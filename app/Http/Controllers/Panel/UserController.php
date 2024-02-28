@@ -23,6 +23,8 @@ use App\Models\UserZoomApi;
 use App\User;
 use App\Student;
 use App\StudentRequirement;
+use App\BundleStudent;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -857,39 +859,41 @@ class UserController extends Controller
 
 
     // create requirement function
-    public function createRequirement($step = 1)
+    public function createRequirement($step = 1, $bundleId=10)
     {
         $user = auth()->user();
-        $student = Student::where("user_id", $user->id)->first();
-        if (!$student) {
+
+        $student = $user->Student;
+
+        $studentBundle = BundleStudent::where("student_id", $student->id)->where("bundle_id", $bundleId)->latest()->first();
+
+        if (!$student || !$studentBundle ) {
             return redirect('/apply');
         }
-        $studentRequirments = StudentRequirement::where("student_id", $student->id)->first();
 
         $data = [
             "user_code" => $user->user_code,
-            "program" => $student->program,
-            "specialization" => $student->specialization,
+            "program" => $studentBundle->bundle->category->slug,
+            "specialization" => $studentBundle->bundle->slug,
             'currentStep' => $step,
             'requirementUploaded' => false,
             'requirementApproved' => StudentRequirement::pending,
-            'bundle' => null
+            'bundle' => $studentBundle->bundle
         ];
+
+       $studentRequirments = $studentBundle->studentRequirement;
 
         if ($studentRequirments) {
             $data["requirementUploaded"] = true;
             $data["requirementApproved"] = $studentRequirments->status;
-
-            $bundle = Bundle::find(8);
-            $data['bundle'] = $bundle;
         }
-
-
 
         return view(getTemplate() . '.panel.requirements.index', [...$data]);
     }
+
+
     // store requirement function
-    public function storeRequirement(Request $request)
+    public function storeRequirement(Request $request, $bundleId=10)
     {
         $request->validate([
             'user_code' => 'required|string',
@@ -901,8 +905,16 @@ class UserController extends Controller
         ]);
 
         $user = auth()->user();
-        $student = Student::where("user_id", $user->id)->first();
-        $studentRequirments = StudentRequirement::where("student_id", $student->id)->first();
+
+        $student = $user->Student;
+
+        $studentBundle = BundleStudent::where("student_id", $student->id)->where("bundle_id", $bundleId)->latest()->first();
+
+        if (!$student || !$studentBundle ) {
+            return redirect('/apply');
+        }
+
+        $studentRequirments = $studentBundle->studentRequirement;
 
 
         $identity_attachment = $request->file('identity_attachment');
@@ -916,7 +928,7 @@ class UserController extends Controller
 
 
         $data = [
-            'student_id' => $student->id,
+            'bundle_student_id' => $studentBundle->id,
             'identity_type' => $request['identity_type'],
             'identity_attachment' => $identity_attachmentPath,
             'admission_attachment' => $admission_attachmentPath,
@@ -933,20 +945,25 @@ class UserController extends Controller
 
 
     // financial requirements function
-    public function account($id = null)
+    public function account($id = null, $bundleId=10)
     {
         $userAuth = auth()->user();
 
-        $student = Student::where('user_id', $userAuth->id)->first();
-        $requirements = StudentRequirement::where('student_id', $student->id)->latest()->first();
-        // dd($userAuth->Student->StudentRequirement);
+        $student = $userAuth->Student;
+
+        $studentBundle = BundleStudent::where("student_id", $student->id)->where("bundle_id", $bundleId)->latest()->first();
+
+        if (!$student || !$studentBundle ) {
+            return redirect('/apply');
+        }
+
+        $studentRequirments = $studentBundle->studentRequirement;
+
         $data = [
             'requirementUploaded' => false,
             'requirementApproved' =>  StudentRequirement::pending
         ];
 
-        $student = Student::where("user_id", $userAuth->id)->first();
-        $studentRequirments = StudentRequirement::where("student_id", $student->id)->first();
         if ($studentRequirments && $studentRequirments->status == "approved") {
             $data["requirementUploaded"] = true;
             $data["requirementApproved"] = $studentRequirments->status;
@@ -1012,7 +1029,7 @@ class UserController extends Controller
 
         $bundle = Bundle::find(8);
 
-        $data['bundle'] = $bundle;
+        $data['bundle'] = $studentBundle->bundle;
 
 
         return view(getTemplate() . '.panel.requirements.index', [...$data]);
