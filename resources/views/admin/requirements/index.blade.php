@@ -52,17 +52,17 @@
                                     @foreach ($requirements as $index => $requirement)
                                         <tr class="text-center">
                                             <td>{{ ++$index }}</td>
-                                            <td class="text-left">{{ $requirement->student->registeredUser->user_code }}
+                                            <td class="text-left">{{ $requirement->bundleStudent->student->registeredUser->user_code }}
                                             </td>
                                             <td class="text-left">
-                                                {{ $requirement->student->registeredUser ? $requirement->student->registeredUser->full_name : '' }}
+                                                {{ $requirement->bundleStudent->student ? $requirement->bundleStudent->student->en_name : '' }}
 
                                             </td>
 
 
-                                            <td>{{ $requirement->student->program }}</td>
+                                            <td>{{ $requirement->bundleStudent->bundle->category->slug }}</td>
 
-                                            <td>{{ $requirement->student->specialization }}</td>
+                                            <td>{{ $requirement->bundleStudent->bundle->slug }}</td>
 
                                             <td>
                                                 <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">
@@ -83,11 +83,11 @@
                                             </td>
 
                                             <td>
-                                                @if ($requirement->approved=="pending")
+                                                @if ($requirement->status=="pending")
                                                 <span class="text-success"> معلق</span>
-                                                @elseif($requirement->approved=="approved")
+                                                @elseif($requirement->status=="approved")
                                                 <span class="text-primary"> تم الموافقة عليه</span>
-                                                @elseif($requirement->approved=="rejected")
+                                                @elseif($requirement->status=="rejected")
                                                 <span class="text-danger"> تم رفضه</span>
                                                 @endif
                                             </td>
