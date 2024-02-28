@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Student;
 use App\User;
 use App\StudentRequirement;
+use App\BundleStudent;
 use Illuminate\Http\Request;
 
 use Spatie\PdfToImage\Pdf;
@@ -43,9 +44,9 @@ class RequirementController extends Controller
                 $requirements->status = StudentRequirement::approved;
                 $requirements->approved_by = $admin->id;
 
-                $data['user_id'] = $requirements->student->registeredUser->id;
-                $data['name'] = $requirements->student->registeredUser->full_name;
-                $data['receiver'] = $requirements->student->email;
+                $data['user_id'] = $requirements->bundleStudent->student->registeredUser->id;
+                $data['name'] = $requirements->bundleStudent->student->registeredUser->ar_name;
+                $data['receiver'] = $requirements->bundleStudent->student->email;
                 $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
                 $data['fromName'] = env('MAIL_FROM_NAME');
                 $data['subject'] = 'الرد علي متطلبات القبول المرسلة';
@@ -80,9 +81,9 @@ class RequirementController extends Controller
                 $requirements->status = StudentRequirement::rejected;
                 $requirements->approved_by = $admin->id;
 
-                $data['user_id'] = $requirements->student->registeredUser->id;
-                $data['name'] = $requirements->student->registeredUser->full_name;
-                $data['receiver'] = $requirements->student->email;
+                $data['user_id'] = $requirements->bundleStudent->student->registeredUser->id;
+                $data['name'] = $requirements->bundleStudent->student->registeredUser->ar_name;
+                $data['receiver'] = $requirements->bundleStudent->student->email;
                 $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
                 $data['fromName'] = env('MAIL_FROM_NAME');
                 $data['subject'] = 'الرد علي متطلبات القبول المرسلة';
