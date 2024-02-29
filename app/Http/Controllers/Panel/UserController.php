@@ -869,7 +869,7 @@ class UserController extends Controller
             return redirect('/apply');
         }
 
-        $studentBundles = BundleStudent::where('student_id', $student->id)->get();
+        $studentBundles = BundleStudent::where('student_id', $student->id)->orderBy("updated_at", "desc")->get();
 
         return view(getTemplate() . '.panel.requirements.index',['studentBundles'=> $studentBundles]);
 
@@ -891,7 +891,7 @@ class UserController extends Controller
         $data = [
             "user_code" => $user->user_code,
             "program" => $studentBundle->bundle->category->slug,
-            "specialization" => $studentBundle->bundle->slug,
+            "specialization" => $studentBundle->bundle->title,
             'currentStep' => 1,
             'requirementUploaded' => false,
             'requirementApproved' => StudentRequirement::pending,

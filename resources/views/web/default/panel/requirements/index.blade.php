@@ -15,6 +15,7 @@
 .requirement-head{
     top: -15px;
     right: 30px;
+    max-width: 85%;
 }
 </style>
 
@@ -22,19 +23,20 @@
 
 @include('web.default.panel.requirements.requirements_includes.progress')
 
-    <section class="container d-flex mt-80">
+    <section class="container d-flex mt-80 flex-wrap flex-md-nowrap">
 
         @if (!empty($studentBundles))
             @foreach ($studentBundles as $studentBundle)
                 <div class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm mb-80 ml-50">
-                    <h2 class="position-absolute bg-white p-5 requirement-head">{{trans($studentBundle->bundle->slug)}}متطلبات القبول في دبلومه</h2>
+                    <h2 class="position-absolute bg-white p-5 requirement-head">
+                    متطلبات القبول ل {{ clean($studentBundle->bundle->title, 't') }}</h2>
                     @if (empty($studentBundle->studentRequirement))
                         <div class="w-100 text-center">
                             <p class="alert alert-info text-center">
                                 لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
                             </p>
                             <a href="/panel/bundles/{{ $studentBundle->id}}/requirements"
-                                class="btn btn-success p-5 mt-20 w-50 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
+                                class="btn btn-success p-5 mt-20 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
                         </div>
                     @else
                         @if ($studentBundle->studentRequirement->status == 'pending')
@@ -50,7 +52,7 @@
                                     لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
                                 </p>
                                 <a href="/bundles/{{ $studentBundle->bundle->slug }}"
-                                    class="btn btn-primary p-5 mt-20 w-50">للذهاب للدفع رسوم البرنامج اضغط هنا</a>
+                                    class="btn btn-primary p-5 mt-20">للذهاب للدفع رسوم البرنامج اضغط هنا</a>
                             </div>
                         @elseif ($studentBundle->studentRequirement->status == 'rejected')
                             <div  class="w-100 text-center">
@@ -59,7 +61,7 @@
                                     اخري
                                 </p>
                                 <a href="/panel/bundles/{{ $studentBundle->id }}/requirements"
-                                    class="btn btn-primary p-5 mt-20 w-50">للذهاب لرفع الملفات مرة اخري اضغط هنا</a>
+                                    class="btn btn-primary p-5 mt-20">للذهاب لرفع الملفات مرة اخري اضغط هنا</a>
                             </div>
                         @endif
                     @endif
