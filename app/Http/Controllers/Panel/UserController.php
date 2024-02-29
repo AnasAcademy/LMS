@@ -858,14 +858,31 @@ class UserController extends Controller
     }
 
 
+    // requirement index
+    public function requirementIndex($step=1){
+
+        $user = auth()->user();
+
+        $student = $user->Student;
+
+        if (!$student) {
+            return redirect('/apply');
+        }
+
+        $studentBundles = BundleStudent::where('student_id', $student->id)->get();
+
+        return view(getTemplate() . '.panel.requirements.index',['studentBundles'=> $studentBundles]);
+
+    }
+
     // create requirement function
-    public function createRequirement($step = 1, $bundleId=10)
+    public function createRequirement( $studentBundleId)
     {
         $user = auth()->user();
 
         $student = $user->Student;
 
-        $studentBundle = BundleStudent::where("student_id", $student->id)->where("bundle_id", $bundleId)->latest()->first();
+        $studentBundle = BundleStudent::find($studentBundleId);
 
         if (!$student || !$studentBundle ) {
             return redirect('/apply');
@@ -875,10 +892,11 @@ class UserController extends Controller
             "user_code" => $user->user_code,
             "program" => $studentBundle->bundle->category->slug,
             "specialization" => $studentBundle->bundle->slug,
-            'currentStep' => $step,
+            'currentStep' => 1,
             'requirementUploaded' => false,
             'requirementApproved' => StudentRequirement::pending,
-            'bundle' => $studentBundle->bundle
+            'bundle' => $studentBundle->bundle,
+            'studentBundleId' =>$studentBundleId
         ];
 
        $studentRequirments = $studentBundle->studentRequirement;
@@ -888,12 +906,12 @@ class UserController extends Controller
             $data["requirementApproved"] = $studentRequirments->status;
         }
 
-        return view(getTemplate() . '.panel.requirements.index', [...$data]);
+        return view(getTemplate() . '.panel.requirements.create', [...$data]);
     }
 
 
     // store requirement function
-    public function storeRequirement(Request $request, $bundleId=10)
+    public function storeRequirement(Request $request,$studentBundleId)
     {
         $request->validate([
             'user_code' => 'required|string',
@@ -908,11 +926,12 @@ class UserController extends Controller
 
         $student = $user->Student;
 
-        $studentBundle = BundleStudent::where("student_id", $student->id)->where("bundle_id", $bundleId)->latest()->first();
+        $studentBundle = BundleStudent::find($studentBundleId);
 
         if (!$student || !$studentBundle ) {
             return redirect('/apply');
         }
+
 
         $studentRequirments = $studentBundle->studentRequirement;
 
@@ -940,7 +959,7 @@ class UserController extends Controller
         } else {
             StudentRequirement::create($data);
         }
-        return redirect('/panel/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
+        return redirect('/panel/bundles/'.$studentBundleId.'/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
     }
 
 
