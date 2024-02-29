@@ -5,54 +5,70 @@
     <link rel="stylesheet" href="/assets/default/vendors/daterangepicker/daterangepicker.min.css">
 @endpush
 
+<style>
+.requirement-card{
+    /* width: 100%;
+    background-color: white; */
+    padding: 70px;
+    box-shadow: 0px 0px 10px 0px #00000073;
+}
+.requirement-head{
+    top: -15px;
+    right: 30px;
+}
+</style>
+
 @section('content')
-    @include('web.default.panel.requirements.requirements_includes.progress')
 
+@include('web.default.panel.requirements.requirements_includes.progress')
 
-    @if (Session::has('success'))
-        <div class="container d-flex justify-content-center mt-80">
-            <p class="alert alert-success w-75 text-center"> {{ Session::get('success') }} </p>
-        </div>
-    @else
-        @if (!empty($requirementUploaded) and $requirementUploaded == true)
-            @if ($requirementApproved == "approved")
-                @if ($currentStep == 1)
-                    <div class="container d-flex justify-content-center mt-80 flex-column align-items-center">
-                        <p class="alert alert-success w-75 text-center">
-                            لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
-                        </p>
+    <section class="container d-flex flex-colums mt-80">
 
-                        <a href="/bundles/{{$bundle->slug}}" class="btn btn-primary p-5 mt-20 w-25">للذهاب للدفع رسوم البرنامج اضغط هنا</a>
-                    </div>
-                @elseif ($currentStep == 2)
-                    @include('web.default.panel.requirements.requirements_includes.financial')
-                @endif
-            @elseif($requirementApproved == "pending")
-                <div class="container d-flex justify-content-center mt-80">
-                    <p class="alert alert-info w-75 text-center">
-                        لقد تم بالفعل رفع متطلبات القبول يرجي الانتظار حتي يتم مراجعتها
-                    </p>
+        @if (!empty($studentBundles))
+            @foreach ($studentBundles as $studentBundle)
+                <div class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm">
+                    <h2 class="position-absolute bg-white p-5 requirement-head">{{trans($studentBundle->bundle->slug)}}متطلبات القبول في دبلومه</h2>
+                    @if (empty($studentBundle->studentRequirement))
+                        <div class="w-100 text-center">
+                            <p class="alert alert-info text-center">
+                                لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
+                            </p>
+                            <a href="/panel/bundles/{{ $studentBundle->bundle_id }}/requirements"
+                                class="btn btn-success p-5 mt-20 w-50 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
+                        </div>
+                    @else
+                        @if ($studentBundle->studentRequirement->status == 'pending')
+                            <div  class="w-100 text-center">
+                                <p class="alert alert-info text-center">
+                                    لقد تم بالفعل رفع متطلبات القبول يرجي الانتظار حتي يتم مراجعتها
+                                </p>
+                            </div>
+                            </div>
+                        @elseif ($studentBundle->studentRequirement->status == 'approved')
+                            <div  class="w-100 text-center">
+                                <p class="alert alert-success text-center">
+                                    لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
+                                </p>
+                                <a href="/bundles/{{ $studentBundle->bundle->slug }}"
+                                    class="btn btn-primary p-5 mt-20 w-50">للذهاب للدفع رسوم البرنامج اضغط هنا</a>
+                            </div>
+                        @elseif ($studentBundle->studentRequirement->status == 'rejected')
+                            <div  class="w-100 text-center">
+                                <p class="alert alert-danger text-center text-white">
+                                    لقد تم رفض الملفات التي قمت برفعها يرجي مراجعة الميل لمشاهدة السبب ثم ارفع الملفات مرة
+                                    اخري
+                                </p>
+                                <a href="/panel/bundles/{{ $studentBundle->bundle_id }}/requirements"
+                                    class="btn btn-primary p-5 mt-20 w-50">للذهاب لرفع الملفات مرة اخري اضغط هنا</a>
+                            </div>
+                        @endif
+                    @endif
                 </div>
-            @elseif($requirementApproved == "rejected")
-                <div class="container d-flex justify-content-center mt-80">
-                    <p class="alert alert-danger w-75 text-center text-white">
-                        لقد تم رفض الملفات التي قمت برفعها يرجي مراجعة الميل لمشاهدة السبب ثم ارفع الملفات مرة اخري
-                    </p>
-                </div>
-
-                @include('web.default.panel.requirements.requirements_includes.basic_information')
-            @endif
-        @else
-            @if (!empty($currentStep) and $currentStep == 1)
-                @include('web.default.panel.requirements.requirements_includes.basic_information')
-            @endif
+            @endforeach
         @endif
 
+    </section>
 
-
-
-
-    @endif
 @endsection
 
 @push('scripts_bottom')
@@ -69,7 +85,4 @@
     </script>
 
     <script src="/assets/default/js/panel/user_setting.min.js"></script>
-
-
-
 @endpush

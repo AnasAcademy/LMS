@@ -1,5 +1,5 @@
 <form method="post" id="userRequirmentForm" class="mt-30" enctype="multipart/form-data"
-    action="{{ '/panel/requirements' }}">
+    action="/panel/bundles/{{$studentBundleId}}/requirements">
     {{ csrf_field() }}
 
     <h1 class="section-title after-line text-center ">نموذج تقديم متطلبات القبول</h1>
