@@ -6,68 +6,75 @@
 @endpush
 
 <style>
-.requirement-card{
-    /* width: 100%;
-    background-color: white; */
-    padding: 70px;
-    box-shadow: 0px 0px 10px 0px #00000073;
-}
-.requirement-head{
-    top: -15px;
-    right: 30px;
-    max-width: 85%;
-}
+    .requirement-card {
+        padding: 70px;
+        box-shadow: 0px 0px 10px 0px #00000073;
+    }
+
+    .requirement-head {
+        top: -15px;
+        right: 30px;
+        max-width: 85%;
+    }
 </style>
 
 @section('content')
 
-@include('web.default.panel.requirements.requirements_includes.progress')
+    @include('web.default.panel.requirements.requirements_includes.progress')
 
     <section class="container d-flex mt-80 flex-wrap flex-md-nowrap">
-
-        @if (!empty($studentBundles))
+        @if (count($studentBundles)>0)
             @foreach ($studentBundles as $studentBundle)
-                <div class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm mb-80 ml-50">
+                <section
+                    class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm mb-80 ml-50">
                     <h2 class="position-absolute bg-white p-5 requirement-head">
-                    متطلبات القبول ل {{ clean($studentBundle->bundle->title, 't') }}</h2>
+                        متطلبات القبول ل {{ clean($studentBundle->bundle->title, 't') }}</h2>
                     @if (empty($studentBundle->studentRequirement))
                         <div class="w-100 text-center">
                             <p class="alert alert-info text-center">
                                 لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
                             </p>
-                            <a href="/panel/bundles/{{ $studentBundle->id}}/requirements"
+                            <a href="/panel/bundles/{{ $studentBundle->id }}/requirements"
                                 class="btn btn-success p-5 mt-20 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
                         </div>
                     @else
                         @if ($studentBundle->studentRequirement->status == 'pending')
-                            <div  class="w-100 text-center">
+                            <div class="w-100 text-center">
                                 <p class="alert alert-info text-center">
                                     لقد تم بالفعل رفع متطلبات القبول يرجي الانتظار حتي يتم مراجعتها
                                 </p>
                             </div>
-                            </div>
                         @elseif ($studentBundle->studentRequirement->status == 'approved')
-                            <div  class="w-100 text-center">
+                            <div class="w-100 text-center">
                                 <p class="alert alert-success text-center">
                                     لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
                                 </p>
                                 <a href="/bundles/{{ $studentBundle->bundle->slug }}"
-                                    class="btn btn-primary p-5 mt-20">للذهاب للدفع رسوم البرنامج اضغط هنا</a>
+                                    class="btn btn-primary p-5 mt-20">للذهاب للدفع
+                                    رسوم البرنامج اضغط هنا</a>
                             </div>
                         @elseif ($studentBundle->studentRequirement->status == 'rejected')
-                            <div  class="w-100 text-center">
+                            <div class="w-100 text-center">
                                 <p class="alert alert-danger text-center text-white">
                                     لقد تم رفض الملفات التي قمت برفعها يرجي مراجعة الميل لمشاهدة السبب ثم ارفع الملفات مرة
                                     اخري
                                 </p>
                                 <a href="/panel/bundles/{{ $studentBundle->id }}/requirements"
-                                    class="btn btn-primary p-5 mt-20">للذهاب لرفع الملفات مرة اخري اضغط هنا</a>
+                                    class="btn btn-primary p-5 mt-20">للذهاب
+                                    لرفع الملفات مرة اخري اضغط هنا</a>
                             </div>
                         @endif
                     @endif
-                </div>
+                </section>
             @endforeach
-        @endif
+       @else
+       <section class="w-100 text-center">
+           <p class="alert alert-info text-center">
+             لم يتم التسجيل في اي دبلومه بعد
+           </p>
+           <a href="/apply" class="btn bg-secondary text-white p-5 mt-20">للتسجيل اضغط علي هذا اللينك</a>
+       </section>
+       @endif
 
     </section>
 
