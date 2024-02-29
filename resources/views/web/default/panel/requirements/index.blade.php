@@ -22,18 +22,18 @@
 
 @include('web.default.panel.requirements.requirements_includes.progress')
 
-    <section class="container d-flex flex-colums mt-80">
+    <section class="container d-flex mt-80">
 
         @if (!empty($studentBundles))
             @foreach ($studentBundles as $studentBundle)
-                <div class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm">
+                <div class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm mb-80 ml-50">
                     <h2 class="position-absolute bg-white p-5 requirement-head">{{trans($studentBundle->bundle->slug)}}متطلبات القبول في دبلومه</h2>
                     @if (empty($studentBundle->studentRequirement))
                         <div class="w-100 text-center">
                             <p class="alert alert-info text-center">
                                 لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
                             </p>
-                            <a href="/panel/bundles/{{ $studentBundle->bundle_id }}/requirements"
+                            <a href="/panel/bundles/{{ $studentBundle->id}}/requirements"
                                 class="btn btn-success p-5 mt-20 w-50 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
                         </div>
                     @else
@@ -58,7 +58,7 @@
                                     لقد تم رفض الملفات التي قمت برفعها يرجي مراجعة الميل لمشاهدة السبب ثم ارفع الملفات مرة
                                     اخري
                                 </p>
-                                <a href="/panel/bundles/{{ $studentBundle->bundle_id }}/requirements"
+                                <a href="/panel/bundles/{{ $studentBundle->id }}/requirements"
                                     class="btn btn-primary p-5 mt-20 w-50">للذهاب لرفع الملفات مرة اخري اضغط هنا</a>
                             </div>
                         @endif
