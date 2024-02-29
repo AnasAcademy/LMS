@@ -894,7 +894,7 @@ class UserController extends Controller
             "specialization" => $studentBundle->bundle->title,
             'currentStep' => 1,
             'requirementUploaded' => false,
-            'requirementApproved' => StudentRequirement::pending,
+            'requirementStatus' => StudentRequirement::pending,
             'bundle' => $studentBundle->bundle,
             'studentBundleId' =>$studentBundleId
         ];
@@ -903,7 +903,7 @@ class UserController extends Controller
 
         if ($studentRequirments) {
             $data["requirementUploaded"] = true;
-            $data["requirementApproved"] = $studentRequirments->status;
+            $data["requirementStatus"] = $studentRequirments->status;
         }
 
         return view(getTemplate() . '.panel.requirements.create', [...$data]);
