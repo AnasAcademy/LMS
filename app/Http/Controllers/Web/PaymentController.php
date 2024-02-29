@@ -337,15 +337,21 @@ class PaymentController extends Controller
                                 $userData = $request->cookie('user_data');
                                 if ($userData) {
                                 $userData = json_decode($userData, true);
+                                $studentData = collect($userData)->except(['category_id', 'bundle_id'])->toArray();
                                 }
-                                $student = Student::create($userData);
+                                $student = Student::where('user_id', auth()->user()->id)->first();
+                    
+                                if (!$student) {
+                                    $student = Student::create($studentData);
+                                }
+                                $student->bundles()->attach($userData['bundle_id']);
 
                                 $lastCode->update(['lst_sd_code' => $nextCode]);
-                }
+                            }
 
-            }catch (\Exception $exception) {
-            dd($exception);
-            }
+                        }catch (\Exception $exception) {
+                        dd($exception);
+                        }
             }
 
             return view('web.default.cart.status_pay', $data);

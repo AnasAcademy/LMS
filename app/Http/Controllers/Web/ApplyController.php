@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\User;
 use App\Student;
+use App\Models\Category;
 use Illuminate\Support\Facades\Cookie;
 
 class ApplyController extends Controller
@@ -23,8 +24,8 @@ class ApplyController extends Controller
     public function index()
     {
         $user = auth()->user();
-
-        return view(getTemplate() . '.pages.application_form',compact('user'));
+        $category=Category::get();
+        return view(getTemplate() . '.pages.application_form',compact('user','category'));
     }
 
     /**
@@ -46,37 +47,44 @@ class ApplyController extends Controller
     public function checkout(Request $request, $carts = null)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required',
-            'program' => 'required',
-            'specialization' => 'required',
-            'ar_name' => 'required',
-            'en_name' => 'required',
-            'country' => 'required',
-            'area' => 'nullable',
-            'city' => 'nullable',
-            'email' => 'required|email',
-            'birthday' => 'required|date',
-            'phone' => 'required',
-            'deaf' => 'required',
-            'gender' => 'required',
-            'healthy' => 'required',
-            'nationality' => 'required',
+            'user_id'=>'required',
+            'category_id' => 'required',
+            'bundle_id' =>  [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $user = auth()->user();
+                    $student = Student::where('user_id', $user->id)->first();
+        
+                    if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                        $fail('User has already applied for this bundle.');
+                    }
+                },
+            ],
+            'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+            'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
+            'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+            'birthdate' => 'required|date',
+            'phone' => 'required|min:5|max:20',
+            'deaf' => 'required|in:0,1',
+            'gender' => 'required|in:male,female',
+            'healthy' => 'required|in:0,1',
+            'nationality' => 'required|min:3|max:25',
             'job' => 'nullable',
             'job_type' => 'nullable',
-            'referral_person' => 'required',
-            'relation' => 'required',
-            'referral_email' => 'required|email',
-            'referral_phone' => 'required',
-            'about_us' => 'nullable',
+            'referral_person' => 'required|min:5|max:255',
+            'relation' => 'required|min:5|max:255',
+            'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+            'referral_phone' => 'required|min:5|max:20',
+            'about_us' => 'required|min:5|max:255',
         ]);
+
         Cookie::queue('user_data', json_encode($validatedData));
-
         $user = auth()->user();
-        $student=Student::where('user_id',$user->id)->first();
-
-        if(empty($student)){
+        
             $paymentChannels = PaymentChannel::where('status', 'active')->get();
-
             $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
@@ -150,9 +158,7 @@ class ApplyController extends Controller
 
                 return $this->handlePaymentOrderWithZeroTotalAmount($order);
             }
-            //checking form fee for user and adding him as student
-
-}
+            
         return redirect('/panel');
     }
 
