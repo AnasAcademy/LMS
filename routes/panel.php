@@ -114,8 +114,6 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
         Route::get('/{quizResultId}/edit-result', 'QuizController@editResult');
         Route::post('/{quizResultId}/update-result', 'QuizController@updateResult');
-
-
     });
 
     Route::group(['prefix' => 'quizzes-questions'], function () {
@@ -273,14 +271,12 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/deleteAccount', 'UserController@deleteAccount');
     });
 
- // requirements Routes
- Route::group(['prefix' => 'requirements'], function () {
-    Route::get('/', 'UserController@createRequirement');
-    Route::post('/', 'UserController@storeRequirement')->name('requirements.store');
-    Route::get('/step/1', 'UserController@createRequirement');
-    Route::get('/step/2', 'UserController@account');
-
-});
+    // requirements Routes
+    Route::group(['prefix' => 'requirements'], function () {
+        Route::get('/', 'UserController@requirementIndex');
+        Route::get('/step/1', 'UserController@requirementIndex');
+        Route::get('/step/2', 'UserController@account');
+    });
 
     Route::group(['prefix' => 'support'], function () {
         Route::get('/', 'SupportsController@index');
@@ -431,6 +427,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
             Route::get('/{id}/courses', 'BundlesController@courses');
             Route::get('/{id}/export-students-list', 'BundlesController@exportStudentsList');
         });
+        // requirements Routes
+        Route::get('/{studentBundleId}/requirements', 'UserController@createRequirement');
+        Route::post('/{studentBundleId}/requirements', 'UserController@storeRequirement')->name('requirements.store');
     });
 
     Route::group(['prefix' => 'bundle-webinars'], function () {
@@ -471,5 +470,3 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 });
-
-
