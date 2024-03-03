@@ -66,6 +66,10 @@ class Category extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\Webinar', 'category_id', 'id');
     }
+    public function bundles()
+    {
+        return $this->hasMany(Bundle::class, 'category_id', 'id');
+    }
 
     public function userOccupations()
     {

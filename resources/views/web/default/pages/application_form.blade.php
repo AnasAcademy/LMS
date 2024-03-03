@@ -50,20 +50,19 @@
                     اضغط هنا
                     </a>
                     </p>
-                    <form action="/apply" method="POST">
+                    <form action="/apply" method="POST" id="myForm">
                         @csrf
                         <input type="hidden" name="user_id" value="{{ $user->id }}">
 
                         <label for="application">{{ trans('application_form.application') }}</label>
-                        <select id="mySelect1" name="program" required class="form-control" onchange="toggleHiddenInput()">
+                        <select id="mySelect1" name="category_id" required class="form-control" onchange="toggleHiddenInput()">
                              <option disabled selected hidden value="">اختار البرنامج المراد اللتسجيل فيه </option>
-                            <option value="ماجستير تنفيذي">ماجستير تنفليذي</option>
-                            <option value="دبلوم عالي"> دبلوم عالي</option>
-                            <option value="دبلوم متوسط">دبلوم متوسط</option>
-
+                             @foreach($category as $item)
+                            <option value="{{$item->id}}">{{$item->title}} </option>
+                            @endforeach
                         </select><br>
                         <label class="hidden-element" id="hiddenLabel1" for="name">التخصص المطلوب</label>
-                        <input type="text" id="specialization" name="specialization"
+                        <input type="text" id="bundle_id" name="bundle_id"
                         required class="hidden-element form-control">
 
                         <label for="name">{{ trans('application_form.name') }}</label>
@@ -119,7 +118,7 @@
                         placeholder="تسجيل البريد الإلكتروني" required class="form-control"><br>
 
                         <label for="birthday">{{ trans('application_form.birthday') }}</label>
-                        <input type="date" id="birthday" name="birthday" required class="form-control"><br>
+                        <input type="date" id="birthday" name="birthdate" required class="form-control"><br>
 
                         <label for="phone">{{ trans('application_form.phone') }}</label>
                         <input type="tel" id="phone" name="phone" value="{{ $user->mobile }}" class="form-control"><br>
@@ -127,8 +126,8 @@
                         <label for="deaf">{{ trans('application_form.deaf_patient') }}</label>
                         <select id="deaf" name="deaf" required class="form-control">
                             <option value="" class="placeholder" disabled="" selected >اختر </option>
-                            <option value="yes">نعم</option>
-                            <option value="no">لا</option>
+                            <option value="1">نعم</option>
+                            <option value="0">لا</option>
                         </select><br>
 
                         <label for="gender">{{ trans('application_form.gender') }}</label>
@@ -141,8 +140,8 @@
                         <label for="healthy">{{ trans('application_form.health_proplem') }}</label>
                         <select id="healthy" name="healthy" required class="form-control">
                             <option value="" class="placeholder" disabled="" selected >اختر </option>
-                            <option value="yes">نعم</option>
-                            <option value="no">لا</option>
+                            <option value="1">نعم</option>
+                            <option value="0">لا</option>
                         </select><br>
 
                         <label for="nationality">{{ trans('application_form.nationality') }}</label>
@@ -206,33 +205,34 @@
 
                         <label>{{ trans('application_form.heard_about_us') }}</label><br>
                         <label for="snapchat">
-                            <input type="radio" id="snapchat" name="about_us" value="snapchat" required>
+                            <input type="radio" id="snapchat" name="about_us" value="snapchat" >
                             {{ trans('application_form.snapchat') }}
                         </label><br>
                         <label for="twitter">
-                            <input type="radio" id="twitter" name="about_us" value="twitter" required>
+                            <input type="radio" id="twitter" name="about_us" value="twitter" >
                             {{ trans('application_form.twitter') }}
                         </label><br>
                         <label for="friend">
-                            <input type="radio" id="friend" name="about_us" value="friend" required>
+                            <input type="radio" id="friend" name="about_us" value="friend" >
                             {{ trans('application_form.friend') }}
                         </label><br>
                         <label for="instagram">
-                            <input type="radio" id="instagram" name="about_us" value="instagram" required>
+                            <input type="radio" id="instagram" name="about_us" value="instagram" >
                             {{ trans('application_form.instagram') }}
                         </label><br>
                         <label for="facebook">
-                            <input type="radio" id="facebook" name="about_us" value="facebook" required>
+                            <input type="radio" id="facebook" name="about_us" value="facebook" >
                             {{ trans('application_form.facebook') }}
                         </label><br>
                         <label for="other">
-                            <input type="radio" id="other" name="about_us" value="other" required>
+                            <input type="radio" id="other" name="about_us" value="other" >
                             {{ trans('application_form.other') }}
                         </label><br>
                          <label id="otherLabel"style="display:none" >أدخل المصدر</label>
-                         <input type="text" id="otherInput" placeholder="" name="about_us" class="form-control" style="display:none"><br>
-
-                        <label>
+                         <input type="text" id="otherInput" placeholder="" name="other_about_us" class="form-control" style="display:none"><br>
+                        
+                        
+                         <label>
                             <input type="checkbox" id="terms" name="terms" required>
                             <!--{{ trans('application_form.agree_terms_conditions') }}-->
                             اقر أنا المسجل بياناتي اعلاه بموافقتي على لائحة الحقوق والوجبات واحكام وشروط القبول والتسجيل، كما أقر بالتزامي التام بمضمونها، وبمسؤوليتي التامة عن أية مخالفات قد تصدر مني لها ، مما يترتب عليه كامل الأحقية للاكاديمية في مسائلتي عن تلك المخالفات والتصرفات المخالفة للوائح المشار إليها في عقد اتفاقية التحاق متدربـ/ـة <a target="_blank" href="https://anasacademy.uk/wp-content/uploads/2024/02/Contract.pdf">انقر هنا لمشاهدة</a>
@@ -257,7 +257,12 @@
     </div>
 </div>
 @endsection
-
+@php
+    $bundlesByCategory = [];
+    foreach ($category as $item) {
+        $bundlesByCategory[$item->id] = $item->bundles;
+    }
+@endphp
 @push('scripts_bottom')
     <script src="/assets/default/vendors/swiper/swiper-bundle.min.js"></script>
     <script src="/assets/default/vendors/owl-carousel2/owl.carousel.min.js"></script>
@@ -275,6 +280,7 @@
             job.style.display = "none";
         }
     }
+
     working.addEventListener("change", toggleJobFields);
     notWorking.addEventListener("change", toggleJobFields);
     toggleJobFields();
@@ -290,45 +296,41 @@
             if (radioButton.value === "other" && radioButton.checked) {
                 otherLabel.style.display = "block";
                 otherInput.style.display = "block";
+                radioButton.value=otherInput.value;
             } else {
                 otherLabel.style.display = "none";
                 otherInput.style.display = "none";
             }
         });
     });
+    
+    otherInput.addEventListener("change", function() {
+      let radioButton=document.getElementById('other');
+      radioButton.value=otherInput.value;
+    })
 
     function toggleHiddenInput() {
+      var bundles = @json($bundlesByCategory);
       var select = document.getElementById("mySelect1");
-      var hiddenInput = document.getElementById("specialization");
+      var hiddenInput = document.getElementById("bundle_id");
       var hiddenLabel = document.getElementById("hiddenLabel1");
 
       if (select && hiddenLabel && hiddenInput) {
-        if (select.value === "ماجستير تنفيذي") {
-          hiddenInput.outerHTML = '<select id="specialization" name="specialization"  class="form-control">' +
+        var categoryId = select.value;
+        var categoryBundles = bundles[categoryId];
+
+        if (categoryBundles) {
+          var options = categoryBundles.map(function(bundle) {
+            return '<option value="' + bundle.id + '">' + bundle.title + '</option>';
+          }).join('');
+
+          hiddenInput.outerHTML = '<select id="bundle_id" name="bundle_id"  class="form-control">' +
             '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص </option>' +
-            '<option value="ماجستير الفنون البصرية الرقمية EMVA">ماجستير الفنون البصرية الرقمية EMVA</option>' +
-            '</select>';
-          hiddenLabel.style.display = "block";
-        } else if (select.value === "دبلوم عالي") {
-          hiddenInput.outerHTML = '<select id="specialization" name="specialization"  class="form-control">' +
-            '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص </option>' +
-            '<option value="دبلوم عالي مع مرتبة الشرف في التصميم الجرافيكي و العلامة التجارية">دبلوم عالي مع مرتبة الشرف في التصميم الجرافيكي و العلامة التجارية</option>' +
-            '<option value="دبلوم عالي مع مرتبة الشرف في الرسوم المتحركة ومؤثرات الصوت والفيديو">دبلوم عالي مع مرتبة الشرف في الرسوم المتحركة ومؤثرات الصوت والفيديو</option>' +
-            '<option value="دبلوم عالي مع مرتبة الشرف في تصميم واجهة وتجربة المستخدم UI/UX وتقنيات الالعاب">دبلوم عالي مع مرتبة الشرف في تصميم واجهة وتجربة المستخدم UI/UX وتقنيات الالعاب</option>' +
-            '<option value="دبلوم عالي مع مرتبة الشرف في التسويق الرقمي وإدارة وسائل التواصل الاجتماعي">دبلوم عالي مع مرتبة الشرف في التسويق الرقمي وإدارة وسائل التواصل الاجتماعي</option>' +
-            '</select>';
-          hiddenLabel.style.display = "block";
-        } else if (select.value === "دبلوم متوسط") {
-          hiddenInput.outerHTML = '<select id="specialization" name="specialization"  class="form-control">' +
-            '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص </option>' +
-            '<option value="دبلوم التصميم الجرافيكي وواجهة المستخدم UI/UX">دبلوم التصميم الجرافيكي وواجهة المستخدم UI/UX</option>' +
-            '<option value="دبلوم التصميم الجرافيكي والرسوم المتحركة">دبلوم التصميم الجرافيكي والرسوم المتحركة</option>' +
-            '<option value="دبلوم التصميم الجرافيكي والتسويق الرقمي">دبلوم التصميم الجرافيكي والتسويق الرقمي</option>';
+            options +
             '</select>';
           hiddenLabel.style.display = "block";
         } else {
-          // Reset the content if none of the conditions are met
-          hiddenInput.outerHTML = '<input type="text" id="specialization" name="specialization" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
+          hiddenInput.outerHTML = '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
           hiddenLabel.style.display = "none";
         }
       }
