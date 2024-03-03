@@ -303,11 +303,11 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // requirements routes
          Route::group(['prefix' => 'requirements'], function () {
-            Route::get('/', 'RequirementController@index');
-            Route::get('/list', 'RequirementController@index');
-            Route::get('/new', 'RequirementController@create');
-            Route::get('/{id}/approve', 'RequirementController@approve');
-            Route::get('/{id}/reject', 'RequirementController@reject');
+            Route::get('/', 'RequirementController@index')->middleware('can:admin_requirements_list');
+            Route::get('/list', 'RequirementController@index')->middleware('can:admin_requirements_list');
+            Route::get('/new', 'RequirementController@create')->middleware('can:admin_requirements_new');
+            Route::get('/{id}/approve', 'RequirementController@approve')->middleware('can:admin_requirements_approve');
+            Route::get('/{id}/reject', 'RequirementController@reject')->middleware('can:admin_requirements_reject');
 
 
         });
