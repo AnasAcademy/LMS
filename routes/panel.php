@@ -19,7 +19,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{id}/getInfo', 'UserController@getUserInfo');
     });
 
-    Route::group(['prefix' => 'webinars'], function () {
+    Route::group(['prefix' => 'webinars', 'middleware' =>'can:student_showClasses'], function () {
         Route::group(['middleware' => 'user.not.access'], function () {
             Route::get('/', 'WebinarController@index');
             Route::get('/new', 'WebinarController@create');
@@ -67,7 +67,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 
-    Route::group(['prefix' => 'upcoming_courses'], function () {
+    Route::group(['prefix' => 'upcoming_courses', 'middleware' =>'can:student_showUpcomingCourses'], function () {
         Route::group(['middleware' => 'user.not.access'], function () {
             Route::get('/', 'UpcomingCoursesController@index');
             Route::get('/new', 'UpcomingCoursesController@create');
@@ -86,7 +86,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/followings', 'UpcomingCoursesController@followings');
     });
 
-    Route::group(['prefix' => 'quizzes'], function () {
+    Route::group(['prefix' => 'quizzes', 'middleware' =>'can:student_showTest'], function () {
         Route::group(['middleware' => 'user.not.access'], function () {
 
             Route::get('/', 'QuizController@index');
@@ -161,7 +161,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{id}/delete', 'FileController@destroy');
     });
 
-    Route::group(['prefix' => 'assignments'], function () {
+    Route::group(['prefix' => 'assignments','middleware'=>'can:student_showTasks'], function () {
         Route::post('/store', 'AssignmentController@store');
         Route::post('/{id}/update', 'AssignmentController@update');
         Route::get('/{id}/delete', 'AssignmentController@destroy');
@@ -198,7 +198,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     });
 
 
-    Route::group(['prefix' => 'certificates'], function () {
+    Route::group(['prefix' => 'certificates','middleware'=>'can:student_showCertificate'], function () {
         Route::get('/', 'CertificateController@lists');
         Route::get('/certificates_template', 'CertificateController@certificateLists');
         Route::get('/achievements', 'CertificateController@achievements');
@@ -209,7 +209,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 
-    Route::group(['prefix' => 'meetings'], function () {
+    Route::group(['prefix' => 'meetings','middleware'=>'can:student_showSession'], function () {
         Route::get('/reservation', 'ReserveMeetingController@reservation');
         Route::get('/requests', 'ReserveMeetingController@requests');
 
@@ -226,7 +226,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::post('/{id}/add-session', 'ReserveMeetingController@addLiveSession');
     });
 
-    Route::group(['prefix' => 'financial'], function () {
+    Route::group(['prefix' => 'financial','middleware'=>'can:student_showFinance'], function () {
         Route::get('/sales', 'SaleController@index');
         Route::get('/summary', 'AccountingController@index');
         Route::get('/payout', 'PayoutController@index');
@@ -292,7 +292,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 
-    Route::group(['prefix' => 'marketing', 'middleware' => 'user.not.access'], function () {
+    Route::group(['prefix' => 'marketing', 'middleware' => ['user.not.access','can:student_showMarkting']], function () {
         Route::get('/special_offers', 'SpecialOfferController@index')->name('special_offer_index');
         Route::post('/special_offers/store', 'SpecialOfferController@store');
         Route::get('/special_offers/{id}/disable', 'SpecialOfferController@disable');
@@ -338,7 +338,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::post('/exchange', 'RewardController@exchange');
     });
 
-    Route::group(['prefix' => 'store', 'namespace' => 'Store'], function () {
+    Route::group(['prefix' => 'store', 'namespace' => 'Store','middleware'=>'can:student_showStore'], function () {
         Route::group(['middleware' => 'user.not.access'], function () {
 
             Route::group(['prefix' => 'products'], function () {
@@ -408,7 +408,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 
-    Route::group(['prefix' => 'assignments'], function () {
+    Route::group(['prefix' => 'assignments','middleware'=>'can:student_showTasks'], function () {
         Route::get('/my-assignments', 'AssignmentController@myAssignments');
         Route::get('/my-courses-assignments', 'AssignmentController@myCoursesAssignments');
         Route::get('/{id}/students', 'AssignmentController@students');
@@ -448,7 +448,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{noticeboard_id}/saveStatus', 'CourseNoticeboardController@saveStatus');
     });
 
-    Route::group(['prefix' => 'forums'], function () {
+    Route::group(['prefix' => 'forums','middleware'=>'can:student_showForums'], function () {
         Route::get('/topics', 'ForumsController@topics');
         Route::get('/topics/{id}/removeBookmarks', 'ForumsController@removeBookmarks');
         Route::get('/posts', 'ForumsController@posts');
