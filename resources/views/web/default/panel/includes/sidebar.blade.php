@@ -98,7 +98,7 @@
                     <span class="sidenav-item-icon mr-10">
                         @include('web.default.panel.includes.sidebar_icons.teachers')
                     </span>
-                    <span class="font-14 text-dark-blue font-weight-500">{{ trans('public.instructors') }}tt</span>
+                    <span class="font-14 text-dark-blue font-weight-500">{{ trans('public.instructors') }}</span>
                 </a>
 
                 <div class="collapse {{ (request()->is('panel/instructors') or request()->is('panel/manage/instructors*')) ? 'show' : '' }}"
