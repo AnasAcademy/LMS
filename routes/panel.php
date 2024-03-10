@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
 
-    Route::get('/', 'DashboardController@dashboard');
+    Route::get('/', 'DashboardController@dashboard')->middleware('can:show_panel');
 
     Route::group(['prefix' => 'users'], function () {
         Route::post('/search', 'UserController@search');
@@ -261,7 +261,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 
-    Route::group(['prefix' => 'setting'], function () {
+    Route::group(['prefix' => 'setting','middleware'=>'can:show_setting'], function () {
         Route::get('/step/{step?}', 'UserController@setting');
         Route::get('/', 'UserController@setting');
         Route::post('/', 'UserController@update');
@@ -278,7 +278,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/step/2', 'UserController@account');
     });
 
-    Route::group(['prefix' => 'support'], function () {
+    Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
         Route::get('/', 'SupportsController@index');
         Route::get('/new', 'SupportsController@create');
         Route::post('/store', 'SupportsController@store');
@@ -317,7 +317,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{noticeboard_id}/saveStatus', 'NoticeboardController@saveStatus');
     });
 
-    Route::group(['prefix' => 'notifications'], function () {
+    Route::group(['prefix' => 'notifications','middleware'=>'can:show_notifications'], function () {
         Route::get('/', 'NotificationsController@index');
         Route::get('/{id}/saveStatus', 'NotificationsController@saveStatus');
         Route::get('/mark-all-as-read', 'NotificationsController@markAllAsRead');
@@ -333,7 +333,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{user_type}/{user_id}/delete', 'UserController@deleteUser');
     });
 
-    Route::group(['prefix' => 'rewards'], function () {
+    Route::group(['prefix' => 'rewards','middleware'=>'can:show_reward'], function () {
         Route::get('/', 'RewardController@index');
         Route::post('/exchange', 'RewardController@exchange');
     });

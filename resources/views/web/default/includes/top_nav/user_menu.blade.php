@@ -35,12 +35,14 @@
                         </a>
                     </li>
                 @else
+                    @can('show_panel')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             <img src="/assets/default/img/icons/user_menu/dashboard.svg" class="icons">
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
                     </li>
+                    @endcan
 
 
                     <li class="navbar-auth-user-dropdown-item">
