@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Translation\CategoryTranslation;
 use Illuminate\Http\Request;
 
+use App\CategoryRequirement;
+
 class CategoryController extends Controller
 {
     public function index()
@@ -73,8 +75,13 @@ class CategoryController extends Controller
             'title' => $data['title'],
         ]);
 
+        // for subCategories
         $hasSubCategories = (!empty($request->get('has_sub')) and $request->get('has_sub') == 'on');
         $this->setSubCategory($category, $request->get('sub_categories'), $hasSubCategories, $data['locale']);
+
+        // for requirements
+        $hasRequirements = (!empty($request->get('requirements')));
+        $this->setRequirements($category, $request->get('requirements'), $hasRequirements, $data['locale']);
 
         cache()->forget(Category::$cacheKey);
 
@@ -131,15 +138,26 @@ class CategoryController extends Controller
             'title' => $data['title'],
         ]);
 
+        // for categories
         $hasSubCategories = (!empty($request->get('has_sub')) and $request->get('has_sub') == 'on');
         $this->setSubCategory($category, $request->get('sub_categories'), $hasSubCategories, $data['locale']);
+
+        // for requirements
+        $hasRequirements = (!empty($request->get('requirements')));
+        $this->setRequirements($category, $request->get('requirements'), $hasRequirements, $data['locale']);
 
 
         cache()->forget(Category::$cacheKey);
 
         removeContentLocale();
 
-        return redirect(getAdminPanelUrl() . '/categories');
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => !empty($parent) ? trans('update.sub_category_successfully_updated') : trans('update.category_successfully_updated'),
+            'status' => 'success'
+        ];
+        return redirect(getAdminPanelUrl() . '/categories')->with(['toast' => $toastData]);
+
     }
 
     public function destroy(Request $request, $id)
@@ -150,9 +168,8 @@ class CategoryController extends Controller
         $parent = !empty($category->parent_id) ? $category->parent_id : null;
 
         if (!empty($category)) {
-            Category::where('parent_id', $category->id)
-                ->delete();
-
+            Category::where('parent_id', $category->id)->delete();
+            CategoryRequirement::where('category_id', $id)->delete();
             $category->delete();
         }
 
@@ -248,5 +265,42 @@ class CategoryController extends Controller
             ->delete();
 
         return true;
+    }
+
+    public function setRequirements(Category $category, $requirements, $hasRequirements, $locale)
+    {
+        $order = 1;
+        $oldIds = [];
+
+        if ($hasRequirements and !empty($requirements) and count($requirements)) {
+            foreach ($requirements as $key => $requirement) {
+                $check = CategoryRequirement::where('id', $key)->first();
+                if (!empty($requirement['title']) and !empty($requirement['description'])) {
+                    $requirement['category_id'] = $category->id;
+                    if($check){
+                        $check->update($requirement);
+                    }else{
+                        CategoryRequirement::create($requirement);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public function deleteRequirement(Request $request, $id, $reqId)
+    {
+        $requirement = CategoryRequirement::where(['id' => $reqId, 'category_id' => $id])->first();
+        $requirement->delete();
+
+        cache()->forget(Category::$cacheKey);
+
+        $toastData = [
+            'title' => trans('public.request_success'),
+            'msg' => !empty($parent) ? trans('update.sub_category_successfully_deleted') : trans('requirement successfully deleted'),
+            'status' => 'success'
+        ];
+
+        return  back()->with(['toast' => $toastData]);
     }
 }
