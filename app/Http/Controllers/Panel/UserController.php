@@ -890,8 +890,7 @@ class UserController extends Controller
 
         $data = [
             "user_code" => $user->user_code,
-            "program" => $studentBundle->bundle->category->slug,
-            "specialization" => $studentBundle->bundle->title,
+            "program" => $studentBundle->bundle->category,
             'currentStep' => 1,
             'requirementUploaded' => false,
             'requirementStatus' => StudentRequirement::pending,

@@ -198,6 +198,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/edit', 'CategoryController@edit');
             Route::post('/{id}/update', 'CategoryController@update');
             Route::get('/{id}/delete', 'CategoryController@destroy');
+            Route::get('/{id}/requirements/{reqId}/delete', 'CategoryController@deleteRequirement');
             Route::post('/search', 'CategoryController@search');
 
             Route::group(['prefix' => 'trends'], function () {

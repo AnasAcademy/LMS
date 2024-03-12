@@ -62,7 +62,7 @@
 
                                             <td>{{ $requirement->bundleStudent->bundle->category->slug }}</td>
 
-                                            <td>{{ $requirement->bundleStudent->bundle->slug }}</td>
+                                            <td>{{ $requirement->bundleStudent->bundle->title }}</td>
 
                                             <td>
                                                 <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">

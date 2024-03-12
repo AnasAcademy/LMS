@@ -1,5 +1,5 @@
 <form method="post" id="userRequirmentForm" class="mt-30" enctype="multipart/form-data"
-    action="/panel/bundles/{{$studentBundleId}}/requirements">
+    action="/panel/bundles/{{ $studentBundleId }}/requirements">
     {{ csrf_field() }}
 
     <h1 class="section-title after-line text-center ">نموذج تقديم متطلبات القبول</h1>
@@ -30,7 +30,7 @@
 
                 <input type="text" name="program" id="program"
                     class="form-control @error('program')  is-invalid @enderror" required readonly
-                    value="{{ preg_replace('/\s+/', ' ', trim($program)) }}" />
+                    value="{{ preg_replace('/\s+/', ' ', trim($program->slug)) }}" />
 
                 @error('program')
                     <div class="invalid-feedback">
@@ -45,7 +45,7 @@
 
                 <input type="text" name="specialization" id="specialization"
                     class="form-control @error('specialization')  is-invalid @enderror" required readonly
-                    value="{{ $specialization }}" />
+                    value="{{ $bundle->title }}" />
 
                 @error('specialization')
                     <div class="invalid-feedback">
@@ -74,8 +74,7 @@
                 @enderror
             </div>
 
-            <div class="form-group p-5 {{ old('identity_type') != '' ? 'd-block' : 'd-none' }}"
-                id="identity_attach">
+            <div class="form-group p-5 {{ old('identity_type') != '' ? 'd-block' : 'd-none' }}" id="identity_attach">
                 <label for="identity_attachment">ارفق صورة {{ old('identity_type') }} *</label>
                 <input type="file" name="identity_attachment" id="identity_attachment"
                     class="form-control @error('identity_attachment')  is-invalid @enderror" placeholder="" required
@@ -99,7 +98,8 @@
                         {{ $message }}
                     </div>
                 @enderror
-                <P class="text-primary">برجاء ارفاق المتطلبات من 2 الى نهاية المتطلبات في ملف واحد بصيغة PDF ولا يتعدي حجم الملف 20
+                <P class="text-primary">برجاء ارفاق المتطلبات من 2 الى نهاية المتطلبات في ملف واحد بصيغة PDF ولا يتعدي
+                    حجم الملف 20
                     ميجا</P>
             </div>
 
@@ -108,15 +108,7 @@
 
         {{-- addmission requirements --}}
         <div class="col-12 col-lg-5 ml-20">
-            @if (preg_replace('/\s+/', ' ', trim($program)) == 'دبلوم متوسط')
-                @include('web.default.panel.requirements.requirements_includes.Intermediate_Diploma_Program')
-            @elseif (preg_replace('/\s+/', ' ', trim($program)) == 'دبلوم عالي')
-                @include('web.default.panel.requirements.requirements_includes.Higher_Diploma_Program')
-            @elseif (preg_replace('/\s+/', ' ', trim($program)) == 'ماجستير مهني')
-                @include("web.default.panel.requirements.requirements_includes.Professional_Master's_Program")
-            @elseif (preg_replace('/\s+/', ' ', trim($program)) == 'ماجستير تنفليذي')
-                @include("web.default.panel.requirements.requirements_includes.Professional_Master's_Program")
-            @endif
+            @include('web.default.panel.requirements.requirements_includes.program_requirements')
         </div>
     </div>
 
@@ -149,8 +141,8 @@
     });
 
     document.onload = function() {
-        if(identity_type.value!="")
-        identity_attach.classList.add("d-block");
+        if (identity_type.value != "")
+            identity_attach.classList.add("d-block");
         identity_attach.classList.remove("d-none");
         identity_attach.firstElementChild.innerText = " ارفق صورة  " + identity_type.value + " *";
     };
