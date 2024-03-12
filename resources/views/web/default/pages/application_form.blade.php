@@ -66,10 +66,10 @@
                         required class="hidden-element form-control">
 
                         <label for="name">{{ trans('application_form.name') }}</label>
-                        <input type="text" id="name" name="ar_name" placeholder="ادخل الإسم باللغه العربية فقط" required class="form-control"><br>
+                        <input type="text" id="name" name="ar_name" value="{{ $student ? $student->ar_name : '' }}" placeholder="ادخل الإسم باللغه العربية فقط" required class="form-control"><br>
 
                         <label for="name_en">{{ trans('application_form.name_en') }}</label>
-                        <input type="text" id="name_en" name="en_name" value="{{ $user->full_name }}"
+                        <input type="text" id="name_en" name="en_name" value="{{ $student ? $student->en_name : $user->full_name }}"
                         placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required class="form-control"><br>
 
                         <label  for="country">{{ trans('application_form.country') }}</label>
@@ -114,14 +114,14 @@
                           </div>
 
                         <label for="email">{{ trans('application_form.email') }}</label>
-                        <input type="email" id="email" name="email" value="{{ $user->email }}"
+                        <input type="email" id="email" name="email" value="{{  $student ? $student->email :$user->email }}"
                         placeholder="تسجيل البريد الإلكتروني" required class="form-control"><br>
 
                         <label for="birthday">{{ trans('application_form.birthday') }}</label>
-                        <input type="date" id="birthday" name="birthdate" required class="form-control"><br>
+                        <input type="date" id="birthday" name="birthdate" value="{{ $student ? $student->birthdate : '' }}" required class="form-control"><br>
 
                         <label for="phone">{{ trans('application_form.phone') }}</label>
-                        <input type="tel" id="phone" name="phone" value="{{ $user->mobile }}" class="form-control"><br>
+                        <input type="tel" id="phone" name="phone" value="{{ $student ? $student->birthdate : $user->mobile }}" class="form-control"><br>
 
                         <label for="deaf">{{ trans('application_form.deaf_patient') }}</label>
                         <select id="deaf" name="deaf" required class="form-control">
@@ -192,16 +192,16 @@
                         </div>
 
                         <label for="referral_person">{{ trans('application_form.referral_name') }}</label>
-                        <input type="text" id="referral_person" name="referral_person" placeholder="أدخل اسم شخص للتواصل معه عند الضرورة" required class="form-control"><br>
+                        <input type="text" id="referral_person" name="referral_person" value="{{ $student ? $student->referral_person : '' }}"  placeholder="أدخل اسم شخص للتواصل معه عند الضرورة" required class="form-control"><br>
 
                         <label for="relation">{{ trans('application_form.referral_state') }}</label>
-                        <input type="text" id="relation" name="relation" placeholder="أدخل صلة القرابة" required class="form-control"><br>
+                        <input type="text" id="relation" name="relation" value="{{ $student ? $student->relation : '' }}" placeholder="أدخل صلة القرابة" required class="form-control"><br>
 
                         <label for="referral_email">{{ trans('application_form.email') }}</label>
-                        <input type="email" id="referral_email" name="referral_email" placeholder="أدخل بريد الكتروني" required class="form-control"><br>
+                        <input type="email" id="referral_email" name="referral_email" value="{{ $student ? $student->referral_email : '' }}" placeholder="أدخل بريد الكتروني" required class="form-control"><br>
 
                         <label>{{ trans('application_form.phone') }}</label>
-                        <input type="tel" id="referral_phone" placeholder="أدخل جوال" name="referral_phone" class="form-control"><br>
+                        <input type="tel" id="referral_phone" placeholder="أدخل جوال" name="referral_phone" value="{{ $student ? $student->referral_phone : '' }}" class="form-control"><br>
 
                         <label>{{ trans('application_form.heard_about_us') }}</label><br>
                         <label for="snapchat">
