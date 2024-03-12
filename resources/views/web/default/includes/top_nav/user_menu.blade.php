@@ -35,37 +35,41 @@
                         </a>
                     </li>
                 @else
+                    @can('show_panel')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             <img src="/assets/default/img/icons/user_menu/dashboard.svg" class="icons">
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
                     </li>
+                    @endcan
 
-
+                    @can('student_showClasses')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ ($authUser->isUser()) ? '/panel/webinars/purchases' : '/panel/webinars' }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             <img src="/assets/default/img/icons/user_menu/my_courses.svg" class="icons">
                             <span class="ml-5">{{ trans('update.my_courses') }}</span>
                         </a>
                     </li>
-
+                    @endcan
                     @if(!$authUser->isUser())
+                    @can('student_showFinance')
                         <li class="navbar-auth-user-dropdown-item">
                             <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                                 <img src="/assets/default/img/icons/user_menu/sales_history.svg" class="icons">
                                 <span class="ml-5">{{ trans('financial.sales_history') }}</span>
                             </a>
                         </li>
+                    @endcan
                     @endif
-
+                    @can('show_support')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/support" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             <img src="/assets/default/img/icons/user_menu/support.svg" class="icons">
                             <span class="ml-5">{{ trans('panel.support') }}</span>
                         </a>
                     </li>
-
+                    @endcan
                     @if(!$authUser->isUser())
                         <li class="navbar-auth-user-dropdown-item">
                             <a href="{{ $authUser->getProfileUrl() }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
@@ -74,13 +78,14 @@
                             </a>
                         </li>
                     @endif
-
+                    @can('show_setting')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons">
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
+                    @endcan
                 @endif
 
                 <li class="navbar-auth-user-dropdown-item">

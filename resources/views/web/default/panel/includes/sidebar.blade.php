@@ -79,7 +79,7 @@
                 </a>
             </li>
         @endif
-
+@can('show_panel')
         <li class="sidenav-item {{ request()->is('panel') ? 'sidenav-item-active' : '' }}">
             <a href="/panel" class="d-flex align-items-center">
                 <span class="sidenav-item-icon mr-10">
@@ -88,7 +88,7 @@
                 <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.dashboard') }}</span>
             </a>
         </li>
-
+@endcan
 
         @if ($authUser->isOrganization())
             <li
@@ -509,6 +509,7 @@
         </li>
         @endcan
 
+        @can('show_support')
         <li
             class="sidenav-item {{ (request()->is('panel/support') or request()->is('panel/support/*')) ? 'sidenav-item-active' : '' }}">
             <a class="d-flex align-items-center" data-toggle="collapse" href="#supportCollapse" role="button"
@@ -534,6 +535,7 @@
                 </ul>
             </div>
         </li>
+        @endcan
 
         @if (
             !$authUser->isUser() or
@@ -687,6 +689,7 @@
         @endphp
 
         @if (!empty($rewardSetting) and $rewardSetting['status'] == '1')
+        @can('show_reward')
             <li class="sidenav-item {{ request()->is('panel/rewards') ? 'sidenav-item-active' : '' }}">
                 <a href="/panel/rewards" class="d-flex align-items-center">
                     <span class="sidenav-item-icon assign-strock mr-10">
@@ -695,8 +698,9 @@
                     <span class="font-14 text-dark-blue font-weight-500">{{ trans('update.rewards') }}</span>
                 </a>
             </li>
+            @endcan
         @endif
-
+        @can('show_notifications')
         <li class="sidenav-item {{ request()->is('panel/notifications') ? 'sidenav-item-active' : '' }}">
             <a href="/panel/notifications" class="d-flex align-items-center">
                 <span class="sidenav-notification-icon sidenav-item-icon mr-10">
@@ -705,7 +709,8 @@
                 <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.notifications') }}</span>
             </a>
         </li>
-
+        @endcan
+        @can('show_setting')
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">
             <a href="/panel/setting" class="d-flex align-items-center">
                 <span class="sidenav-setting-icon sidenav-item-icon mr-10">
@@ -714,6 +719,7 @@
                 <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.settings') }}</span>
             </a>
         </li>
+        @endcan
 
 
         @if ($authUser->isTeacher() or $authUser->isOrganization())

@@ -25,7 +25,11 @@
             <div class="d-flex align-items-center flex-column mt-30 text-center">
                 <h2>{{ trans('cart.failed_pay_title') }}</h2>
                 <p class="mt-5 text-center">{!! nl2br(trans('cart.failed_pay_msg')) !!}</p>
+                @if(auth()->user()->isUser())
                 <a href="/panel" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
+                @else
+                <a href="/panel/requirements" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
+                @endif
             </div>
         </div>
     @endif
