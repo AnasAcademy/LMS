@@ -25,7 +25,7 @@ class ApplyController extends Controller
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        $category=Category::where('parent_id', null)->get();
+        $category=Category::where('parent_id','!=', null)->get();
         return view(getTemplate() . '.pages.application_form',compact('user','category','student'));
     }
 

@@ -1,0 +1,5 @@
+-login or register to / not panel  ---->done
+-remove link from bundle.     ---->done
+-remove google and facebook from login and register  ---->done
+-to pay bundle show bundle??  ---->done
+-stripe to بطاقه ائتمانيه mada in arabic  ---->done

@@ -33,7 +33,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/panel';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -240,7 +240,7 @@ class LoginController extends Controller
         if ($user->isAdmin()) {
             return redirect(getAdminPanelUrl() . '');
         } else {
-            return redirect('/panel');
+            return redirect('/');
         }
     }
 

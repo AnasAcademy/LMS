@@ -311,7 +311,7 @@ class PaymentController extends Controller
             if($sale && $sale->order->user_id == $user->id  && $sale->order->status == 'paid' )
             {
                 //add as student
-            try{
+                try{
                 $lastCode = Code::latest()->first();
                 if(!empty( $lastCode)){
                     if(empty($lastCode->lst_sd_code)){
@@ -344,7 +344,12 @@ class PaymentController extends Controller
                                 if (!$student) {
                                     $student = Student::create($studentData);
                                 }
-                                $student->bundles()->attach($userData['bundle_id']);
+                                $bundleId = $userData['bundle_id'];
+
+                                // Check if the student already has the bundle ID attached
+                                if (!$student->bundles->contains($bundleId)) {
+                                    $student->bundles()->attach($bundleId);
+                                    }
 
                                 $lastCode->update(['lst_sd_code' => $nextCode]);
                             }
@@ -352,6 +357,19 @@ class PaymentController extends Controller
                         }catch (\Exception $exception) {
                         dd($exception);
                         }
+            }
+            else{
+                $sale = Sale::where('order_id', $order->id)
+                ->where('type', 'bundle')
+                ->where('buyer_id', $user->id)
+                ->first();
+                if($sale && $sale->order->user_id == $user->id  && $sale->order->status == 'paid' ){
+                    $user = User::where('id', $user->id)->first();
+                    $user->update([
+                        'role_id' => 1, 
+                        'role_name' => 'user', 
+                    ]);
+                }
             }
 
             return view('web.default.cart.status_pay', $data);
