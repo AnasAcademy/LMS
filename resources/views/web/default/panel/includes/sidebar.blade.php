@@ -710,7 +710,7 @@
             </a>
         </li>
         @endcan
-        @can('show_setting')
+        
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">
             <a href="/panel/setting" class="d-flex align-items-center">
                 <span class="sidenav-setting-icon sidenav-item-icon mr-10">
@@ -719,7 +719,7 @@
                 <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.settings') }}</span>
             </a>
         </li>
-        @endcan
+       
 
 
         @if ($authUser->isTeacher() or $authUser->isOrganization())

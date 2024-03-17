@@ -92,9 +92,9 @@
                             @enderror
                         </div>
 
-                        @if($showCertificateAdditionalInRegister)
+                        <!-- @if($showCertificateAdditionalInRegister)
                             <div class="form-group">
-                                <label class="input-label" for="certificate_additional">{{ trans('update.certificate_additional') }}</label>
+                                <label class="input-label" for="certificate_additional">{{ trans('update.certificate_additional') }}9</label>
                                 <input name="certificate_additional" id="certificate_additional" class="form-control @error('certificate_additional') is-invalid @enderror"/>
                                 @error('certificate_additional')
                                 <div class="invalid-feedback">
@@ -102,7 +102,7 @@
                                 </div>
                                 @enderror
                             </div>
-                        @endif
+                        @endif -->
 
                         @if(getFeaturesSettings('timezone_in_register'))
                             @php

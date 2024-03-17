@@ -162,6 +162,22 @@ class ApplyController extends Controller
             
         return redirect('/panel');
     }
+    private function handlePaymentOrderWithZeroTotalAmount($order)
+    {
+        $order->update([
+            'payment_method' => Order::$paymentChannel
+        ]);
+
+        $paymentController = new PaymentController();
+
+        $paymentController->setPaymentAccounting($order);
+
+        $order->update([
+            'status' => Order::$paid
+        ]);
+
+        return redirect('/payments/status?order_id=' . $order->id);
+    }
 
     /**
      * Display the specified resource.

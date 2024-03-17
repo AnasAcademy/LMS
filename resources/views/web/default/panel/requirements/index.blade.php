@@ -49,9 +49,67 @@
                                 <p class="alert alert-success text-center">
                                     لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
                                 </p>
-                                <a href="/bundles/{{ $studentBundle->bundle->slug }}"
-                                    class="btn btn-primary p-5 mt-20">للذهاب للدفع
-                                    رسوم البرنامج اضغط هنا</a>
+                                <!-- <a href="/bundles/{{ $studentBundle->bundle->slug }}"
+                                    class="btn btn-primary p-5 mt-20"> لدفع
+                                      رسوم البرنامج بقيمه {{$studentBundle->bundle->price}}ريال
+                                    اضغط هنا</a> -->
+                                <div class="px-20 pb-30">
+                                    <form action="/panel/bundles/purchase" method="post">
+                                        {{ csrf_field() }}
+                                        <input type="hidden" name="item_id" value="{{ $studentBundle->bundle->id }}">
+
+                                        @if($studentBundle->bundle->price > 0)
+                                            <div id="priceBox" class="d-flex align-items-center justify-content-center mt-20 {{ !empty($activeSpecialOffer) ? ' flex-column ' : '' }}">
+                                                <div class="text-center">
+                                                    @php
+                                                        $realPrice = handleCoursePagePrice($studentBundle->bundle->price);
+                                                    @endphp
+                                                    <span id="realPrice" data-value="{{ $studentBundle->bundle->price }}"
+                                                        data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : ''}}"
+                                                        class="d-block @if(!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
+                                                        {{ $realPrice['price'] }}
+                                                    </span>
+
+                                                    @if(!empty($realPrice['tax']) and empty($activeSpecialOffer))
+                                                        <span class="d-block font-14 text-gray">+ {{ $realPrice['tax'] }} tax</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="d-flex align-items-center justify-content-center mt-20">
+                                                <span class="font-36 text-primary">{{ trans('public.free') }}</span>
+                                            </div>
+                                        @endif
+
+                                        @php
+                                            $hasBought = $studentBundle->bundle->checkUserHasBought(auth()->user());
+                                            $canSale = ($studentBundle->bundle->canSale() and !$hasBought);
+                                        @endphp
+
+                                        <div class="mt-20 d-flex flex-column">
+                                            @if($hasBought or !empty($studentBundle->bundle->getInstallmentOrder()))
+                                                <button type="button" class="btn btn-primary" disabled>{{ trans('panel.purchased') }}</button>
+                                            @elseif($studentBundle->bundle->price > 0)
+                                                <button type="{{ $canSale ? 'submit' : 'button' }}" @if(!$canSale) disabled @endif class="btn btn-primary">
+                                                    @if(!$canSale)
+                                                        {{ trans('update.disabled_add_to_cart') }}
+                                                    @else
+                                                    لدفع رسوم البرنامج اضغط هنا
+                                                    @endif
+                                                </button>
+
+                                                @if($canSale and !empty(getFeaturesSettings('direct_bundles_payment_button_status')))
+                                                    <button type="button" class="btn btn-outline-danger mt-20 js-bundle-direct-payment">
+                                                        {{ trans('update.buy_now') }}
+                                                    </button>
+                                                @endif
+                                            @else
+                                                <a href="{{ $canSale ? '/bundles/'. $studentBundle->bundle->slug .'/free' : '#' }}" class="btn btn-primary @if(!$canSale) disabled @endif">{{ trans('update.enroll_on_bundle') }}</a>
+                                            @endif
+                                        </div>
+
+                                    </form>
+                                </div>
                             </div>
                         @elseif ($studentBundle->studentRequirement->status == 'rejected')
                             <div class="w-100 text-center">

@@ -378,7 +378,7 @@ class CartController extends Controller
         $cartHasInstallmentPayment = array_filter($carts->pluck('installment_payment_id')->toArray());
 
         $taxIsDifferent = (count($cartHasWebinar) or count($cartHasBundle) or count($cartHasCertificate) or count($cartHasMeeting) or count($cartHasInstallmentPayment));
-
+        
         foreach ($carts as $cart) {
             $orderPrices = $this->handleOrderPrices($cart, $user, $taxIsDifferent, $discountCoupon);
             $subTotal += $orderPrices['sub_total'];

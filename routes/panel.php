@@ -261,7 +261,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
     });
 
-    Route::group(['prefix' => 'setting','middleware'=>'can:show_setting'], function () {
+    Route::group(['prefix' => 'setting'], function () {
         Route::get('/step/{step?}', 'UserController@setting');
         Route::get('/', 'UserController@setting');
         Route::post('/', 'UserController@update');
@@ -419,6 +419,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
             Route::get('/', 'BundlesController@index');
             Route::get('/new', 'BundlesController@create');
             Route::post('/store', 'BundlesController@store');
+            Route::post('/purchase', 'BundlesController@purchase_bundle');
             Route::get('/{id}/step/{step?}', 'BundlesController@edit');
             Route::get('/{id}/edit', 'BundlesController@edit');
             Route::post('/{id}/update', 'BundlesController@update');

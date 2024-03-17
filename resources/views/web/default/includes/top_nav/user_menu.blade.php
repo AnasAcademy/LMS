@@ -102,6 +102,6 @@
 @else
     <div class="d-flex align-items-center ml-md-50">
         <a href="/login" class="py-5 px-10 mr-10 text-dark-blue font-14">{{ trans('auth.login') }}</a>
-        <a href="/register" class="py-5 px-10 text-dark-blue font-14">{{ trans('auth.register') }}</a>
+        <a href="/register" class="py-5 px-10 text-dark-blue font-14">إنشاء حساب</a>
     </div>
 @endif

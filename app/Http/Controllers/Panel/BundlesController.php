@@ -17,10 +17,13 @@ use App\Models\Webinar;
 use App\Models\WebinarFilterOption;
 use App\Models\WebinarPartnerTeacher;
 use App\User;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\PaymentChannel;
 
 class BundlesController extends Controller
 {
@@ -75,6 +78,268 @@ class BundlesController extends Controller
         ];
 
         return view('web.default.panel.bundle.index', $data);
+    }
+    public function createOrderAndOrderItems($bundle,$installment_payment_id=null, $calculate, $user, $discountCoupon = null)
+    {
+        $totalCouponDiscount = 0;
+
+        $totalAmount = $calculate["total"] - $totalCouponDiscount;
+
+        $order = Order::create([
+            'user_id' => $user->id,
+            'status' => Order::$pending,
+            'amount' => $calculate["sub_total"],
+            'tax' => $calculate["tax_price"],
+            'total_discount' => $calculate["total_discount"] + $totalCouponDiscount,
+            'total_amount' => ($totalAmount > 0) ? $totalAmount : 0,
+            'product_delivery_fee' => $calculate["product_delivery_fee"] ?? null,
+            'created_at' => time(),
+        ]);
+
+      
+
+            $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent = false, $discountCoupon);
+            $price = $orderPrices['sub_total'];
+            $totalDiscount = $orderPrices['total_discount'];
+            $tax = $orderPrices['tax'];
+            $taxPrice = $orderPrices['tax_price'];
+            $commission = $orderPrices['commission'];
+            $commissionPrice = $orderPrices['commission_price'];
+
+
+            $productDeliveryFee = 0;
+
+            $allDiscountPrice = $totalDiscount;
+            if ($totalCouponDiscount > 0 and $price > 0) {
+                $percent = (($price / $calculate["sub_total"]) * 100);
+                $allDiscountPrice += (($totalCouponDiscount * $percent) / 100);
+            }
+
+            $subTotalWithoutDiscount = $price - $allDiscountPrice;
+            $totalAmount = $subTotalWithoutDiscount + $taxPrice + $productDeliveryFee;
+
+            OrderItem::create([
+                'user_id' => $user->id,
+                'order_id' => $order->id,
+                'webinar_id' => $cart->webinar_id ?? null,
+                'bundle_id' => $bundle->id ?? null,
+                'certificate_template_id' =>  null,
+                'certificate_bundle_id' =>  null,
+                'product_id' => null,
+                'product_order_id' =>  null,
+                'reserve_meeting_id' => null,
+                'subscribe_id' => null,
+                'promotion_id' => null,
+                'gift_id' =>null,
+                'installment_payment_id' => $installment_payment_id ?? null,
+                'ticket_id' => null,
+                'discount_id' => $discountCoupon ? $discountCoupon->id : null,
+                'amount' => $price,
+                'total_amount' => $totalAmount,
+                'tax' => $tax,
+                'tax_price' => $taxPrice,
+                'commission' => $commission,
+                'commission_price' => $commissionPrice,
+                'product_delivery_fee' => $productDeliveryFee,
+                'discount' => $allDiscountPrice,
+                'created_at' => time(),
+            ]);
+
+        return $order;
+    }
+
+    public function handleOrderPrices($bundle,$installment_payment_id=null, $user, $taxIsDifferent = false, $discountCoupon = null)
+    {
+        $seller = $bundle->creator ?? null;
+        $financialSettings = getFinancialSettings();
+
+        $subTotal = 0;
+        $totalDiscount = 0;
+        $tax = (!empty($financialSettings['tax']) and $financialSettings['tax'] > 0) ? $financialSettings['tax'] : 0;
+        $taxPrice = 0;
+        $commissionPrice = 0;
+
+        if (!empty($seller)) {
+            $commission = $seller->getCommission();
+        } else {
+            $commission = 0;
+
+            if (!empty($financialSettings) and !empty($financialSettings['commission'])) {
+                $commission = (int)$financialSettings['commission'];
+            }
+        }
+
+        if (!empty($bundle)) {
+            // $item = !empty($cart->webinar_id) ? $cart->webinar : $cart->bundle;
+            $item = $bundle;
+
+            $price = $item->price;
+            $discount=null;
+            $priceWithoutDiscount = $price - $discount;
+
+            if ($tax > 0 and $priceWithoutDiscount > 0) {
+                $taxPrice += $priceWithoutDiscount * $tax / 100;
+            }
+
+            if (!empty($commission) and $commission > 0) {
+                $commissionPrice += $priceWithoutDiscount > 0 ? $priceWithoutDiscount * $commission / 100 : 0;
+            }
+
+            $totalDiscount += $discount;
+            $subTotal += $price;
+        } elseif (!empty($installment_payment_id)) {
+            $price = 55;
+            // $cart->installmentPayment->amount;
+            $discount = 0;
+
+            $priceWithoutDiscount = $price - $discount;
+
+            if ($tax > 0 and $priceWithoutDiscount > 0) {
+                $taxPrice += $priceWithoutDiscount * $tax / 100;
+            }
+
+            if (!empty($commission) and $commission > 0) {
+                $commissionPrice += $priceWithoutDiscount > 0 ? $priceWithoutDiscount * $commission / 100 : 0;
+            }
+
+            $totalDiscount += $discount;
+            $subTotal += $price;
+        }
+
+        if ($totalDiscount > $subTotal) {
+            $totalDiscount = $subTotal;
+        }
+
+
+        return [
+            'sub_total' => round($subTotal, 2),
+            'total_discount' => round($totalDiscount, 2),
+            'tax' => $tax,
+            'tax_price' => round($taxPrice, 2),
+            'commission' => $commission,
+            'commission_price' => round($commissionPrice, 2),
+            //'product_delivery_fee' => round($productDeliveryFee, 2),
+            'tax_is_different' => $taxIsDifferent
+        ];
+    }
+
+    private function calculatePrice($bundle, $user,$installment_payment_id=null, $discountCoupon = null)
+    {
+        $financialSettings = getFinancialSettings();
+
+        $subTotal = 0;
+        $totalDiscount = 0;
+        $tax = (!empty($financialSettings['tax']) and $financialSettings['tax'] > 0) ? $financialSettings['tax'] : 0;
+        $taxPrice = 0;
+        $commissionPrice = 0;
+        $commission = 0;
+       
+        // $cartHasCertificate = array_filter($carts->pluck('certificate_template_id')->toArray());
+        // $cartHasInstallmentPayment = array_filter($carts->pluck('installment_payment_id')->toArray());
+
+        $taxIsDifferent = (1
+        // or count($cartHasCertificate) or count($cartHasInstallmentPayment)
+    );
+
+        
+        $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent, $discountCoupon);
+        $subTotal += $orderPrices['sub_total'];
+        $totalDiscount += $orderPrices['total_discount'];
+        $tax = $orderPrices['tax'];
+        $taxPrice += $orderPrices['tax_price'];
+        $commission += $orderPrices['commission'];
+        $commissionPrice += $orderPrices['commission_price'];
+        $taxIsDifferent = $orderPrices['tax_is_different'];
+        
+
+        if ($totalDiscount > $subTotal) {
+            $totalDiscount = $subTotal;
+        }
+
+        $subTotalWithoutDiscount = $subTotal - $totalDiscount;
+        $productDeliveryFee = 0;
+
+        $total = $subTotalWithoutDiscount + $taxPrice + $productDeliveryFee;
+
+        if ($total < 0) {
+            $total = 0;
+        }
+
+        return [
+            'sub_total' => round($subTotal, 2),
+            'total_discount' => round($totalDiscount, 2),
+            'tax' => $tax,
+            'tax_price' => round($taxPrice, 2),
+            'commission' => $commission,
+            'commission_price' => round($commissionPrice, 2),
+            'total' => round($total, 2),
+            'product_delivery_fee' => round($productDeliveryFee, 2),
+            'tax_is_different' => $taxIsDifferent
+        ];
+    }
+
+    public function purchase_bundle(Request $request, $carts = null){
+        $bundle_id=$request->item_id;
+        $bundle = Bundle::find($bundle_id);
+        $user = auth()->user();
+
+        $paymentChannels = PaymentChannel::where('status', 'active')->get();
+
+            $calculate = $this->calculatePrice($bundle,$installment_payment_id=null, $user);
+
+            $order = $this->createOrderAndOrderItems($bundle,$installment_payment_id=null, $calculate, $user, $discountCoupon=null);
+
+            if (!empty($order) and $order->total_amount > 0) {
+                $razorpay = false;
+                $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
+
+                foreach ($paymentChannels as $paymentChannel) {
+                    if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                        $razorpay = true;
+                    }
+                }
+
+                $data = [
+                    'pageTitle' => trans('public.checkout_page_title'),
+                    'paymentChannels' => $paymentChannels,
+                    'carts' => $carts,
+                    'subTotal' => $calculate["sub_total"],
+                    'totalDiscount' => $calculate["total_discount"],
+                    'tax' => $calculate["tax"],
+                    'taxPrice' => $calculate["tax_price"],
+                    'total' => $calculate["total"],
+                    'userGroup' => $user->userGroup ? $user->userGroup->group : null,
+                    'order' => $order,
+                    'count' => 0,
+                    'userCharge' => $user->getAccountingCharge(),
+                    'razorpay' => $razorpay,
+                    'totalCashbackAmount' => null,
+                    'previousUrl' => url()->previous(),
+                ];
+
+                return view(getTemplate() . '.cart.payment', $data);
+            } else {
+                
+                return $this->handlePaymentOrderWithZeroTotalAmount($order);
+            }
+        
+
+    }
+    private function handlePaymentOrderWithZeroTotalAmount($order)
+    {
+        $order->update([
+            'payment_method' => Order::$paymentChannel
+        ]);
+
+        $paymentController = new PaymentController();
+
+        $paymentController->setPaymentAccounting($order);
+
+        $order->update([
+            'status' => Order::$paid
+        ]);
+
+        return redirect('/payments/status?order_id=' . $order->id);
     }
 
     public function create()
