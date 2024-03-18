@@ -18,7 +18,7 @@ class UserNotAccess
         if (auth()->check() and !auth()->user()->isUser()) {
             return $next($request);
         }
-
+dd(auth()->user()->isUser());
         abort(404);
     }
 }

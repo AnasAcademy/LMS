@@ -311,6 +311,10 @@ class InstallmentsController extends Controller
                         'created_at' => time()
                     ]);
 
+                    $installmentPaymentId = $installmentPayment->id;
+
+                    // return redirect()->route('purchase_bundle')->with('installment_payment_id', $installmentPaymentId);
+
                     return redirect('/cart');
                 } else {
 

@@ -17,8 +17,6 @@ use App\Models\InstallmentStep;
 use App\Models\InstallmentUserGroup;
 use App\Models\RegistrationPackage;
 use App\Models\Subscribe;
-use App\Models\SelectedInstallment;
-use App\Models\SelectedInstallmentStep;
 use App\Models\Translation\InstallmentStepTranslation;
 use App\Models\Translation\InstallmentTranslation;
 use Illuminate\Http\Request;
@@ -184,11 +182,6 @@ class InstallmentsController extends Controller
                     $step = InstallmentStep::query()->where('id', $stepId)
                         ->where('installment_id', $installment->id)
                         ->first();
-                        $SelectedInstallment=SelectedInstallment::query()->where('installment_id',$installment->id)->first();
-                     
-                     $step2 = SelectedInstallmentStep::query()->where('installment_step_id', $stepId)
-                    ->where('selected_installment_id', $SelectedInstallment->id)
-                    ->first();
 
                     if (!empty($step)) {
                         $step->update([
@@ -204,23 +197,6 @@ class InstallmentsController extends Controller
                             'amount' => $stepData['amount'] ?? null,
                             'amount_type' => $stepData['amount_type'] ?? null,
                             'order' => $order,
-                        ]);
-                    }
-                    
-                    if (!empty($step2)) {
-                        $step2->update([
-                            'deadline' => $stepData['deadline'] ?? null,
-                            'amount' => $stepData['amount'] ?? null,
-                            'amount_type' => $stepData['amount_type'] ?? null,
-                            
-                        ]);
-                    } else {
-                        $step2 = InstallmentStep::query()->create([
-                            'installment_id' => $installment->id,
-                            'deadline' => $stepData['deadline'] ?? null,
-                            'amount' => $stepData['amount'] ?? null,
-                            'amount_type' => $stepData['amount_type'] ?? null,
-                           
                         ]);
                     }
 

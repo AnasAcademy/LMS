@@ -42,7 +42,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/apply';
 
     /**
      * Create a new controller instance.
@@ -148,20 +148,20 @@ class RegisterController extends Controller
                 //     if(empty($lastCode->lst_sd_code)){
                 //         $lastCode->lst_sd_code=$lastCode->student_code;
                 //     }
-                //     $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2)); 
+                //     $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
                 //     do {
                 //         $nextCodeAsInt = $lastCodeAsInt + 1;
                 //         $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-                        
+
                 //         $codeExists = User::where('user_code', $nextCode)->exists();
-                        
+
                 //         if ($codeExists) {
                 //             $lastCodeAsInt = $nextCodeAsInt;
                 //         } else {
                 //             break;
                 //         }
                 //     } while (true);
-                 
+
                 //      $user = User::create([
                 //                     'role_name' => $roleName,
                 //                     'role_id' => $roleId,
@@ -178,7 +178,7 @@ class RegisterController extends Controller
                 //                 ]);
                 //                 $lastCode->update(['lst_sd_code' => $nextCode]);
                 // }else{
-        
+
                     $user = User::create([
                         'role_name' => 'registered_user',
                         'role_id' => 13,

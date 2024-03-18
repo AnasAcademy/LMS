@@ -96,7 +96,7 @@ class BundlesController extends Controller
             'created_at' => time(),
         ]);
 
-      
+
 
             $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent = false, $discountCoupon);
             $price = $orderPrices['sub_total'];
@@ -121,7 +121,7 @@ class BundlesController extends Controller
             OrderItem::create([
                 'user_id' => $user->id,
                 'order_id' => $order->id,
-                'webinar_id' => $cart->webinar_id ?? null,
+                'webinar_id' => null,
                 'bundle_id' => $bundle->id ?? null,
                 'certificate_template_id' =>  null,
                 'certificate_bundle_id' =>  null,
@@ -233,7 +233,7 @@ class BundlesController extends Controller
         $taxPrice = 0;
         $commissionPrice = 0;
         $commission = 0;
-       
+
         // $cartHasCertificate = array_filter($carts->pluck('certificate_template_id')->toArray());
         // $cartHasInstallmentPayment = array_filter($carts->pluck('installment_payment_id')->toArray());
 
@@ -241,7 +241,7 @@ class BundlesController extends Controller
         // or count($cartHasCertificate) or count($cartHasInstallmentPayment)
     );
 
-        
+
         $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent, $discountCoupon);
         $subTotal += $orderPrices['sub_total'];
         $totalDiscount += $orderPrices['total_discount'];
@@ -250,7 +250,7 @@ class BundlesController extends Controller
         $commission += $orderPrices['commission'];
         $commissionPrice += $orderPrices['commission_price'];
         $taxIsDifferent = $orderPrices['tax_is_different'];
-        
+
 
         if ($totalDiscount > $subTotal) {
             $totalDiscount = $subTotal;
@@ -278,12 +278,194 @@ class BundlesController extends Controller
         ];
     }
 
-    public function purchase_bundle(Request $request, $carts = null){
-        $bundle_id=$request->item_id;
-        $bundle = Bundle::find($bundle_id);
-        $user = auth()->user();
+    public function purchase_bundle(Request $request, $installmentId=null,$carts = null,){
+        if(!empty($installmentId))
+        {
+            dd($installmentId);
+            $user = auth()->user();
+            $itemId = $request->get('item');
+            $itemType = $request->get('item_type');
 
-        $paymentChannels = PaymentChannel::where('status', 'active')->get();
+            if (empty($user) or !$user->enable_installments) {
+                $toastData = [
+                    'title' => trans('public.request_failed'),
+                    'msg' => trans('update.you_cannot_use_installment_plans'),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+
+            $installment = Installment::query()->where('id', $installmentId)
+                ->where('enable', true)
+                ->withCount([
+                    'steps'
+                ])
+                ->first();
+
+            if (!empty($installment)) {
+                if (!$installment->hasCapacity()) {
+                    $toastData = [
+                        'title' => trans('public.request_failed'),
+                        'msg' => trans('update.installment_not_capacity'),
+                        'status' => 'error'
+                    ];
+                    return back()->with(['toast' => $toastData]);
+                }
+
+
+                $this->validate($request, [
+                    'item' => 'required',
+                    'item_type' => 'required',
+                ]);
+
+                $data = $request->all();
+                $attachments = (!empty($data['attachments']) and count($data['attachments'])) ? array_map('array_filter', $data['attachments']) : [];
+                $attachments = !empty($attachments) ? array_filter($attachments) : [];
+
+                if ($installment->request_uploads) {
+                    if (count($attachments) < 1) {
+                        return redirect()->back()->withErrors([
+                            'attachments' => trans('validation.required', ['attribute' => 'attachments'])
+                        ]);
+                    }
+                }
+
+                if (!empty($installment->capacity)) {
+                    $openOrdersCount = InstallmentOrder::query()->where('installment_id', $installment->id)
+                        ->where('status', 'open')
+                        ->count();
+
+                    if ($openOrdersCount >= $installment->capacity) {
+                        $toastData = [
+                            'title' => trans('public.request_failed'),
+                            'msg' => trans('update.installment_not_capacity'),
+                            'status' => 'error'
+                        ];
+
+                        return back()->with(['toast' => $toastData]);
+                    }
+                }
+
+                $item = $this->getItem($itemId, $itemType, $user);
+
+                if (!empty($item)) {
+
+                    $productOrder = null;
+
+                    if ($itemType == 'product') {
+                        $hasPhysicalProduct = ($item->type == Product::$physical);
+
+                        $this->validate($request, [
+                            'country_id' => Rule::requiredIf($hasPhysicalProduct),
+                            'province_id' => Rule::requiredIf($hasPhysicalProduct),
+                            'city_id' => Rule::requiredIf($hasPhysicalProduct),
+                            'district_id' => Rule::requiredIf($hasPhysicalProduct),
+                            'address' => Rule::requiredIf($hasPhysicalProduct),
+                        ]);
+
+                        /* Product Order */
+                        $productOrder = $this->handleProductOrder($request, $user, $item);
+                    }
+
+                    $columnName = $this->getColumnByItemType($itemType);
+
+                    $status = 'paying';
+
+                    if (empty($installment->upfront)) {
+                        $status = 'open';
+
+                        if ($installment->needToVerify()) {
+                            $status = 'pending_verification';
+                        }
+                    }
+
+                    $itemPrice = $item->getPrice();
+
+                    $order = InstallmentOrder::query()->updateOrCreate([
+                        'installment_id' => $installment->id,
+                        'user_id' => $user->id,
+                        $columnName => $itemId,
+                        'product_order_id' => !empty($productOrder) ? $productOrder->id : null,
+                        'item_price' => $itemPrice,
+                        'status' => $status,
+                    ], [
+                        'created_at' => time(),
+                    ]);
+
+                    /* Attachments */
+                    $this->handleAttachments($attachments, $order);
+
+                    /* Store Installment Data */
+                    $this->handleSelectedInstallment($user, $order, $installment);
+
+                    /* Update Product Order */
+                    if (!empty($productOrder)) {
+                        $productOrder->update([
+                            'installment_order_id' => $order->id
+                        ]);
+                    }
+
+                    $notifyOptions = [
+                        '[u.name]' => $order->user->full_name,
+                        '[installment_title]' => $installment->main_title,
+                        '[time.date]' => dateTimeFormat(time(), 'j M Y - H:i'),
+                        '[amount]' => handlePrice($itemPrice),
+                    ];
+
+                    sendNotification("instalment_request_submitted", $notifyOptions, $order->user_id);
+                    sendNotification("instalment_request_submitted_for_admin", $notifyOptions, 1);
+
+
+                    /* Payment and Cart */
+                    if (!empty($installment->upfront)) {
+                        $installmentPayment = InstallmentOrderPayment::query()->updateOrCreate([
+                            'installment_order_id' => $order->id,
+                            'sale_id' => null,
+                            'type' => 'upfront',
+                            'selected_installment_step_id' => null,
+                            'amount' => $installment->getUpfront($order->getItemPrice()),
+                            'status' => 'paying',
+                        ], [
+                            'created_at' => time(),
+                        ]);
+
+                        Cart::updateOrCreate([
+                            'creator_id' => $user->id,
+                            'installment_payment_id' => $installmentPayment->id,
+                        ], [
+                            'created_at' => time()
+                        ]);
+
+                        $installmentPaymentId = $installmentPayment->id;
+
+                        return redirect()->route('purchase_bundle')->with('installment_payment_id', $installmentPaymentId);
+
+                        // return redirect('/cart');
+                    } else {
+
+                        if ($installment->needToVerify()) {
+                            sendNotification("installment_verification_request_sent", $notifyOptions, $order->user_id);
+                            sendNotification("admin_installment_verification_request_sent", $notifyOptions, 1); // Admin
+
+                            return redirect('/installments/request_submitted');
+                        } else {
+                            sendNotification("approve_installment_verification_request", $notifyOptions, $order->user_id);
+
+                            return $this->handleOpenOrder($item, $productOrder);
+                        }
+                    }
+                }
+            }
+
+            abort(404);
+        }
+        else{
+            $bundle_id=$request->item_id;
+            $bundle = Bundle::find($bundle_id);
+            $user = auth()->user();
+
+            $paymentChannels = PaymentChannel::where('status', 'active')->get();
 
             $calculate = $this->calculatePrice($bundle,$installment_payment_id=null, $user);
 
@@ -319,11 +501,11 @@ class BundlesController extends Controller
 
                 return view(getTemplate() . '.cart.payment', $data);
             } else {
-                
+
                 return $this->handlePaymentOrderWithZeroTotalAmount($order);
             }
-        
 
+        }
     }
     private function handlePaymentOrderWithZeroTotalAmount($order)
     {

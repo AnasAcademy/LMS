@@ -78,14 +78,14 @@
                             </a>
                         </li>
                     @endif
-                    @can('show_setting')
+
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons">
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
-                    @endcan
+                    
                 @endif
 
                 <li class="navbar-auth-user-dropdown-item">

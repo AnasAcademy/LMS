@@ -33,7 +33,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/apply';
 
     /**
      * Create a new controller instance.
@@ -102,7 +102,7 @@ class LoginController extends Controller
             ]);
         }
 
-        return redirect('/');
+        return redirect('/login');
     }
 
     public function username()
@@ -240,7 +240,7 @@ class LoginController extends Controller
         if ($user->isAdmin()) {
             return redirect(getAdminPanelUrl() . '');
         } else {
-            return redirect('/');
+            return redirect('/apply');
         }
     }
 

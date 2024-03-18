@@ -4,11 +4,6 @@
             'lang' => 'متطلبات القبول',
             'icon' => 'about'
         ],
-
-        2 => [
-            'lang' => 'public.identity_and_financial',
-            'icon' => 'financial'
-        ]
     ];
 
 

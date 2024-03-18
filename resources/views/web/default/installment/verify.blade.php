@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <form action="/installments/{{ $installment->id }}/store" method="post">
+        <form action="/panel/bundles/purchase/{{ $installment->id }}" method="post">
             {{ csrf_field() }}
             <input type="hidden" name="item" value="{{ request()->get('item') }}">
             <input type="hidden" name="item_type" value="{{ request()->get('item_type') }}">
