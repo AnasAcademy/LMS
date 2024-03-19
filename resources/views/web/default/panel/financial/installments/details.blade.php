@@ -112,7 +112,7 @@
                             @foreach($installment->steps as $step)
                                 @php
                                     $stepPayment = $payments->where('selected_installment_step_id', $step->id)->where('status', 'paid')->first();
-                                    $dueAt = ($step->deadline * 86400) + $order->created_at;
+                                    $dueAt = ($step->deadline * 86400) + $order->bundle->start_date;
                                     $isOverdue = ($dueAt < time() and empty($stepPayment));
                                 @endphp
 
@@ -125,7 +125,7 @@
                                             <span class="ml-5 font-12 text-gray">({{ $step->amount }}%)</span>
                                             @endif
                                         </div>
-                                        <span class="d-block font-12 text-gray">{{ trans('update.n_days_after_purchase', ['days' => $step->deadline]) }}</span>
+                                        <span class="d-block font-12 text-gray">{{ $step->deadline }} أيام بعد بداية الدورة</span>
                                     </td>
 
                                     <td class="text-center">{{ handlePrice($step->getPrice($itemPrice)) }}</td>

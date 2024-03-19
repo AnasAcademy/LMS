@@ -24,6 +24,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\PaymentChannel;
+use App\Models\Installment;
+use App\Models\InstallmentOrder;
+use App\Models\InstallmentOrderAttachment;
+use App\Models\InstallmentOrderPayment;
+use App\Models\SelectedInstallment;
+use App\Models\SelectedInstallmentStep;
 
 class BundlesController extends Controller
 {
@@ -79,7 +85,7 @@ class BundlesController extends Controller
 
         return view('web.default.panel.bundle.index', $data);
     }
-    public function createOrderAndOrderItems($bundle,$installment_payment_id=null, $calculate, $user, $discountCoupon = null)
+    public function createOrderAndOrderItems($bundle,$installment_payment_id, $calculate, $user, $discountCoupon = null)
     {
         $totalCouponDiscount = 0;
 
@@ -122,7 +128,7 @@ class BundlesController extends Controller
                 'user_id' => $user->id,
                 'order_id' => $order->id,
                 'webinar_id' => null,
-                'bundle_id' => $bundle->id ?? null,
+                'bundle_id' => $bundle ? $bundle->id : null,
                 'certificate_template_id' =>  null,
                 'certificate_bundle_id' =>  null,
                 'product_id' => null,
@@ -188,7 +194,8 @@ class BundlesController extends Controller
             $totalDiscount += $discount;
             $subTotal += $price;
         } elseif (!empty($installment_payment_id)) {
-            $price = 55;
+            $installmentOrderPayment = InstallmentOrderPayment::findOrFail($installment_payment_id);
+            $price = $installmentOrderPayment->amount;
             // $cart->installmentPayment->amount;
             $discount = 0;
 
@@ -223,7 +230,7 @@ class BundlesController extends Controller
         ];
     }
 
-    private function calculatePrice($bundle, $user,$installment_payment_id=null, $discountCoupon = null)
+    private function calculatePrice($bundle,$installment_payment_id, $user, $discountCoupon)
     {
         $financialSettings = getFinancialSettings();
 
@@ -239,7 +246,7 @@ class BundlesController extends Controller
 
         $taxIsDifferent = (1
         // or count($cartHasCertificate) or count($cartHasInstallmentPayment)
-    );
+     );
 
 
         $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent, $discountCoupon);
@@ -278,10 +285,9 @@ class BundlesController extends Controller
         ];
     }
 
-    public function purchase_bundle(Request $request, $installmentId=null,$carts = null,){
+    public function purchase_bundle(Request $request, $installmentId=null,$carts = null){
         if(!empty($installmentId))
         {
-            dd($installmentId);
             $user = auth()->user();
             $itemId = $request->get('item');
             $itemType = $request->get('item_type');
@@ -353,21 +359,6 @@ class BundlesController extends Controller
 
                     $productOrder = null;
 
-                    if ($itemType == 'product') {
-                        $hasPhysicalProduct = ($item->type == Product::$physical);
-
-                        $this->validate($request, [
-                            'country_id' => Rule::requiredIf($hasPhysicalProduct),
-                            'province_id' => Rule::requiredIf($hasPhysicalProduct),
-                            'city_id' => Rule::requiredIf($hasPhysicalProduct),
-                            'district_id' => Rule::requiredIf($hasPhysicalProduct),
-                            'address' => Rule::requiredIf($hasPhysicalProduct),
-                        ]);
-
-                        /* Product Order */
-                        $productOrder = $this->handleProductOrder($request, $user, $item);
-                    }
-
                     $columnName = $this->getColumnByItemType($itemType);
 
                     $status = 'paying';
@@ -399,13 +390,6 @@ class BundlesController extends Controller
                     /* Store Installment Data */
                     $this->handleSelectedInstallment($user, $order, $installment);
 
-                    /* Update Product Order */
-                    if (!empty($productOrder)) {
-                        $productOrder->update([
-                            'installment_order_id' => $order->id
-                        ]);
-                    }
-
                     $notifyOptions = [
                         '[u.name]' => $order->user->full_name,
                         '[installment_title]' => $installment->main_title,
@@ -430,18 +414,54 @@ class BundlesController extends Controller
                             'created_at' => time(),
                         ]);
 
-                        Cart::updateOrCreate([
-                            'creator_id' => $user->id,
-                            'installment_payment_id' => $installmentPayment->id,
-                        ], [
-                            'created_at' => time()
-                        ]);
+                        // Cart::updateOrCreate([
+                        //     'creator_id' => $user->id,
+                        //     'installment_payment_id' => $installmentPayment->id,
+                        // ], [
+                        //     'created_at' => time()
+                        // ]);
 
-                        $installmentPaymentId = $installmentPayment->id;
+                        $installment_payment_id = $installmentPayment->id;
 
-                        return redirect()->route('purchase_bundle')->with('installment_payment_id', $installmentPaymentId);
+                        $paymentChannels = PaymentChannel::where('status', 'active')->get();
 
-                        // return redirect('/cart');
+                        $calculate = $this->calculatePrice($bundle=null,$installment_payment_id, $user,$discountCoupon = null);
+
+                        $order = $this->createOrderAndOrderItems($bundle=null,$installment_payment_id, $calculate, $user, $discountCoupon=null);
+
+                        if (!empty($order) and $order->total_amount > 0) {
+                            $razorpay = false;
+                            $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
+
+                            foreach ($paymentChannels as $paymentChannel) {
+                                if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                                    $razorpay = true;
+                                }
+                            }
+
+                            $data = [
+                                'pageTitle' => trans('public.checkout_page_title'),
+                                'paymentChannels' => $paymentChannels,
+                                'carts' => $carts,
+                                'subTotal' => $calculate["sub_total"],
+                                'totalDiscount' => $calculate["total_discount"],
+                                'tax' => $calculate["tax"],
+                                'taxPrice' => $calculate["tax_price"],
+                                'total' => $calculate["total"],
+                                'userGroup' => $user->userGroup ? $user->userGroup->group : null,
+                                'order' => $order,
+                                'count' => 0,
+                                'userCharge' => $user->getAccountingCharge(),
+                                'razorpay' => $razorpay,
+                                'totalCashbackAmount' => null,
+                                'previousUrl' => url()->previous(),
+                            ];
+
+                            return view(getTemplate() . '.cart.payment', $data);
+                        } else {
+
+                            return $this->handlePaymentOrderWithZeroTotalAmount($order);
+                        }
                     } else {
 
                         if ($installment->needToVerify()) {
@@ -467,7 +487,7 @@ class BundlesController extends Controller
 
             $paymentChannels = PaymentChannel::where('status', 'active')->get();
 
-            $calculate = $this->calculatePrice($bundle,$installment_payment_id=null, $user);
+            $calculate = $this->calculatePrice($bundle,$installment_payment_id=null, $user,$discountCoupon = null);
 
             $order = $this->createOrderAndOrderItems($bundle,$installment_payment_id=null, $calculate, $user, $discountCoupon=null);
 
@@ -506,6 +526,83 @@ class BundlesController extends Controller
             }
 
         }
+    }
+    private function handleSelectedInstallment($user, $order, $installment)
+    {
+        $selected = SelectedInstallment::query()->updateOrCreate([
+            'user_id' => $user->id,
+            'installment_id' => $installment->id,
+            'installment_order_id' => $order->id,
+        ], [
+            'start_date' => $installment->start_date,
+            'end_date' => $installment->end_date,
+            'upfront' => $installment->upfront,
+            'upfront_type' => $installment->upfront_type,
+            'created_at' => time(),
+        ]);
+
+        SelectedInstallmentStep::query()->where('selected_installment_id', $selected->id)->delete();
+
+        $insert = [];
+
+        foreach ($installment->steps as $step) {
+            $insert[] = [
+                'selected_installment_id' => $selected->id,
+                'installment_step_id' => $step->id,
+                'deadline' => $step->deadline,
+                'amount' => $step->amount,
+                'amount_type' => $step->amount_type,
+            ];
+        }
+
+        if (!empty($insert)) {
+            SelectedInstallmentStep::query()->insert($insert);
+        }
+    }
+    private function handleAttachments($attachments, $order)
+    {
+        InstallmentOrderAttachment::query()->where('installment_order_id', $order->id)->delete();
+
+        if (!empty($attachments)) {
+            $attachmentsInsert = [];
+
+            foreach ($attachments as $attachment) {
+                if (!empty($attachment['title']) and !empty($attachment['file'])) {
+                    $attachmentsInsert[] = [
+                        'installment_order_id' => $order->id,
+                        'title' => $attachment['title'],
+                        'file' => $attachment['file'],
+                    ];
+                }
+            }
+
+            if (!empty($attachmentsInsert)) {
+                InstallmentOrderAttachment::query()->insert($attachmentsInsert);
+            }
+        }
+    }
+    private function getColumnByItemType($itemType)
+    {
+        if ($itemType == 'bundles') {
+            return 'bundle_id';
+        } 
+    }
+    private function getItem($itemId, $itemType, $user)
+    {
+        if ($itemType == 'bundles') {
+            $bundle = Bundle::where('id', $itemId)
+                ->where('status', 'active')
+                ->first();
+
+            $hasBought = $bundle->checkUserHasBought($user);
+            $canSale = ($bundle->canSale() and !$hasBought);
+
+            if ($canSale and !empty($bundle->price)) {
+                return $bundle;
+            }
+        } 
+
+        return null;
     }
     private function handlePaymentOrderWithZeroTotalAmount($order)
     {

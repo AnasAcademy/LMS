@@ -44,18 +44,18 @@ class CartController extends Controller
                 }
             ])
             ->get();
-        
+
           foreach ($carts as $index => $cart) {
-          
+
             if (!is_null($cart['bundle_id'])) {
                 $bundle=Bundle::where('id',$cart['bundle_id'])->first();
                 $certificates[$index] = $bundle->certificate_template;
             } else {
-               
+
                 $certificates[$index] = null;
             }
         }
-     
+
 
         if (!empty($carts) and !$carts->isEmpty()) {
             $calculate = $this->calculatePrice($carts, $user);
@@ -378,7 +378,7 @@ class CartController extends Controller
         $cartHasInstallmentPayment = array_filter($carts->pluck('installment_payment_id')->toArray());
 
         $taxIsDifferent = (count($cartHasWebinar) or count($cartHasBundle) or count($cartHasCertificate) or count($cartHasMeeting) or count($cartHasInstallmentPayment));
-        
+
         foreach ($carts as $cart) {
             $orderPrices = $this->handleOrderPrices($cart, $user, $taxIsDifferent, $discountCoupon);
             $subTotal += $orderPrices['sub_total'];
@@ -423,7 +423,7 @@ class CartController extends Controller
     public function checkout(Request $request, $carts = null)
     {
         // dd($request->all());
-        
+
         $user = auth()->user();
 
         if (empty($carts)) {
@@ -498,7 +498,7 @@ class CartController extends Controller
 
                 return view(getTemplate() . '.cart.payment', $data);
             } else {
-                
+
                 return $this->handlePaymentOrderWithZeroTotalAmount($order);
             }
         }
@@ -671,7 +671,7 @@ class CartController extends Controller
             else{
                  $discount = $item->getDiscount($cart->ticket, $user);
             }
-           
+
 
             $priceWithoutDiscount = $price - $discount;
 
