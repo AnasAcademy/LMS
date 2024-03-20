@@ -77,7 +77,7 @@
             display: none;
         }
 
-        .hero{
+        .hero {
             width: 100%;
             height: 80vh;
             /* background-color: #ED1088; */
@@ -174,7 +174,7 @@
                                     {{-- nationality --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="nationality">{{ trans('application_form.nationality') }}*</label>
-                                        <select id="nationality" name="nationality" required class="form-control">
+                                        <select id="nationality" name="nationality" required class="form-control" onchange="toggleNationality()">
                                             <option value="" class="placeholder" disabled="" selected="selected">
                                                 اختر جنسيتك</option>
                                             <option value="سعودي/ة" selected>سعودي/ة</option>
@@ -196,7 +196,7 @@
                                             <option value="عماني/ة">عماني/ة</option>
                                             <option value="قطري/ة">قطري/ة</option>
                                             <option value="موريتاني/ة">موريتاني/ة</option>
-                                            <option value="أخرى">أخرى</option>
+                                            <option value="أخرى" id="anotherNationality">أخرى</option>
                                         </select>
                                     </div>
 
@@ -223,6 +223,14 @@
                                                 </label>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    {{-- other nationality --}}
+                                    <div class="form-group col-12 col-sm-6" id="other_nationality_section"
+                                        style="display: none">
+                                        <label for="nationality">ادخل الجنسية *</label>
+                                        <input type="text" class="form-control" id="other_nationality"
+                                            name="other_nationality" placeholder="اكتب الجنسية" onkeyup="setNationality()">
                                     </div>
 
                                     {{-- country --}}
@@ -252,15 +260,15 @@
                                             <option value="جيبوتي">جيبوتي</option>
                                             <option value="عمان">عمان</option>
                                             <option value="موريتانيا">موريتانيا</option>
-                                            <option value="أخرى">أخرى</option>
+                                            <option value="أخرى" id="anotherCountry">أخرى</option>
                                         </select>
                                     </div>
 
                                     {{-- other country --}}
-                                    <div class="form-group col-12 col-sm-6" id="otherCountry" style="display: none">
+                                    <div class="form-group col-12 col-sm-6" id="anotherCountrySection" style="display: none">
                                         <label for="city" class="form-label">ادخل البلد*</label>
                                         <input type="text" id="city" name="city" class="form-control"
-                                            placeholder="ادخل دولتك">
+                                            placeholder="ادخل دولتك" onkeyup="setCountry()">
                                     </div>
 
                                     {{-- region --}}
@@ -328,7 +336,7 @@
                                             البكالوريوس*</label>
 
                                         <select id="educational_qualification_country"
-                                            name="educational_qualification_country" required class="form-control">
+                                            name="educational_qualification_country" required class="form-control" onchange="educationCountryToggle()">
                                             <option value="" class="placeholder" disabled="">اختر دولتك</option>
                                             <option value="السعودية" selected="selected">السعودية</option>
                                             <option value="الامارات العربية المتحدة">الامارات العربية المتحدة</option>
@@ -351,8 +359,20 @@
                                             <option value="جيبوتي">جيبوتي</option>
                                             <option value="عمان">عمان</option>
                                             <option value="موريتانيا">موريتانيا</option>
-                                            <option value="أخرى">أخرى</option>
+                                            <option value="أخرى" id="anotherEducationCountryOption">أخرى</option>
                                         </select>
+                                    </div>
+
+                                    {{-- مصدر شهادة البكالوريوس --}}
+                                    <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection" style="display: none">
+
+                                        <label for="university" class="form-label">
+                                            ادخل مصدر شهادة البكالوريوس*
+                                        </label>
+                                        <input type="text" id="anotherEducationCountry" class="form-control" name="anotherEducationCountry"
+                                            placeholder="ادخل مصدر شهادة البكالوريوس"
+
+                                            onkeyup="setEducationCountry()">
                                     </div>
 
                                     {{-- معدل المرحلة الثانوية --}}
@@ -391,6 +411,7 @@
                                         <input type="text" id="school" class="form-control" name="school"
                                             placeholder="أدخل المدرسة">
                                     </div>
+
 
                                     {{-- الجامعه --}}
                                     <div class="form-group col-12 col-sm-6 high_education">
@@ -725,6 +746,7 @@
     <script src="/assets/default/vendors/owl-carousel2/owl.carousel.min.js"></script>
     <script src="/assets/default/vendors/parallax/parallax.min.js"></script>
     <script src="/assets/default/js/parts/home.min.js"></script>
+    {{-- job script --}}
     <script>
         var working = document.getElementById("working");
         var notWorking = document.getElementById("not_working");
@@ -742,6 +764,8 @@
         notWorking.addEventListener("change", toggleJobFields);
         toggleJobFields();
     </script>
+
+    {{-- about us script --}}
     <script>
         var otherLabel = document.getElementById("otherLabel");
         var otherInput = document.getElementById("otherInput");
@@ -765,7 +789,10 @@
             let radioButton = document.getElementById('other');
             radioButton.value = otherInput.value;
         })
+    </script>
 
+    {{-- bundle toggle and education section toggle --}}
+    <script>
         function toggleHiddenInput() {
             var bundles = @json($bundlesByCategory);
             var select = document.getElementById("mySelect1");
@@ -819,8 +846,10 @@
                 }
             }
         }
+    </script>
 
-
+    {{-- city and country toggle --}}
+    <script>
         function toggleHiddenInputs() {
             var select = document.getElementById("mySelect");
             var hiddenInput = document.getElementById("area");
@@ -829,8 +858,10 @@
             var hiddenLabel2 = document.getElementById("hiddenLabel2");
             var cityLabel = document.getElementById("cityLabel");
             var cityInput = document.getElementById("cityInput");
-            var otherCountry = document.getElementById("otherCountry");
+            var anotherCountrySection = document.getElementById("anotherCountrySection");
             var region = document.getElementById("region");
+            let anotherCountryOption = document.getElementById("anotherCountry");
+
             if (select && select.value !== "السعودية") {
                 region.style.display = "block";
             } else {
@@ -838,10 +869,12 @@
             }
 
             if (select.value === "أخرى") {
-                otherCountry.style.display = "block";
-                select.value = hiddenInput2.value;
+                anotherCountrySection.style.display = "block";
+                anotherCountryOption.value = hiddenInput2.value;
             } else {
-                otherCountry.style.display = "none";
+                anotherCountrySection.style.display = "none";
+                anotherCountryOption.value = "أخرى";
+
             }
             if (select && cityLabel && cityInput) {
                 if (select.value === "السعودية") {
@@ -880,10 +913,22 @@
                 }
             }
         }
+        function setCountry(){
+            let anotherCountrySection = document.getElementById("anotherCountrySection");
+            let anotherCountryOption = document.getElementById("anotherCountry");
+            let another_country = document.getElementById("city");
 
+            if(anotherCountrySection.style.display !="none"){
+                // nationality.value = other_nationality.value;
+                anotherCountryOption.value = another_country.value;
+
+            }
+        }
         toggleHiddenInputs();
+    </script>
 
-
+    {{--  healthy section toggle--}}
+    <script>
         // healthy section display
         function toggleHealthyProblemSection() {
             let healthyProblemSection = document.getElementById("healthy_problem_section");
@@ -895,12 +940,16 @@
             }
 
         }
+
         let healthy = document.getElementById("healthy");
         let notHealthy = document.getElementById("not_healthy");
         healthy.addEventListener("change", toggleHealthyProblemSection);
         notHealthy.addEventListener("change", toggleHealthyProblemSection);
         toggleHealthyProblemSection();
+    </script>
 
+    {{-- disabled section toggle --}}
+    <script>
         // disabled section display
         function toggleDisabledSection() {
             let disabledTypeSection = document.getElementById("disabled_type_section");
@@ -917,5 +966,69 @@
         disabled.addEventListener("change", toggleDisabledSection);
         notDisabled.addEventListener("change", toggleDisabledSection);
         toggleDisabledSection();
+    </script>
+
+    {{-- nationality toggle --}}
+    <script>
+        function toggleNationality(){
+            let other_nationality_section = document.getElementById("other_nationality_section");
+            let nationality = document.getElementById("nationality");
+            let other_nationality = document.getElementById("other_nationality");
+            let anotherNationalityOption = document.getElementById("anotherNationality");
+            if(nationality && nationality.value == "أخرى"){
+                other_nationality_section.style.display = "block";
+
+                // nationality.value = other_nationality.value;
+                anotherNationalityOption.value = other_nationality.value;
+            }
+            else{
+                other_nationality_section.style.display = "none";
+                anotherNationalityOption.value = "أخرى";
+            }
+        }
+
+        function setNationality(){
+            let other_nationality_section = document.getElementById("other_nationality_section");
+            let nationality = document.getElementById("nationality");
+            let other_nationality = document.getElementById("other_nationality");
+            let anotherNationalityOption = document.getElementById("anotherNationality");
+            if(other_nationality_section.style.display !="none"){
+                // nationality.value = other_nationality.value;
+                anotherNationalityOption.value = other_nationality.value;
+
+            }
+        }
+
+    </script>
+
+    {{-- education section --}}
+    <script>
+        function educationCountryToggle(){
+            let anotherEducationCountrySection = document.getElementById("anotherEducationCountrySection");
+            let anotherEducationCountry = document.getElementById("anotherEducationCountry");
+            let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
+            let educationalQualificationCountry = document.getElementById("educational_qualification_country");
+
+            if(educationalQualificationCountry && educationalQualificationCountry.value == "أخرى"){
+                anotherEducationCountrySection.style.display = "block";
+                anotherEducationCountryOption.value = anotherEducationCountry.value;
+
+            }else{
+                anotherEducationCountrySection.style.display = "none";
+                anotherEducationCountryOption.value = "أخرى";
+            }
+
+        }
+        function setEducationCountry(){
+            let anotherEducationCountrySection = document.getElementById("anotherEducationCountrySection");
+            let anotherEducationCountry = document.getElementById("anotherEducationCountry");
+            let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
+            let educationalQualificationCountry = document.getElementById("educational_qualification_country");
+
+            if(anotherEducationCountrySection.style.display !="none"){
+                anotherEducationCountryOption.value = anotherEducationCountry.value;
+            }
+
+        }
     </script>
 @endpush
