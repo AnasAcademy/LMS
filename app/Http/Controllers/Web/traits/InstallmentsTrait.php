@@ -217,7 +217,7 @@ trait InstallmentsTrait
         if (!empty($user)) {
             $time = time();
             $overdueIntervalDays = getInstallmentsSettings('overdue_interval_days') ?? 0; // days
-           
+
             $overdueIntervalDays = $overdueIntervalDays * 86400;
             $time = $time - $overdueIntervalDays;
 
@@ -232,8 +232,8 @@ trait InstallmentsTrait
                 ->where('installment_orders.user_id', $user->id)
                 ->whereRaw("((selected_installment_steps.deadline * 86400) + bundles.start_date) < {$time}")
                 ->where(function ($query) { // Where Doesnt Have payment
-                    $query->whereRaw("installment_order_payments.id < 1");
-                    $query->orWhereRaw("installment_order_payments.id is null");
+                    $query->whereNull("installment_order_payments.id")
+                    ->orWhere("installment_order_payments.status", "paying");
                 })
                 ->where('installment_orders.status', 'open')
                 ->get();
@@ -251,7 +251,7 @@ trait InstallmentsTrait
         }
 
         $installmentsSettings = getInstallmentsSettings();
-      
+
 
         if (!empty($user) and !empty($installmentsSettings['status'])) {
             $overdueInstallmentOrders = $this->checkUserHasOverdueInstallment($user);

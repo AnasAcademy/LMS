@@ -100,7 +100,7 @@ trait InstallmentVerificationRequestsTrait
                     $stepAmount = $step->getPrice($itemPrice);
                     $unpaidStepsAmount += $stepAmount;
 
-                    if (($step->deadline * 86400) + $order->created_at < time()) {
+                    if (($step->deadline * 86400) + $order->bundle->start_date < time()) {
                         $overdueCount += 1;
                         $overdueAmount += $stepAmount;
                     }

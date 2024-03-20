@@ -175,7 +175,7 @@ class BundlesController extends Controller
             }
         }
 
-        if (!empty($bundle)) {
+        if (!empty($bundle) && empty($installment_payment_id)) {
             // $item = !empty($cart->webinar_id) ? $cart->webinar : $cart->bundle;
             $item = $bundle;
 
@@ -427,7 +427,7 @@ class BundlesController extends Controller
 
                         $calculate = $this->calculatePrice($bundle=null,$installment_payment_id, $user,$discountCoupon = null);
 
-                        $order = $this->createOrderAndOrderItems($bundle=null,$installment_payment_id, $calculate, $user, $discountCoupon=null);
+                        $order = $this->createOrderAndOrderItems($bundle=$item,$installment_payment_id, $calculate, $user, $discountCoupon=null);
 
                         if (!empty($order) and $order->total_amount > 0) {
                             $razorpay = false;
@@ -585,7 +585,7 @@ class BundlesController extends Controller
     {
         if ($itemType == 'bundles') {
             return 'bundle_id';
-        } 
+        }
     }
     private function getItem($itemId, $itemType, $user)
     {
@@ -600,7 +600,7 @@ class BundlesController extends Controller
             if ($canSale and !empty($bundle->price)) {
                 return $bundle;
             }
-        } 
+        }
 
         return null;
     }

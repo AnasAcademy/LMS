@@ -99,18 +99,18 @@
                                             <td class="text-center">{{ dateTimeFormat($order->overdue_date, 'j M Y') }} ({{ dateTimeFormatForHumans($order->overdue_date,true,null,1) }})</td>
 
                                             <td class="text-center">
-                                                @if(!empty($order->paid_at))
+                                                @if($order->status=='paid')
                                                     <span class="text-success">{{ trans('public.paid') }}</span>
                                                 @else
                                                     <span class="text-danger">{{ trans('update.unpaid') }}</span>
                                                 @endif
                                             </td>
 
-                                            <td class="text-center">{{ !empty($order->paid_at) ? dateTimeFormat($order->paid_at, 'j M Y') : '-' }}</td>
+                                            <td class="text-center">{{ $order->status=='paid' ? dateTimeFormat($order->paid_at, 'j M Y') : '-' }}</td>
 
                                             <td class="text-center">
                                                 @php
-                                                    $time = !empty($order->paid_at) ? $order->paid_at : time();
+                                                    $time = $order->status=='paid' ? $order->paid_at : time();
                                                     $days = round(($time - $order->overdue_date) / 86400);
                                                 @endphp
                                                 {{ $days }}

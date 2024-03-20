@@ -44,7 +44,7 @@
             @endif
         </div>
 
-        <div class="col-4 p-0 pr-15">
+        <div class="col-8 p-0 pr-15">
             <div class="installment-card__payments d-flex flex-column w-100 h-100">
 
                 @php

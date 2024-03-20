@@ -123,7 +123,7 @@ class InstallmentsController extends Controller
         $itemPrice = $order->getItemPrice();
 
         foreach ($order->selectedInstallment->steps as $step) {
-            $dueAt = ($step->deadline * 86400) + $order->created_at;
+            $dueAt = ($step->deadline * 86400) + $order->bundle->start_date;
 
             if ($dueAt < $time) {
                 $payment = InstallmentOrderPayment::query()

@@ -62,6 +62,7 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app', 'share
     Route::get('/facebook/redirect', 'SocialiteController@redirectToFacebook');
     Route::get('/facebook/callback', 'SocialiteController@handleFacebookCallback');
     Route::get('/reff/{code}', 'ReferralController@referral');
+
 });
 
 Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impersonate', 'share', 'check_maintenance']], function () {
@@ -79,9 +80,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     // set Locale
     Route::post('/set-currency', 'SetCurrencyController@setCurrency');
 
-    Route::get('/', 'HomeController@index');
     // application
     Route::group(['middleware' => 'web.auth'], function () {
+        Route::get('/', 'ApplyController@index');
         Route::get('/apply', 'ApplyController@index');
         Route::post('/apply', 'ApplyController@checkout')->name('payFee');
      });

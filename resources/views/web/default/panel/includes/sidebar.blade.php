@@ -68,6 +68,16 @@
         class="sidebar-menu pt-10 @if (!empty($authUser->userGroup)) has-user-group @endif @if (empty($getPanelSidebarSettings) or empty($getPanelSidebarSettings['background'])) without-bottom-image @endif"
         @if (!empty($isRtl) and $isRtl) data-simplebar-direction="rtl" @endif>
 
+        @can('show_panel')
+        <li class="sidenav-item {{ request()->is('panel') ? 'sidenav-item-active' : '' }}">
+            <a href="/panel" class="d-flex align-items-center">
+                <span class="sidenav-item-icon mr-10">
+                    @include('web.default.panel.includes.sidebar_icons.dashboard')
+                </span>
+                <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.dashboard') }}</span>
+            </a>
+        </li>
+        @endcan
         {{-- requirements link --}}
         @if (auth()->user()->Student)
             <li class="sidenav-item {{ request()->is('panel/requirements') ? 'sidenav-item-active' : '' }}">
@@ -79,16 +89,6 @@
                 </a>
             </li>
         @endif
-@can('show_panel')
-        <li class="sidenav-item {{ request()->is('panel') ? 'sidenav-item-active' : '' }}">
-            <a href="/panel" class="d-flex align-items-center">
-                <span class="sidenav-item-icon mr-10">
-                    @include('web.default.panel.includes.sidebar_icons.dashboard')
-                </span>
-                <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.dashboard') }}</span>
-            </a>
-        </li>
-@endcan
 
         @if ($authUser->isOrganization())
             <li
@@ -176,7 +176,7 @@
                         <a href="/panel/webinars/purchases">{{ trans('panel.my_purchases') }}</a>
                     </li>
 
-                    @if ($authUser->isOrganization() || $authUser->isTeacher())
+                    {{-- @if ($authUser->isOrganization() || $authUser->isTeacher())
                         <li class="mt-5 {{ request()->is('panel/webinars/comments') ? 'active' : '' }}">
                             <a href="/panel/webinars/comments">{{ trans('panel.my_class_comments') }}</a>
                         </li>
@@ -188,13 +188,13 @@
 
                     <li class="mt-5 {{ request()->is('panel/webinars/favorites') ? 'active' : '' }}">
                         <a href="/panel/webinars/favorites">{{ trans('panel.favorites') }}</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </li>
 @endcan
 
-        @if (!empty(getFeaturesSettings('upcoming_courses_status')))
+        {{-- @if (!empty(getFeaturesSettings('upcoming_courses_status')))
         @can('student_showUpcomingCourses')
             <li
                 class="sidenav-item {{ (request()->is('panel/upcoming_courses') or request()->is('panel/upcoming_courses/*')) ? 'sidenav-item-active' : '' }}">
@@ -226,7 +226,7 @@
                 </div>
             </li>
             @endcan
-        @endif
+        @endif --}}
 
         @if ($authUser->isOrganization() or $authUser->isTeacher())
             <li
@@ -254,7 +254,7 @@
             </li>
         @endif
 
-        @if (getFeaturesSettings('webinar_assignment_status'))
+        {{-- @if (getFeaturesSettings('webinar_assignment_status'))
         @can('student_showTasks')
             <li
                 class="sidenav-item {{ (request()->is('panel/assignments') or request()->is('panel/assignments/*')) ? 'sidenav-item-active' : '' }}">
@@ -285,9 +285,9 @@
                 </div>
             </li>
             @endcan
-        @endif
+        @endif --}}
 
-        @can('student_showSession')
+        {{-- @can('student_showSession')
         <li
             class="sidenav-item {{ (request()->is('panel/meetings') or request()->is('panel/meetings/*')) ? 'sidenav-item-active' : '' }}">
             <a class="d-flex align-items-center" data-toggle="collapse" href="#meetingCollapse" role="button"
@@ -355,7 +355,7 @@
                 </ul>
             </div>
         </li>
-        @endcan
+        @endcan --}}
         @can('student_showCertificate')
         <li
             class="sidenav-item {{ (request()->is('panel/certificates') or request()->is('panel/certificates/*')) ? 'sidenav-item-active' : '' }}">
@@ -398,7 +398,7 @@
         @endcan
 
         @if ($authUser->checkCanAccessToStore())
-        @can('student_showStore')
+        {{-- @can('student_showStore')
             <li
                 class="sidenav-item {{ (request()->is('panel/store') or request()->is('panel/store/*')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#storeCollapse" role="button"
@@ -452,7 +452,7 @@
                     </ul>
                 </div>
             </li>
-            @endcan
+            @endcan --}}
         @endif
         @can('student_showFinance')
         <li
@@ -537,12 +537,11 @@
         </li>
         @endcan
 
-        @if (
-            !$authUser->isUser() or
+        {{-- @if (   !$authUser->isUser() or
                 !empty($referralSettings) and $referralSettings['status'] and $authUser->affiliate or
                 !empty(getRegistrationBonusSettings('status')) and $authUser->enable_registration_bonus)
-            @can('student_showMarkting')
-            <li
+                @can('student_showMarkting')
+                <li
                 class="sidenav-item {{ (request()->is('panel/marketing') or request()->is('panel/marketing/*')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#marketingCollapse" role="button"
                     aria-expanded="false" aria-controls="marketingCollapse">
@@ -579,9 +578,9 @@
                         @endif
                     </ul>
                 </div>
-            </li>
-            @endcan
-        @endif
+             </li>
+             @endcan
+            @endif
 
         @if (getFeaturesSettings('forums_status'))
         @can('student_showForums')
@@ -616,7 +615,7 @@
                 </div>
             </li>
             @endcan
-        @endif
+        @endif --}}
 
 
         @if ($authUser->isTeacher())
@@ -710,7 +709,7 @@
             </a>
         </li>
         @endcan
-        
+
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">
             <a href="/panel/setting" class="d-flex align-items-center">
                 <span class="sidenav-setting-icon sidenav-item-icon mr-10">
@@ -719,7 +718,7 @@
                 <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.settings') }}</span>
             </a>
         </li>
-       
+
 
 
         @if ($authUser->isTeacher() or $authUser->isOrganization())

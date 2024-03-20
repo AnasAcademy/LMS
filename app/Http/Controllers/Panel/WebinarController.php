@@ -628,15 +628,15 @@ class WebinarController extends Controller
             // .\ Check Capacity
 
             // if ($webinar->isWebinar()) {
-                         
+
                 if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                     $data['timezone'] = getTimezone();
                 }
-               
+
                 $startDate = convertTimeToUTCzone($data['start_date'], $data['timezone']);
 
                 $data['start_date'] = $startDate->getTimestamp();
-               
+
             // }
 
             $data['forum'] = !empty($data['forum']) ? true : false;
@@ -1065,14 +1065,7 @@ class WebinarController extends Controller
             ->whereNull('sales.refund_at')
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
-                $query->where(function ($query) {
-                    $query->whereNotNull('sales.webinar_id')
-                        ->where('sales.type', 'webinar')
-                        ->whereHas('webinar', function ($query) {
-                            $query->where('status', 'active');
-                        });
-                });
-                $query->orWhere(function ($query) {
+                $query->Where(function ($query) {
                     $query->whereNotNull('sales.bundle_id')
                         ->where('sales.type', 'bundle')
                         ->whereHas('bundle', function ($query) {

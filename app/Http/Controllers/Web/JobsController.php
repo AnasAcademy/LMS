@@ -242,7 +242,7 @@ class JobsController extends Controller
             if (empty($checkPayment)) {
                 $itemPrice = $order->getItemPrice();
 
-                $dueAt = ($step->deadline * 86400) + $order->created_at;
+                $dueAt = ($step->deadline * 86400) + $order->bundle->start_date;
                 $daysLeft = ($dueAt - $timestamp) / (86400);
 
                 $reminderType = null;

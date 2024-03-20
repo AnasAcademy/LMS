@@ -41,7 +41,7 @@
                     </button>
                 </div>
 
-                <ul class="navbar-nav mr-auto d-flex align-items-center">
+                {{-- <ul class="navbar-nav mr-auto d-flex align-items-center">
                     @if(!empty($categories) and count($categories))
                         <li class="mr-lg-25">
                             <div class="menu-category">
@@ -96,7 +96,7 @@
                             </li>
                         @endforeach
                     @endif
-                </ul>
+                </ul> --}}
             </div>
 
             <div class="nav-icons-or-start-live navbar-order">
@@ -112,7 +112,7 @@
                 @endif
 
                 <div class="d-none nav-notify-cart-dropdown top-navbar ">
-                    @include(getTemplate().'.includes.shopping-cart-dropdwon')
+                    {{-- @include(getTemplate().'.includes.shopping-cart-dropdwon') --}}
 
                     <div class="border-left mx-15"></div>
 

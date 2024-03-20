@@ -132,9 +132,11 @@
                                                         <a href="{{ $orderItem->getLearningPageUrl() }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('update.learning_page') }}</a>
                                                     @endif
 
-                                                    {{--@if($order->isCompleted() or $order->status == "open")
+                                                    {{--
+                                                        @if($order->isCompleted() or $order->status == "open")
                                                         <a href="/panel/financial/installments/{{ $order->id }}/refund" class="webinar-actions d-block mt-10 delete-action">{{ trans('update.refund') }}</a>
-                                                    @endif--}}
+                                                        @endif
+                                                    --}}
 
                                                     @if($order->status == "pending_verification" and getInstallmentsSettings("allow_cancel_verification"))
                                                         <a href="/panel/financial/installments/{{ $order->id }}/cancel" class="webinar-actions d-block mt-10 text-danger delete-action" data-title="{{ trans('public.deleteAlertHint') }}" data-confirm="{{ trans('update.yes_cancel') }}">{{ trans('public.cancel') }}</a>

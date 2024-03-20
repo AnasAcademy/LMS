@@ -142,7 +142,7 @@
                                                     @endif
                                                 </div>
 
-                                                <span class="d-block font-12 text-gray">{{ trans('update.n_days_after_purchase', ['days' => $step->deadline]) }}</span>
+                                                <span class="d-block font-12 text-gray">{{ $step->deadline}}أيام بعد بدايه الدورة</span>
                                             </td>
 
                                             <td class="text-center">{{ handlePrice($step->getPrice($itemPrice)) }}</td>

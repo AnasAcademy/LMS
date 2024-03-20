@@ -38,19 +38,19 @@ trait InstallmentOverdueTrait
         $query = InstallmentOrder::query()
         ->join('selected_installments', 'installment_orders.id', 'selected_installments.installment_order_id')
         ->join('selected_installment_steps', 'selected_installments.id', 'selected_installment_steps.selected_installment_id')
-        ->join('bundles', 'bundles.id', 'installment_orders.bundle_id') // Join the 'bundles' table
+        ->join('bundles', 'bundles.id', 'installment_orders.bundle_id')
         ->leftJoin('installment_order_payments', 'installment_order_payments.selected_installment_step_id', 'selected_installment_steps.id')
         ->select(
             'installment_orders.*',
             'selected_installment_steps.amount',
             'selected_installment_steps.amount_type',
-            'bundles.start_date as bundle_start_date', // Include bundles.start_date in the select
-            DB::raw('((selected_installment_steps.deadline * 86400) + bundles.start_date) as overdue_date') // Use bundles.start_date in the calculation
+            'bundles.start_date as bundle_start_date',
+            DB::raw('((selected_installment_steps.deadline * 86400) + bundles.start_date) as overdue_date')
         )
-        ->whereRaw("((selected_installment_steps.deadline * 86400) + bundles.start_date) < {$time}") // Use bundles.start_date in the where clause
+        ->whereRaw("((selected_installment_steps.deadline * 86400) + bundles.start_date) < {$time}")
         ->where(function ($query) {
-            $query->whereRaw("installment_order_payments.id < 1");
-            $query->orWhereRaw("installment_order_payments.id is null");
+            $query->whereNull("installment_order_payments.id")
+            ->orWhere("installment_order_payments.status", "paying");
         })
         ->where('installment_orders.status', 'open')
         ->orderBy('overdue_date', 'asc');
@@ -74,7 +74,7 @@ trait InstallmentOverdueTrait
 
         $orders = $this->getOverdueHistoriesQuery($request)
             ->paginate(10);
-
+// dd( $orders);
         $data = [
             'pageTitle' => trans('update.overdue_installments'),
             'orders' => $orders
@@ -98,6 +98,7 @@ trait InstallmentOverdueTrait
             'selected_installment_steps.amount_type',
             'bundles.start_date as bundle_start_date', // Include bundles.start_date in the select
             DB::raw('((selected_installment_steps.deadline * 86400) + bundles.start_date) as overdue_date'),
+            DB::raw('installment_order_payments.status as status'),
             DB::raw('installment_order_payments.created_at as paid_at'),
             DB::raw('selected_installment_steps.deadline as deadline')
         )
