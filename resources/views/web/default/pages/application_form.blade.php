@@ -46,36 +46,54 @@
             line-height: 39px;
             color: #5E0A83;
         }
-        .form-title{
+
+        .form-title {
 
 
-        font-family: 'IBM Plex Sans';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 32px;
-        line-height: 42px;
-        color: #000000;
+            font-family: 'IBM Plex Sans';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 32px;
+            line-height: 42px;
+            color: #000000;
 
         }
 
-        input{
+        input {
             text-align: right;
         }
 
-        .main-section{
+        .main-section {
             background-color: #F6F7F8;
         }
-       .main-container {
+
+        .main-container {
             border-width: 2px !important;
         }
-    </style>
 
+        .secondary_education,
+        .high_education,
+        #education {
+            display: none;
+        }
+
+        .hero{
+            width: 100%;
+            height: 80vh;
+            /* background-color: #ED1088; */
+            background-image: linear-gradient(90deg, #5E0A83 19%, #F70387 100%);
+        }
+    </style>
 @endpush
 
 @section('content')
+    <header class="hero">
+        <section class=" container-fluid"></section>
+
+    </header>
     <div class="application container-fluid">
-        <div class="col-lg-8 col-md-8 col-sm-6">
-            <div class="col-lg-12 col-md-12 col-sm-6">
+        <div class="col-lg-8 col-md-8">
+            <div class="col-lg-12 col-md-12">
                 <Section class="section1 main-section">
                     <div class="container_form">
                         <!--Form Title-->
@@ -132,15 +150,15 @@
                                     {{-- english name --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="name_en">{{ trans('application_form.name_en') }}*</label>
-                                        <input type="text" id="name_en" name="en_name" value="{{ $student ? $student->en_name : $user->full_name }}"
+                                        <input type="text" id="name_en" name="en_name"
+                                            value="{{ $student ? $student->en_name : $user->full_name }}"
                                             placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required class="form-control">
                                     </div>
 
                                     {{-- identifier number --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="name_en">رقم الهوية الوطنية أو جواز السفر*</label>
-                                        <input type="text" id="name_en" name="en_name"
-                                            value=""
+                                        <label for="identifier_num">رقم الهوية الوطنية أو جواز السفر*</label>
+                                        <input type="text" id="identifier_num" name="identifier_num" value=""
                                             placeholder="الرجاء إدخال الرقم كامًلا والمكون من 10 أرقام للهوية أو 6 أرقام للجواز"
                                             required class="form-control">
                                     </div>
@@ -182,6 +200,31 @@
                                         </select>
                                     </div>
 
+                                    {{-- gender --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="gender">{{ trans('application_form.gender') }}*</label>
+
+                                        <div class="row mr-5 mt-5">
+                                            {{-- female --}}
+                                            <div class="col-sm-4 col">
+                                                <label for="female">
+                                                    <input type="radio" id="female" name="gender" value="female"
+                                                        required>
+                                                    انثي
+                                                </label>
+                                            </div>
+
+                                            {{-- male --}}
+                                            <div class="col">
+                                                <label for="male">
+                                                    <input type="radio" id="male" name="gender" value="male"
+                                                        required>
+                                                    ذكر
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     {{-- country --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="country">{{ trans('application_form.country') }}*</label>
@@ -214,23 +257,17 @@
                                     </div>
 
                                     {{-- other country --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <div id="hiddenInputContainer2">
-                                            <label for="city" class="hidden-element" id="hiddenLabel2">ادخل
-                                                البلد:*</label>
-                                            <input type="text" id="city" name="city"
-                                                class="hidden-element form-control" placeholder="ادخل دولتك">
-                                        </div>
+                                    <div class="form-group col-12 col-sm-6" id="otherCountry" style="display: none">
+                                        <label for="city" class="form-label">ادخل البلد*</label>
+                                        <input type="text" id="city" name="city" class="form-control"
+                                            placeholder="ادخل دولتك">
                                     </div>
 
                                     {{-- region --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <div id="hiddenInputContainer">
-                                            <label for="area" class="hidden-element"
-                                                id="hiddenLabel">المنطقة:*</label>
-                                            <input type="text" id="area" name="area"
-                                                class="hidden-element form-control" placeholder="اكتب المنطقة">
-                                        </div>
+                                    <div class="form-group col-12 col-sm-6" id="region" style="display: none">
+                                        <label for="area" class="form-label">المنطقة*</label>
+                                        <input type="text" id="area" name="area" class="form-control"
+                                            placeholder="اكتب المنطقة">
                                     </div>
 
                                     {{-- city --}}
@@ -243,22 +280,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- gender --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="gender">{{ trans('application_form.gender') }}*</label>
-                                        <br>
-                                        <label for="female">
-                                            <input type="radio" id="female" name="gender" value="female"
-                                                required>
-                                           انثي
-                                        </label>
-
-                                        <label for="male">
-                                            <input type="radio" id="male" name="gender" value="male"
-                                                required>
-                                            ذكر
-                                        </label>
-                                    </div>
                                 </section>
                             </section>
 
@@ -283,10 +304,10 @@
                                             placeholder="تسجيل البريد الإلكتروني" required class="form-control">
                                     </div>
 
-                                    {{-- phone number --}}
+                                    {{-- mobile number --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="phone">{{ 'رقم الهاتف' }}</label>
-                                        <input type="tel" id="phone" name="phone"
+                                        <label for="mobile">{{ 'رقم الهاتف' }}</label>
+                                        <input type="tel" id="mobile" name="mobile"
                                             value="{{ $student ? $student->phone : $user->mobile }}"
                                             class="form-control">
                                     </div>
@@ -294,37 +315,177 @@
 
                             </section>
 
+
                             {{--  education --}}
-                            <section>
-                                <h2 class="form-main-title">المؤهلات التعليمية والعملية</h2>
+                            <section id="education">
+                                <h2 class="form-main-title">المؤهلات التعليمية</h2>
                                 <section
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label>{{ trans('application_form.status') }}*</label><br>
-                                        <label for="working">
-                                            <input type="radio" id="working" name="status" value="working"
-                                                required>
-                                            {{ trans('application_form.working') }}
-                                        </label>
 
-                                        <label for="not_working">
-                                            <input type="radio" id="not_working" name="status" value="not_working"
-                                                required>
-                                            {{ trans('application_form.not_working') }}
-                                        </label>
+                                    {{-- المؤهل التعليمي --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="educational_qualification_country" class="form-label">بلد مصدر شهادة
+                                            البكالوريوس*</label>
+
+                                        <select id="educational_qualification_country"
+                                            name="educational_qualification_country" required class="form-control">
+                                            <option value="" class="placeholder" disabled="">اختر دولتك</option>
+                                            <option value="السعودية" selected="selected">السعودية</option>
+                                            <option value="الامارات العربية المتحدة">الامارات العربية المتحدة</option>
+                                            <option value="الاردن">الاردن</option>
+                                            <option value="البحرين">البحرين</option>
+                                            <option value="الجزائر">الجزائر</option>
+                                            <option value="العراق">العراق</option>
+                                            <option value="المغرب">المغرب</option>
+                                            <option value="اليمن">اليمن</option>
+                                            <option value="السودان">السودان</option>
+                                            <option value="الصومال">الصومال</option>
+                                            <option value="الكويت">الكويت</option>
+                                            <option value="جنوب السودان">جنوب السودان</option>
+                                            <option value="سوريا">سوريا</option>
+                                            <option value="لبنان">لبنان</option>
+                                            <option value="مصر">مصر</option>
+                                            <option value="تونس">تونس</option>
+                                            <option value="فلسطين">فلسطين</option>
+                                            <option value="جزرالقمر">جزرالقمر</option>
+                                            <option value="جيبوتي">جيبوتي</option>
+                                            <option value="عمان">عمان</option>
+                                            <option value="موريتانيا">موريتانيا</option>
+                                            <option value="أخرى">أخرى</option>
+                                        </select>
                                     </div>
 
-                                    <div class="form-group col-12 col-sm-6">
-                                        <div id="job" style="display:none;">
-                                            <label for="job_title">الوظيفة*</label>
-                                            <input type="text" id="job_title" name="job_title" class="form-control">
+                                    {{-- معدل المرحلة الثانوية --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <label for="secondary_school_gpa" class="form-label">
+                                            معدل المرحلة الثانوية*
+                                        </label>
+                                        <input type="text" id="secondary_school_gpa" class="form-control"
+                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية">
+                                    </div>
 
-                                            <label for="employment_type">جهة العمل*</label>
-                                            <select id="employment_type" name="employment_type" class="form-control">
-                                                <option value="" selected disabled>اختر جهة العمل</option>
-                                                <option value="governmental">حكومية</option>
-                                                <option value="private">خاصة</option>
-                                            </select>
+                                    {{-- المنطقة التعليمية --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="educational_area" class="form-label">
+                                            المنطقة التعليمية*
+                                        </label>
+                                        <input type="text" id="educational_area" class="form-control"
+                                            name="educational_area" placeholder="أدخل المنطقة التعليمية">
+                                    </div>
+
+                                    {{--  سنة الحصول على الشهادة الثانوية --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <label for="secondary_graduation_year" class="form-label">
+                                            سنة الحصول على الشهادة الثانوية*
+                                        </label>
+                                        <input type="text" id="secondary_graduation_year" class="form-control"
+                                            name="secondary_graduation_year"
+                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية">
+                                    </div>
+
+                                    {{-- المدرسة --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <label for="school" class="form-label">
+                                            المدرسة*
+                                        </label>
+                                        <input type="text" id="school" class="form-control" name="school"
+                                            placeholder="أدخل المدرسة">
+                                    </div>
+
+                                    {{-- الجامعه --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="university" class="form-label">
+                                            الجامعة*
+                                        </label>
+                                        <input type="text" id="university" class="form-control" name="university"
+                                            placeholder="أدخل الجامعة">
+                                    </div>
+
+                                    {{-- الكليه --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="faculty" class="form-label">
+                                            الكلية*
+                                        </label>
+                                        <input type="text" id="faculty" class="form-control" name="faculty"
+                                            placeholder="أدخل الكلية">
+                                    </div>
+
+                                    {{-- التخصص  --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="education_specialization" class="form-label">
+                                            التخصص*
+                                        </label>
+                                        <input type="text" id="education_specialization" class="form-control"
+                                            name="education_specialization" placeholder="أدخل التخصص">
+                                    </div>
+
+                                    {{-- سنة التخرج --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="graduation_year" class="form-label">
+                                            سنة التخرج*
+                                        </label>
+                                        <input type="text" id="graduation_year" class="form-control"
+                                            name="graduation_year" placeholder="أدخل سنة التخرج">
+                                    </div>
+
+                                    {{-- المعدل --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="gpa" class="form-label">
+                                            المعدل*
+                                        </label>
+                                        <input type="text" id="gpa" class="form-control" name="gpa"
+                                            placeholder="أدخل المعدل ">
+                                    </div>
+                                </section>
+                            </section>
+
+                            {{-- working --}}
+                            <section>
+                                <h2 class="form-main-title">بيانات المهنة </h2>
+                                <section
+                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
+                                    {{-- work status --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label>{{ trans('application_form.status') }}*</label>
+
+                                        <div class="row mr-5 mt-5">
+                                            {{-- working status --}}
+                                            <div class="col-sm-4 col">
+                                                <label for="working">
+                                                    <input type="radio" id="working" name="status" value="working"
+                                                        required>
+                                                    {{ trans('application_form.working') }}
+                                                </label>
+                                            </div>
+
+                                            {{-- not working status --}}
+                                            <div class="col">
+                                                <label for="not_working">
+                                                    <input type="radio" id="not_working" name="status"
+                                                        value="not_working" required>
+                                                    {{ trans('application_form.not_working') }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- job details --}}
+                                    <div class="col-12" id="job" style="display: none">
+                                        <div class="row">
+                                            <div class="form-group col-12 col-sm-6">
+                                                <label for="job_title">الوظيفة*</label>
+                                                <input type="text" id="job_title" name="job_title"
+                                                    class="form-control" placeholder="أدخل الوظيفة">
+                                            </div>
+
+                                            <div class="form-group col-12 col-sm-6">
+                                                <label for="employment_type">جهة العمل*</label>
+                                                <select id="employment_type" name="employment_type" class="form-control">
+                                                    <option value="" selected disabled>اختر جهة العمل</option>
+                                                    <option value="governmental">حكومية</option>
+                                                    <option value="private">خاصة</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </section>
@@ -335,37 +496,124 @@
                                 <h2 class="form-main-title">الحالة الصحية</h2>
                                 <section
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label>هل أنت من ذوي الإعاقة؟*</label><br>
-                                        <label for="healthy">
-                                            <input type="radio" id="healthy" name="healthy" value="1" required>
-                                            نعم
-                                        </label>
 
-                                        <label for="not_healthy">
-                                            <input type="radio" id="not_healthy" name="healthy" value="0"
-                                                required>
-                                            لا
-                                        </label>
+                                    {{-- deaf status --}}
+                                    <div class="col-12 row">
+                                        {{-- deaf --}}
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label for="deaf">{{ trans('application_form.deaf_patient') }}؟ *</label>
+
+                                            <div class="row mr-5 mt-5">
+                                                {{-- deaf --}}
+                                                <div class="col-sm-4 col">
+                                                    <label for="deaf">
+                                                        <input type="radio" id="deaf" name="deaf"
+                                                            value="1" required>
+                                                        نعم
+                                                    </label>
+                                                </div>
+
+                                                {{-- not deaf --}}
+                                                <div class="col">
+                                                    <label for="not_deaf">
+                                                        <input type="radio" id="not_deaf" name="deaf"
+                                                            value="0" required>
+                                                        لا
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="disabled">{{ 'حدد نوع الإعاقة*' }}</label>
-                                        <select id="disabled" name="disabled" required class="form-control">
-                                            <option value="" class="placeholder" disabled="" selected>أختر نوع
-                                                الإعاقة
-                                            </option>
-                                        </select>
+                                    <div class="col-12 row">
+                                        {{-- disabled --}}
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label>هل أنت من ذوي الإعاقة؟*</label>
+
+                                            <div class="row mr-5 mt-5">
+                                                {{-- disabled --}}
+                                                <div class="col-sm-4 col">
+                                                    <label for="disabled">
+                                                        <input type="radio" id="disabled" name="disabled"
+                                                            value="1" required>
+                                                        نعم
+                                                    </label>
+                                                </div>
+
+                                                {{-- not disabled --}}
+                                                <div class="col">
+                                                    <label for="not_disabled">
+                                                        <input type="radio" id="not_disabled" name="disabled"
+                                                            value="0" required>
+                                                        لا
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        {{-- disabled type --}}
+                                        <div class="form-group col-12 col-sm-6" id="disabled_type_section"
+                                            style="display: none">
+                                            <label for="disabled_type">{{ 'حدد نوع الإعاقة*' }}</label>
+                                            <select id="disabled_type" name="disabled_type" required
+                                                class="form-control">
+                                                <option value="" class="placeholder" disabled="" selected>أختر
+                                                    نوع
+                                                    الإعاقة
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-12 row">
+                                        {{-- healthy status --}}
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label for="healthy">{{ trans('application_form.health_proplem') }}؟*</label>
+
+                                            <div class="row mr-5 mt-5">
+                                                {{-- healthy --}}
+                                                <div class="col-sm-4 col">
+                                                    <label for="healthy">
+                                                        <input type="radio" id="healthy" name="healthy"
+                                                            value="1" required>
+                                                        نعم
+                                                    </label>
+                                                </div>
+
+                                                {{-- not healthy --}}
+                                                <div class="col">
+                                                    <label for="not_healthy">
+                                                        <input type="radio" id="not_healthy" name="healthy"
+                                                            value="0" required>
+                                                        لا
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        {{-- healthy problem --}}
+                                        <div class="form-group col-12 col-sm-6" id="healthy_problem_section"
+                                            style="display: none">
+                                            <label for="healthy_problem">ادخل المشكلة الصحية*</label>
+                                            <input type="text" id="healthy_problem" class="form-control"
+                                                name="healthy_problem" placeholder="ادخل المشكلة الصحية">
+
+                                        </div>
                                     </div>
                                 </section>
                             </section>
 
+                            {{-- Relatives --}}
                             <section>
                                 <h2 class="form-main-title">معلومات الأقرباء في حال الطوارئ</h2>
                                 <section
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="referral_person">{{ trans('application_form.referral_name') }}*</label>
+                                        <label
+                                            for="referral_person">{{ trans('application_form.referral_name') }}*</label>
                                         <input type="text" id="referral_person" name="referral_person"
                                             value="{{ $student ? $student->referral_person : '' }}"
                                             placeholder="أدخل الأسم الثنائي" required class="form-control">
@@ -394,7 +642,9 @@
                                     </div>
                                 </section>
                             </section>
-                            <div class="form-group col-12 col-sm-6">
+
+                            {{-- about us --}}
+                            <div class="form-group col-12">
                                 <label>{{ trans('application_form.heard_about_us') }}*</label><br>
                                 <label for="snapchat">
                                     <input type="radio" id="snapchat" name="about_us" value="snapchat">
@@ -443,21 +693,7 @@
                             </div>
 
 
-                            {{-- <label for="deaf">{{ trans('application_form.deaf_patient') }}</label>
-                            <select id="deaf" name="deaf" required class="form-control">
-                                <option value="" class="placeholder" disabled="" selected>اختر </option>
-                                <option value="1">نعم</option>
-                                <option value="0">لا</option>
-                            </select><br> --}}
-
-                            {{-- <label for="healthy">{{ trans('application_form.health_proplem') }}</label>
-                            <select id="healthy" name="healthy" required class="form-control">
-                                <option value="" class="placeholder" disabled="" selected>اختر </option>
-                                <option value="1">نعم</option>
-                                <option value="0">لا</option>
-                            </select><br>
-                            --}}
-
+                            {{-- display errors --}}
                             @if ($errors->any())
                                 <div class="alert alert-danger">
                                     <ul>
@@ -535,6 +771,9 @@
             var select = document.getElementById("mySelect1");
             var hiddenInput = document.getElementById("bundle_id");
             var hiddenLabel = document.getElementById("hiddenLabel1");
+            let education = document.getElementById("education");
+            let high_education = document.getElementsByClassName("high_education");
+            let secondary_education = document.getElementsByClassName("secondary_education");
 
             if (select && hiddenLabel && hiddenInput) {
                 var categoryId = select.value;
@@ -555,6 +794,29 @@
                         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
                     hiddenLabel.style.display = "none";
                 }
+                var selectedOption = select.options[select.selectedIndex];
+                var selectedText = selectedOption.textContent;
+                education.style.display = "block";
+
+                if (selectedText.trim() == "دبلوم متوسط") {
+                    secondary_education.forEach(function(element) {
+                        element.style.display = "block";
+                    });
+
+                    high_education.forEach(function(element) {
+                        element.style.display = "none";
+                    });
+
+                } else {
+                    secondary_education.forEach(function(element) {
+                        element.style.display = "none";
+                    });
+
+                    high_education.forEach(function(element) {
+                        element.style.display = "block";
+                    });
+
+                }
             }
         }
 
@@ -567,21 +829,19 @@
             var hiddenLabel2 = document.getElementById("hiddenLabel2");
             var cityLabel = document.getElementById("cityLabel");
             var cityInput = document.getElementById("cityInput");
-            if (select && hiddenInput && hiddenLabel && select.value !== "السعودية") {
-                hiddenInput.style.display = "block";
-                hiddenLabel.style.display = "block";
+            var otherCountry = document.getElementById("otherCountry");
+            var region = document.getElementById("region");
+            if (select && select.value !== "السعودية") {
+                region.style.display = "block";
             } else {
-                hiddenInput.style.display = "none";
-                hiddenLabel.style.display = "none";
+                region.style.display = "none";
             }
 
             if (select.value === "أخرى") {
-                hiddenInput2.style.display = "block";
-                hiddenLabel2.style.display = "block";
+                otherCountry.style.display = "block";
                 select.value = hiddenInput2.value;
             } else {
-                hiddenInput2.style.display = "none";
-                hiddenLabel2.style.display = "none";
+                otherCountry.style.display = "none";
             }
             if (select && cityLabel && cityInput) {
                 if (select.value === "السعودية") {
@@ -614,15 +874,48 @@
                         '<option value="القطيف">القطيف</option>' +
                         '<option value="الباحة">الباحة</option>' +
                         '</select>';
-                    cityLabel.textContent = "{{ trans('application_form.city') }}";
                 } else {
                     cityInput.outerHTML =
                         '<input type="text" id="cityInput" name="cityInput" placeholder="اكتب مدينه السكن الحاليه"  class="form-control">';
-                    cityLabel.textContent = "{{ trans('application_form.city') }}";
                 }
             }
         }
 
         toggleHiddenInputs();
+
+
+        // healthy section display
+        function toggleHealthyProblemSection() {
+            let healthyProblemSection = document.getElementById("healthy_problem_section");
+            let healthyStatus = document.getElementById("healthy");
+            if (healthyStatus.checked) {
+                healthyProblemSection.style.display = "block";
+            } else {
+                healthyProblemSection.style.display = "none";
+            }
+
+        }
+        let healthy = document.getElementById("healthy");
+        let notHealthy = document.getElementById("not_healthy");
+        healthy.addEventListener("change", toggleHealthyProblemSection);
+        notHealthy.addEventListener("change", toggleHealthyProblemSection);
+        toggleHealthyProblemSection();
+
+        // disabled section display
+        function toggleDisabledSection() {
+            let disabledTypeSection = document.getElementById("disabled_type_section");
+            let disabledStatus = document.getElementById("disabled");
+            if (disabledStatus.checked) {
+                disabledTypeSection.style.display = "block";
+            } else {
+                disabledTypeSection.style.display = "none";
+            }
+
+        }
+        let disabled = document.getElementById("disabled");
+        let notDisabled = document.getElementById("not_disabled");
+        disabled.addEventListener("change", toggleDisabledSection);
+        notDisabled.addEventListener("change", toggleDisabledSection);
+        toggleDisabledSection();
     </script>
 @endpush
