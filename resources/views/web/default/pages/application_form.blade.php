@@ -83,6 +83,24 @@
             /* background-color: #ED1088; */
             background-image: linear-gradient(90deg, #5E0A83 19%, #F70387 100%);
         }
+        @media(max-width:768px){
+            .hero{
+                height: 50vh;
+            }
+            footer img{
+                width: 150px !important;
+            }
+            .img-cover{
+                width: 100% !important;
+            }
+        }
+        @media(max-width:576px){
+            .form-main-title{
+                font-size:25px;
+            }
+
+
+        }
     </style>
 @endpush
 
@@ -92,8 +110,8 @@
 
     </header>
     <div class="application container-fluid">
-        <div class="col-lg-8 col-md-8">
-            <div class="col-lg-12 col-md-12">
+        <div class="col-12 col-lg-10 col-md-11 px-0">
+            <div class="col-lg-12 col-md-12 px-0">
                 <Section class="section1 main-section">
                     <div class="container_form">
                         <!--Form Title-->
