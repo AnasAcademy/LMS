@@ -151,14 +151,14 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="name_en">{{ trans('application_form.name_en') }}*</label>
                                         <input type="text" id="name_en" name="en_name"
-                                            value="{{ $student ? $student->en_name : $user->full_name }}"
+                                            value="{{ $student ? $student->en_name : '' }}"
                                             placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required class="form-control">
                                     </div>
 
                                     {{-- identifier number --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="identifier_num">رقم الهوية الوطنية أو جواز السفر*</label>
-                                        <input type="text" id="identifier_num" name="identifier_num" value=""
+                                        <input type="text" id="identifier_num" name="identifier_num" value="{{ $student ? $student->identifier_num : '' }}"
                                             placeholder="الرجاء إدخال الرقم كامًلا والمكون من 10 أرقام للهوية أو 6 أرقام للجواز"
                                             required class="form-control">
                                     </div>
@@ -230,7 +230,9 @@
                                         style="display: none">
                                         <label for="nationality">ادخل الجنسية *</label>
                                         <input type="text" class="form-control" id="other_nationality"
-                                            name="other_nationality" placeholder="اكتب الجنسية" onkeyup="setNationality()">
+                                            name="other_nationality" placeholder="اكتب الجنسية"
+                                            value="{{ $student ? $student->other_nationality : '' }}"
+                                            onkeyup="setNationality()">
                                     </div>
 
                                     {{-- country --}}
@@ -268,14 +270,17 @@
                                     <div class="form-group col-12 col-sm-6" id="anotherCountrySection" style="display: none">
                                         <label for="city" class="form-label">ادخل البلد*</label>
                                         <input type="text" id="city" name="city" class="form-control"
-                                            placeholder="ادخل دولتك" onkeyup="setCountry()">
+                                            placeholder="ادخل دولتك"
+                                            value="{{ $student ? $student->city : '' }}"
+                                            onkeyup="setCountry()">
                                     </div>
 
                                     {{-- region --}}
                                     <div class="form-group col-12 col-sm-6" id="region" style="display: none">
                                         <label for="area" class="form-label">المنطقة*</label>
                                         <input type="text" id="area" name="area" class="form-control"
-                                            placeholder="اكتب المنطقة">
+                                            placeholder="اكتب المنطقة"
+                                            value="{{ $student ? $student->area : '' }}">
                                     </div>
 
                                     {{-- city --}}
@@ -284,7 +289,9 @@
                                             <label for="town"
                                                 id="cityLabel">{{ trans('application_form.city') }}*</label>
                                             <input type="text" id="town" name="town"
-                                                placeholder="اكتب مدينه السكن الحاليه" required class="form-control">
+                                                placeholder="اكتب مدينه السكن الحاليه"
+                                                value="{{ $student ? $student->town : '' }}"
+                                                required class="form-control">
                                         </div>
                                     </div>
 
@@ -316,7 +323,7 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="mobile">{{ 'رقم الهاتف' }}</label>
                                         <input type="tel" id="mobile" name="mobile"
-                                            value="{{ $student ? $student->phone : $user->mobile }}"
+                                            value="{{ $student ? $student->mobile : $user->mobile }}"
                                             class="form-control">
                                     </div>
                                 </section>
@@ -371,6 +378,7 @@
                                         </label>
                                         <input type="text" id="anotherEducationCountry" class="form-control" name="anotherEducationCountry"
                                             placeholder="ادخل مصدر شهادة البكالوريوس"
+                                            value="{{ $student ? $student->anotherEducationCountry : '' }}"
 
                                             onkeyup="setEducationCountry()">
                                     </div>
@@ -381,7 +389,8 @@
                                             معدل المرحلة الثانوية*
                                         </label>
                                         <input type="text" id="secondary_school_gpa" class="form-control"
-                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية">
+                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية"
+                                            value="{{ $student ? $student->secondary_school_gpa : '' }}">
                                     </div>
 
                                     {{-- المنطقة التعليمية --}}
@@ -390,7 +399,8 @@
                                             المنطقة التعليمية*
                                         </label>
                                         <input type="text" id="educational_area" class="form-control"
-                                            name="educational_area" placeholder="أدخل المنطقة التعليمية">
+                                            name="educational_area" placeholder="أدخل المنطقة التعليمية"
+                                            value="{{ $student ? $student->educational_area : '' }}">
                                     </div>
 
                                     {{--  سنة الحصول على الشهادة الثانوية --}}
@@ -400,7 +410,8 @@
                                         </label>
                                         <input type="text" id="secondary_graduation_year" class="form-control"
                                             name="secondary_graduation_year"
-                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية">
+                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية"
+                                            value="{{ $student ? $student->secondary_graduation_year : '' }}">
                                     </div>
 
                                     {{-- المدرسة --}}
@@ -409,7 +420,8 @@
                                             المدرسة*
                                         </label>
                                         <input type="text" id="school" class="form-control" name="school"
-                                            placeholder="أدخل المدرسة">
+                                            placeholder="أدخل المدرسة"
+                                            value="{{ $student ? $student->school : '' }}">
                                     </div>
 
 
@@ -419,7 +431,8 @@
                                             الجامعة*
                                         </label>
                                         <input type="text" id="university" class="form-control" name="university"
-                                            placeholder="أدخل الجامعة">
+                                            placeholder="أدخل الجامعة"
+                                            value="{{ $student ? $student->university : '' }}">
                                     </div>
 
                                     {{-- الكليه --}}
@@ -428,7 +441,8 @@
                                             الكلية*
                                         </label>
                                         <input type="text" id="faculty" class="form-control" name="faculty"
-                                            placeholder="أدخل الكلية">
+                                            placeholder="أدخل الكلية"
+                                            value="{{ $student ? $student->faculty : '' }}">
                                     </div>
 
                                     {{-- التخصص  --}}
@@ -437,7 +451,8 @@
                                             التخصص*
                                         </label>
                                         <input type="text" id="education_specialization" class="form-control"
-                                            name="education_specialization" placeholder="أدخل التخصص">
+                                            name="education_specialization" placeholder="أدخل التخصص"
+                                            value="{{ $student ? $student->education_specialization : '' }}">
                                     </div>
 
                                     {{-- سنة التخرج --}}
@@ -446,7 +461,8 @@
                                             سنة التخرج*
                                         </label>
                                         <input type="text" id="graduation_year" class="form-control"
-                                            name="graduation_year" placeholder="أدخل سنة التخرج">
+                                            name="graduation_year" placeholder="أدخل سنة التخرج"
+                                            value="{{ $student ? $student->graduation_year : '' }}">
                                     </div>
 
                                     {{-- المعدل --}}
@@ -455,7 +471,8 @@
                                             المعدل*
                                         </label>
                                         <input type="text" id="gpa" class="form-control" name="gpa"
-                                            placeholder="أدخل المعدل ">
+                                            placeholder="أدخل المعدل "
+                                            value="{{ $student ? $student->gpa : '' }}">
                                     </div>
                                 </section>
                             </section>
@@ -496,7 +513,8 @@
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="job_title">الوظيفة*</label>
                                                 <input type="text" id="job_title" name="job"
-                                                    class="form-control" placeholder="أدخل الوظيفة">
+                                                    class="form-control" placeholder="أدخل الوظيفة"
+                                                    value="{{ $student ? $student->job : '' }}">
                                             </div>
 
                                             <div class="form-group col-12 col-sm-6">
@@ -622,7 +640,8 @@
                                             style="display: none">
                                             <label for="healthy_problem">ادخل المشكلة الصحية*</label>
                                             <input type="text" id="healthy_problem" class="form-control"
-                                                name="healthy_problem" placeholder="ادخل المشكلة الصحية">
+                                                name="healthy_problem" placeholder="ادخل المشكلة الصحية"
+                                                value="{{ $student ? $student->healthy_problem : '' }}">
 
                                         </div>
                                     </div>
