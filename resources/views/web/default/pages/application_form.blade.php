@@ -83,6 +83,28 @@
             /* background-color: #ED1088; */
             background-image: linear-gradient(90deg, #5E0A83 19%, #F70387 100%);
         }
+
+        @media(max-width:768px) {
+            .hero {
+                height: 50vh;
+            }
+
+            footer img {
+                width: 150px !important;
+            }
+
+            .img-cover {
+                width: 100% !important;
+            }
+        }
+
+        @media(max-width:576px) {
+            .form-main-title {
+                font-size: 25px;
+            }
+
+
+        }
     </style>
 @endpush
 
@@ -92,8 +114,8 @@
 
     </header>
     <div class="application container-fluid">
-        <div class="col-lg-8 col-md-8">
-            <div class="col-lg-12 col-md-12">
+        <div class="col-12 col-lg-10 col-md-11 px-0">
+            <div class="col-lg-12 col-md-12 px-0">
                 <Section class="section1 main-section">
                     <div class="container_form">
                         <!--Form Title-->
@@ -117,7 +139,9 @@
                                     <option disabled selected hidden value="">اختر الدرجة العلمية التي تريد دراستها في
                                         اكاديمية انس للفنون </option>
                                     @foreach ($category as $item)
-                                        <option value="{{ $item->id }}">{{ $item->title }} </option>
+                                        <option value="{{ $item->id }}"
+                                            {{ old('category_id', $student->category_id ?? null) == $item->id ? 'selected' : '' }}>
+                                            {{ $item->title }} </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -128,7 +152,8 @@
                                     {{ trans('application_form.specialization') }}*
                                 </label>
                                 <input type="text" id="bundle_id" name="bundle_id" required
-                                    class="hidden-element form-control">
+                                    class="hidden-element form-control"
+                                    value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
                             </div>
 
                             <h1 class="pr-3 mt-50 mb-25">بيانات المتدرب الأساسية</h1>
@@ -142,23 +167,25 @@
                                     {{-- arabic name --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="name">{{ trans('application_form.name') }}*</label>
-                                        <input type="text" id="name" name="ar_name"
-                                            value="{{ $student ? $student->ar_name : '' }}"
+                                        <input type="text" id="name" name="ar_name" {{-- value="{{ $student ? $student->ar_name : '' }}" --}}
+                                            value="{{ old('ar_name', $student ? $student->ar_name : '') }}"
                                             placeholder="ادخل الإسم باللغه العربية فقط" required class="form-control">
                                     </div>
 
                                     {{-- english name --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="name_en">{{ trans('application_form.name_en') }}*</label>
-                                        <input type="text" id="name_en" name="en_name"
-                                            value="{{ $student ? $student->en_name : $user->full_name }}"
+                                        <input type="text" id="name_en" name="en_name" {{-- value="{{ $student ? $student->en_name : '' }}" --}}
+                                            value="{{ old('en_name', $student ? $student->en_name : '') }}"
                                             placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required class="form-control">
                                     </div>
 
                                     {{-- identifier number --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="identifier_num">رقم الهوية الوطنية أو جواز السفر*</label>
-                                        <input type="text" id="identifier_num" name="identifier_num" value=""
+                                        <input type="text" id="identifier_num" name="identifier_num"
+                                            {{-- value="{{ $student ? $student->identifier_num : '' }}" --}}
+                                            value="{{ old('identifier_num', $student ? $student->identifier_num : '') }}"
                                             placeholder="الرجاء إدخال الرقم كامًلا والمكون من 10 أرقام للهوية أو 6 أرقام للجواز"
                                             required class="form-control">
                                     </div>
@@ -166,36 +193,47 @@
                                     {{-- birthday --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="birthday">{{ trans('application_form.birthday') }}*</label>
-                                        <input type="date" id="birthday" name="birthdate"
-                                            value="{{ $student ? $student->birthdate : '' }}" required
+                                        <input type="date" id="birthday" name="birthdate" {{-- value="{{ $student ? $student->birthdate : '' }}" --}}
+                                            value="{{ old('birthdate', $student ? $student->birthdate : '') }}" required
                                             class="form-control">
                                     </div>
 
                                     {{-- nationality --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="nationality">{{ trans('application_form.nationality') }}*</label>
-                                        <select id="nationality" name="nationality" required class="form-control" onchange="toggleNationality()">
+                                        @php
+                                            $nationalities = [
+                                                ' سعودي/ة',
+                                                'اماراتي/ة',
+                                                'اردني/ة',
+                                                'بحريني/ة',
+                                                'جزائري/ة',
+                                                'عراقي/ة',
+                                                'مغربي/ة',
+                                                'يمني/ة',
+                                                'سوداني/ة',
+                                                'صومالي/ة',
+                                                'كويتي/ة',
+                                                'سوري/ة',
+                                                'لبناني/ة',
+                                                'مصري/ة',
+                                                'تونسي/ة',
+                                                'فلسطيني/ة',
+                                                'جيبوتي/ة',
+                                                'عماني/ة',
+                                                'موريتاني/ة',
+                                                'قطري/ة',
+                                            ];
+                                        @endphp
+                                        <select id="nationality" name="nationality" required class="form-control"
+                                            onchange="toggleNationality()">
                                             <option value="" class="placeholder" disabled="" selected="selected">
                                                 اختر جنسيتك</option>
-                                            <option value="سعودي/ة" selected>سعودي/ة</option>
-                                            <option value="اماراتي/ة">اماراتي/ة</option>
-                                            <option value="اردني/ة">اردني/ة</option>
-                                            <option value="بحريني/ة">بحريني/ة</option>
-                                            <option value="جزائري/ة">جزائري/ة</option>
-                                            <option value="عراقي/ة">عراقي/ة</option>
-                                            <option value="مغربي/ة">مغربي/ة</option>
-                                            <option value="يمني/ة">يمني/ة</option>
-                                            <option value="سوداني/ة">سوداني/ة</option>
-                                            <option value="صومالي/ة">صومالي/ة</option>
-                                            <option value="كويتي/ة">كويتي/ة</option>
-                                            <option value="سوري/ة">سوري/ة</option>
-                                            <option value="لبناني/ة">لبناني/ة</option>
-                                            <option value="مصري/ة">مصري/ة</option>
-                                            <option value="تونسي/ة">تونسي/ة</option>
-                                            <option value="فلسطيني/ة">فلسطيني/ة</option>
-                                            <option value="عماني/ة">عماني/ة</option>
-                                            <option value="قطري/ة">قطري/ة</option>
-                                            <option value="موريتاني/ة">موريتاني/ة</option>
+                                            @foreach ($nationalities as $nationality)
+                                                <option value="{{ $nationality }}"
+                                                    {{ old('nationality', $student->nationality ?? null) == $nationality ? 'selected' : '' }}>
+                                                    {{ $nationality }}</option>
+                                            @endforeach
                                             <option value="أخرى" id="anotherNationality">أخرى</option>
                                         </select>
                                     </div>
@@ -209,7 +247,8 @@
                                             <div class="col-sm-4 col">
                                                 <label for="female">
                                                     <input type="radio" id="female" name="gender" value="female"
-                                                        required>
+                                                        required
+                                                        {{ old('gender', $student->gender ?? null) == 'female' ? 'checked' : '' }}>
                                                     انثي
                                                 </label>
                                             </div>
@@ -218,7 +257,8 @@
                                             <div class="col">
                                                 <label for="male">
                                                     <input type="radio" id="male" name="gender" value="male"
-                                                        required>
+                                                        required
+                                                        {{ old('gender', $student->gender ?? null) == 'male' ? 'checked' : '' }}>
                                                     ذكر
                                                 </label>
                                             </div>
@@ -230,52 +270,68 @@
                                         style="display: none">
                                         <label for="nationality">ادخل الجنسية *</label>
                                         <input type="text" class="form-control" id="other_nationality"
-                                            name="other_nationality" placeholder="اكتب الجنسية" onkeyup="setNationality()">
+                                            name="other_nationality" placeholder="اكتب الجنسية" {{-- value="{{ $student ? $student->other_nationality : '' }}" --}}
+                                            value="{{ old('other_nationality', $student ? $student->other_nationality : '') }}"
+                                            onkeyup="setNationality()">
                                     </div>
 
                                     {{-- country --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="country">{{ trans('application_form.country') }}*</label>
+                                        @php
+                                            $countries = [
+                                                'السعودية',
+                                                'الامارات العربية المتحدة',
+                                                'الاردن',
+                                                'البحرين',
+                                                'الجزائر',
+                                                'العراق',
+                                                'المغرب',
+                                                'اليمن',
+                                                'السودان',
+                                                'الصومال',
+                                                'الكويت',
+                                                'جنوب السودان',
+                                                'سوريا',
+                                                'لبنان',
+                                                'مصر',
+                                                'تونس',
+                                                'فلسطين',
+                                                'جزرالقمر',
+                                                'جيبوتي',
+                                                'عمان',
+                                                'موريتانيا',
+                                            ];
+                                        @endphp
                                         <select id="mySelect" name="country" required class="form-control"
                                             onchange="toggleHiddenInputs()">
                                             <option value="" class="placeholder" disabled="">اختر دولتك</option>
-                                            <option value="السعودية" selected="selected">السعودية</option>
-                                            <option value="الامارات العربية المتحدة">الامارات العربية المتحدة</option>
-                                            <option value="الاردن">الاردن</option>
-                                            <option value="البحرين">البحرين</option>
-                                            <option value="الجزائر">الجزائر</option>
-                                            <option value="العراق">العراق</option>
-                                            <option value="المغرب">المغرب</option>
-                                            <option value="اليمن">اليمن</option>
-                                            <option value="السودان">السودان</option>
-                                            <option value="الصومال">الصومال</option>
-                                            <option value="الكويت">الكويت</option>
-                                            <option value="جنوب السودان">جنوب السودان</option>
-                                            <option value="سوريا">سوريا</option>
-                                            <option value="لبنان">لبنان</option>
-                                            <option value="مصر">مصر</option>
-                                            <option value="تونس">تونس</option>
-                                            <option value="فلسطين">فلسطين</option>
-                                            <option value="جزرالقمر">جزرالقمر</option>
-                                            <option value="جيبوتي">جيبوتي</option>
-                                            <option value="عمان">عمان</option>
-                                            <option value="موريتانيا">موريتانيا</option>
+                                            @foreach ($countries as $country)
+                                                <option value="{{ $country }}"
+                                                    {{ old('country', $student->country ?? null) == $country ? 'selected' : '' }}>
+                                                    {{ $country }}</option>
+                                            @endforeach
                                             <option value="أخرى" id="anotherCountry">أخرى</option>
+
                                         </select>
                                     </div>
 
                                     {{-- other country --}}
-                                    <div class="form-group col-12 col-sm-6" id="anotherCountrySection" style="display: none">
+                                    <div class="form-group col-12 col-sm-6" id="anotherCountrySection"
+                                        style="display: none">
                                         <label for="city" class="form-label">ادخل البلد*</label>
                                         <input type="text" id="city" name="city" class="form-control"
-                                            placeholder="ادخل دولتك" onkeyup="setCountry()">
+                                            placeholder="ادخل دولتك"
+                                            value="{{ old('city', $student ? $student->city : '') }}"
+                                            onkeyup="setCountry()">
                                     </div>
 
                                     {{-- region --}}
                                     <div class="form-group col-12 col-sm-6" id="region" style="display: none">
                                         <label for="area" class="form-label">المنطقة*</label>
                                         <input type="text" id="area" name="area" class="form-control"
-                                            placeholder="اكتب المنطقة">
+                                            placeholder="اكتب المنطقة"
+                                            value="{{ old('area', $student ? $student->area : '') }}">
                                     </div>
 
                                     {{-- city --}}
@@ -284,7 +340,9 @@
                                             <label for="town"
                                                 id="cityLabel">{{ trans('application_form.city') }}*</label>
                                             <input type="text" id="town" name="town"
-                                                placeholder="اكتب مدينه السكن الحاليه" required class="form-control">
+                                                placeholder="اكتب مدينه السكن الحاليه"
+                                                value="{{ old('town', $student ? $student->town : '') }}" required
+                                                class="form-control">
                                         </div>
                                     </div>
 
@@ -300,7 +358,7 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="phone">{{ trans('application_form.phone') }}*</label>
                                         <input type="tel" id="phone" name="phone"
-                                            value="{{ $student ? $student->phone : $user->mobile }}"
+                                            value="{{ old('phone', $student ? $student->phone : $user->mobile) }}"
                                             class="form-control">
                                     </div>
 
@@ -308,7 +366,7 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="email">{{ trans('application_form.email') }}*</label>
                                         <input type="email" id="email" name="email"
-                                            value="{{ $student ? $student->email : $user->email }}"
+                                            value="{{ old('email', $student ? $student->email : $user->email) }}"
                                             placeholder="تسجيل البريد الإلكتروني" required class="form-control">
                                     </div>
 
@@ -316,7 +374,7 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="mobile">{{ 'رقم الهاتف' }}</label>
                                         <input type="tel" id="mobile" name="mobile"
-                                            value="{{ $student ? $student->phone : $user->mobile }}"
+                                            value="{{ old('mobile', $student ? $student->mobile : $user->mobile) }}"
                                             class="form-control">
                                     </div>
                                 </section>
@@ -336,42 +394,31 @@
                                             البكالوريوس*</label>
 
                                         <select id="educational_qualification_country"
-                                            name="educational_qualification_country" required class="form-control" onchange="educationCountryToggle()">
+                                            name="educational_qualification_country" required class="form-control"
+                                            onchange="educationCountryToggle()">
                                             <option value="" class="placeholder" disabled="">اختر دولتك</option>
-                                            <option value="السعودية" selected="selected">السعودية</option>
-                                            <option value="الامارات العربية المتحدة">الامارات العربية المتحدة</option>
-                                            <option value="الاردن">الاردن</option>
-                                            <option value="البحرين">البحرين</option>
-                                            <option value="الجزائر">الجزائر</option>
-                                            <option value="العراق">العراق</option>
-                                            <option value="المغرب">المغرب</option>
-                                            <option value="اليمن">اليمن</option>
-                                            <option value="السودان">السودان</option>
-                                            <option value="الصومال">الصومال</option>
-                                            <option value="الكويت">الكويت</option>
-                                            <option value="جنوب السودان">جنوب السودان</option>
-                                            <option value="سوريا">سوريا</option>
-                                            <option value="لبنان">لبنان</option>
-                                            <option value="مصر">مصر</option>
-                                            <option value="تونس">تونس</option>
-                                            <option value="فلسطين">فلسطين</option>
-                                            <option value="جزرالقمر">جزرالقمر</option>
-                                            <option value="جيبوتي">جيبوتي</option>
-                                            <option value="عمان">عمان</option>
-                                            <option value="موريتانيا">موريتانيا</option>
-                                            <option value="أخرى" id="anotherEducationCountryOption">أخرى</option>
+                                            @foreach ($countries as $country)
+                                                <option value="{{ $country }}"
+                                                    {{ old('educational_qualification_country', $student->educational_qualification_country ?? null) == $country ? 'selected' : '' }}>
+                                                    {{ $country }}</option>
+                                            @endforeach
+
+                                            <option value="أخرى"
+                                                {{ $student && !in_array($student->educational_qualification_country, $countries) ? 'selected' : '' }}
+                                                id="anotherEducationCountryOption">أخرى</option>
                                         </select>
                                     </div>
 
                                     {{-- مصدر شهادة البكالوريوس --}}
-                                    <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection" style="display: none">
+                                    <div class="form-group col-12 col-sm-6 high_education"
+                                        id="anotherEducationCountrySection" style="display: none">
 
                                         <label for="university" class="form-label">
                                             ادخل مصدر شهادة البكالوريوس*
                                         </label>
-                                        <input type="text" id="anotherEducationCountry" class="form-control" name="anotherEducationCountry"
-                                            placeholder="ادخل مصدر شهادة البكالوريوس"
-
+                                        <input type="text" id="anotherEducationCountry" class="form-control"
+                                            name="anotherEducationCountry" placeholder="ادخل مصدر شهادة البكالوريوس"
+                                            value="{{ old('anotherEducationCountry', $student && !in_array($student->educational_qualification_country, $countries) ? $student->educational_qualification_country : '') }}"
                                             onkeyup="setEducationCountry()">
                                     </div>
 
@@ -381,7 +428,8 @@
                                             معدل المرحلة الثانوية*
                                         </label>
                                         <input type="text" id="secondary_school_gpa" class="form-control"
-                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية">
+                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية"
+                                            value="{{ old('secondary_school_gpa', $student ? $student->secondary_school_gpa : '') }}">
                                     </div>
 
                                     {{-- المنطقة التعليمية --}}
@@ -390,7 +438,8 @@
                                             المنطقة التعليمية*
                                         </label>
                                         <input type="text" id="educational_area" class="form-control"
-                                            name="educational_area" placeholder="أدخل المنطقة التعليمية">
+                                            name="educational_area" placeholder="أدخل المنطقة التعليمية"
+                                            value="{{ old('educational_area', $student ? $student->educational_area : '') }}">
                                     </div>
 
                                     {{--  سنة الحصول على الشهادة الثانوية --}}
@@ -400,7 +449,8 @@
                                         </label>
                                         <input type="text" id="secondary_graduation_year" class="form-control"
                                             name="secondary_graduation_year"
-                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية">
+                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية"
+                                            value="{{ old('secondary_graduation_year', $student ? $student->secondary_graduation_year : '') }}">
                                     </div>
 
                                     {{-- المدرسة --}}
@@ -409,7 +459,8 @@
                                             المدرسة*
                                         </label>
                                         <input type="text" id="school" class="form-control" name="school"
-                                            placeholder="أدخل المدرسة">
+                                            placeholder="أدخل المدرسة"
+                                            value="{{ old('school', $student ? $student->school : '') }}">
                                     </div>
 
 
@@ -419,7 +470,8 @@
                                             الجامعة*
                                         </label>
                                         <input type="text" id="university" class="form-control" name="university"
-                                            placeholder="أدخل الجامعة">
+                                            placeholder="أدخل الجامعة"
+                                            value="{{ old('university', $student ? $student->university : '') }}">
                                     </div>
 
                                     {{-- الكليه --}}
@@ -428,7 +480,8 @@
                                             الكلية*
                                         </label>
                                         <input type="text" id="faculty" class="form-control" name="faculty"
-                                            placeholder="أدخل الكلية">
+                                            placeholder="أدخل الكلية"
+                                            value="{{ old('faculty', $student ? $student->faculty : '') }}">
                                     </div>
 
                                     {{-- التخصص  --}}
@@ -437,7 +490,8 @@
                                             التخصص*
                                         </label>
                                         <input type="text" id="education_specialization" class="form-control"
-                                            name="education_specialization" placeholder="أدخل التخصص">
+                                            name="education_specialization" placeholder="أدخل التخصص"
+                                            value="{{ old('education_specialization', $student ? $student->education_specialization : '') }}">
                                     </div>
 
                                     {{-- سنة التخرج --}}
@@ -446,7 +500,8 @@
                                             سنة التخرج*
                                         </label>
                                         <input type="text" id="graduation_year" class="form-control"
-                                            name="graduation_year" placeholder="أدخل سنة التخرج">
+                                            name="graduation_year" placeholder="أدخل سنة التخرج"
+                                            value="{{ old('graduation_year', $student ? $student->graduation_year : '') }}">
                                     </div>
 
                                     {{-- المعدل --}}
@@ -455,7 +510,8 @@
                                             المعدل*
                                         </label>
                                         <input type="text" id="gpa" class="form-control" name="gpa"
-                                            placeholder="أدخل المعدل ">
+                                            placeholder="أدخل المعدل "
+                                            value="{{ old('gpa', $student ? $student->gpa : '') }}">
                                     </div>
                                 </section>
                             </section>
@@ -474,7 +530,8 @@
                                             <div class="col-sm-4 col">
                                                 <label for="working">
                                                     <input type="radio" id="working" name="status" value="working"
-                                                        required>
+                                                        required
+                                                        {{ old('status', $student->job ?? null) != null ? 'checked' : '' }}>
                                                     {{ trans('application_form.working') }}
                                                 </label>
                                             </div>
@@ -482,8 +539,8 @@
                                             {{-- not working status --}}
                                             <div class="col">
                                                 <label for="not_working">
-                                                    <input type="radio" id="not_working" name="status"
-                                                        value="not_working" required>
+                                                    <input type="radio" id="not_working" name="status" required
+                                                        {{ old('status', $student->job ?? null) == null ? 'checked' : '' }}>
                                                     {{ trans('application_form.not_working') }}
                                                 </label>
                                             </div>
@@ -495,16 +552,21 @@
                                         <div class="row">
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="job_title">الوظيفة*</label>
-                                                <input type="text" id="job_title" name="job"
-                                                    class="form-control" placeholder="أدخل الوظيفة">
+                                                <input type="text" id="job_title" name="job" class="form-control"
+                                                    placeholder="أدخل الوظيفة"
+                                                    value="{{ old('job', $student ? $student->job : '') }}">
                                             </div>
 
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="employment_type">جهة العمل*</label>
                                                 <select id="employment_type" name="job_type" class="form-control">
                                                     <option value="" selected disabled>اختر جهة العمل</option>
-                                                    <option value="governmental">حكومية</option>
-                                                    <option value="private">خاصة</option>
+                                                    <option value="governmental"
+                                                        {{ old('job_type', $student->job_type ?? null) == 'governmental' ? 'selected' : '' }}>
+                                                        حكومية</option>
+                                                    <option value="private"
+                                                        {{ old('job_type', $student->job_type ?? null) == 'private' ? 'selected' : '' }}>
+                                                        خاصة</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -529,7 +591,8 @@
                                                 <div class="col-sm-4 col">
                                                     <label for="deaf">
                                                         <input type="radio" id="deaf" name="deaf"
-                                                            value="1" required>
+                                                            value="1" required
+                                                            {{ old('deaf', $student->deaf ?? null) == 1 ? 'checked' : '' }}>
                                                         نعم
                                                     </label>
                                                 </div>
@@ -538,7 +601,8 @@
                                                 <div class="col">
                                                     <label for="not_deaf">
                                                         <input type="radio" id="not_deaf" name="deaf"
-                                                            value="0" required>
+                                                            value="0" required
+                                                            {{ old('deaf', $student->deaf ?? null) == 0 ? 'checked' : '' }}>
                                                         لا
                                                     </label>
                                                 </div>
@@ -546,7 +610,9 @@
                                         </div>
                                     </div>
 
+                                    {{-- disabled --}}
                                     <div class="col-12 row">
+
                                         {{-- disabled --}}
                                         <div class="form-group col-12 col-sm-6">
                                             <label>هل أنت من ذوي الإعاقة؟*</label>
@@ -556,7 +622,8 @@
                                                 <div class="col-sm-4 col">
                                                     <label for="disabled">
                                                         <input type="radio" id="disabled" name="disabled"
-                                                            value="1" required>
+                                                            value="1" required
+                                                            {{ old('disabled', $student->disabled_type ?? null) != null ? 'checked' : '' }}>
                                                         نعم
                                                     </label>
                                                 </div>
@@ -565,7 +632,8 @@
                                                 <div class="col">
                                                     <label for="not_disabled">
                                                         <input type="radio" id="not_disabled" name="disabled"
-                                                            value="0" required>
+                                                            value="0" required
+                                                            {{ old('disabled', $student->disabled_type ?? null) == null ? 'checked' : '' }}>
                                                         لا
                                                     </label>
                                                 </div>
@@ -577,19 +645,23 @@
                                         <div class="form-group col-12 col-sm-6" id="disabled_type_section"
                                             style="display: none">
                                             <label for="disabled_type">{{ 'حدد نوع الإعاقة*' }}</label>
-                                            <select id="disabled_type" name="disabled_type"
-                                                class="form-control">
+                                            <select id="disabled_type" name="disabled_type" class="form-control">
                                                 <option value="" class="placeholder" disabled="" selected>أختر
                                                     نوع
                                                     الإعاقة
                                                 </option>
-                                                <option value="option1">اوبشن 1 </option>
-                                                <option value="option2">اوبشن 2</option>
+                                                <option value="option1"
+                                                    {{ old('disabled_type', $student->disabled_type ?? null) == 'option1' ? 'selected' : '' }}>
+                                                    اوبشن 1 </option>
+                                                <option value="option2"
+                                                    {{ old('disabled_type', $student->disabled_type ?? null) == 'option2' ? 'selected' : '' }}>
+                                                    اوبشن 2</option>
                                             </select>
                                         </div>
 
                                     </div>
 
+                                    {{-- healthy problem --}}
                                     <div class="col-12 row">
                                         {{-- healthy status --}}
                                         <div class="form-group col-12 col-sm-6">
@@ -600,7 +672,8 @@
                                                 <div class="col-sm-4 col">
                                                     <label for="healthy">
                                                         <input type="radio" id="healthy" name="healthy"
-                                                            value="1" required>
+                                                            value="1" required
+                                                            {{ old('healthy', $student->healthy_problem ?? null) != null ? 'checked' : '' }}>
                                                         نعم
                                                     </label>
                                                 </div>
@@ -609,7 +682,8 @@
                                                 <div class="col">
                                                     <label for="not_healthy">
                                                         <input type="radio" id="not_healthy" name="healthy"
-                                                            value="0" required>
+                                                            value="0" required
+                                                            {{ old('healthy', $student->healthy_problem ?? null) == null ? 'checked' : '' }}>
                                                         لا
                                                     </label>
                                                 </div>
@@ -622,7 +696,8 @@
                                             style="display: none">
                                             <label for="healthy_problem">ادخل المشكلة الصحية*</label>
                                             <input type="text" id="healthy_problem" class="form-control"
-                                                name="healthy_problem" placeholder="ادخل المشكلة الصحية">
+                                                name="healthy_problem" placeholder="ادخل المشكلة الصحية"
+                                                value="{{ old('healthy_problem', $student ? $student->healthy_problem : '') }}">
 
                                         </div>
                                     </div>
@@ -638,21 +713,21 @@
                                         <label
                                             for="referral_person">{{ trans('application_form.referral_name') }}*</label>
                                         <input type="text" id="referral_person" name="referral_person"
-                                            value="{{ $student ? $student->referral_person : '' }}"
+                                            value="{{ old('referral_person', $student ? $student->referral_person : '') }}"
                                             placeholder="أدخل الأسم الثنائي" required class="form-control">
                                     </div>
 
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="relation">{{ trans('application_form.referral_state') }}*</label>
                                         <input type="text" id="relation" name="relation"
-                                            value="{{ $student ? $student->relation : '' }}"
+                                            value="{{ old('relation', $student ? $student->relation : '') }}"
                                             placeholder="أدخل صلة القرابة" required class="form-control">
                                     </div>
 
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="referral_email">{{ trans('application_form.email') }}*</label>
                                         <input type="email" id="referral_email" name="referral_email"
-                                            value="{{ $student ? $student->referral_email : '' }}"
+                                            value="{{ old('referral_email', $student ? $student->referral_email : '') }}"
                                             placeholder="أدخل بريد الكتروني" required class="form-control">
 
                                     </div>
@@ -660,7 +735,8 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <label>{{ trans('application_form.phone') }}*</label>
                                         <input type="tel" id="referral_phone" placeholder="أدخل جوال"
-                                            name="referral_phone" value="{{ $student ? $student->referral_phone : '' }}"
+                                            name="referral_phone"
+                                            value="{{ old('referral_phone', $student ? $student->referral_phone : '') }}"
                                             class="form-control">
                                     </div>
                                 </section>
@@ -670,27 +746,27 @@
                             <div class="form-group col-12">
                                 <label>{{ trans('application_form.heard_about_us') }}*</label><br>
                                 <label for="snapchat">
-                                    <input type="radio" id="snapchat" name="about_us" value="snapchat">
+                                    <input type="radio" id="snapchat" name="about_us" value="snapchat" {{ old('about_us', $student->about_us ?? null) == 'snapchat' ? 'checked' : '' }}>
                                     {{ trans('application_form.snapchat') }}
                                 </label><br>
                                 <label for="twitter">
-                                    <input type="radio" id="twitter" name="about_us" value="twitter">
+                                    <input type="radio" id="twitter" name="about_us" value="twitter" {{ old('about_us', $student->about_us ?? null) == 'twitter' ? 'checked' : '' }}>
                                     {{ trans('application_form.twitter') }}
                                 </label><br>
                                 <label for="friend">
-                                    <input type="radio" id="friend" name="about_us" value="friend">
+                                    <input type="radio" id="friend" name="about_us" value="friend" {{ old('about_us', $student->about_us ?? null) == 'friend' ? 'checked' : '' }}>
                                     {{ trans('application_form.friend') }}
                                 </label><br>
                                 <label for="instagram">
-                                    <input type="radio" id="instagram" name="about_us" value="instagram">
+                                    <input type="radio" id="instagram" name="about_us" value="instagram" {{ old('about_us', $student->about_us ?? null) =='instagram' ? 'checked' : '' }}>
                                     {{ trans('application_form.instagram') }}
                                 </label><br>
                                 <label for="facebook">
-                                    <input type="radio" id="facebook" name="about_us" value="facebook">
+                                    <input type="radio" id="facebook" name="about_us" value="facebook" {{ old('about_us', $student->about_us ?? null) =='facebook' ? 'checked' : '' }}>
                                     {{ trans('application_form.facebook') }}
                                 </label><br>
                                 <label for="other">
-                                    <input type="radio" id="other" name="about_us" value="other">
+                                    <input type="radio" id="other" name="about_us" value="other" {{ old('about_us', $student->about_us ?? null) == "other" ? 'checked' : '' }}>
                                     {{ trans('application_form.other') }}
                                 </label><br>
                                 <label id="otherLabel"style="display:none">أدخل المصدر</label>
@@ -699,7 +775,7 @@
 
 
                                 <label>
-                                    <input type="checkbox" id="terms" name="terms" required>
+                                    <input type="checkbox" id="terms" name="terms" required >
                                     <!--{{ trans('application_form.agree_terms_conditions') }}-->
                                     اقر أنا المسجل بياناتي اعلاه بموافقتي على لائحة الحقوق والوجبات واحكام وشروط
                                     القبول
@@ -810,7 +886,9 @@
 
                 if (categoryBundles) {
                     var options = categoryBundles.map(function(bundle) {
-                        return '<option value="' + bundle.id + '">' + bundle.title + '</option>';
+                        var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
+                            'selected' : '';
+                        return `<option value="${bundle.id}" ${isSelected}>${bundle.title}</option>`;
                     }).join('');
 
                     hiddenInput.outerHTML = '<select id="bundle_id" name="bundle_id"  class="form-control">' +
@@ -848,6 +926,7 @@
                 }
             }
         }
+        toggleHiddenInput();
     </script>
 
     {{-- city and country toggle --}}
@@ -882,7 +961,7 @@
                 if (select.value === "السعودية") {
                     town.outerHTML = '<select id="town" name="town"  class="form-control">' +
                         '<option value="الرياض" selected="selected">الرياض</option>' +
-                        '<option value="جدة">جدة</option>' +
+                        '<option value="جدة>"جدة</option>' +
                         '<option value="مكة المكرمة">مكة المكرمة</option>' +
                         '<option value="المدينة المنورة">المدينة المنورة</option>' +
                         '<option value="الدمام">الدمام</option>' +
@@ -910,17 +989,19 @@
                         '<option value="الباحة">الباحة</option>' +
                         '</select>';
                 } else {
+
                     town.outerHTML =
-                        '<input type="text" id="town" name="town" placeholder="اكتب مدينه السكن الحاليه"  class="form-control">';
+                        `<input type="text" id="town" name="town" placeholder="اكتب مدينه السكن الحاليه" class="form-control" value="{{ old('town', $student ? $student->town : '') }}" >`;
                 }
             }
         }
-        function setCountry(){
+
+        function setCountry() {
             let anotherCountrySection = document.getElementById("anotherCountrySection");
             let anotherCountryOption = document.getElementById("anotherCountry");
             let another_country = document.getElementById("city");
 
-            if(anotherCountrySection.style.display !="none"){
+            if (anotherCountrySection.style.display != "none") {
                 // nationality.value = other_nationality.value;
                 anotherCountryOption.value = another_country.value;
 
@@ -929,7 +1010,7 @@
         toggleHiddenInputs();
     </script>
 
-    {{--  healthy section toggle--}}
+    {{--  healthy section toggle --}}
     <script>
         // healthy section display
         function toggleHealthyProblemSection() {
@@ -972,65 +1053,65 @@
 
     {{-- nationality toggle --}}
     <script>
-        function toggleNationality(){
+        function toggleNationality() {
             let other_nationality_section = document.getElementById("other_nationality_section");
             let nationality = document.getElementById("nationality");
             let other_nationality = document.getElementById("other_nationality");
             let anotherNationalityOption = document.getElementById("anotherNationality");
-            if(nationality && nationality.value == "أخرى"){
+            if (nationality && nationality.value == "أخرى") {
                 other_nationality_section.style.display = "block";
 
                 // nationality.value = other_nationality.value;
                 anotherNationalityOption.value = other_nationality.value;
-            }
-            else{
+            } else {
                 other_nationality_section.style.display = "none";
                 anotherNationalityOption.value = "أخرى";
             }
         }
 
-        function setNationality(){
+        function setNationality() {
             let other_nationality_section = document.getElementById("other_nationality_section");
             let nationality = document.getElementById("nationality");
             let other_nationality = document.getElementById("other_nationality");
             let anotherNationalityOption = document.getElementById("anotherNationality");
-            if(other_nationality_section.style.display !="none"){
+            if (other_nationality_section.style.display != "none") {
                 // nationality.value = other_nationality.value;
                 anotherNationalityOption.value = other_nationality.value;
 
             }
         }
-
     </script>
 
     {{-- education section --}}
     <script>
-        function educationCountryToggle(){
+        function educationCountryToggle() {
             let anotherEducationCountrySection = document.getElementById("anotherEducationCountrySection");
             let anotherEducationCountry = document.getElementById("anotherEducationCountry");
             let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
             let educationalQualificationCountry = document.getElementById("educational_qualification_country");
 
-            if(educationalQualificationCountry && educationalQualificationCountry.value == "أخرى"){
+            if (educationalQualificationCountry && educationalQualificationCountry.value == "أخرى") {
                 anotherEducationCountrySection.style.display = "block";
                 anotherEducationCountryOption.value = anotherEducationCountry.value;
 
-            }else{
+            } else {
                 anotherEducationCountrySection.style.display = "none";
                 anotherEducationCountryOption.value = "أخرى";
             }
 
         }
-        function setEducationCountry(){
+
+        function setEducationCountry() {
             let anotherEducationCountrySection = document.getElementById("anotherEducationCountrySection");
             let anotherEducationCountry = document.getElementById("anotherEducationCountry");
             let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
             let educationalQualificationCountry = document.getElementById("educational_qualification_country");
 
-            if(anotherEducationCountrySection.style.display !="none"){
+            if (anotherEducationCountrySection.style.display != "none") {
                 anotherEducationCountryOption.value = anotherEducationCountry.value;
             }
 
         }
+        educationCountryToggle();
     </script>
 @endpush
