@@ -330,22 +330,22 @@ class PaymentController extends Controller
                             break;
                         }
                     } while (true);
-                    
+
                                 $userData = $request->cookie('user_data');
                                 if ($userData) {
                                 $userData = json_decode($userData, true);
                                 $studentData = collect($userData)->except(['category_id', 'bundle_id'])->toArray();
                                 }
                                 $student = Student::where('user_id', auth()->user()->id)->first();
-                    
+
                                 if (!$student) {
                                     $student = Student::create($studentData);
                                     $user = User::where('id', $user->id)->update([
                                         'user_code' => $nextCode,
                                     ]);
-                                $lastCode->update(['lst_sd_code' => $nextCode]);
+                                    $lastCode->update(['lst_sd_code' => $nextCode]);
                                 }
-                                
+
                                 $bundleId = $userData['bundle_id'];
 
                                 // Check if the student already has the bundle ID attached
@@ -366,8 +366,8 @@ class PaymentController extends Controller
                 if($sale && $sale->order->user_id == $user->id  && $sale->order->status == 'paid' ){
                     $user = User::where('id', $user->id)->first();
                     $user->update([
-                        'role_id' => 1, 
-                        'role_name' => 'user', 
+                        'role_id' => 1,
+                        'role_name' => 'user',
                     ]);
                 }
             }

@@ -281,9 +281,9 @@
                                     {{-- city --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <div id="cityContainer">
-                                            <label for="cityInput"
+                                            <label for="town"
                                                 id="cityLabel">{{ trans('application_form.city') }}*</label>
-                                            <input type="text" id="cityInput" name="cityInput"
+                                            <input type="text" id="town" name="town"
                                                 placeholder="اكتب مدينه السكن الحاليه" required class="form-control">
                                         </div>
                                     </div>
@@ -495,13 +495,13 @@
                                         <div class="row">
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="job_title">الوظيفة*</label>
-                                                <input type="text" id="job_title" name="job_title"
+                                                <input type="text" id="job_title" name="job"
                                                     class="form-control" placeholder="أدخل الوظيفة">
                                             </div>
 
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="employment_type">جهة العمل*</label>
-                                                <select id="employment_type" name="employment_type" class="form-control">
+                                                <select id="employment_type" name="job_type" class="form-control">
                                                     <option value="" selected disabled>اختر جهة العمل</option>
                                                     <option value="governmental">حكومية</option>
                                                     <option value="private">خاصة</option>
@@ -577,12 +577,14 @@
                                         <div class="form-group col-12 col-sm-6" id="disabled_type_section"
                                             style="display: none">
                                             <label for="disabled_type">{{ 'حدد نوع الإعاقة*' }}</label>
-                                            <select id="disabled_type" name="disabled_type" required
+                                            <select id="disabled_type" name="disabled_type"
                                                 class="form-control">
                                                 <option value="" class="placeholder" disabled="" selected>أختر
                                                     نوع
                                                     الإعاقة
                                                 </option>
+                                                <option value="option1">اوبشن 1 </option>
+                                                <option value="option2">اوبشن 2</option>
                                             </select>
                                         </div>
 
@@ -857,7 +859,7 @@
             var hiddenInput2 = document.getElementById("city");
             var hiddenLabel2 = document.getElementById("hiddenLabel2");
             var cityLabel = document.getElementById("cityLabel");
-            var cityInput = document.getElementById("cityInput");
+            var town = document.getElementById("town");
             var anotherCountrySection = document.getElementById("anotherCountrySection");
             var region = document.getElementById("region");
             let anotherCountryOption = document.getElementById("anotherCountry");
@@ -876,9 +878,9 @@
                 anotherCountryOption.value = "أخرى";
 
             }
-            if (select && cityLabel && cityInput) {
+            if (select && cityLabel && town) {
                 if (select.value === "السعودية") {
-                    cityInput.outerHTML = '<select id="cityInput" name="cityInput"  class="form-control">' +
+                    town.outerHTML = '<select id="town" name="town"  class="form-control">' +
                         '<option value="الرياض" selected="selected">الرياض</option>' +
                         '<option value="جدة">جدة</option>' +
                         '<option value="مكة المكرمة">مكة المكرمة</option>' +
@@ -908,8 +910,8 @@
                         '<option value="الباحة">الباحة</option>' +
                         '</select>';
                 } else {
-                    cityInput.outerHTML =
-                        '<input type="text" id="cityInput" name="cityInput" placeholder="اكتب مدينه السكن الحاليه"  class="form-control">';
+                    town.outerHTML =
+                        '<input type="text" id="town" name="town" placeholder="اكتب مدينه السكن الحاليه"  class="form-control">';
                 }
             }
         }
