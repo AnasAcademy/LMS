@@ -76,7 +76,7 @@ class ApplyController extends Controller
             'phone' => 'required|min:5|max:20',
             'mobile' => 'required|min:5|max:20',
             'educational_qualification_country'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-            'secondary_school_gpa'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+            'secondary_school_gpa'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
             'educational_area'=>'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
             'secondary_graduation_year'=>$categoryTitle == "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
             'school'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
