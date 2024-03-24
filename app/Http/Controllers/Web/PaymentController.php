@@ -371,11 +371,28 @@ class PaymentController extends Controller
                     ]);
                 }
             }
+            
+            if(!empty($data['order']) && $data['order']->status === Order::$paid){
+                $toastData = [
+                    'title' => trans('cart.success_pay_title'),
+                    'msg' => trans('cart.success_pay_msg'),
+                    'status' => 'success'
+                ];
+                return redirect('/panel/requirements')->with(['toast' => $toastData]);
+            }
+            else if(!empty($data['order']) && $data['order']->status === Order::$fail){
+                $toastData = [
+                    'title' => trans('cart.failed_pay_title'),
+                    'msg' => trans('cart.failed_pay_msg'),
+                    'status' => 'error'
+                ];
+                return redirect('/')->with(['toast' => $toastData]);
+            }
 
-            return view('web.default.cart.status_pay', $data);
+            // return view('web.default.cart.status_pay', $data);
         }
 
-        // return redirect('/panel');
+        return redirect('/');
     }
 
     private function handleMeetingReserveReward($user)

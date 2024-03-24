@@ -92,7 +92,8 @@
                 bgColor: '@if(session()->get('toast')['status'] == 'success') #43d477 @else #f63c3c @endif',
                 textColor: 'white',
                 hideAfter: 10000,
-                position: 'bottom-right',
+                width:'450px !important',
+                position: 'top-right',
                 icon: '{{ session()->get('toast')['status'] }}'
             });
         })(jQuery)

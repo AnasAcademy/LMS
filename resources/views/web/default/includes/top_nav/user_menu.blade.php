@@ -70,11 +70,11 @@
                         </a>
                     </li>
                     @endcan
-                    @if(!$authUser->isUser())
+                    @if((\App\Student::where('user_id',$authUser->id)))
                         <li class="navbar-auth-user-dropdown-item">
-                            <a href="{{ $authUser->getProfileUrl() }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
+                            <a href="/panel/requirements" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                                 <img src="/assets/default/img/icons/user_menu/profile.svg" class="icons">
-                                <span class="ml-5">{{ trans('public.profile') }}</span>
+                                <span class="ml-5">خطوات التسجيل</span>
                             </a>
                         </li>
                     @endif
@@ -85,7 +85,7 @@
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
-                    
+
                 @endif
 
                 <li class="navbar-auth-user-dropdown-item">

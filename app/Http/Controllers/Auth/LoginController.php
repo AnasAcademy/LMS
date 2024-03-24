@@ -8,6 +8,7 @@ use App\Models\Reward;
 use App\Models\RewardAccounting;
 use App\Models\UserSession;
 use App\User;
+use App\Student;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class LoginController extends Controller
      *
      * @var string
      */
+
     protected $redirectTo = '/apply';
 
     /**
@@ -237,9 +239,13 @@ class LoginController extends Controller
         $cartManagerController = new CartManagerController();
         $cartManagerController->storeCookieCartsToDB();
 
+        $student = Student::where('user_id',$user->id)->first();
         if ($user->isAdmin()) {
             return redirect(getAdminPanelUrl() . '');
-        } else {
+        } else if($student) {
+            return redirect('/panel/requirements');
+        }
+        else{
             return redirect('/apply');
         }
     }
