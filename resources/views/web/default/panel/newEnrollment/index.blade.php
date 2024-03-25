@@ -114,6 +114,7 @@
         <div class="col-12 col-lg-10 col-md-11 px-0">
             <div class="col-lg-12 col-md-12 px-0">
                 <Section class="section1 main-section">
+                    <h2 class="section-title">طلب تسجيل جديد</h2>
                     <div class="container_form">
                         <form action="/apply" method="POST" id="myForm">
                             @csrf
@@ -171,7 +172,7 @@
                                     'موريتانيا',
                                 ];
                             @endphp
-                            
+
 
                             <label class="mt-30">
                                 <input type="checkbox" id="terms" name="terms" required>
