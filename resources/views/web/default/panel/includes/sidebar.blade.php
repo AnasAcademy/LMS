@@ -90,6 +90,17 @@
             </li>
         @endif
 
+        @if (auth()->user()->Student)
+            <li class="sidenav-item {{ request()->is('panel/newEnrollment') ? 'sidenav-item-active' : '' }}">
+                <a href="/panel/newEnrollment" class="d-flex align-items-center">
+                    <span class="sidenav-setting-icon sidenav-item-icon mr-10">
+                        @include('web.default.panel.includes.sidebar_icons.webinars')
+                    </span>
+                    <span class="font-14 text-dark-blue font-weight-500">طلب تسجيل جديد</span>
+                </a>
+            </li>
+        @endif
+
         @if ($authUser->isOrganization())
             <li
                 class="sidenav-item {{ (request()->is('panel/instructors') or request()->is('panel/manage/instructors*')) ? 'sidenav-item-active' : '' }}">

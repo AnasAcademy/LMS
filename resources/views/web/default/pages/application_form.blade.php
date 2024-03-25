@@ -140,7 +140,7 @@
                                         اكاديمية انس للفنون </option>
                                     @foreach ($category as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ old('category_id', $student->category_id ?? null) == $item->id ? 'selected' : '' }}>
+                                            {{ old('category_id') == $item->id ? 'selected' : '' }}>
                                             {{ $item->title }} </option>
                                     @endforeach
                                 </select>
@@ -896,34 +896,36 @@
                         options +
                         '</select>';
                     hiddenLabel.style.display = "block";
+
                 } else {
                     hiddenInput.outerHTML =
                         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
                     hiddenLabel.style.display = "none";
                 }
                 var selectedOption = select.options[select.selectedIndex];
-                var selectedText = selectedOption.textContent;
-                education.style.display = "block";
+                    var selectedText = selectedOption.textContent;
+                    education.style.display = "block";
 
-                if (selectedText.trim() == "دبلوم متوسط") {
-                    secondary_education.forEach(function(element) {
-                        element.style.display = "block";
-                    });
+                    if (selectedText.trim() == "دبلوم متوسط") {
+                        secondary_education.forEach(function(element) {
+                            element.style.display = "block";
+                        });
 
-                    high_education.forEach(function(element) {
-                        element.style.display = "none";
-                    });
+                        high_education.forEach(function(element) {
+                            element.style.display = "none";
+                        });
 
-                } else {
-                    secondary_education.forEach(function(element) {
-                        element.style.display = "none";
-                    });
+                    } else {
+                        secondary_education.forEach(function(element) {
+                            element.style.display = "none";
+                        });
 
-                    high_education.forEach(function(element) {
-                        element.style.display = "block";
-                    });
+                        high_education.forEach(function(element) {
+                            element.style.display = "block";
+                        });
 
-                }
+                    }
+
             }
         }
         toggleHiddenInput();

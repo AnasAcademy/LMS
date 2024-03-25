@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\Route;
 | User Panel Routes
 |--------------------------------------------------------------------------
 */
+Route::group(['namespace' => 'Web','prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
+
+    // new enrollment
+    Route::group(['prefix' => 'newEnrollment'], function () {
+        Route::get('/', 'ApplyController@newEnrollment');
+        Route::post('/step', 'ApplyController@storeNewEnrollment');
+    });
+});
 
 Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
 
@@ -277,6 +285,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/step/1', 'UserController@requirementIndex');
         Route::get('/step/2', 'UserController@account');
     });
+
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
         Route::get('/', 'SupportsController@index');

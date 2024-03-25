@@ -34,9 +34,12 @@ class ApplyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function newEnrollment()
     {
-        //
+        $user = auth()->user();
+        $student = Student::where('user_id', $user->id)->first();
+        $category=Category::where('parent_id','!=', null)->get();
+        return view(getTemplate() . '.panel.newEnrollment.index',compact('user','category','student'));
     }
 
     /**
@@ -50,54 +53,75 @@ class ApplyController extends Controller
         // dd($request->all());
         $category = Category::where('id', $request->category_id)->first();
         $categoryTitle=$category->title;
-        $validatedData = $request->validate([
-            'user_id'=>'required',
-            'category_id' => 'required',
-            'bundle_id' =>  [
-                'required',
-                function ($attribute, $value, $fail) {
-                    $user = auth()->user();
-                    $student = Student::where('user_id', $user->id)->first();
+        $student = Student::where('user_id', auth()->user()->id)->first();
 
-                    if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
-                        $fail('User has already applied for this bundle.');
-                    }
-                },
-            ],
-            'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
-            'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
-            'identifier_num'=>'required|numeric|regex:/^\d{6,10}$/',
-            'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-            'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-            'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-            'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-            'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-            'birthdate' => 'required|date',
-            'phone' => 'required|min:5|max:20',
-            'mobile' => 'required|min:5|max:20',
-            'educational_qualification_country'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-            'secondary_school_gpa'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
-            'educational_area'=>'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-            'secondary_graduation_year'=>$categoryTitle == "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
-            'school'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-            'university'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-            'faculty'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-            'education_specialization'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-            'graduation_year'=>$categoryTitle != "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
-            'gpa'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
-            'deaf' => 'required|in:0,1',
-            'disabled_type'=>$request->disabled == 1 ?'required|string|max:255|min:3':'nullable',
-            'gender' => 'required|in:male,female',
-            'healthy_problem' => $request->healthy == 1 ?'required|string|max:255|min:3':'nullable',
-            'nationality' => 'required|string|min:3|max:25',
-            'job' => 'nullable',
-            'job_type' => 'nullable',
-            'referral_person' => 'required|string|min:3|max:255',
-            'relation' => 'required|string|min:3|max:255',
-            'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-            'referral_phone' => 'required|min:3|max:20',
-            'about_us' => 'required|string|min:3|max:255',
-        ]);
+        if ($student) {
+            $validatedData = $request->validate([
+                'user_id'=>'required',
+                'category_id' => 'required',
+                'bundle_id' =>  [
+                    'required',
+                    function ($attribute, $value, $fail) {
+                        $user = auth()->user();
+                        $student = Student::where('user_id', $user->id)->first();
+
+                        if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                            $fail('User has already applied for this bundle.');
+                        }
+                    },
+                ]
+            ]);
+        }else{
+            $validatedData = $request->validate([
+                'user_id'=>'required',
+                'category_id' => 'required',
+                'bundle_id' =>  [
+                    'required',
+                    function ($attribute, $value, $fail) {
+                        $user = auth()->user();
+                        $student = Student::where('user_id', $user->id)->first();
+
+                        if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                            $fail('User has already applied for this bundle.');
+                        }
+                    },
+                ],
+                'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+                'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
+                'identifier_num'=>'required|numeric|regex:/^\d{6,10}$/',
+                'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                'birthdate' => 'required|date',
+                'phone' => 'required|min:5|max:20',
+                'mobile' => 'required|min:5|max:20',
+                'educational_qualification_country'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'secondary_school_gpa'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
+                'educational_area'=>'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                'secondary_graduation_year'=>$categoryTitle == "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
+                'school'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'university'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'faculty'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'education_specialization'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'graduation_year'=>$categoryTitle != "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
+                'gpa'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
+                'deaf' => 'required|in:0,1',
+                'disabled_type'=>$request->disabled == 1 ?'required|string|max:255|min:3':'nullable',
+                'gender' => 'required|in:male,female',
+                'healthy_problem' => $request->healthy == 1 ?'required|string|max:255|min:3':'nullable',
+                'nationality' => 'required|string|min:3|max:25',
+                'job' => 'nullable',
+                'job_type' => 'nullable',
+                'referral_person' => 'required|string|min:3|max:255',
+                'relation' => 'required|string|min:3|max:255',
+                'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                'referral_phone' => 'required|min:3|max:20',
+                'about_us' => 'required|string|min:3|max:255',
+            ]);
+        }
+
 
         Cookie::queue('user_data', json_encode($validatedData));
         $user = auth()->user();

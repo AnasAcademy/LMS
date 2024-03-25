@@ -337,7 +337,6 @@ class PaymentController extends Controller
                                 $studentData = collect($userData)->except(['category_id', 'bundle_id'])->toArray();
                                 }
                                 $student = Student::where('user_id', auth()->user()->id)->first();
-
                                 if (!$student) {
                                     $student = Student::create($studentData);
                                     $user = User::where('id', $user->id)->update([
@@ -371,7 +370,7 @@ class PaymentController extends Controller
                     ]);
                 }
             }
-            
+
             if(!empty($data['order']) && $data['order']->status === Order::$paid){
                 $toastData = [
                     'title' => trans('cart.success_pay_title'),

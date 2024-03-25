@@ -85,7 +85,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::get('/', 'ApplyController@index');
         Route::get('/apply', 'ApplyController@index');
         Route::post('/apply', 'ApplyController@checkout')->name('payFee');
-     });
+    });
 
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
 
