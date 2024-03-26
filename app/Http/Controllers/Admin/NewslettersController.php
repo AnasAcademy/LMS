@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\SendNotifications;
 use App\Models\Newsletter;
 use App\Models\NewsletterHistory;
+use App\User;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -97,8 +98,8 @@ class NewslettersController extends Controller
         try {
             foreach ($newsletters as $newsletter) {
             $user=User::find($newsletter->user_id);
-            $name=$user->student ? $user->student->ar_name : $user->fullname;
-                \Mail::to($newsletter->email)->send(new SendNotifications(['title' => $title, 'message' => $description,'name'=>$name]));
+            if(!empty($user)){$name=$user->student ? $user->student->ar_name : $user->fullname;}
+                \Mail::to($newsletter->email)->send(new SendNotifications(['title' => $title, 'message' => $description,'name'=>$name ?? null]));
             }
 
             return count($newsletters);

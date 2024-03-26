@@ -1691,8 +1691,8 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
-                $name=$user->student ? $user->student->ar_name : $user->fullname;
                 if (!empty($user) and !empty($user->email)) {
+                $name=$user->student ? $user->student->ar_name : $user->fullname;
                     try {
 
                         Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$name]));

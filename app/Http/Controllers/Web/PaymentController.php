@@ -212,6 +212,9 @@ class PaymentController extends Controller
 
     public function setPaymentAccounting($order, $type = null)
     {
+        try {
+            //code...
+
         $cashbackAccounting = new CashbackAccounting();
 
         if ($order->is_charge_account) {
@@ -279,8 +282,10 @@ class PaymentController extends Controller
             // Set Cashback Accounting For All Order Items
             $cashbackAccounting->setAccountingForOrderItems($order->orderItems);
         }
-
-        Cart::emptyCart($order->user_id);
+    } catch (\Exception $exception) {
+        dd($exception);
+        }
+        // Cart::emptyCart($order->user_id);
     }
 
     public function payStatus(Request $request)

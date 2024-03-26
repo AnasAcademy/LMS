@@ -1066,7 +1066,7 @@ class Webinar extends Model implements TranslatableContract
         foreach ($gifts as $gift) {
             $user = User::query()->select('id', 'email')->where('email', $gift->email)->first();
             $data=['email'=>$gift->email,
-                    'name'=>$gift->name];
+                    'name'=>$gift->name ?? null];
             if (empty($user)) {
                 sendNotificationToEmail("new_quiz", $notifyOptions, $data);
             }
