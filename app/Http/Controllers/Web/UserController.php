@@ -578,10 +578,11 @@ class UserController extends Controller
                         'errors' => $validator->errors()
                     ], 422);
                 }
-
+                $name=$user->student ? $user->student->ar_name : $user->fullname;
                 $mail = [
                     'title' => $data['title'],
                     'message' => trans('site.you_have_message_from', ['email' => $data['email']]) . "\n" . $data['description'],
+                    'name'=>$name
                 ];
 
                 try {

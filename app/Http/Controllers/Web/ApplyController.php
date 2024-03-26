@@ -69,7 +69,8 @@ class ApplyController extends Controller
                             $fail('User has already applied for this bundle.');
                         }
                     },
-                ]
+                ],
+                'terms' => 'accepted'
             ]);
         }else{
             $validatedData = $request->validate([
@@ -119,6 +120,7 @@ class ApplyController extends Controller
                 'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
                 'referral_phone' => 'required|min:3|max:20',
                 'about_us' => 'required|string|min:3|max:255',
+                'terms' => 'accepted',
             ]);
         }
 

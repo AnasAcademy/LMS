@@ -278,8 +278,8 @@ class BundleController extends Controller
 
             $data['start_date'] = $startDate->getTimestamp();
         }
-        
-        
+
+
         $bundle = Bundle::create([
             'slug' => $data['slug'],
             'teacher_id' => $data['teacher_id'],
@@ -368,7 +368,7 @@ class BundleController extends Controller
         $categories = Category::where('parent_id', null)
             ->with('subCategories')
             ->get();
-            
+
         $certificates = CertificateTemplate::where('type', 'bundle')->get();
 
         $tags = $bundle->tags->pluck('title')->toArray();
@@ -799,9 +799,9 @@ class BundleController extends Controller
                         'type' => 'single',
                         'created_at' => time()
                     ]);
-
+                    $name=$user->student ? $user->student->ar_name : $user->fullname;
                     if (!empty($user->email) and env('APP_ENV') == 'production') {
-                        \Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'], 'message' => $data['message']]));
+                        \Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'], 'message' => $data['message'],'name'=>$name]));
                     }
                 }
             }

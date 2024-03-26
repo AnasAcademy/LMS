@@ -96,8 +96,9 @@ class NotificationsController extends Controller
 
         if (!empty($data['user_id']) and env('APP_ENV') == 'production') {
             $user = \App\User::where('id', $data['user_id'])->first();
+            $name=$user->student ? $user->student->ar_name : $user->fullname;
             if (!empty($user) and !empty($user->email)) {
-                \Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'], 'message' => $data['message']]));
+                \Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'], 'message' => $data['message'],'name'=>$name]));
             }
         }
 

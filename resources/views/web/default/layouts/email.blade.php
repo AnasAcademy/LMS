@@ -1,576 +1,378 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office">
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-    {{-- <link rel="stylesheet" type="text/css" href="{{ url('/css/email.css') }}"> --}}
-    <style type="text/css">
-        /* /\/\/\/\/\/\/\/\/ CLIENT-SPECIFIC STYLES /\/\/\/\/\/\/\/\/ */
-        #outlook a {
-            padding: 0;
+    <!--[if gte mso 9]> <xml> <o:OfficeDocumentSettings> <o:AllowPNG/> <o:PixelsPerInch>96</o:PixelsPerInch> </o:OfficeDocumentSettings> </xml> <![endif]-->
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="date=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="x-apple-disable-message-reformatting"> <!--[if !mso]><!-->
+    <link href="https://fonts.googleapis.com/css?family=Noto+Serif:400,400i,700,700i|Raleway:400,400i,700,700i"
+        rel="stylesheet"> <!--<![endif]-->
+    <title>*|MC:SUBJECT|*</title>
+    <!--[if gte mso 9]> <style type="text/css" media="all"> sup { font-size: 100% !important; } </style> <![endif]-->
+    <style type="text/css" media="screen">
+        .d>img {
+            margin: 0 5px !important;
         }
 
-        /* Force Outlook to provide a "view in browser" message */
-        .ReadMsgBody {
-            width: 100%;
-        }
-
-        .ExternalClass {
-            width: 100%;
-        }
-
-        /* Force Hotmail to display emails at full width */
-        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
-            line-height: 100%;
-        }
-
-        /* Force Hotmail to display normal line spacing */
-        body, table, td, p, a, li, blockquote {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-        }
-
-        /* Prevent WebKit and Windows mobile changing default text sizes */
-        table, td {
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-        }
-
-        /* Remove spacing between tables in Outlook 2007 and up */
-        img {
-            -ms-interpolation-mode: bicubic;
-        }
-
-        /* Allow smoother rendering of resized image in Internet Explorer */
-        /* /\/\/\/\/\/\/\/\/ RESET STYLES /\/\/\/\/\/\/\/\/ */
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        img {
-            border: 0;
-            height: auto;
-            line-height: 100%;
-            outline: none;
+        .info-button {
             text-decoration: none;
+            /* Remove underline from the link */
         }
 
-        table {
-            border-collapse: collapse !important;
+        .info-button-style {
+            color: white;
+            background-color: #5E0A83;
+            /* Background color */
+            border: 1px solid #ddd;
+            /* Border color */
+            padding: 10px 15px;
+            /* Padding for the button */
+            border-radius: 5px;
+            /* Rounded corners */
+            cursor: pointer;
+            /* Change cursor on hover */
+            transition: background-color 0.3s, color 0.3s;
+            /* Smooth transition effect */
         }
 
-        body, #bodyTable, #bodyCell {
-            height: 100% !important;
-            margin: 0;
-            padding: 0;
-            width: 100% !important;
+        .info-button-style:hover {
+            background-color: #ddd;
+            /* Change background color on hover */
+            color: blue;
+            /* Change text color on hover */
         }
 
-        /* /\/\/\/\/\/\/\/\/ TEMPLATE STYLES /\/\/\/\/\/\/\/\/ */
-        /* ========== Page Styles ========== */
-        * {
-            font-family: Tahoma, Geneva, sans-serif !important;
-        }
-
-        #bodyCell {
-            padding: 0;
-        }
-
-        #templateContainer {
-            width: 600px;
-        }
-
-        body, #bodyTable {
-            background-color: #F5F6F7;
-        }
-
-        #bodyCell {
-            border-top: 5px solid #43d477;
-        }
-
-        #templateContainer {
-            border: 1px solid #BBBBBB;
-        }
-
-        h1 {
-            display: block;
-            font-size: 18px;
-            font-style: normal;
-            font-weight: bold;
-            line-height: 100%;
-            letter-spacing: normal;
-            margin-top: 0;
-            margin-right: 0;
-            margin-bottom: 30px;
-            margin-left: 0;
-            text-align: center;
-            color: #484848;
-        }
-
-        h2 {
-            color: #404040 !important;
-            display: block;
-            font-size: 20px;
-            font-style: normal;
-            font-weight: bold;
-            line-height: 100%;
-            letter-spacing: normal;
-            margin-top: 0;
-            margin-right: 0;
-            margin-bottom: 10px;
-            margin-left: 0;
-            text-align: left;
-        }
-
-        h3 {
-            display: block;
-            font-size: 16px;
-            font-weight: bold;
-            line-height: 160%;
-            letter-spacing: normal;
-            margin-top: 0;
-            margin-right: 0;
-            margin-bottom: 10px;
-            margin-left: 0;
-            color: #3b4144;
-        }
-
-        h4 {
-            color: #808080 !important;
-            display: block;
-            font-size: 14px;
-            font-style: italic;
-            font-weight: normal;
-            line-height: 100%;
-            letter-spacing: normal;
-            margin-top: 0;
-            margin-right: 0;
-            margin-bottom: 10px;
-            margin-left: 0;
-            text-align: left;
-        }
-
-        /* ========== Header Styles ========== */
-        #templatePreheader {
-            /* background-color:#F4F4F4;*/
-            /* border-bottom:1px solid #CCCCCC;*/
-        }
-
-        .preheaderContent {
-            color: #808080;
-            font-size: 10px;
-            line-height: 125%;
-            text-align: right;
-        }
-
-        .preheaderContent a:link, .preheaderContent a:visited,
-        .preheaderContent a .yshortcuts {
-            color: #606060;
-            font-weight: normal;
-        }
-
-        #templateHeader {
-            border-top: 1px solid #FFFFFF;
-            border-bottom: 1px solid #CCCCCC;
-        }
-
-        .headerContent {
-            color: #505050;
-            font-size: 20px;
-            font-weight: bold;
-            line-height: 100%;
-            padding-top: 0;
-            padding-right: 0;
-            padding-bottom: 0;
-            padding-left: 0;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .headerContent a:link, .headerContent a:visited,
-        .headerContent a .yshortcuts {
-            color: #43d477;
-            font-weight: normal;
-        }
-
-        #headerImage {
-            height: auto;
-            max-width: 600px;
-        }
-
-        /* ========== Body Styles ========== */
-        #templateBody {
-            /*
-
-        @editable   border-top:1px solid #FFFFFF;*/
-            /*
-
-        @editable   border-bottom:1px solid #CCCCCC;*/
-        }
-
-        .bodyContent {
-            color: #505050;
-            font-size: 14px;
-            line-height: 150%;
-            padding-top: 30px;
-            padding-right: 30px;
-            padding-bottom: 30px;
-            padding-left: 30px;
-            text-align: left;
-        }
-
-        .bodyContent a:link, .bodyContent a:visited,
-        .bodyContent a .yshortcuts {
-            color: #43d477;
-            font-weight: normal;
-            text-decoration: none;
-        }
-
-        .bodyContent img {
-            display: inline;
-            height: auto;
-            max-width: 560px;
-        }
-
-        /* ========== Footer Styles ========== */
-        #templateFooter {
-            /*
-
-        @editable   border-top:1px solid #FFFFFF;*/
-        }
-
-        .footerContent {
-            color: #999999;
-            font-size: 14px;
-            line-height: 150%;
-            padding-top: 20px;
-            padding-right: 20px;
-            padding-bottom: 20px;
-            padding-left: 20px;
-            text-align: center;
-        }
-
-        .footerContent a:link, .footerContent a:visited,
-        .footerContent a .yshortcuts, .footerContent a span {
-            color: #999999;
-            font-weight: normal;
-            text-decoration: none;
-        }
-
-        /* /\/\/\/\/\/\/\/\/ MOBILE STYLES /\/\/\/\/\/\/\/\/ */
-        @media only screen and (max-width: 480px) {
-            /* /\/\/\/\/\/\/ CLIENT-SPECIFIC MOBILE STYLES /\/\/\/\/\/\/ */
-            body, table, td, p, a, li, blockquote {
-                -webkit-text-size-adjust: none !important;
-            }
-
-            /* Prevent Webkit platforms from changing default text sizes */
-            body {
+        @media only screen and (max-device-width: 480px),
+        only screen and (max-width: 480px) {
+            .mobile-shell {
                 width: 100% !important;
                 min-width: 100% !important;
             }
 
-            /* Prevent iOS Mail from adding padding to the body */
-            /* /\/\/\/\/\/\/ MOBILE RESET STYLES /\/\/\/\/\/\/ */
-            #bodyCell {
+            .logo {
+                width: 120px;
+            }
+
+            .m-center {
+                text-align: center !important;
+            }
+
+            .m-left {
+                margin-right: auto !important;
+            }
+
+            .center {
+                margin: 0 auto !important;
+            }
+
+            .td {
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            .m-br-15 {
+                height: 15px !important;
+            }
+
+            .m-separator {
+                border-bottom: 1px solid #000000;
+            }
+
+            .small-separator {
+                border-top: 1px solid #333333 !important;
+                padding-bottom: 20px !important;
+            }
+
+            .m-td,
+            .m-hide {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                font-size: 0 !important;
+                line-height: 0 !important;
+                min-height: 0 !important;
+            }
+
+            .m-block {
+                display: block !important;
+            }
+
+            .fluid-img img {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+            }
+
+            .content-middle {
+                width: 140px !important;
                 padding: 0px !important;
             }
 
-            /* /\/\/\/\/\/\/ MOBILE TEMPLATE STYLES /\/\/\/\/\/\/ */
-            /* ======== Page Styles ======== */
-            #templateContainer {
-                max-width: 600px !important;
+            .text-white {
+                font-size: 12px !important;
+            }
+
+            .h2-white {
+                font-size: 46px !important;
+                line-height: 50px !important;
+            }
+
+            .h3-white {
+                font-size: 24px !important;
+                line-height: 30px !important;
+            }
+
+            .mpb15 {
+                padding-bottom: 15px;
+            }
+
+            .content {
+                padding: 20px 15px !important;
+            }
+
+            .section-inner {
+                padding: 0px !important;
+            }
+
+            .content-2 {
+                padding: 30px 15px 30px 15px !important;
+            }
+
+            .pt30 {
+                padding-top: 20px !important;
+            }
+
+            .p30-15 {
+                padding: 30px 15px !important;
+            }
+
+            .footer {
+                padding: 30px 15px !important;
+            }
+
+            .main {
+                padding: 0px !important;
+            }
+
+            .section {
+                padding: 30px 15px 30px 15px !important;
+            }
+
+            .section2 {
+                padding: 0px 15px 30px 15px !important;
+            }
+
+            .section4 {
+                padding: 30px 15px !important;
+            }
+
+            .section-inner2 {
+                padding: 30px 15px !important;
+            }
+
+            .separator-outer {
+                padding-bottom: 30px !important;
+            }
+
+            .section3 {
+                padding: 30px 15px !important;
+            }
+
+            .mpb10 {
+                padding-bottom: 10px !important;
+                padding-top: 5px !important;
+            }
+
+            .preheader {
+                padding-bottom: 20px !important;
+            }
+
+            .column,
+            .column-dir,
+            .column-top,
+            .column-empty,
+            .column-empty2,
+            .column-bottom,
+            .column-dir-top,
+            .column-dir-bottom {
+                float: left !important;
                 width: 100% !important;
+                display: block !important;
             }
 
-            h1 {
-                font-size: 20px !important;
-                line-height: 120% !important;
+            .column-empty {
+                padding-bottom: 30px !important;
             }
 
-            h2 {
-                font-size: 20px !important;
-                line-height: 100% !important;
+            .column-empty2 {
+                padding-bottom: 10px !important;
             }
 
-            h3 {
-                font-size: 18px !important;
-            }
-
-            h4 {
-                font-size: 16px !important;
-                line-height: 100% !important;
-            }
-
-            /* ======== Header Styles ======== */
-            /*#templatePreheader{display:none !important;}*/
-            /* Hide the template preheader to save space */
-            #headerImage {
-                height: auto !important;
-                max-width: 600px !important;
-                width: 100% !important;
-            }
-
-            .headerContent {
-                font-size: 20px !important;
-                line-height: 125% !important;
-            }
-
-            /* ======== Body Styles ======== */
-            .bodyContent {
-                font-size: 16px !important;
-                line-height: 125% !important;
-            }
-
-            /* ======== Footer Styles ======== */
-            .footerContent {
-                font-size: 14px !important;
-                line-height: 115% !important;
-            }
-
-            /* ======== Column Styles ======== */
-            .templateColumnContainer {
-                display: table !important;
-                width: 100% !important;
-            }
-
-            .columnImage {
-                height: auto !important;
-                max-width: 480px !important;
-                width: 100% !important;
-            }
-
-            .leftColumnContent {
-                font-size: 16px !important;
-                line-height: 125% !important;
-            }
-
-            .rightColumnContent {
-                font-size: 16px !important;
-                line-height: 125% !important;
-            }
-
-            .more {
-                margin-bottom: 20px;
+            .content-spacing {
+                width: 15px !important;
             }
         }
 
-        .templateContainer {
+        .message table:nth-of-type(1) {
             border: none !important;
         }
 
-        .headerContent {
-            padding-top: 20px;
-            padding-right: 30px;
-            padding-left: 30px;
+        .message table:nth-of-type(1),
+        .message table:nth-of-type(2),
+        .message table:nth-of-type(3),
+        .message table:nth-of-type(4),
+        .message table:nth-of-type(5),
+        .message table:nth-of-type(6),
+        .message table:nth-of-type(7),
+        .message table:nth-of-type(8),
+        .message table:nth-of-type(9) {
+            text-align: right !important;
+            float: right !important;
+            border-top: 1px solid #dddddd !important;
+            display: inline-block !important;
+            min-width: 50% !important;
+            width: 50% !important;
         }
 
-        .bodyContent {
-            background-color: #fff;
-            display: block;
-            margin: 20px;
+        .message table:nth-of-type(6) img {
+            display: none;
         }
 
-        #templateContainer {
-            border: none;
+        #message-htmlpart1 div.rcmBody #v1templateBody .v1mcnTextContent,
+        #message-htmlpart1 div.rcmBody #v1templateBody .v1mcnTextContent p {
+            color: #555555 !important;
+            font-family: 'IBM Plex Sans' !important;
+            font-size: 14px !important;
+            line-height: 150% !important;
+            padding: 0px !important;
+            border-radius: 12px !important;
+            background-color: #F4F5F6 !important;
         }
-
-        p {
-            font-weight: 100;
-            text-align: left;
-            line-height: 1.7rem;
-        }
-
-        .btn {
-            border: medium none;
-            cursor: pointer;
-            text-align: center;
-            -webkit-transition: background 200ms ease 0s;
-            transition: background 200ms ease 0s;
-            background: #43d477;
-            color: #ffffff !important;
-            font-size: 1rem;
-            margin-top: 40px;
-            padding: 10px 0 12px 0;
-            text-decoration: none !important;
-            display: block;
-            border-radius: 4px;
-        }
-
-        .code {
-            text-align: center;
-            color: #43d477;
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        .properties-wrapper {
-            padding-top: 25px;
-            padding-right: 15px;
-            padding-left: 15px;
-            padding-bottom: 0;
-        }
-
-        .post-wrapper {
-            padding: 20px 10px 10px 10px !important;
-        }
-
-        /* ========== Column Styles ========== */
-        .templateColumnContainer {
-            width: 260px;
-        }
-
-        /**
-        *
-        @tab
-        Columns
-                *
-        @
-        section left column text
-                *
-        @tip
-        Set the styling for your email's left column content text. Choose a size and color that is easy to read.
-                */
-        .leftColumnContent {
-            color: #505050;
-            font-size: 14px;
-            line-height: 150%;
-            padding-top: 0;
-            padding-right: 20px;
-            padding-bottom: 20px;
-            padding-left: 20px;
-            text-align: right;
-        }
-
-        .leftColumnContent a:link, .leftColumnContent a:visited,
-        .leftColumnContent a .yshortcuts {
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        /**
-        *
-        @tab
-        Columns
-                *
-        @
-        section right column text
-                *
-        @tip
-        Set the styling for your email's right column content text. Choose a size and color that is easy to read.
-                */
-        .rightColumnContent {
-            color: #505050;
-            font-size: 14px;
-            line-height: 150%;
-            padding-top: 0;
-            padding-right: 20px;
-            padding-bottom: 20px;
-            padding-left: 20px;
-        }
-
-        /**
-        *
-        @tab
-        Columns
-                *
-        @
-        section right column link
-                *
-        @tip
-        Set the styling for your email's right column content links. Choose a color that helps them stand out from your text.
-                */
-        .rightColumnContent a:link, .rightColumnContent a:visited,
-        .rightColumnContent a .yshortcuts {
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .leftColumnContent img, .rightColumnContent img {
-            display: inline;
-            height: auto;
-            max-width: 260px;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 22px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-        }
-        .alert-info {
-            color: #31708f;
-            background-color: #d9edf7;
-            border-color: #bce8f1;
-        }
-        .emailConfigCode {
-            text-align: center;
-            font-size: 25px;
-        }
-
     </style>
-      @if(!empty($generalSettings['site_name']))
-    <title>{{ $generalSettings['site_name'] }}</title>
-   @else
-   <title>Platform Title</title>
-   @endif
 </head>
-<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-<center>
-    <table align="center" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
-        <tr>
-            <td align="center" valign="top" id="bodyCell">
-                <!-- BEGIN TEMPLATE // -->
-                <table border="0" cellpadding="0" cellspacing="0" id="templateContainer">
-                    <tr>
-                        <td align="center" valign="top">
-                            <!-- BEGIN PREHEADER // -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templatePreheader">
-                                <tr>
-                                    <td class="headerContent" width="100%">
-                                        <a href=""><img src="{{ url($generalSettings['logo']) }}" style="max-width:128px;margin-bottom: 8px;margin-top: 24px" id="headerImage campaign-icon" mc:label="header_image" mc:edit="header_image" mc:allowtext/></a>
-                                    </td>
-                                </tr>
-                            </table>
-                            <!-- // END PREHEADER -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center" valign="top">
-                            <!-- BEGIN BODY // -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody">
-                                <tr>
-                                    @yield('body')
 
-                                </tr>
-                            </table>
-                            <!-- // END BODY -->
-                        </td>
-                    </tr>
+<body class="body"
+    style="-webkit-text-size-adjust: none; padding: 0; margin: 0; display: block; min-width: 100%; width: 100%;">
+    <!--*|IF:MC_PREVIEW_TEXT|*--> <!--[if !gte mso 9]><!--> <span class="mcnPreviewText"
+        style="font-size: 0px; line-height: 0px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; visibility: hidden; mso-hide: all; display: none;"></span>
+    <!--<![endif]--> <!--*|END:IF|*-->
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#fff">
+        <tr>
+            <td align="center" valign="top"> <!-- Main -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                        <td align="center" valign="top">
-                            <!-- BEGIN FOOTER // -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateFooter">
+                        <td align="center">
+                            <table width="650" border="0" cellspacing="0" cellpadding="0" class="mobile-shell">
                                 <tr>
-                                    <td valign="top" class="footerContent" style="padding-top:0; padding-bottom:40px;" mc:edit="footer_content02">
-                                        @yield('cancel')
+                                    <td class="td"
+                                        style="width:650px; min-width:650px; font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal;">
+                                        <!-- Header -->
+                                        <table align="center" width="100%" border="0" cellspacing="0"
+                                            cellpadding="0" bgcolor="#ffffff">
+                                            <tr align="center">
+                                                <td
+                                                    style="padding: 14px;border-radius:12px 12px 0 0;background-repeat: no-repeat;background-size:cover; background-image: url(https://anasacademy.uk/wp-content/uploads/2022/02/slider-03new.jpg);">
+                                                    <img width="80" height="80"
+                                                        src="https://anasacademy.uk/wp-content/uploads/2022/03/03-5-2.png"
+                                                        style="border-radius:50%;-ms-interpolation-mode: bicubic;">
+                                                </td>
+                                            </tr>
+                                        </table> <!-- END Header --> <!--content-->
+                                        <table class="message" width="100%" border="0" cellspacing="0"
+                                            cellpadding="0" style="direction: rtl !important; text-align: right;">
+                                            <tr>
+                                                <td style="padding:0px 10px;">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                                        style="direction: rtl !important;min-width: 100% !important;">
+                                                        <tr>
+                                                            @yield('body')
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table> <!--end content--> <!-- Footer -->
+
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                            bgcolor="#4e54cb" style="border-radius:0 0 12px 12px">
+                                            <tr>
+                                                <td class="footer"
+                                                    style="padding:0px 20px; background-image:url('https://anasacademy.uk/wp-content/uploads/2022/02/slider-03new.jpg'); background-repeat: no-repeat; border-collapse:collapse; font-size:0px;line-height:0px; background-size:100% 100%;border-radius: 0 0 12px 12px;">
+
+                                                    <table width="100%" border="0" cellspacing="0"
+                                                        cellpadding="0">
+                                                        <tr style="display: flex; padding:10px;">
+                                                            <td class="img" width="50%"><a
+                                                                    href="https://anasacademy.uk/" target="_blank"
+                                                                    style="color: #4e54cb; text-decoration: none; height:auto;">
+                                                                    <img class="img logo"
+                                                                        src="https://support.anasacademy.uk//storage/public/Logo-04.png"
+                                                                        style="float: left !important;-ms-interpolation-mode: bicubic;height:auto;padding:10px; width: 135px !important;" /></a>
+                                                            </td>
+
+                                                            <td class="img d"
+                                                                style="text-align: right;padding-top: 10px; float: right;"
+                                                                width="50%"><a
+                                                                    href="https://twitter.com/anasacademy?lang=ar"
+                                                                    target="_blank"
+                                                                    style="color: #4e54cb; text-decoration: none;"></a><a
+                                                                    href="https://www.linkedin.com/company/anasacademy/"
+                                                                    target="_blank"
+                                                                    style="color: #4e54cb; text-decoration: none;"><img
+                                                                        src="https://anasacademy.uk/wp-content/uploads/2021/10/Layer-4-1.png"
+                                                                        width="30" height="30"
+                                                                        mc:edit="image_15"
+                                                                        style="-ms-interpolation-mode: bicubic; max-width: 40px; margin: 0 5px !important;"
+                                                                        border="0" alt=""></a><a
+                                                                    href="https://www.instagram.com/anasacademy/"
+                                                                    target="_blank"
+                                                                    style="color: #4e54cb; text-decoration: none;"><img
+                                                                        src="https://anasacademy.uk/wp-content/uploads/2021/10/Layer-5-1.png"
+                                                                        width="30" height="30"
+                                                                        mc:edit="image_15"
+                                                                        style="-ms-interpolation-mode: bicubic; max-width: 40px; margin: 0 5px !important;"
+                                                                        border="0" alt=""></a><a
+                                                                    href="https://www.snapchat.com/add/anasacademy"
+                                                                    target="_blank"
+                                                                    style="color: #4e54cb; text-decoration: none;"><img
+                                                                        src="https://anasacademy.uk/wp-content/uploads/2021/10/Layer-1-1.png"
+                                                                        width="30" height="30"
+                                                                        mc:edit="image_15"
+                                                                        style="-ms-interpolation-mode: bicubic; max-width: 40px; margin: 0 5px !important;"
+                                                                        border="0" alt=""></a><a
+                                                                    href="https://www.youtube.com/channel/UCglrBLCkL6YnRZYy69-TwUw"
+                                                                    target="_blank"
+                                                                    style="color: #4e54cb; text-decoration: none;"><img
+                                                                        src="https://anasacademy.uk/wp-content/uploads/2021/10/Layer-3-1.png"
+                                                                        width="30" height="30"
+                                                                        mc:edit="image_13"
+                                                                        style="-ms-interpolation-mode: bicubic; max-width: 40px; margin: 0 5px !important;"
+                                                                        border="0" alt=""></a>
+                                                            </td>
+                                                        </tr>
+
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+
                                     </td>
                                 </tr>
-                                {{--   <tr>
-                                       <td valign="top" class="footerContent" mc:edit="footer_content00">
-                                           <a href="*|TWITTER:PROFILEURL|*">Follow on Twitter</a>&nbsp;&nbsp;&nbsp;<a href="*|FACEBOOK:PROFILEURL|*">Friend on Facebook</a>&nbsp;&nbsp;&nbsp;<a href="*|FORWARD|*">Forward to Friend</a>&nbsp;
-                                       </td>
-                                   </tr>--}}
                             </table>
-                            <!-- // END FOOTER -->
                         </td>
                     </tr>
                 </table>
-                <!-- // END TEMPLATE -->
             </td>
         </tr>
     </table>
-</center>
 </body>
+
 </html>

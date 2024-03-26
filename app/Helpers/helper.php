@@ -1691,11 +1691,12 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
+                $name=$user->student ? $user->student->ar_name : $user->fullname;
                 if (!empty($user) and !empty($user->email)) {
                     try {
-                        
-                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
-    
+
+                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$name]));
+
                     } catch (Exception $exception) {
                         // dd($exception)
                     }
@@ -1709,7 +1710,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
     return false;
 }
 
-function sendNotificationToEmail($template, $options, $email)
+function sendNotificationToEmail($template, $options, $data)
 {
     $templateId = getNotificationTemplates($template);
     $notificationTemplate = \App\Models\NotificationTemplate::where('id', $templateId)->first();
@@ -1721,7 +1722,7 @@ function sendNotificationToEmail($template, $options, $email)
 
         if (env('APP_ENV') == 'production') {
             try {
-                \Mail::to($email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message]));
+                \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$data['name']]));
             } catch (Exception $exception) {
                 // dd($exception)
             }

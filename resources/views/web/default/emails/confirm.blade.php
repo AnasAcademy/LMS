@@ -399,7 +399,3 @@
 </body>
 
 </html>
-
-
-
-has context menu

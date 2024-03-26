@@ -92,11 +92,12 @@ class Gift extends Model
                 '[amount]' => (!empty($amount) and $amount > 0) ? handlePrice($amount) : trans('public.free'),
                 '[gift_message]' => $this->description,
             ];
-
+            $data=['name'=>$this->name,
+                    'email'=>$this->email];
             if (!empty($receipt)) {
                 sendNotification('reminder_gift_to_receipt', $notifyOptions, $receipt->id);
             } else if (!empty($this->email)) {
-                sendNotificationToEmail('reminder_gift_to_receipt', $notifyOptions, $this->email);
+                sendNotificationToEmail('reminder_gift_to_receipt', $notifyOptions, $data);
             }
         }
     }

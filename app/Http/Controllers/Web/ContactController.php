@@ -54,7 +54,7 @@ class ContactController extends Controller
 
         sendNotification('contact_message_submission_for_admin', $notifyOptions, 1);
 
-        sendNotificationToEmail('contact_message_submission', $notifyOptions, $data['email']);
+        sendNotificationToEmail('contact_message_submission', $notifyOptions, $data);
 
         return back()->with(['msg' => trans('site.contact_store_success')]);
     }

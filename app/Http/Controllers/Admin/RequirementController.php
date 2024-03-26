@@ -53,7 +53,7 @@ class RequirementController extends Controller
                 $data['body'] = 'نود اعلامك علي انه تم الموافقة علي مرفقات متطلبات القبول التي قمت بارسالها، يرجي الذهاب للموقع الخاص بنا للمتابعه في باقي الخطوات';
 
                 $this->sendNotification($data);
-                $this->sendEmail($data);
+                // $this->sendEmail($data);
                 $requirements->save();
                 return back()->with('success', 'تم الموافقة علي طلب القبول وارسال ايميل للطالب بهذا');
             } else {
@@ -82,7 +82,7 @@ class RequirementController extends Controller
                 $requirements->approved_by = $admin->id;
 
                 $data['user_id'] = $requirements->bundleStudent->student->registeredUser->id;
-                $data['name'] = $requirements->bundleStudent->student->registeredUser->ar_name;
+                $data['name'] = $requirements->bundleStudent->student->ar_name;
                 $data['receiver'] = $requirements->bundleStudent->student->email;
                 $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
                 $data['fromName'] = env('MAIL_FROM_NAME');
@@ -91,7 +91,7 @@ class RequirementController extends Controller
                 $data['body'] = $request['message'];
 
                 $this->sendNotification($data);
-                $this->sendEmail($data);
+                // $this->sendEmail($data);
 
                 $requirements->save();
                 return back()->with('success', 'تم رفض الطلب وارسال ايميل للطالب بهذا');
@@ -120,24 +120,24 @@ class RequirementController extends Controller
         if (!empty($data['user_id']) and env('APP_ENV') == 'production' or env('APP_ENV') == 'develepment') {
             $user = User::where('id', $data['user_id'])->first();
             if (!empty($user) and !empty($user->email)) {
-                Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body']]));
+                Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'],'name' => $data['name']]));
             }
         }
 
         return true;
     }
 
-    protected function sendEmail($data)
-    {
-        try {
-            Mail::send('web.default.emails.confirm', $data, function ($message) use ($data) {
-                $message->to($data['receiver'])
-                    ->from($data['fromEmail'], $data['fromName'])
-                    ->subject($data['subject']);
-            });
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
+    // protected function sendEmail($data)
+    // {
+    //     try {
+    //         Mail::send('web.default.emails.confirm', $data, function ($message) use ($data) {
+    //             $message->to($data['receiver'])
+    //                 ->from($data['fromEmail'], $data['fromName'])
+    //                 ->subject($data['subject']);
+    //         });
+    //         return true;
+    //     } catch (\Exception $e) {
+    //         return false;
+    //     }
+    // }
 }

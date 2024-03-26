@@ -63,7 +63,7 @@ class WaitlistController extends Controller
             if (!empty($user)) {
                 sendNotification("waitlist_submission", $notifyOptions, $user->id);
             } else {
-                sendNotificationToEmail("waitlist_submission", $notifyOptions, $email);
+                sendNotificationToEmail("waitlist_submission", $notifyOptions, $data);
             }
 
             return response()->json([
