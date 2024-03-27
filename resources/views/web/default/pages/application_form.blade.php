@@ -410,7 +410,7 @@
                                     </div>
 
                                     {{-- مصدر شهادة البكالوريوس --}}
-                                    <div class="form-group col-12 col-sm-6 high_education"
+                                    <div class="form-group col-12 col-sm-6 "
                                         id="anotherEducationCountrySection" style="display: none">
 
                                         <label for="university" class="form-label">
@@ -880,7 +880,7 @@
             let high_education = document.getElementsByClassName("high_education");
             let secondary_education = document.getElementsByClassName("secondary_education");
 
-            if (select && hiddenLabel && hiddenInput) {
+            if (select.value && hiddenLabel && hiddenInput) {
                 var categoryId = select.value;
                 var categoryBundles = bundles[categoryId];
 

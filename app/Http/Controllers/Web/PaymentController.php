@@ -282,7 +282,7 @@ class PaymentController extends Controller
             // Set Cashback Accounting For All Order Items
             $cashbackAccounting->setAccountingForOrderItems($order->orderItems);
         }
-    } catch (\Exception $exception) {
+     } catch (\Exception $exception) {
         dd($exception);
         }
         // Cart::emptyCart($order->user_id);
