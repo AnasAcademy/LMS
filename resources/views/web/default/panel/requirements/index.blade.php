@@ -9,12 +9,13 @@
     .requirement-card {
         padding: 70px;
         box-shadow: 0px 0px 10px 0px #00000073;
+
     }
 
     .requirement-head {
         top: -15px;
         right: 30px;
-        max-width: 85%;
+
     }
 </style>
 
@@ -22,11 +23,19 @@
 
     @include('web.default.panel.requirements.requirements_includes.progress')
 
-    <section class="container d-flex mt-80 flex-wrap flex-md-nowrap">
+    <section class="row mt-80 mx-0 justify-content-center">
         @if (count($bundleInstallments)>0)
+            @php
+                $count = 0;
+            @endphp
             @foreach ($bundleInstallments as $bundleId => $bundleData)
+            @php
+                $count++;
+            @endphp
                 <section
-                    class="requirement-card bg-white w-100 position-relative d-flex justify-content-center align-items-center rounded-sm mb-80 ml-50">
+                    class="requirement-card bg-white position-relative col-lg-5 col-12 d-flex justify-content-center align-items-center rounded-sm mb-80 @if ($count%2 == 0)
+                    ml-lg-50
+                    @endif">
                     <h2 class="position-absolute bg-white p-5 requirement-head">
                         متطلبات القبول ل {{ clean($bundleData['bundle']->bundle->title, 't') }}</h2>
                     @if (empty($bundleData['bundle']->studentRequirement))
