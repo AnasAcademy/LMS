@@ -27,10 +27,10 @@
                 <select name="reason" id="reason" class="form-control mb-3" required>
 
                     <option value=""  selected disabled>اختر سبب الرفض</option>
+
                     <option value="يوجد مشكلة في مرفق  بطاقة الهوية الوطنية أو جواز السفر">
                         يوجد مشكلة في مرفق  بطاقة الهوية الوطنية أو جواز السفر
                     </option>
-
                     <option value="يوجد مشكلة في مرفق  شهادة البكالوريوس">يوجد مشكلة في مرفق  شهادة البكالوريوس</option>
                     <option value="يوجد مشكلة في مرفق السجل الأكاديمي">يوجد مشكلة في مرفق السجل الأكاديمي</option>
                     <option value="يوجد مشكلة في مرفق السيرة الذاتية ">يوجد مشكلة في مرفق السيرة الذاتية </option>
