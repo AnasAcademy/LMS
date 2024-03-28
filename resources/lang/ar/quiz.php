@@ -60,7 +60,7 @@ return [
     'waiting' => 'انتظار',
     'filter_quizzes' => 'فتلرة الاختبارات',
     'filter_results' => 'فلترة النتائج',
-    'quiz_or_webinar' => 'اختبار / فصل',
+    'quiz_or_webinar' => 'اختبار / مقرر',
     'show_only_active_quizzes' => 'اظهر الاختبارات النشطة فقط',
     'show_only_open_results' => 'اظهر النتائج المفتوحة فقط',
 
@@ -107,8 +107,8 @@ return [
     'failed_students' => 'الطلاب الراسبون',
     'filter_certificates' => 'فلترة الشهادات',
     'generated_certificates' => 'الشهادات المولدة',
-    'certificates_no_result' => 'لا يوجد شهادات في فصلك!',
-    'certificates_no_result_hint' => 'عن طريق انشاء اختبار يحتوي علي شهادة سيكون فصلك افضل.',
+    'certificates_no_result' => 'لا يوجد شهادات في مقررك!',
+    'certificates_no_result_hint' => 'عن طريق انشاء اختبار يحتوي علي شهادة سيكون مقررك افضل.',
 
     'my_certificates' => 'شهاداتي',
     'my_certificates_statistics' => 'احصائيات شهاداتي',

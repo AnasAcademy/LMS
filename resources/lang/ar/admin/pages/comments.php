@@ -29,8 +29,8 @@ return [
     'edit_comment' => 'تعديل التعليق',
 
     'reports' => 'الابلاغات',
-    'classes_comments_reports' => 'تعليقات الفصل',
-    'classes_reports' => 'بلاغات الفصل',
+    'classes_comments_reports' => 'تعليقات المقرر',
+    'classes_reports' => 'بلاغات المقرر',
     'blog_comments_reports' => 'بلاغات تعليقات المدونة',
     'comments_reports' => 'بلاغات التعليق',
     'reported_comment' => 'التعلبقات التي تم الابلاغ عنها',

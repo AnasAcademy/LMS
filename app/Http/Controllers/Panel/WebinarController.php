@@ -1041,7 +1041,9 @@ class WebinarController extends Controller
 
         abort(404);
     }
-
+    public function schedule(){
+        return view(getTemplate() . '.panel.webinar.schedule');
+    }
     public function purchases(Request $request)
     {
         $user = auth()->user();

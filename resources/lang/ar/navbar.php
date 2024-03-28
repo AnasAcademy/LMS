@@ -17,7 +17,7 @@ return [
     'items' => 'العناصر',
     'menu' => 'القائمة',
     'title' => 'العنوان',
-    'start_a_live_class' => 'ابدأ فصل مباشر جديد',
+    'start_a_live_class' => 'ابدأ مقرر مباشر جديد',
 
 
 

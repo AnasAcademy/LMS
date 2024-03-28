@@ -82,7 +82,7 @@ return [
     'subscribe_not_valid' => 'فشل الاشتراك',
     'you_dont_have_active_subscribe' => 'ليس لديك خطة اشتراك مفعلة.',
     'you_have_active_subscribe' => 'تم الاشتراك بنجاح',
-    'you_bought_webinar' => 'تم الانضمام للفصل بنجاح',
+    'you_bought_webinar' => 'تم الانضمام مقرر بنجاح',
 
     'search_page_title' => 'البحث',
     'categories_page_title' => 'الفئات',

@@ -8,8 +8,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'course' => 'فصل',
-    'courses' => 'فصول',
+    'course' => 'مقرر',
+    'courses' => 'مقررات',
     'text_course' => 'دورة كتابية',
   	'video_course' => 'دورة فيديو',
     'information' => 'معلومات',
@@ -17,7 +17,7 @@ return [
     'review' => 'مراجعة',
     'reviews' => 'مراجعات',
 
-    'Webinar_description' => 'عن هذا الفصل',
+    'Webinar_description' => 'عن هذا المقرر',
 
     'post_comment' => 'نشر تعليق',
     'post_review' => 'نشر مراجعة',

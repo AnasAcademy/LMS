@@ -78,7 +78,7 @@ return [
     'departments' => 'الاقسام',
 
     'classes_conversations' => 'محادثات الفصول',
-    'course_conversations' => 'محادثات الفصل',
+    'course_conversations' => 'محادثات المقرر',
     'course_conversations_lists_lead' => 'قائمة محادثات المستخدم والمعلمين',
     'support_conversation' => 'محداثة الدعم',
     'support_lists_lead' => 'قائمة محادثات الدعم للمستخدم',
@@ -116,7 +116,7 @@ return [
     'financial_doc_type' => 'نوع المستند المالي',
     'instructor_name' => 'اسم المعلم',
     'student_name' => 'اسم الطالب',
-    'course_title' => 'اسم الفصل',
+    'course_title' => 'اسم المقرر',
     'quiz_title' => 'اسم الاختبار',
     'quiz_result' => 'نتيجة الاختبار',
     'support_ticket_title' => 'عنوان تذكرة الدعم',
