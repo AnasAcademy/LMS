@@ -799,7 +799,7 @@ class BundleController extends Controller
                         'type' => 'single',
                         'created_at' => time()
                     ]);
-                    if (!empty($user->email) and env('APP_ENV') == 'production') {
+                    if (!empty($user->email)) {
                         $name=$user->student ? $user->student->ar_name : $user->fullname;
                         \Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'], 'message' => $data['message'],'name'=>$name]));
                     }

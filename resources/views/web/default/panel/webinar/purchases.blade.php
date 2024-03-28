@@ -87,11 +87,11 @@
                                                 <th>الإجراءات</th>
                                             </tr>
                                             @php
-                                                $totalHours = 0; // Initialize total hours counter
+                                                $totalHours = 0;
                                             @endphp
                                             @foreach ($item->bundleWebinars as $bundleWebinar)
                                                 @php
-                                                    $totalHours += $bundleWebinar->webinar->duration; // Add duration of current webinar to total
+                                                    $totalHours += $bundleWebinar->webinar->duration; 
                                                 @endphp
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>

@@ -1,5 +1,10 @@
 @extends(getTemplate() .'.panel.layouts.panel_layout')
+<style>
+.notification-message {
+    display: none;
+}
 
+</style>
 @section('content')
     <section>
         <div class="d-flex align-items-center justify-content-between">
@@ -32,7 +37,7 @@
 
                         <div class="col-12 col-lg-4 mt-10 mt-lg-0 text-right">
                             <button type="button" data-id="{{ $notification->id }}" id="showNotificationMessage{{ $notification->id }}" class="js-show-message btn btn-border-white @if(!empty($notification->notificationStatus)) seen-at @endif">{{ trans('public.view') }}</button>
-                            <input type="hidden" class="notification-message" value="{!! $notification->message !!}">
+                            <input type="hidden" class="notification-message" value="{{$notification->message }} ">
                         </div>
                     </div>
                 </div>
