@@ -58,13 +58,13 @@
                         <span>{{ 'متطلبات القبول' }}</span>
                     </a>
                     <ul class="dropdown-menu">
-                        @can('admin_requirements_new')
+                        {{-- @can('admin_requirements_new')
                             <li
                                 class="{{ (request()->is(getAdminPanelUrl('/requirements', false)) and request()->get('type') == 'new') ? 'active' : '' }}">
                                 <a class="nav-link @if (!empty($sidebarBeeps['requirements']) and $sidebarBeeps['requirements']) beep beep-sidebar @endif"
                                     href="{{ getAdminPanelUrl() }}/requirements/new">{{ 'نموذج طلب قبول جديد' }}</a>
                             </li>
-                        @endcan()
+                        @endcan() --}}
 
                         @can('admin_requirements_list')
                             <li
