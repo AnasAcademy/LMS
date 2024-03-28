@@ -67,7 +67,8 @@ class RequirementController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'message' => 'required'
+                'reason' => 'required',
+                'message' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -88,7 +89,7 @@ class RequirementController extends Controller
                 $data['fromName'] = env('MAIL_FROM_NAME');
                 $data['subject'] = 'الرد علي متطلبات القبول المرسلة';
                 // $data['body'] = 'نود اعلامك علي انه يوجد مشكلة في الملفات التي قمت برفعها يرجي الذهاب للموقع لرفعها مرة اخري بشكل صحيح ';
-                $data['body'] = $request['message'];
+                $data['body'] = $request['reason'] . "\n" . $request['message'];
 
                 $this->sendNotification($data);
                 // $this->sendEmail($data);

@@ -23,8 +23,25 @@
                 </button>
             </div>
             <form class="modal-body" method="GET" action="{{ $url }}" id="deleteForm">
-                <label for="message">{{ "اذكر سبب الرفض" }}</label>
-                <textarea class="form-control" id="message" name="message"></textarea>
+                <label for="message" class="form-label">{{ "اذكر سبب الرفض" }}</label>
+                <select name="reason" id="reason" class="form-control mb-3" required>
+
+                    <option value=""  selected disabled>اختر سبب الرفض</option>
+                    <option value="يوجد مشكلة في مرفق  بطاقة الهوية الوطنية أو جواز السفر">
+                        يوجد مشكلة في مرفق  بطاقة الهوية الوطنية أو جواز السفر
+                    </option>
+
+                    <option value="يوجد مشكلة في مرفق  شهادة البكالوريوس">يوجد مشكلة في مرفق  شهادة البكالوريوس</option>
+                    <option value="يوجد مشكلة في مرفق السجل الأكاديمي">يوجد مشكلة في مرفق السجل الأكاديمي</option>
+                    <option value="يوجد مشكلة في مرفق السيرة الذاتية ">يوجد مشكلة في مرفق السيرة الذاتية </option>
+                    <option value="يوجد مشكلة في مرفق الغرض من الدراسة">يوجد مشكلة في مرفق الغرض من الدراسة </option>
+                    <option value="يوجد مشكلة في مرفق الخبرة العملية التخصص المقدم اليه">
+                        يوجد مشكلة في مرفق الخبرة العملية التخصص المقدم اليه</option>
+                    <option value="يوجد مشكلة في مرفق التوصية العلمية والمهنية">يوجد مشكلة في مرفق توصية العلمية والمهنية</option>
+                    <option value="يوجد مشكلة في مرفق  الخلفية المهنية">يوجد مشكلة في مرفق  الخلفية المهنية</option>
+
+                </select>
+                <textarea class="form-control" id="message" name="message" placeholder="اكتب بشكل مفصل سبب الرفض"></textarea>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary ml-3" data-dismiss="modal">{{ trans('admin/main.cancel') }}</button>
                     <button type="submit" class="btn btn-danger id="confirmAction">{{ trans('admin/main.send')}}</button>
