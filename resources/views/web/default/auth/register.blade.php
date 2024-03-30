@@ -5,6 +5,66 @@
 @endpush
 
 @section('content')
+<style>
+
+    .register-container{
+         display: flex;
+        margin-right: -15px;
+        margin-left: -15px;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        margin: 120px 0 70px;
+        border-radius: 0px;
+        border: 0px;
+    }
+    .form-inner{
+           border-radius: 16px;
+        border: 1px solid #fff;
+        background-color:#f6f7f8;
+        padding:20px;
+    }
+    .login-card{
+        padding: 0px;
+    }
+    .login-card h1{
+        text-align:center;
+        color:#5E0A83;
+        font-size:30px;
+    }
+ .ft-text{
+     text-align:center;
+        color:#5E0A83;
+ }
+  .ft-text a{
+      text-decoration: underline;
+      font-weight:700;
+  }
+  .custom-control-label:after, .custom-control-label:before {
+    position: absolute;
+    top: -.1rem;
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    content: "";
+    right: 0 !important;
+    left: 0 !important;
+}
+.term {
+    margin-right:30px;
+}
+
+.password-section{
+    display:flex;
+}
+    /*.hero {*/
+    /*    width: 100%;*/
+    /*    height: 80vh;*/
+        /* background-color: #ED1088; */
+    /*    background-image: linear-gradient(90deg, #5E0A83 19%, #F70387 100%);*/
+    /*}*/
+</style>
     @php
         $registerMethod = getGeneralSettings('register_method') ?? 'mobile';
         $showOtherRegisterMethod = getFeaturesSettings('show_other_register_method') ?? false;
@@ -13,15 +73,18 @@
     @endphp
 
     <div class="container">
-        <div class="row login-container">
-            <div class="col-12 col-md-6 pl-0">
-                <img src="{{ getPageBackgroundSettings('register') }}" class="img-cover" alt="Login">
-            </div>
-            <div class="col-12 col-md-6">
+        <div class="row register-container">
+            <!--<div class="col-12 col-md-6 pl-0">-->
+            <!--    <img src="{{ getPageBackgroundSettings('register') }}" class="img-cover" alt="Login">-->
+            <!--</div>-->
+            
+            <div class="col-12 col-md-6 form-inner">
                 <div class="login-card">
-                    <h1 class="font-20 font-weight-bold">{{ trans('auth.signup') }}</h1>
+                    <!--<h1 class="font-20 font-weight-bold">{{ trans('auth.signup') }}</h1>-->
 
                     <form method="post" action="/register" class="mt-35">
+                         <h1 class="font-20 font-weight-bold">{{ trans('auth.signup') }}</h1>
+
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                         @if(!empty($selectRolesDuringRegistration) and count($selectRolesDuringRegistration))
@@ -43,7 +106,17 @@
                                 </div>
                             </div>
                         @endif
+                        <div class="form-group">
+                            <!--<label class="input-label" for="full_name">{{ trans('auth.full_name') }}:</label>-->
+                            <label class="input-label" for="full_name">الأسم الثلاثي *</label>
 
+                            <input name="full_name" type="text" value="{{ old('full_name') }}" class="form-control @error('full_name') is-invalid @enderror" placeholder="أدخل الأسم ">
+                            @error('full_name')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
                         @if($registerMethod == 'mobile')
                             @include('web.default.auth.register_includes.mobile_field')
 
@@ -57,41 +130,34 @@
                                 @include('web.default.auth.register_includes.mobile_field',['optional' => true])
                             @endif
                         @endif
+                   
+                       <div class="password-section">
 
-                        <div class="form-group">
-                            <label class="input-label" for="full_name">{{ trans('auth.full_name') }}:</label>
-                            <input name="full_name" type="text" value="{{ old('full_name') }}" class="form-control @error('full_name') is-invalid @enderror">
-                            @error('full_name')
-                            <div class="invalid-feedback">
-                                {{ $message }}
+                            <div class="form-group  col-6 p-0">
+                                <label class="input-label" for="password">{{ trans('auth.password') }}:</label>
+                                <input name="password" type="password"
+                                       class="form-control @error('password') is-invalid @enderror" id="password"
+                                       aria-describedby="passwordHelp">
+                                @error('password')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
                             </div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label class="input-label" for="password">{{ trans('auth.password') }}:</label>
-                            <input name="password" type="password"
-                                   class="form-control @error('password') is-invalid @enderror" id="password"
-                                   aria-describedby="passwordHelp">
-                            @error('password')
-                            <div class="invalid-feedback">
-                                {{ $message }}
+    
+                            <div class="form-group  col-6 p-0 pr-1 ">
+                                <label class="input-label" for="confirm_password">{{ trans('auth.retype_password') }}:</label>
+                                <input name="password_confirmation" type="password"
+                                       class="form-control @error('password_confirmation') is-invalid @enderror" id="confirm_password"
+                                       aria-describedby="confirmPasswordHelp">
+                                @error('password_confirmation')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
                             </div>
-                            @enderror
+                            
                         </div>
-
-                        <div class="form-group ">
-                            <label class="input-label" for="confirm_password">{{ trans('auth.retype_password') }}:</label>
-                            <input name="password_confirmation" type="password"
-                                   class="form-control @error('password_confirmation') is-invalid @enderror" id="confirm_password"
-                                   aria-describedby="confirmPasswordHelp">
-                            @error('password_confirmation')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-
                         <!-- @if($showCertificateAdditionalInRegister)
                             <div class="form-group">
                                 <label class="input-label" for="certificate_additional">{{ trans('update.certificate_additional') }}9</label>
@@ -143,11 +209,16 @@
                         @if(!empty(getGeneralSecuritySettings('captcha_for_register')))
                             @include('web.default.includes.captcha_input')
                         @endif
-
+<!--start-->
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" name="term" value="1" {{ (!empty(old('term')) and old('term') == '1') ? 'checked' : '' }} class="custom-control-input @error('term') is-invalid @enderror" id="term">
-                            <label class="custom-control-label font-14" for="term">{{ trans('auth.i_agree_with') }}
+                            <label class="custom-control-label font-14" for="term">
+                                <p class="term">
+                                {{ trans('auth.i_agree_with') }}
+                               
                                 <a href="pages/terms" target="_blank" class="text-secondary font-weight-bold font-14">{{ trans('auth.terms_and_rules') }}</a>
+                                
+                                </p>
                             </label>
 
                             @error('term')
@@ -161,14 +232,23 @@
                             {{ $message }}
                         </div>
                         @enderror
+<!--end-->
 
                         <button type="submit" class="btn btn-primary btn-block mt-20">{{ trans('auth.signup') }}</button>
                     </form>
 
-                    <div class="text-center mt-20">
+                    <!--<div class="text-center mt-20">-->
+                    <!--    <span class="text-secondary">-->
+                    <!--        {{ trans('auth.already_have_an_account') }}-->
+                    <!--        <a href="/login" class="text-secondary font-weight-bold">{{ trans('auth.login') }}</a>-->
+                    <!--    </span>-->
+                    <!--</div>-->
+                     <div class="ft-text text-center mt-20">
                         <span class="text-secondary">
-                            {{ trans('auth.already_have_an_account') }}
-                            <a href="/login" class="text-secondary font-weight-bold">{{ trans('auth.login') }}</a>
+                            لديك حساب بالفعل ؟
+                           
+                           <br>
+                            <a href="/login" class="text-secondary font-weight-bold">تسجيل دخول</a>
                         </span>
                     </div>
 
