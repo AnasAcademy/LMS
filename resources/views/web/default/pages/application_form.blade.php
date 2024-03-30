@@ -401,7 +401,7 @@
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
 
                                     {{-- المؤهل التعليمي --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
+                                    <div class="form-group col-12 col-sm-6">
                                         <label for="educational_qualification_country" class="form-label">بلد مصدر شهادة
                                             البكالوريوس*</label>
 
@@ -892,7 +892,7 @@
             let high_education = document.getElementsByClassName("high_education");
             let secondary_education = document.getElementsByClassName("secondary_education");
 
-            if (select && hiddenLabel && hiddenInput) {
+            if (select.value && hiddenLabel && hiddenInput) {
                 var categoryId = select.value;
                 var categoryBundles = bundles[categoryId];
 
