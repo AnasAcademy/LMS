@@ -10,7 +10,7 @@
             /* Add border to the container */
             padding: 20px;
             /* Optional: Add padding for spacing */
-            border-radius: 10px !important;
+            border-radius:16px !important;
             box-shadow: 2px 5px 10px #ddd;
             margin: 60px auto;
         }
@@ -39,24 +39,21 @@
         }
 
         .form-main-title {
-            font-family: 'Inter';
+            font-family: "IBM Plex Sans Arabic" !important;
             font-style: normal;
             font-weight: 400;
-            font-size: 32px;
+            font-size: 22px;
             line-height: 39px;
             color: #5E0A83;
         }
 
-        .form-title {
-
-
-            font-family: 'IBM Plex Sans';
+         .form-title {
+            font-family: "IBM Plex Sans Arabic" !important;
             font-style: normal;
             font-weight: 700;
-            font-size: 32px;
+            font-size: 36px;
             line-height: 42px;
-            color: #000000;
-
+            color: #fff;
         }
 
         input {
@@ -65,10 +62,12 @@
 
         .main-section {
             background-color: #F6F7F8;
+            border-radius:16px !important;
         }
 
         .main-container {
             border-width: 2px !important;
+            border-radius: 16px !important;
         }
 
         .secondary_education,
@@ -79,9 +78,17 @@
 
         .hero {
             width: 100%;
-            height: 80vh;
+            height: 50vh;
             /* background-color: #ED1088; */
-            background-image: linear-gradient(90deg, #5E0A83 19%, #F70387 100%);
+            background-image: URL('https://lh3.googleusercontent.com/pw/AM-JKLXva4P7RlMWEJD_UMf699iZq37WokzlPBAqpkLcxYqgkUi3YzPTP5fuglzL3els1W36mjlBVmMNcqjGJMGNtQREe3THVN9pMkRZGNazhM3F5iQSuC4Z435gIA_0xrrPQWa1DGvsV02rmdJBJQxU0XM=w1400-h474-no');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: stretch;
         }
 
         @media(max-width:768px) {
@@ -100,7 +107,7 @@
 
         @media(max-width:576px) {
             .form-main-title {
-                font-size: 25px;
+                font-size: 20px;
             }
 
 
@@ -110,16 +117,21 @@
 
 @section('content')
     <header class="hero">
-        <section class=" container-fluid"></section>
+        <section>
+            <div class="container hero-title">
+                 <h1 class="form-title">نموذج قبول طلب جديد وحجز مقعد دراسي</h1>
+            </div>
+            
+        </section>
 
     </header>
-    <div class="application container-fluid">
+    <div class="application container">
         <div class="col-12 col-lg-10 col-md-11 px-0">
             <div class="col-lg-12 col-md-12 px-0">
                 <Section class="section1 main-section">
                     <div class="container_form">
                         <!--Form Title-->
-                        <h1 class="form-title">نموذج قبول طلب جديد وحجز مقعد دراسي</h1>
+
                         <p style="padding: 40px 0;font-size:18px;font-weight:600;line-height:1.5em">
                             يجب الاطلاع على متطلبات القبول في البرامج قبل تقديم طلب قبول جديد
                             <a href="https://anasacademy.uk/admission/" style="color:#f70387 !important;" target="_blank">
@@ -140,7 +152,7 @@
                                         اكاديمية انس للفنون </option>
                                     @foreach ($category as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ old('category_id') == $item->id ? 'selected' : '' }}>
+                                            {{ old('category_id', $student->category_id ?? null) == $item->id ? 'selected' : '' }}>
                                             {{ $item->title }} </option>
                                     @endforeach
                                 </select>
@@ -156,12 +168,12 @@
                                     value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
                             </div>
 
-                            <h1 class="pr-3 mt-50 mb-25">بيانات المتدرب الأساسية</h1>
+                            <h1 class=" mt-50 mb-25">بيانات المتدرب الأساسية</h1>
 
 
                             {{-- personal details --}}
                             <section>
-                                <h2 class="form-main-title pr-3">البيانات الشخصية</h2>
+                                <h2 class="form-main-title">البيانات الشخصية</h2>
                                 <section
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
                                     {{-- arabic name --}}
@@ -410,7 +422,7 @@
                                     </div>
 
                                     {{-- مصدر شهادة البكالوريوس --}}
-                                    <div class="form-group col-12 col-sm-6 "
+                                    <div class="form-group col-12 col-sm-6 high_education"
                                         id="anotherEducationCountrySection" style="display: none">
 
                                         <label for="university" class="form-label">
@@ -880,7 +892,7 @@
             let high_education = document.getElementsByClassName("high_education");
             let secondary_education = document.getElementsByClassName("secondary_education");
 
-            if (select.value && hiddenLabel && hiddenInput) {
+            if (select && hiddenLabel && hiddenInput) {
                 var categoryId = select.value;
                 var categoryBundles = bundles[categoryId];
 
@@ -896,36 +908,34 @@
                         options +
                         '</select>';
                     hiddenLabel.style.display = "block";
-
                 } else {
                     hiddenInput.outerHTML =
                         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
                     hiddenLabel.style.display = "none";
                 }
                 var selectedOption = select.options[select.selectedIndex];
-                    var selectedText = selectedOption.textContent;
-                    education.style.display = "block";
+                var selectedText = selectedOption.textContent;
+                education.style.display = "block";
 
-                    if (selectedText.trim() == "دبلوم متوسط") {
-                        secondary_education.forEach(function(element) {
-                            element.style.display = "block";
-                        });
+                if (selectedText.trim() == "دبلوم متوسط") {
+                    secondary_education.forEach(function(element) {
+                        element.style.display = "block";
+                    });
 
-                        high_education.forEach(function(element) {
-                            element.style.display = "none";
-                        });
+                    high_education.forEach(function(element) {
+                        element.style.display = "none";
+                    });
 
-                    } else {
-                        secondary_education.forEach(function(element) {
-                            element.style.display = "none";
-                        });
+                } else {
+                    secondary_education.forEach(function(element) {
+                        element.style.display = "none";
+                    });
 
-                        high_education.forEach(function(element) {
-                            element.style.display = "block";
-                        });
+                    high_education.forEach(function(element) {
+                        element.style.display = "block";
+                    });
 
-                    }
-
+                }
             }
         }
         toggleHiddenInput();
