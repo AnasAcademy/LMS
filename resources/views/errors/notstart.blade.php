@@ -15,20 +15,14 @@
         <h2 class="mt-25 font-36" id="countdown"></h2>
         <p class="mt-25 font-16">Time left for The diploma </p>
     </section>
-    
+
 
 <script>
-  
-
-    var endTime = new Date('<?php echo $bundle_start; ?>').getTime();
 
     // Update the countdown every second
     var countdownInterval = setInterval(function() {
-        // Get the current time
-        var now = new Date().getTime();
 
-        // Calculate the remaining time in milliseconds
-        var remainingTime = endTime - now;
+        var remainingTime = '<?php echo $remainingTime; ?>'
 
         // Calculate days, hours, minutes, and seconds
         var days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));

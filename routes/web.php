@@ -89,49 +89,49 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
 
-    // Route::group(['prefix' => 'course'], function () {
-    //     Route::get('/{slug}', 'WebinarController@course');
-    //     Route::get('/{slug}/file/{file_id}/download', 'WebinarController@downloadFile');
-    //     Route::get('/{slug}/file/{file_id}/showHtml', 'WebinarController@showHtmlFile');
-    //     Route::get('/{slug}/lessons/{lesson_id}/read', 'WebinarController@getLesson');
-    //     Route::post('/getFilePath', 'WebinarController@getFilePath');
-    //     Route::get('/{slug}/file/{file_id}/play', 'WebinarController@playFile');
-    //     Route::get('/{slug}/free', 'WebinarController@free');
-    //     Route::get('/{slug}/points/apply', 'WebinarController@buyWithPoint');
-    //     Route::post('/{id}/report', 'WebinarController@reportWebinar');
-    //     Route::post('/{id}/learningStatus', 'WebinarController@learningStatus');
+    Route::group(['prefix' => 'course'], function () {
+        Route::get('/{slug}', 'WebinarController@course');
+        Route::get('/{slug}/file/{file_id}/download', 'WebinarController@downloadFile');
+        Route::get('/{slug}/file/{file_id}/showHtml', 'WebinarController@showHtmlFile');
+        Route::get('/{slug}/lessons/{lesson_id}/read', 'WebinarController@getLesson');
+        Route::post('/getFilePath', 'WebinarController@getFilePath');
+        Route::get('/{slug}/file/{file_id}/play', 'WebinarController@playFile');
+        Route::get('/{slug}/free', 'WebinarController@free');
+        Route::get('/{slug}/points/apply', 'WebinarController@buyWithPoint');
+        Route::post('/{id}/report', 'WebinarController@reportWebinar');
+        Route::post('/{id}/learningStatus', 'WebinarController@learningStatus');
 
-    //     Route::group(['middleware' => 'web.auth'], function () {
+        Route::group(['middleware' => 'web.auth'], function () {
     //         Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
 
-    //         Route::post('/learning/itemInfo', 'LearningPageController@getItemInfo');
-    //         Route::get('/learning/{slug}', 'LearningPageController@index');
-    //         Route::get('/learning/{slug}/noticeboards', 'LearningPageController@noticeboards');
-    //         Route::get('/assignment/{assignmentId}/download/{id}/attach', 'LearningPageController@downloadAssignment');
-    //         Route::post('/assignment/{assignmentId}/history/{historyId}/message', 'AssignmentHistoryController@storeMessage');
-    //         Route::post('/assignment/{assignmentId}/history/{historyId}/setGrade', 'AssignmentHistoryController@setGrade');
-    //         Route::get('/assignment/{assignmentId}/history/{historyId}/message/{messageId}/downloadAttach', 'AssignmentHistoryController@downloadAttach');
+            Route::post('/learning/itemInfo', 'LearningPageController@getItemInfo');
+            Route::get('/learning/{slug}', 'LearningPageController@index');
+            Route::get('/learning/{slug}/noticeboards', 'LearningPageController@noticeboards');
+            Route::get('/assignment/{assignmentId}/download/{id}/attach', 'LearningPageController@downloadAssignment');
+            Route::post('/assignment/{assignmentId}/history/{historyId}/message', 'AssignmentHistoryController@storeMessage');
+            Route::post('/assignment/{assignmentId}/history/{historyId}/setGrade', 'AssignmentHistoryController@setGrade');
+            Route::get('/assignment/{assignmentId}/history/{historyId}/message/{messageId}/downloadAttach', 'AssignmentHistoryController@downloadAttach');
 
-    //         Route::group(['prefix' => '/learning/{slug}/forum'], function () { // LearningPageForumTrait
-    //             Route::get('/', 'LearningPageController@forum');
-    //             Route::post('/store', 'LearningPageController@forumStoreNewQuestion');
-    //             Route::get('/{forumId}/edit', 'LearningPageController@getForumForEdit');
-    //             Route::post('/{forumId}/update', 'LearningPageController@updateForum');
-    //             Route::post('/{forumId}/pinToggle', 'LearningPageController@forumPinToggle');
-    //             Route::get('/{forumId}/downloadAttach', 'LearningPageController@forumDownloadAttach');
+            Route::group(['prefix' => '/learning/{slug}/forum'], function () { // LearningPageForumTrait
+                Route::get('/', 'LearningPageController@forum');
+                Route::post('/store', 'LearningPageController@forumStoreNewQuestion');
+                Route::get('/{forumId}/edit', 'LearningPageController@getForumForEdit');
+                Route::post('/{forumId}/update', 'LearningPageController@updateForum');
+                Route::post('/{forumId}/pinToggle', 'LearningPageController@forumPinToggle');
+                Route::get('/{forumId}/downloadAttach', 'LearningPageController@forumDownloadAttach');
 
-    //             Route::group(['prefix' => '/{forumId}/answers'], function () {
-    //                 Route::get('/', 'LearningPageController@getForumAnswers');
-    //                 Route::post('/', 'LearningPageController@storeForumAnswers');
-    //                 Route::get('/{answerId}/edit', 'LearningPageController@answerEdit');
-    //                 Route::post('/{answerId}/update', 'LearningPageController@answerUpdate');
-    //                 Route::post('/{answerId}/{togglePinOrResolved}', 'LearningPageController@answerTogglePinOrResolved');
-    //             });
-    //         });
+                Route::group(['prefix' => '/{forumId}/answers'], function () {
+                    Route::get('/', 'LearningPageController@getForumAnswers');
+                    Route::post('/', 'LearningPageController@storeForumAnswers');
+                    Route::get('/{answerId}/edit', 'LearningPageController@answerEdit');
+                    Route::post('/{answerId}/update', 'LearningPageController@answerUpdate');
+                    Route::post('/{answerId}/{togglePinOrResolved}', 'LearningPageController@answerTogglePinOrResolved');
+                });
+            });
 
     //         Route::post('/direct-payment', 'WebinarController@directPayment');
-    //     });
-    // });
+        });
+    });
 
     Route::group(['prefix' => 'certificate_validation'], function () {
         Route::get('/', 'CertificateValidationController@index');

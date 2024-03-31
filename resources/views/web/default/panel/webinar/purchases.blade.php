@@ -91,7 +91,7 @@
                                             @endphp
                                             @foreach ($item->bundleWebinars as $bundleWebinar)
                                                 @php
-                                                    $totalHours += $bundleWebinar->webinar->duration; 
+                                                    $totalHours += $bundleWebinar->webinar->duration;
                                                 @endphp
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>
@@ -102,21 +102,9 @@
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
                                                         </td>
                                                         <td>
-                                                            <div class="btn-group dropdown table-actions">
-                                                                <button type="button"
-                                                                    class="btn-transparent dropdown-toggle"
-                                                                    data-toggle="dropdown" aria-haspopup="true"
-                                                                    aria-expanded="false">
-                                                                    <i data-feather="more-vertical" height="20"></i>
-                                                                </button>
-                                                                <div class="dropdown-menu ">
-                                                                    <a href="{{ $bundleWebinar->webinar->slug }}"
-                                                                        target="_blank"
-                                                                        class="webinar-actions d-block mt-10">اضغط هنا
-                                                                        للذهاب للمحاضرا</a>
-
-                                                                </div>
-                                                            </div>
+                                                            <a class="btn btn-primary" style="width:190px;height:50px" href="{{ $bundleWebinar->webinar->slug }}">اضغط هنا
+                                                                للذهاب للمحاضرا</a>
+                                                                <a class="btn btn-primary" href="{{ $bundleWebinar->getWebinarUrl() }}" target="_blank" rel="noopener noreferrer">للذهاب للتسجيل</a>
                                                         </td>
                                                     </tr>
                                                 @endif
