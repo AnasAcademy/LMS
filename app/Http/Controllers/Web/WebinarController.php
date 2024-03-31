@@ -295,36 +295,42 @@ class WebinarController extends Controller
             return $data;
         }
         $bundleId = BundleWebinar::where('webinar_id', $course->id)->value('bundle_id');
-
+// dd($bundleId);
         $order_id = OrderItem::where('bundle_id', $bundleId)
         ->where('user_id', auth()->user()->id)
         ->latest('created_at')
         ->value('order_id');
-     
+
         $order = Order::where('id', $order_id)->first();
         $installment_order = InstallmentOrder::where('bundle_id', $bundleId)->where('user_id',auth()->user()->id)->first();
         //////////////////////////////////////
         $bundle_start=Bundle::where('id',$bundleId)->value('start_date');
-        $bundle_start=date("Y-m-d", $bundle_start);
+        $bundle_start=Carbon::createFromTimestamp($bundle_start);
 // dd($order_id);
         if (optional($order)->status == 'paid' && $order->user_id == auth()->user()->id) {
-            if(now()->format('Y-m-d') >= $bundle_start )
+            if(now() >= $bundle_start )
             {
                 return view('web.default.course.index', $data);
             }
             else
             {
-                 return view('errors.notstart',  ['bundle_start' => $bundle_start]);
+                $now = Carbon::now();
+                $endTime = $bundle_start->timestamp * 1000;
+                $remainingTime = $endTime - ($now->timestamp * 1000);
+                 return view('errors.notstart',  ['remainingTime' => $remainingTime]);
             }
-            
+
         } elseif (optional($installment_order)->status == 'open' && $installment_order->user_id == auth()->user()->id) {
-            if(now()->format('Y-m-d') >= $bundle_start )
+            if(now() >= $bundle_start )
             {
                 return view('web.default.course.index', $data);
             }
             else
             {
-                 return view('errors.notstart', ['bundle_start' => $bundle_start]);
+                $now = Carbon::now();
+                $endTime = $bundle_start->timestamp * 1000;
+                $remainingTime = $endTime - ($now->timestamp * 1000);
+                 return view('errors.notstart',  ['remainingTime' => $remainingTime]);
             }
         } else {
             return view('errors.notPaid');
@@ -578,6 +584,7 @@ class WebinarController extends Controller
 
                         return view('web.default.course.learningPage.interactive_file', $data);
                     } else if ($file->isVideo()) {
+
                         return response()->file(public_path($file->file));
                     }
                 }

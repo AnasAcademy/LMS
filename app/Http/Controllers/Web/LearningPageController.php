@@ -54,6 +54,7 @@ class LearningPageController extends Controller
 
             if ($unReadCourseNoticeboards) {
                 $url = $course->getNoticeboardsPageUrl();
+                
                 return redirect($url);
             }
         }
