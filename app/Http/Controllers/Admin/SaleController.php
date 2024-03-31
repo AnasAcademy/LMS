@@ -45,9 +45,9 @@ class SaleController extends Controller
                 'webinar',
                 'meeting',
                 'subscribe',
-                'promotion'
+                'promotion',
             ])
-            ->paginate(10);
+            ->paginate(100);
 
         foreach ($sales as $sale) {
             $sale = $this->makeTitle($sale);
@@ -55,7 +55,7 @@ class SaleController extends Controller
             if (empty($sale->saleLog)) {
                 SaleLog::create([
                     'sale_id' => $sale->id,
-                    'viewed_at' => time()
+                    'viewed_at' => time(),
                 ]);
             }
         }
@@ -73,17 +73,17 @@ class SaleController extends Controller
         $student_ids = $request->get('student_ids');
         $webinar_ids = $request->get('webinar_ids');
 
-        if (!empty($teacher_ids)) {
+        if (! empty($teacher_ids)) {
             $data['teachers'] = User::select('id', 'full_name')
                 ->whereIn('id', $teacher_ids)->get();
         }
 
-        if (!empty($student_ids)) {
+        if (! empty($student_ids)) {
             $data['students'] = User::select('id', 'full_name')
                 ->whereIn('id', $student_ids)->get();
         }
 
-        if (!empty($webinar_ids)) {
+        if (! empty($webinar_ids)) {
             $data['webinars'] = Webinar::select('id')
                 ->whereIn('id', $webinar_ids)->get();
         }
@@ -93,51 +93,51 @@ class SaleController extends Controller
 
     private function makeTitle($sale)
     {
-        if (!empty($sale->webinar_id) or !empty($sale->bundle_id)) {
-            $item = !empty($sale->webinar_id) ? $sale->webinar : $sale->bundle;
+        if (! empty($sale->webinar_id) or ! empty($sale->bundle_id)) {
+            $item = ! empty($sale->webinar_id) ? $sale->webinar : $sale->bundle;
 
             $sale->item_title = $item ? $item->title : trans('update.deleted_item');
             $sale->item_id = $item ? $item->id : '';
             $sale->item_seller = ($item and $item->creator) ? $item->creator->full_name : trans('update.deleted_item');
             $sale->seller_id = ($item and $item->creator) ? $item->creator->id : '';
             $sale->sale_type = ($item and $item->creator) ? $item->creator->id : '';
-        } elseif (!empty($sale->meeting_id)) {
+        } elseif (! empty($sale->meeting_id)) {
             $sale->item_title = trans('panel.meeting');
             $sale->item_id = $sale->meeting_id;
             $sale->item_seller = ($sale->meeting and $sale->meeting->creator) ? $sale->meeting->creator->full_name : trans('update.deleted_item');
             $sale->seller_id = ($sale->meeting and $sale->meeting->creator) ? $sale->meeting->creator->id : '';
-        } elseif (!empty($sale->subscribe_id)) {
-            $sale->item_title = !empty($sale->subscribe) ? $sale->subscribe->title : trans('update.deleted_subscribe');
+        } elseif (! empty($sale->subscribe_id)) {
+            $sale->item_title = ! empty($sale->subscribe) ? $sale->subscribe->title : trans('update.deleted_subscribe');
             $sale->item_id = $sale->subscribe_id;
             $sale->item_seller = 'Admin';
             $sale->seller_id = '';
-        } elseif (!empty($sale->promotion_id)) {
-            $sale->item_title = !empty($sale->promotion) ? $sale->promotion->title : trans('update.deleted_promotion');
+        } elseif (! empty($sale->promotion_id)) {
+            $sale->item_title = ! empty($sale->promotion) ? $sale->promotion->title : trans('update.deleted_promotion');
             $sale->item_id = $sale->promotion_id;
             $sale->item_seller = 'Admin';
             $sale->seller_id = '';
-        } elseif (!empty($sale->registration_package_id)) {
-            $sale->item_title = !empty($sale->registrationPackage) ? $sale->registrationPackage->title : 'Deleted registration Package';
+        } elseif (! empty($sale->registration_package_id)) {
+            $sale->item_title = ! empty($sale->registrationPackage) ? $sale->registrationPackage->title : 'Deleted registration Package';
             $sale->item_id = $sale->registration_package_id;
             $sale->item_seller = 'Admin';
             $sale->seller_id = '';
-        } elseif (!empty($sale->gift_id) and !empty($sale->gift)) {
+        } elseif (! empty($sale->gift_id) and ! empty($sale->gift)) {
             $gift = $sale->gift;
-            $item = !empty($gift->webinar_id) ? $gift->webinar : (!empty($gift->bundle_id) ? $gift->bundle : $gift->product);
+            $item = ! empty($gift->webinar_id) ? $gift->webinar : (! empty($gift->bundle_id) ? $gift->bundle : $gift->product);
 
             $sale->item_title = $gift->getItemTitle();
             $sale->item_id = $item->id;
             $sale->item_seller = $item->creator->full_name;
             $sale->seller_id = $item->creator_id;
-        } elseif (!empty($sale->installment_payment_id) and !empty($sale->installmentOrderPayment)) {
+        } elseif (! empty($sale->installment_payment_id) and ! empty($sale->installmentOrderPayment)) {
             $installmentOrderPayment = $sale->installmentOrderPayment;
             $installmentOrder = $installmentOrderPayment->installmentOrder;
             $installmentItem = $installmentOrder->getItem();
 
-            $sale->item_title = !empty($installmentItem) ? $installmentItem->title : '--';
-            $sale->item_id = !empty($installmentItem) ? $installmentItem->id : '--';
-            $sale->item_seller = !empty($installmentItem) ? $installmentItem->creator->full_name : '--';
-            $sale->seller_id = !empty($installmentItem) ? $installmentItem->creator->id : '--';
+            $sale->item_title = ! empty($installmentItem) ? $installmentItem->title : '--';
+            $sale->item_id = ! empty($installmentItem) ? $installmentItem->id : '--';
+            $sale->item_seller = ! empty($installmentItem) ? $installmentItem->creator->full_name : '--';
+            $sale->seller_id = ! empty($installmentItem) ? $installmentItem->creator->id : '--';
         } else {
             $sale->item_title = '---';
             $sale->item_id = '---';
@@ -159,14 +159,14 @@ class SaleController extends Controller
         $student_ids = $request->get('student_ids', []);
         $userIds = array_merge($teacher_ids, $student_ids);
 
-        if (!empty($item_title)) {
+        if (! empty($item_title)) {
             $ids = Webinar::whereTranslationLike('title', "%$item_title%")->pluck('id')->toArray();
             $webinar_ids = array_merge($webinar_ids, $ids);
         }
 
         $query = fromAndToDateFilter($from, $to, $query, 'created_at');
 
-        if (!empty($status)) {
+        if (! empty($status)) {
             if ($status == 'success') {
                 $query->whereNull('refund_at');
             } elseif ($status == 'refund') {
@@ -176,11 +176,11 @@ class SaleController extends Controller
             }
         }
 
-        if (!empty($webinar_ids) and count($webinar_ids)) {
+        if (! empty($webinar_ids) and count($webinar_ids)) {
             $query->whereIn('webinar_id', $webinar_ids);
         }
 
-        if (!empty($userIds) and count($userIds)) {
+        if (! empty($userIds) and count($userIds)) {
             $query->where(function ($query) use ($userIds) {
                 $query->whereIn('buyer_id', $userIds);
                 $query->orWhereIn('seller_id', $userIds);
@@ -206,27 +206,27 @@ class SaleController extends Controller
 
             foreach ($salesWithSubscribe as $saleWithSubscribe) {
                 $saleWithSubscribe->update([
-                    'refund_at' => time()
+                    'refund_at' => time(),
                 ]);
 
-                if (!empty($saleWithSubscribe->webinar) and !empty($saleWithSubscribe->subscribe)) {
+                if (! empty($saleWithSubscribe->webinar) and ! empty($saleWithSubscribe->subscribe)) {
                     Accounting::refundAccountingForSaleWithSubscribe($saleWithSubscribe->webinar, $saleWithSubscribe->subscribe);
                 }
             }
         }
 
-        if (!empty($sale->total_amount)) {
+        if (! empty($sale->total_amount)) {
             Accounting::refundAccounting($sale);
         }
 
-        if (!empty($sale->meeting_id) and $sale->type == Sale::$meeting) {
+        if (! empty($sale->meeting_id) and $sale->type == Sale::$meeting) {
             $appointment = ReserveMeeting::where('meeting_id', $sale->meeting_id)
                 ->where('sale_id', $sale->id)
                 ->first();
 
-            if (!empty($appointment)) {
+            if (! empty($appointment)) {
                 $appointment->update([
-                    'status' => ReserveMeeting::$canceled
+                    'status' => ReserveMeeting::$canceled,
                 ]);
             }
         }
@@ -261,20 +261,20 @@ class SaleController extends Controller
                                     $query->select('id', 'full_name');
                                 },
                             ]);
-                        }
+                        },
                     ]);
-                }
+                },
             ])
             ->first();
 
-        if (!empty($sale)) {
+        if (! empty($sale)) {
             $webinar = $sale->webinar;
 
-            if (!empty($webinar)) {
+            if (! empty($webinar)) {
                 $data = [
                     'pageTitle' => trans('webinars.invoice_page_title'),
                     'sale' => $sale,
-                    'webinar' => $webinar
+                    'webinar' => $webinar,
                 ];
 
                 return view('admin.financial.sales.invoice', $data);
@@ -298,7 +298,7 @@ class SaleController extends Controller
                 'webinar',
                 'meeting',
                 'subscribe',
-                'promotion'
+                'promotion',
             ])
             ->get();
 
