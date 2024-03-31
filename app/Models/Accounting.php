@@ -35,7 +35,7 @@ class Accounting extends Model
     {
         return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
     }
-    
+
      public function certificate_template()
     {
         return $this->belongsTo('App\Models\CertificateTemplate', 'certificate_template_id', 'id');
@@ -172,7 +172,7 @@ class Accounting extends Model
 
         if (!empty($orderItem->webinar_id)) {
             $notifyOptions['[c.title]'] = $orderItem->webinar->title;
-        } elseif (!empty($orderItem->bundle_id)) {
+        } elseif (!empty($orderItem->bundle_id) && empty($orderItem->installment_payment_id)) {
             $notifyOptions['[c.title]'] = $orderItem->bundle->title;
         }elseif (!empty($orderItem->certificate_template_id)) {
             $notifyOptions['[c.title]'] = "certificate";

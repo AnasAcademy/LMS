@@ -13,14 +13,14 @@
             </a>
 
             <div class="d-flex align-items-center d-lg-none ml-20">
-                <a href="{{ $course->getUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200 d-none d-md-block">{{ trans('update.course_page') }}</a>
+                {{-- <a href="{{ $course->getUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200 d-none d-md-block">{{ trans('update.course_page') }}</a> --}}
 
-                <a href="/panel/webinars/purchases" class="btn learning-page-navbar-btn btn-sm border-gray200 ml-0 ml-md-10">{{ trans('update.my_courses') }}</a>
+                <a href="/panel/webinars/purchases" class="btn learning-page-navbar-btn btn-sm border-gray200 ml-0 ml-md-10">جدول مقرراتي</a>
             </div>
         </div>
 
         <div class="learning-page-progress-card d-flex flex-column">
-            <a href="{{ $course->getUrl() }}" class="learning-page-navbar-title">
+            <a href="" class="learning-page-navbar-title">
                 <span class="font-weight-bold">{{ $course->title }}</span>
             </a>
 
@@ -49,9 +49,9 @@
         @endif
 
         <div class="d-none align-items-center d-lg-flex">
-            <a href="{{ $course->getUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200">{{ trans('update.course_page') }}</a>
+            {{-- <a href="{{ $course->getUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200">{{ trans('update.course_page') }}</a> --}}
 
-            <a href="/panel/webinars/purchases" class="btn learning-page-navbar-btn btn-sm border-gray200 ml-10">{{ trans('update.my_courses') }}</a>
+            <a href="/panel/webinars/purchases" class="btn learning-page-navbar-btn btn-sm border-gray200 ml-10">جدول مقرراتي</a>
         </div>
 
         <button id="collapseBtn" type="button" class="btn-transparent ml-auto ml-lg-20">

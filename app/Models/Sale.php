@@ -35,7 +35,7 @@ class Sale extends Model
     {
         return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
     }
-    
+
     public function certificate_template()
     {
         return $this->belongsTo('App\Models\CertificateTemplate', 'certificate_template_id', 'id');
@@ -114,7 +114,7 @@ class Sale extends Model
             $orderType = Order::$registrationPackage;
         } elseif (!empty($orderItem->product_id)) {
             $orderType = Order::$product;
-        } elseif (!empty($orderItem->bundle_id)) {
+        } elseif (!empty($orderItem->bundle_id) && empty($orderItem->installment_payment_id)) {
             $orderType = Order::$bundle;
         }elseif (!empty($orderItem->certificate_template_id)) {
             $orderType = Order::$certificate;
@@ -184,7 +184,7 @@ try{
         $title = '';
         if (!empty($orderItem->webinar_id)) {
             $title = $orderItem->webinar->title;
-        } elseif (!empty($orderItem->bundle_id)) {
+        } elseif (!empty($orderItem->bundle_id) && empty($orderItem->installment_payment_id)) {
             $title = $orderItem->bundle->title;
         } elseif (!empty($orderItem->certificate_template_id)) {
             $title = "certificate";
