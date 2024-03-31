@@ -7,7 +7,7 @@
     $footerColumns = getFooterColumns();
 @endphp
 
-<footer class="footer bg-secondary position-relative user-select-none">
+<footer class="footer bg-secondary position-relative user-select-none">{{--
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -63,7 +63,7 @@
 
         <div class="mt-40 border-blue py-25 d-flex align-items-center justify-content-between">
             <div class="footer-logo">
-                <a href="/">
+                <a href="https://anasacademy.uk/">
                     @if(!empty($generalSettings['footer_logo']))
                         <img src="{{ $generalSettings['footer_logo'] }}" class="img-cover" alt="footer logo">
                     @endif
@@ -80,11 +80,11 @@
             </div>
         </div>
     </div>
-
+--}}
     @if(getOthersPersonalizationSettings('platform_phone_and_email_position') == 'footer')
         <div class="footer-copyright-card">
-            <div class="container d-flex align-items-center justify-content-between py-15">
-                <div class="font-14 text-white">{{ trans('update.platform_copyright_hint') }}</div>
+            <div class="container d-flex align-items-center justify-content-center py-15">
+                <div class="font-14 text-white">جميع الحقوق محفوظة لأكاديمية أنس للفنون© 2024</div>
 
                 <div class="d-flex align-items-center justify-content-center">
                     @if(!empty($generalSettings['site_phone']))
