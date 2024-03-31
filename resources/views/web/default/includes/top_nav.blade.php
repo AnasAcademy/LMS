@@ -1,4 +1,4 @@
-@php
+{{-- @php
     $userLanguages = !empty($generalSettings['site_language']) ? [$generalSettings['site_language'] => getLanguages($generalSettings['site_language'])] : [];
 
     if (!empty($generalSettings['user_languages']) and is_array($generalSettings['user_languages'])) {
@@ -39,7 +39,6 @@
 
             <div class="d-flex align-items-center justify-content-between justify-content-md-center">
 
-                {{-- Currency --}}
                 @include('web.default.includes.top_nav.currency')
 
 
@@ -65,27 +64,26 @@
                 @endif
 
 
-                {{-- <form action="/search" method="get" class="form-inline my-2 my-lg-0 navbar-search position-relative">
+                 <form action="/search" method="get" class="form-inline my-2 my-lg-0 navbar-search position-relative">
                     <input class="form-control mr-5 rounded" type="text" name="search" placeholder="{{ trans('navbar.search_anything') }}" aria-label="Search">
 
                     <button type="submit" class="btn-transparent d-flex align-items-center justify-content-center search-icon">
                         <i data-feather="search" width="20" height="20" class="mr-10"></i>
                     </button>
-                </form> --}}
+                </form> 
             </div>
         </div>
 
         <div class="xs-w-100 d-flex align-items-center justify-content-between ">
             <div class="d-flex">
 
-                {{-- @include(getTemplate().'.includes.shopping-cart-dropdwon') --}}
+         @include(getTemplate().'.includes.shopping-cart-dropdwon') 
 
                 <div class="border-left mx-5 mx-lg-15"></div>
 
                 @include(getTemplate().'.includes.notification-dropdown')
             </div>
 
-            {{-- User Menu --}}
             @include('web.default.includes.top_nav.user_menu')
         </div>
     </div>
@@ -97,3 +95,4 @@
     <script src="/assets/default/vendors/flagstrap/js/jquery.flagstrap.min.js"></script>
     <script src="/assets/default/js/parts/top_nav_flags.min.js"></script>
 @endpush
+--}}
