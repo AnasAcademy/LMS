@@ -51,7 +51,7 @@
             font-family: "IBM Plex Sans Arabic" !important;
             font-style: normal;
             font-weight: 700;
-            font-size: 36px;
+            /* font-size: 36px; */
             line-height: 42px;
             color: #fff;
         }
@@ -119,9 +119,9 @@
     <header class="hero">
         <section>
             <div class="container hero-title">
-                 <h1 class="form-title">نموذج قبول طلب جديد وحجز مقعد دراسي</h1>
+                 <h1 class="form-title font-36">نموذج قبول طلب جديد وحجز مقعد دراسي</h1>
             </div>
-            
+
         </section>
 
     </header>
@@ -422,7 +422,7 @@
                                     </div>
 
                                     {{-- مصدر شهادة البكالوريوس --}}
-                                    <div class="form-group col-12 col-sm-6 high_education"
+                                    <div class="form-group col-12 col-sm-6"
                                         id="anotherEducationCountrySection" style="display: none">
 
                                         <label for="university" class="form-label">
