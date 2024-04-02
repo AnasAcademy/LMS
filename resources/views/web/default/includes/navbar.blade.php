@@ -37,7 +37,7 @@
 <div id="navbarVacuum"></div>
 <nav id="navbar" class="navbar navbar-expand-lg navbar-light">
     <div class="{{ (!empty($isPanel) and $isPanel) ? 'container-fluid' : 'container' }} flex-nowrap">
-        <div class="d-flex align-items-center justify-content-between {{ (!empty($isPanel) and $isPanel) ? 'w-100' : '' }}">
+        <div class="d-flex align-items-center justify-content-between">
 
             <a class="navbar-brand navbar-order d-flex align-items-center justify-content-center mr-0 {{ (empty($navBtnUrl) and empty($navBtnText)) ? 'mr-auto' : '' }}"
                 href="http://anasacademy.uk/">
@@ -48,7 +48,6 @@
 
 
             <span class="d-none navbar-order"></span>
-
 
             {{-- <div class="mx-lg-30 d-none d-lg-flex flex-grow-1 navbar-toggle-content " id="navbarContent">
                 <div class="navbar-toggle-header text-right d-lg-none">
