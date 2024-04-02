@@ -6,7 +6,7 @@
     $navBtnUrl = null;
     $navBtnText = null;
 
-    if(request()->is('forums*')) {
+    if (request()->is('forums*')) {
         $navBtnUrl = '/forums/create-topic';
         $navBtnText = trans('update.create_new_topic');
     } else {
@@ -19,7 +19,9 @@
     }
 @endphp
 @php
-    $userLanguages = !empty($generalSettings['site_language']) ? [$generalSettings['site_language'] => getLanguages($generalSettings['site_language'])] : [];
+    $userLanguages = !empty($generalSettings['site_language'])
+        ? [$generalSettings['site_language'] => getLanguages($generalSettings['site_language'])]
+        : [];
 
     if (!empty($generalSettings['user_languages']) and is_array($generalSettings['user_languages'])) {
         $userLanguages = getLanguages($generalSettings['user_languages']);
@@ -27,35 +29,35 @@
 
     $localLanguage = [];
 
-    foreach($userLanguages as $key => $userLanguage) {
+    foreach ($userLanguages as $key => $userLanguage) {
         $localLanguage[localeToCountryCode($key)] = $userLanguage;
     }
 
 @endphp
 <div id="navbarVacuum"></div>
 <nav id="navbar" class="navbar navbar-expand-lg navbar-light">
-    <div class="{{ (!empty($isPanel) and $isPanel) ? 'container-fluid' : 'container'}}">
-        <div class="d-flex align-items-center justify-content-between w-100">
+    <div class="{{ (!empty($isPanel) and $isPanel) ? 'container-fluid' : 'container' }} flex-nowrap">
+        <div class="d-flex align-items-center justify-content-between">
 
-            <a class="navbar-brand navbar-order d-flex align-items-center justify-content-center mr-0 {{ (empty($navBtnUrl) and empty($navBtnText)) ? 'mr-auto' : '' }}" href="http://anasacademy.uk/">
-                @if(!empty($generalSettings['logo']))
+            <a class="navbar-brand navbar-order d-flex align-items-center justify-content-center mr-0 {{ (empty($navBtnUrl) and empty($navBtnText)) ? 'mr-auto' : '' }}"
+                href="http://anasacademy.uk/">
+                @if (!empty($generalSettings['logo']))
                     <img src="{{ $generalSettings['logo'] }}" class="img-cover" alt="site logo">
                 @endif
             </a>
 
-            <button class="navbar-toggler navbar-order" type="button" id="navbarToggle">
-                <span class="navbar-toggler-icon"></span>
-            </button>
 
-            <div class="mx-lg-30 d-none d-lg-flex flex-grow-1 navbar-toggle-content " id="navbarContent">
+            <span class="d-none navbar-order"></span>
+
+            {{-- <div class="mx-lg-30 d-none d-lg-flex flex-grow-1 navbar-toggle-content " id="navbarContent">
                 <div class="navbar-toggle-header text-right d-lg-none">
                     <button class="btn-transparent" id="navbarClose">
                         <i data-feather="x" width="32" height="32"></i>
                     </button>
                 </div>
 
-                {{-- <ul class="navbar-nav mr-auto d-flex align-items-center">
-                    @if(!empty($categories) and count($categories))
+                 <ul class="navbar-nav mr-auto d-flex align-items-center">
+                    @if (!empty($categories) and count($categories))
                         <li class="mr-lg-25">
                             <div class="menu-category">
                                 <ul>
@@ -64,7 +66,7 @@
                                         {{ trans('categories.categories') }}
 
                                         <ul class="cat-dropdown-menu">
-                                            @foreach($categories as $category)
+                                            @foreach ($categories as $category)
                                                 <li>
                                                     <a href="{{ $category->getUrl() }}">
                                                         <div class="d-flex align-items-center">
@@ -72,18 +74,18 @@
                                                             {{ $category->title }}
                                                         </div>
 
-                                                        @if(!empty($category->subCategories) and count($category->subCategories))
+                                                        @if (!empty($category->subCategories) and count($category->subCategories))
                                                             <i data-feather="chevron-right" width="20" height="20" class="d-none d-lg-inline-block mr-10"></i>
                                                             <i data-feather="chevron-down" width="20" height="20" class="d-inline-block d-lg-none"></i>
                                                         @endif
                                                     </a>
 
-                                                    @if(!empty($category->subCategories) and count($category->subCategories))
-                                                        <ul class="sub-menu" data-simplebar @if((!empty($isRtl) and $isRtl)) data-simplebar-direction="rtl" @endif>
-                                                            @foreach($category->subCategories as $subCategory)
+                                                    @if (!empty($category->subCategories) and count($category->subCategories))
+                                                        <ul class="sub-menu" data-simplebar @if (!empty($isRtl) and $isRtl) data-simplebar-direction="rtl" @endif>
+                                                            @foreach ($category->subCategories as $subCategory)
                                                                 <li>
                                                                     <a href="{{ $subCategory->getUrl() }}">
-                                                                        @if(!empty($subCategory->icon))
+                                                                        @if (!empty($subCategory->icon))
                                                                             <img src="{{ $subCategory->icon }}" class="cat-dropdown-menu-icon mr-10" alt="{{ $subCategory->title }} icon">
                                                                         @endif
 
@@ -102,19 +104,19 @@
                         </li>
                     @endif
 
-                    @if(!empty($navbarPages) and count($navbarPages))
-                        @foreach($navbarPages as $navbarPage)
+                    @if (!empty($navbarPages) and count($navbarPages))
+                        @foreach ($navbarPages as $navbarPage)
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ $navbarPage['link'] }}">{{ $navbarPage['title'] }}</a>
                             </li>
                         @endforeach
                     @endif
-                </ul> --}}
-            </div>
+                </ul>
+            </div> --}}
 
             <div class="nav-icons-or-start-live navbar-order">
 
-                @if(!empty($navBtnUrl))
+                @if (!empty($navBtnUrl))
                     <a href="{{ $navBtnUrl }}" class="d-none d-lg-flex btn btn-sm btn-primary nav-start-a-live-btn">
                         {{ $navBtnText }}
                     </a>
@@ -129,32 +131,31 @@
 
                     <div class="border-left mx-15"></div>
 
-                    @include(getTemplate().'.includes.notification-dropdown')
+                    @include(getTemplate() . '.includes.notification-dropdown')
                 </div>
 
             </div>
-        </div>
-         <div class="d-flex align-items-center justify-content-between justify-content-md-center">
+
+            <div class="d-flex align-items-center justify-content-between justify-content-md-center">
 
                 {{-- Currency --}}
                 @include('web.default.includes.top_nav.currency')
 
 
-                @if(!empty($localLanguage) and count($localLanguage) > 1)
+                @if (!empty($localLanguage) and count($localLanguage) > 1)
                     <form action="/locale" method="post" class="mr-15 mx-md-20">
                         {{ csrf_field() }}
 
                         <input type="hidden" name="locale">
 
-                        @if(!empty($previousUrl))
+                        @if (!empty($previousUrl))
                             <input type="hidden" name="previous_url" value="{{ $previousUrl }}">
                         @endif
 
                         <div class="language-select">
                             <div id="localItems"
-                                 data-selected-country="{{ localeToCountryCode(mb_strtoupper(app()->getLocale())) }}"
-                                 data-countries='{{ json_encode($localLanguage) }}'
-                            ></div>
+                                data-selected-country="{{ localeToCountryCode(mb_strtoupper(app()->getLocale())) }}"
+                                data-countries='{{ json_encode($localLanguage) }}'></div>
                         </div>
                     </form>
                 @else
@@ -172,28 +173,26 @@
             </div>
         </div>
 
-        <div class="xs-w-100 d-flex align-items-center justify-content-between ">
+        {{-- "xs-w-100" --}}
+        <div class="d-flex align-items-center justify-content-between xs-w-100 ">
             <div class="d-flex">
 
                 {{-- @include(getTemplate().'.includes.shopping-cart-dropdwon') --}}
 
                 <div class="border-left mx-5 mx-lg-15"></div>
 
-              {{--  @include(getTemplate().'.includes.notification-dropdown')--}}
+                {{--  @include(getTemplate().'.includes.notification-dropdown') --}}
             </div>
 
             {{-- User Menu --}}
             @include('web.default.includes.top_nav.user_menu')
         </div>
     </div>
-    </div>
-    
 </nav>
 
 @push('scripts_bottom')
     <script src="/assets/default/js/parts/navbar.min.js"></script>
-      <link href="/assets/default/vendors/flagstrap/css/flags.css" rel="stylesheet">
+    <link href="/assets/default/vendors/flagstrap/css/flags.css" rel="stylesheet">
     <script src="/assets/default/vendors/flagstrap/js/jquery.flagstrap.min.js"></script>
     <script src="/assets/default/js/parts/top_nav_flags.min.js"></script>
 @endpush
-

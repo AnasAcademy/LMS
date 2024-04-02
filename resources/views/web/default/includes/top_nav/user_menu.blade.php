@@ -1,6 +1,6 @@
 @if(!empty($authUser))
 
-    <div class="custom-dropdown navbar-auth-user-dropdown position-relative mr-50">
+    <div class="custom-dropdown navbar-auth-user-dropdown position-relative">
         <div class="custom-dropdown-toggle d-flex align-items-center navbar-user cursor-pointer">
             <img src="{{ $authUser->getAvatar() }}" class="rounded-circle" alt="{{ $authUser->full_name }}">
             <span class="font-16 user-name ml-10 text-dark-blue font-14">{{ $authUser->full_name }}</span>
@@ -101,7 +101,7 @@
     </div>
 @else
     <div class="d-flex align-items-center mr-md-50">
-        <div class="custom-dropdown navbar-auth-user-dropdown position-relative mr-50">
+        <div class="custom-dropdown navbar-auth-user-dropdown position-relative mr-10">
               <a href="/login" class=" text-dark-blue font-14">
                 <div class="custom-dropdown-toggle d-flex align-items-center navbar-user cursor-pointer">
                     <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,11 +117,11 @@
 </svg>
 
                     <span class="font-16 user-name ml-10 text-dark-blue font-14"> {{ trans('auth.login') }} / إنشاء حساب </span>
-                </div> 
+                </div>
              </a>
         </div>
     </div>
-    
-    
-    
+
+
+
 @endif
