@@ -44,9 +44,9 @@
             </a>
         @endif
 
-        @if($course->forum)
+        {{-- @if($course->forum)
             <a href="{{ $course->getForumPageUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200 mr-10">{{ trans('update.course_forum') }}</a>
-        @endif
+        @endif --}}
 
         <div class="d-none align-items-center d-lg-flex">
             {{-- <a href="{{ $course->getUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200">{{ trans('update.course_page') }}</a> --}}
