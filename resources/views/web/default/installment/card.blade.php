@@ -1,6 +1,12 @@
-<div class="installment-card p-15 mt-20">
+<style>
+.installment-card__payments .installment-step:first-child:before {
+
+    background: var(--primary);
+}
+</style>
+<div class="installment-card p-15">
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             <h4 class="font-16 font-weight-bold text-dark-blue">{{ $installment->main_title }}</h4>
 
             <div class="">
@@ -44,7 +50,7 @@
             @endif
         </div>
 
-        <div class="col-8 p-0 pr-15">
+        <div class="col-12 p-0">
             <div class="installment-card__payments d-flex flex-column w-100 h-100">
 
                 @php
@@ -67,7 +73,7 @@
                     @endforeach
                 </div>
 
-                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-auto">{{ trans('update.pay_with_installments') }}</a>
+                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-auto">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
             </div>
         </div>
     </div>
