@@ -114,63 +114,9 @@
                 </ul>
             </div> --}}
 
-            <div class="nav-icons-or-start-live navbar-order">
-
-                @if (!empty($navBtnUrl))
-                    <a href="{{ $navBtnUrl }}" class="d-none d-lg-flex btn btn-sm btn-primary nav-start-a-live-btn">
-                        {{ $navBtnText }}
-                    </a>
-
-                    <a href="{{ $navBtnUrl }}" class="d-flex d-lg-none text-primary nav-start-a-live-btn font-14">
-                        {{ $navBtnText }}
-                    </a>
-                @endif
-
-                <div class="d-none nav-notify-cart-dropdown top-navbar ">
-                    {{-- @include(getTemplate().'.includes.shopping-cart-dropdwon') --}}
-
-                    <div class="border-left mx-15"></div>
-
-                    @include(getTemplate() . '.includes.notification-dropdown')
-                </div>
-
-            </div>
-
-            <div class="d-flex align-items-center justify-content-between justify-content-md-center">
-
-                {{-- Currency --}}
-                @include('web.default.includes.top_nav.currency')
 
 
-                @if (!empty($localLanguage) and count($localLanguage) > 1)
-                    <form action="/locale" method="post" class="mr-15 mx-md-20">
-                        {{ csrf_field() }}
 
-                        <input type="hidden" name="locale">
-
-                        @if (!empty($previousUrl))
-                            <input type="hidden" name="previous_url" value="{{ $previousUrl }}">
-                        @endif
-
-                        <div class="language-select">
-                            <div id="localItems"
-                                data-selected-country="{{ localeToCountryCode(mb_strtoupper(app()->getLocale())) }}"
-                                data-countries='{{ json_encode($localLanguage) }}'></div>
-                        </div>
-                    </form>
-                @else
-                    <div class="mr-15 mx-md-20"></div>
-                @endif
-
-
-                {{-- <form action="/search" method="get" class="form-inline my-2 my-lg-0 navbar-search position-relative">
-                    <input class="form-control mr-5 rounded" type="text" name="search" placeholder="{{ trans('navbar.search_anything') }}" aria-label="Search">
-
-                    <button type="submit" class="btn-transparent d-flex align-items-center justify-content-center search-icon">
-                        <i data-feather="search" width="20" height="20" class="mr-10"></i>
-                    </button>
-                </form> --}}
-            </div>
         </div>
 
         {{-- "xs-w-100" --}}
@@ -178,14 +124,74 @@
             <div class="d-flex">
 
                 {{-- @include(getTemplate().'.includes.shopping-cart-dropdwon') --}}
-
-                <div class="border-left mx-5 mx-lg-15"></div>
-
                 {{--  @include(getTemplate().'.includes.notification-dropdown') --}}
             </div>
 
             {{-- User Menu --}}
-            @include('web.default.includes.top_nav.user_menu')
+            <div class="d-flex flex-nowrap align-items-center justify-content-between">
+                {{-- currency --}}
+                <div class="d-flex align-items-center justify-content-between justify-content-md-center">
+
+                    {{-- Currency --}}
+                    @include('web.default.includes.top_nav.currency')
+
+
+                    @if (!empty($localLanguage) and count($localLanguage) > 1)
+                        <form action="/locale" method="post" class="mr-15 mx-md-20">
+                            {{ csrf_field() }}
+
+                            <input type="hidden" name="locale">
+
+                            @if (!empty($previousUrl))
+                                <input type="hidden" name="previous_url" value="{{ $previousUrl }}">
+                            @endif
+
+                            <div class="language-select">
+                                <div id="localItems"
+                                    data-selected-country="{{ localeToCountryCode(mb_strtoupper(app()->getLocale())) }}"
+                                    data-countries='{{ json_encode($localLanguage) }}'></div>
+                            </div>
+                        </form>
+                    @else
+                        <div class="mr-15 mx-md-20"></div>
+                    @endif
+
+
+                    {{-- <form action="/search" method="get" class="form-inline my-2 my-lg-0 navbar-search position-relative">
+                    <input class="form-control mr-5 rounded" type="text" name="search" placeholder="{{ trans('navbar.search_anything') }}" aria-label="Search">
+
+                        <button type="submit" class="btn-transparent d-flex align-items-center justify-content-center search-icon">
+                            <i data-feather="search" width="20" height="20" class="mr-10"></i>
+                        </button>
+                    </form> --}}
+                </div>
+
+                {{-- notification --}}
+                <div class="nav-icons-or-start-live mr-25">
+
+                    @if (!empty($navBtnUrl))
+                        <a href="{{ $navBtnUrl }}"
+                            class="d-none d-lg-flex btn btn-sm btn-primary nav-start-a-live-btn">
+                            {{ $navBtnText }}
+                        </a>
+
+                        <a href="{{ $navBtnUrl }}"
+                            class="d-flex d-lg-none text-primary nav-start-a-live-btn font-14">
+                            {{ $navBtnText }}
+                        </a>
+                    @endif
+
+                    <div class="d-none nav-notify-cart-dropdown top-navbar ">
+                        {{-- @include(getTemplate().'.includes.shopping-cart-dropdwon') --}}
+
+                        <div class="border-left mx-15"></div>
+
+                        @include(getTemplate() . '.includes.notification-dropdown')
+                    </div>
+
+                </div>
+                @include('web.default.includes.top_nav.user_menu')
+            </div>
         </div>
     </div>
 </nav>
