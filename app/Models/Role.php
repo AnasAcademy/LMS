@@ -9,6 +9,7 @@ class Role extends Model
     public $timestamps = false;
     static $admin = 'admin';
     static $user = 'user';
+    static $registered_user = 'registered_user';
     static $teacher = 'teacher';
     static $organization = 'organization';
 
@@ -19,6 +20,7 @@ class Role extends Model
         switch ($this->name) {
             case self::$admin:
             case self::$user:
+            case self::$registered_user:
             case self::$organization:
             case self::$teacher:
                 return false;

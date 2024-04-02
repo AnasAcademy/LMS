@@ -201,6 +201,7 @@
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
                         <th>{{ trans('admin/main.income') }}</th>
                         <th>{{ trans('admin/main.user_group') }}</th>
+                        <th>حاله الدفع</th>
                         <th>كود الطالب</th>
                         <th>{{ trans('admin/main.register_date') }}</th>
                         <th>{{ trans('admin/main.status') }}</th>
@@ -251,7 +252,9 @@
                             <td>
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td>
-                            
+                            <td>
+                                {{ !empty($user->student) ? 'تم دفع رسوم التسجيل' : 'لم يتم الدفع'}}
+                            </td>
                              <td>
                                 {{ $user->user_code }}
                             </td>

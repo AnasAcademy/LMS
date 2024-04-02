@@ -25,6 +25,14 @@ class RequirementController extends Controller
         return view('admin.requirements.index', ['requirements' => $requirements]);
     }
 
+    public function students()
+    {
+
+        $requirements = '';
+
+        return view('admin.requirements.students', ['requirements' => $requirements]);
+    }
+
     public function create()
     {
     }

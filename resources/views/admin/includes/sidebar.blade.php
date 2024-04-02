@@ -68,10 +68,15 @@
 
                         @can('admin_requirements_list')
                             <li
-                                class="{{ (request()->is(getAdminPanelUrl('/requirements', false)) and request()->get('type') == 'list') ? 'active' : '' }}">
+                                class="{{ request()->is(getAdminPanelUrl('/requirements/list', false)) ? 'active' : '' }}">
                                 <a class="nav-link @if (!empty($sidebarBeeps['requirements']) and $sidebarBeeps['requirements']) beep beep-sidebar @endif"
                                     href="{{ getAdminPanelUrl() }}/requirements/list">{{ 'نموذج المتطلبات' }}</a>
                             </li>
+                            {{-- <li
+                                class="{{ request()->is(getAdminPanelUrl('/requirements/students', false)) ? 'active' : '' }}">
+                                <a class="nav-link @if (!empty($sidebarBeeps['requirements']) and $sidebarBeeps['requirements']) beep beep-sidebar @endif"
+                                    href="{{ getAdminPanelUrl() }}/requirements/students">{{ 'طلاب نموذج المتطلبات' }}</a>
+                            </li> --}}
                         @endcan
 
 

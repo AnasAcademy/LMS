@@ -96,7 +96,8 @@
                                             </td>
 
                                             <td class="font-12">
-                                                {{ dateTimeFormat($requirement->created_at, 'Y M j | H:i') }}</td>
+                                                {{ (Carbon\Carbon::parse($requirement->created_at))
+                                                    ->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}</td>
 
                                             {{-- actions --}}
                                             <td width="200" class="">

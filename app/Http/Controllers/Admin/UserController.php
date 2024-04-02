@@ -113,7 +113,8 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_list');
 
-        $query = User::where('role_name', Role::$user);
+        $query = User::where('role_name', Role::$user)
+        ->orWhere('role_name', Role::$registered_user);;
 
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -497,13 +498,13 @@ class UserController extends Controller
                     if(empty($lastCode->lst_sd_code)){
                         $lastCode->lst_sd_code=$lastCode->student_code;
                     }
-                    $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2)); 
+                    $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
                     do {
                         $nextCodeAsInt = $lastCodeAsInt + 1;
                         $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-                        
+
                         $codeExists = User::where('user_code', $nextCode)->exists();
-                        
+
                         if ($codeExists) {
                             $lastCodeAsInt = $nextCodeAsInt;
                         } else {
@@ -529,13 +530,13 @@ class UserController extends Controller
                     if(empty($lastCode->lst_tr_code)){
                         $lastCode->lst_tr_code=$lastCode->instructor_code;
                     }
-                    $lastCodeAsInt = intval(substr($lastCode->lst_tr_code, 2)); 
+                    $lastCodeAsInt = intval(substr($lastCode->lst_tr_code, 2));
                     do {
                         $nextCodeAsInt = $lastCodeAsInt + 1;
                         $nextCode = 'TR' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-                        
+
                         $codeExists = User::where('user_code', $nextCode)->exists();
-                        
+
                         if ($codeExists) {
                             $lastCodeAsInt = $nextCodeAsInt;
                         } else {
@@ -1246,7 +1247,9 @@ class UserController extends Controller
         }
 
         session()->put(['impersonated' => $user->id]);
-
+        if(!$user->isUser()){
+            return redirect('/');
+        }
         return redirect('/panel');
     }
 
