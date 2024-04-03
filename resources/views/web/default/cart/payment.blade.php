@@ -20,9 +20,9 @@
         $subTitle = "<span class='payment-hint font-20 text-white d-block'>";
 
         if ($count > 0) {
-            $subTitle .= handlePrice($total) . ' ' . trans('cart.for_items', ['count' => $count]);
+            $subTitle .= ($total) . ' ريال سعودي ' . trans('cart.for_items', ['count' => $count]);
         } else {
-            $subTitle .= handlePrice($total) . ' ' . '    رسوم التسجيل ';
+            $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
         }
         // close subtitle
         $subTitle .= '</span>';
