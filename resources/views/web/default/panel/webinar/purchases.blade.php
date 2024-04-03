@@ -102,16 +102,18 @@
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
                                                         </td>
                                                         <td>
-                                                            @if($bundleWebinar->webinar->video_demo)
-                                                                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:190px;height:50px"
-                                                                href="{{ $bundleWebinar->webinar->video_demo }}">اضغط هنا للذهاب للمحاضرا</a>
-                                                            @else
-                                                                <button class="btn btn-primary" style="width:190px;height:50px" disabled>اضغط هنا للذهاب للمحاضرا</button>
-                                                            @endif
+                                                            @if($bundleWebinar->webinar->duration !=0)
+                                                                @if($bundleWebinar->webinar->video_demo)
+                                                                    <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:190px;height:50px"
+                                                                    href="{{ $bundleWebinar->webinar->video_demo }}">اضغط هنا للذهاب للمحاضرا</a>
+                                                                @else
+                                                                    <button class="btn btn-primary" style="width:190px;height:50px" disabled>اضغط هنا للذهاب للمحاضرا</button>
+                                                                @endif
 
-                                                            <a class="btn btn-primary"
-                                                                href="{{ $bundleWebinar->getWebinarUrl() }}"
-                                                                target="_blank" rel="noopener noreferrer">للذهاب للتسجيل</a>
+                                                                <a class="btn btn-primary"
+                                                                    href="{{ $bundleWebinar->getWebinarUrl() }}"
+                                                                    target="_blank" rel="noopener noreferrer">للذهاب للتسجيل</a>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endif
