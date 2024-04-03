@@ -56,24 +56,24 @@
                                 </p>
                             </div>
                         @elseif ($bundleData['bundle']->studentRequirement->status == 'approved')
-                        @php
-                            $hasBought = $bundleData['bundle']->bundle->checkUserHasBought(
-                                auth()->user(),
-                            );
-                            $canSale = ($bundleData['bundle']->bundle->canSale() and !$hasBought);
+                            @php
+                                $hasBought = $bundleData['bundle']->bundle->checkUserHasBought(auth()->user());
+                                $canSale = ($bundleData['bundle']->bundle->canSale() and !$hasBought);
 
-                        @endphp
+                            @endphp
                             <section class="row mx-0 col-12">
                                 <div class="col-12 text-center mb-20">
                                     @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                    <p class="alert alert-success text-center">
-                                        لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
-                                    </p>
+                                        <p class="alert alert-success text-center">
+                                            لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه
+                                            للدفع
+                                        </p>
                                     @endif
                                 </div>
 
                                 {{-- direct buy --}}
-                                <div class="px-20 pb-30 col-12 col-md-6 installment-card mb-md-0 mb-20" style="background-color: #fbfbfb">
+                                <div class="px-20 pb-30 col-12 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }} installment-card mb-md-0 mb-20"
+                                    style="background-color: #fbfbfb">
 
                                     <section class="mt-20 text-start">
                                         @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
@@ -168,11 +168,10 @@
 
                                     </form>
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    @if (!empty($bundleData['installments']))
-                                        {{-- <p class="text-center fs-10">
-                                        أو بالتقسيط من هنا
-                                    </p> --}}
+
+                                @if (!empty($bundleData['installments']) && count($bundleData['installments']))
+                                    <div class="col-12 col-md-6">
+
                                         {{-- Installments --}}
                                         @if (
                                             !empty($bundleData['installments']) and
@@ -201,8 +200,8 @@
                                                 ])
                                             @endforeach
                                         @endif
-                                    @endif
-                                </div>
+                                    </div>
+                                @endif
                             </section>
                         @elseif ($bundleData['bundle']->studentRequirement->status == 'rejected')
                             <div class="w-100 text-center">

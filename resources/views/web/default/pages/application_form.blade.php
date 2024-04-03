@@ -116,15 +116,10 @@
 @endpush
 
 @section('content')
-    <header class="hero">
-        <section>
-            <div class="container hero-title">
-                 <h1 class="form-title font-36">نموذج قبول طلب جديد وحجز مقعد دراسي</h1>
-            </div>
 
-        </section>
-
-    </header>
+    {{-- hero section --}}
+    @include('web.default.includes.hero_section', ['inner'=> "<h1 class='form-title font-36'>نموذج قبول طلب جديد وحجز مقعد دراسي</h1>"])
+    
     <div class="application container">
         <div class="col-12 col-lg-10 col-md-11 px-0">
             <div class="col-lg-12 col-md-12 px-0">
