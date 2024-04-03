@@ -13,7 +13,7 @@
                 <p class="text-gray font-14 text-ellipsis">{{ nl2br($installment->description) }}</p>
             </div>
 
-            @if(!empty($installment->capacity))
+            {{-- @if(!empty($installment->capacity))
                 @php
                     $reachedCapacityPercent = $installment->reachedCapacityPercent();
                 @endphp
@@ -26,7 +26,7 @@
                         <div class="ml-10 font-12 text-danger">{{ trans('update.percent_capacity_reached',['percent' => $reachedCapacityPercent]) }}</div>
                     </div>
                 @endif
-            @endif
+            @endif --}}
 
             @if(!empty($installment->banner))
                 <div class="mt-20">

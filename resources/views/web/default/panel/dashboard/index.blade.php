@@ -82,51 +82,18 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-3 mt-35">
-                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/meetings/requests @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center">
-                    <div class="stat-icon requests">
-                        <img src="/assets/default/img/icons/request.svg" alt="">
-                    </div>
-                    <div class="d-flex flex-column ml-15">
-                        <span class="font-30 text-secondary">{{ !empty($pendingAppointments) ? $pendingAppointments : (!empty($webinarsCount) ? $webinarsCount : 0) }}</span>
-                        <span class="font-16 text-gray font-weight-500">{{ $authUser->isUser() ? trans('panel.purchased_courses') : trans('panel.pending_appointments') }}</span>
-                    </div>
-                </a>
-
-                <a href="@if($authUser->isUser()) /panel/meetings/reservation @else /panel/financial/sales @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-15 mt-md-30">
+            <div class="col-12 col-lg-6 mt-35">
+                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-15 mt-md-30">
                     <div class="stat-icon monthly-sales">
-                        <img src="@if($authUser->isUser()) /assets/default/img/icons/meeting.svg @else /assets/default/img/icons/monay.svg @endif" alt="">
+                        <img src="/assets/default/img/icons/meeting.svg" alt="">
                     </div>
                     <div class="d-flex flex-column ml-15">
-                        <span class="font-30 text-secondary">{{ !empty($monthlySalesCount) ? handlePrice($monthlySalesCount) : (!empty($reserveMeetingsCount) ? $reserveMeetingsCount : 0) }}</span>
-                        <span class="font-16 text-gray font-weight-500">{{ $authUser->isUser() ? trans('panel.meetings') : trans('panel.monthly_sales') }}</span>
+                        <span class="font-16 text-gray font-weight-500">جدول المقررات</span>
                     </div>
                 </a>
             </div>
 
-            <div class="col-12 col-lg-3 mt-35">
-                <a href="/panel/support" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center">
-                    <div class="stat-icon support-messages">
-                        <img src="/assets/default/img/icons/support.svg" alt="">
-                    </div>
-                    <div class="d-flex flex-column ml-15">
-                        <span class="font-30 text-secondary">{{ !empty($supportsCount) ? $supportsCount : 0 }}</span>
-                        <span class="font-16 text-gray font-weight-500">{{ trans('panel.support_messages') }}</span>
-                    </div>
-                </a>
-
-                <a href="@if($authUser->isUser()) /panel/webinars/my-comments @else /panel/webinars/comments @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-15 mt-md-30">
-                    <div class="stat-icon comments">
-                        <img src="/assets/default/img/icons/comment.svg" alt="">
-                    </div>
-                    <div class="d-flex flex-column ml-15">
-                        <span class="font-30 text-secondary">{{ !empty($commentsCount) ? $commentsCount : 0 }}</span>
-                        <span class="font-16 text-gray font-weight-500">{{ trans('panel.comments') }}</span>
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-12 col-lg-3 mt-35">
+            {{-- <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-15 px-10 px-md-20">
                     <div data-percent="{{ !empty($nextBadge) ? $nextBadge['percent'] : 0 }}" data-label="{{ (!empty($nextBadge) and !empty($nextBadge['earned'])) ? $nextBadge['earned']->title : '' }}" id="nextBadgeChart" class="text-center">
                     </div>
@@ -135,10 +102,10 @@
                         <span class="font-16 font-weight-bold text-secondary">{{ (!empty($nextBadge) and !empty($nextBadge['badge'])) ? $nextBadge['badge']->title : trans('public.not_defined') }}</span>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-12 col-lg-6 mt-35">
                 <div class="bg-white noticeboard rounded-sm panel-shadow py-10 py-md-20 px-15 px-md-30">
                     <h3 class="font-16 text-dark-blue font-weight-bold">{{ trans('panel.noticeboard') }}</h3>
@@ -179,7 +146,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </section>
 
 

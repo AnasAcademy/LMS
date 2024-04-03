@@ -56,32 +56,38 @@
                                 </p>
                             </div>
                         @elseif ($bundleData['bundle']->studentRequirement->status == 'approved')
-                            <section class="row mx-0">
+                        @php
+                            $hasBought = $bundleData['bundle']->bundle->checkUserHasBought(
+                                auth()->user(),
+                            );
+                            $canSale = ($bundleData['bundle']->bundle->canSale() and !$hasBought);
+
+                        @endphp
+                            <section class="row mx-0 col-12">
                                 <div class="col-12 text-center mb-20">
+                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
                                     <p class="alert alert-success text-center">
                                         لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة التاليه للدفع
                                     </p>
-                                    <!-- <a href="/bundles/{{ $bundleData['bundle']->bundle->slug }}"
-                                                    class="btn btn-primary p-5 mt-20"> لدفع
-                                                      رسوم البرنامج بقيمه {{ $bundleData['bundle']->bundle->price }}ريال
-                                                    اضغط هنا</a> -->
+                                    @endif
                                 </div>
 
                                 {{-- direct buy --}}
                                 <div class="px-20 pb-30 col-12 col-md-6 installment-card mb-md-0 mb-20" style="background-color: #fbfbfb">
 
                                     <section class="mt-20 text-start">
-                                        <h4 class="font-16 font-weight-bold text-dark-blue">
-                                            دفع الرسوم كاملة
-                                        </h4>
-                                        <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة</p>
-
-                                        <div class="mt-20 d-flex align-items-center">
+                                        @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
+                                            <h4 class="font-16 font-weight-bold text-dark-blue">
+                                                دفع الرسوم كاملة
+                                            </h4>
+                                            <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة</p>
+                                        @endif
+                                        {{-- <div class="mt-20 d-flex align-items-center">
                                             <div class="progress card-progress flex-grow-1">
                                                 <span class="progress-bar rounded-sm bg-primary" style="width: 100%"></span>
                                             </div>
                                             <div class="ml-10 font-12 text-danger">100% of capacity reached</div>
-                                        </div>
+                                        </div> --}}
                                         {{-- bundle Price --}}
                                         @if ($bundleData['bundle']->bundle->price > 0)
                                             <div id="priceBox"
@@ -121,7 +127,7 @@
                                         </p>
                                         <p class="bundle-details text-gray mt-10">
                                             مكونة من
-                                            {{ $bundleData['bundle']->bundle->getBundleDuration() }}
+                                            {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
                                             ساعات دراسية
                                         </p>
 
@@ -131,13 +137,7 @@
                                         <input type="hidden" name="item_id"
                                             value="{{ $bundleData['bundle']->bundle->id }}">
 
-                                        @php
-                                            $hasBought = $bundleData['bundle']->bundle->checkUserHasBought(
-                                                auth()->user(),
-                                            );
-                                            $canSale = ($bundleData['bundle']->bundle->canSale() and !$hasBought);
 
-                                        @endphp
 
                                         <div class="mt-20 d-flex flex-column">
                                             @if ($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder()))
