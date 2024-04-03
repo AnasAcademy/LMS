@@ -873,7 +873,7 @@ class UserController extends Controller
             return redirect('/apply');
         }
 
-        $studentBundles = BundleStudent::where('student_id', $student->id)->orderBy("updated_at", "desc")->get();
+        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
 
         /* Installments */
         $bundleInstallments = [];
@@ -934,6 +934,9 @@ class UserController extends Controller
        $studentRequirments = $studentBundle->studentRequirement;
 
         if ($studentRequirments) {
+            if($studentRequirments->status !="rejected"){
+                return redirect('/panel/requirements');
+            }
             $data["requirementUploaded"] = true;
             $data["requirementStatus"] = $studentRequirments->status;
         }
@@ -991,7 +994,7 @@ class UserController extends Controller
         } else {
             StudentRequirement::create($data);
         }
-        return redirect('/panel/bundles/'.$studentBundleId.'/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
+        return redirect('/panel/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
     }
 
 
