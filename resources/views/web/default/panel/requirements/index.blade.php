@@ -98,12 +98,18 @@
                                                             $bundleData['bundle']->bundle->price,
                                                         );
                                                     @endphp
-                                                    <span id="realPrice"
-                                                        data-value="{{ $bundleData['bundle']->bundle->price }}"
-                                                        data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
-                                                        class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
-                                                        {{ $realPrice['price'] }}
-                                                    </span>
+                                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
+                                                      <p style="text-decoration: line-through;"> {{ handleCoursePagePrice($bundleData['bundle']->bundle->price + ($bundleData['bundle']->bundle->price*0.23))['price'] }}</p>
+                                                        <span id="realPrice"
+                                                            data-value="{{ $bundleData['bundle']->bundle->price }}"
+                                                            data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
+                                                            class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
+                                                            {{ $realPrice['price'] }}
+                                                        </span>
+                                                        <p class="text-center text-danger mt-15">
+                                                            خصم 23% عند دفع كامل الرسوم مرة واحده
+                                                        </p>
+                                                    @endif
 
                                                     @if (!empty($realPrice['tax']) and empty($activeSpecialOffer))
                                                         <span class="d-block font-14 text-gray">+ {{ $realPrice['tax'] }}
@@ -116,21 +122,21 @@
                                                 <span class="font-36 text-primary">{{ trans('public.free') }}</span>
                                             </div>
                                         @endif
+                                        @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
+                                            <p class="bundle-details text-gray mt-10">
+                                                الدبلومة عن بعد 100%
+                                            </p>
 
-                                        <p class="bundle-details text-gray mt-10">
-                                            الدبلومة عن بعد 100%
-                                        </p>
-
-                                        <p class="bundle-details text-gray mt-10">
-                                            مكونة من
-                                            {{ $bundleData['bundle']->bundle->bundleWebinars->count() }} فصول دراسية
-                                        </p>
-                                        <p class="bundle-details text-gray mt-10">
-                                            مكونة من
-                                            {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
-                                            ساعات دراسية
-                                        </p>
-
+                                            <p class="bundle-details text-gray mt-10">
+                                                مكونة من
+                                                {{ $bundleData['bundle']->bundle->bundleWebinars->count() }} فصول دراسية
+                                            </p>
+                                            <p class="bundle-details text-gray mt-10">
+                                                مكونة من
+                                                {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
+                                                ساعات دراسية
+                                            </p>
+                                        @endif
                                     </section>
                                     <form action="{{ route('purchase_bundle') }}" method="POST">
                                         {{ csrf_field() }}
