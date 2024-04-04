@@ -14,8 +14,10 @@
         $showCertificateAdditionalInRegister = getFeaturesSettings('show_certificate_additional_in_register') ?? false;
         $selectRolesDuringRegistration = getFeaturesSettings('select_the_role_during_registration') ?? null;
     @endphp
-    <div class="p-4 m-3">
-        <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="40%" class="mb-5 mt-2">
+    <div class="p-md-4 m-md-3">
+        <div class="col-7 col-md-4 p-0 mb-5 mt-3 mt-md-auto">
+            <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="100%" class="">
+        </div>
 
         <h1 class="font-20 font-weight-bold mb-3"><svg width="34" height="29" viewBox="0 0 34 29" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
@@ -167,7 +169,7 @@
 
             <button type="submit" class="btn btn-primary btn-block mt-20">{{ trans('auth.signup') }}</button>
         </form>
-        
+
         <div class="ft-text text-center mt-20">
             <span class="text-secondary">
                 لديك حساب بالفعل ؟

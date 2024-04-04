@@ -72,10 +72,10 @@
                                 </div>
 
                                 {{-- direct buy --}}
-                                <div class="px-20 pb-30 col-12 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }} installment-card mb-md-0 mb-20"
+                                <div class="px-20 pb-30 col-12 row mx-0 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }} installment-card mb-md-0 mb-20"
                                     style="background-color: #fbfbfb">
 
-                                    <section class="mt-20 text-start">
+                                    <section class="mt-20 text-start col-12">
                                         @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
                                             <h4 class="font-16 font-weight-bold text-dark-blue">
                                                 دفع الرسوم كاملة
@@ -91,7 +91,7 @@
                                         {{-- bundle Price --}}
                                         @if ($bundleData['bundle']->bundle->price > 0)
                                             <div id="priceBox"
-                                                class="d-flex align-items-center justify-content-center mt-20 {{ !empty($activeSpecialOffer) ? ' flex-column ' : '' }}">
+                                                class="order-1 col-12 text-center d-flex align-items-center justify-content-center mt-20 {{ !empty($activeSpecialOffer) ? ' flex-column ' : '' }}">
                                                 <div class="text-center">
                                                     @php
                                                         $realPrice = handleCoursePagePrice(
@@ -118,27 +118,29 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <div class="d-flex align-items-center justify-content-center mt-20">
+                                            <div class="d-flex align-items-center justify-content-center mt-20 order-1 col-12 ">
                                                 <span class="font-36 text-primary">{{ trans('public.free') }}</span>
                                             </div>
                                         @endif
-                                        @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                            <p class="bundle-details text-gray mt-10">
-                                                الدبلومة عن بعد 100%
-                                            </p>
-
-                                            <p class="bundle-details text-gray mt-10">
-                                                مكونة من
-                                                {{ $bundleData['bundle']->bundle->bundleWebinars->count() }} فصول دراسية
-                                            </p>
-                                            <p class="bundle-details text-gray mt-10">
-                                                مكونة من
-                                                {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
-                                                ساعات دراسية
-                                            </p>
-                                        @endif
                                     </section>
-                                    <form action="{{ route('purchase_bundle') }}" method="POST">
+                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
+                                       <section class="bundle-details mt-3 order-3 col-12">
+                                        <p class="bundle-details text-gray mt-10">
+                                            الدبلومة عن بعد 100%
+                                        </p>
+
+                                        <p class="bundle-details text-gray mt-10">
+                                            مكونة من
+                                            {{ $bundleData['bundle']->bundle->bundleWebinars->count() }} فصول دراسية
+                                        </p>
+                                        <p class="bundle-details text-gray mt-10">
+                                            مكونة من
+                                            {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
+                                            ساعات دراسية
+                                        </p>
+                                       </section>
+                                    @endif
+                                    <form action="{{ route('purchase_bundle') }}" method="POST" class="order-2 col-12">
                                         {{ csrf_field() }}
                                         <input type="hidden" name="item_id"
                                             value="{{ $bundleData['bundle']->bundle->id }}">

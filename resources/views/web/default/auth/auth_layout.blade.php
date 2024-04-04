@@ -56,7 +56,7 @@
         }
 
         .auth-hero {
-            background-image: url("https://edu.anasacademy.uk/pluginfile.php/1/theme_edumy/login_bg/1710084791/BGhome%20%286%29.png");
+            background-image: url("{{asset('assets/default/img/auth/BGhome - Copy.png')}}");
             background-position: center center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -68,14 +68,37 @@
             top: 0;
             width: 100%;
             overflow: hidden;
-            
+
 
         }
 
-        .content{
+        .auth_hero_2{
+            height: 100vh;
+            background-position: bottom;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .content {
             overflow: auto;
             height: 100vh;
         }
+
+        @media(max-width:992px){
+            .auth_hero_2{
+            height: 50vh !important;
+            min-height: 50vh !important;
+            background-position: left;
+            }
+        }
+
+        @media(max-width: 992px) and (min-width: 768px){
+            .content {
+            min-height: 50vh !important;
+            height: auto !important;
+        }
+        }
+
     </style>
 </head>
 
@@ -86,14 +109,30 @@
             $getPageBackgroundSettings = getPageBackgroundSettings();
         @endphp
 
-        <section class="d-flex auth-hero">
-            
-                <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white content">
+        {{-- <section class="d-flex auth-hero">
+
+            <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white content">
+                @yield('content')
+
+
+            </div>
+
+        </section> --}}
+
+        <section class="section">
+            <div class="d-flex flex-wrap align-items-stretch">
+                <div class="col-lg-4 col-12 order-lg-1 min-vh-100 order-2 bg-white content">
+
                     @yield('content')
-                    
 
                 </div>
 
+                <div class="col-lg-8 col-12 order-lg-2 order-1 position-relative overlay-gradient-bottom min-vh-100 auth_hero_2 d-none d-md-block"
+                    data-background="{{asset('assets/default/img/auth/BGhome.png')}}">
+
+                </div>
+
+            </div>
         </section>
     </div>
     <!-- General JS Scripts -->
