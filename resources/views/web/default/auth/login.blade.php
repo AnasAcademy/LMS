@@ -6,8 +6,10 @@
         $siteGeneralSettings = getGeneralSettings();
     @endphp
 
-    <div class="p-4 m-3">
-        <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="40%" class="mb-5 mt-2">
+    <div class="p-md-4 m-md-3">
+        <div class="col-7 col-md-4 p-0 mb-5 mt-3 mt-md-auto">
+            <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="100%" class="">
+        </div>
 
         <h1 class="font-20 font-weight-bold mb-3"><svg width="34" height="29" viewBox="0 0 34 29" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
