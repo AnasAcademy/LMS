@@ -4,7 +4,7 @@
     background: var(--primary);
 }
 </style>
-<div class="installment-card p-15">
+<div class="installment-card p-15 w-100 h-100">
     <div class="row">
         <div class="col-12">
             <h4 class="font-16 font-weight-bold text-dark-blue">{{ $installment->main_title }}</h4>
@@ -59,14 +59,14 @@
                     $installmentTotalInterest = $installment->totalInterest($itemPrice, $totalPayments);
                 @endphp
 
-                <div class="d-flex align-items-center justify-content-center flex-column">
+                <div class="d-flex align-items-center justify-content-center flex-column order-1">
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
                     {{-- <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
                             ({{ trans('update.percent_interest',['percent' => $installmentTotalInterest]) }})
                         @endif</span> --}}
                 </div>
 
-                <div class="mt-25 mb-15">
+                <div class="mt-25 mb-15 order-3 mt-35">
                     <div class="installment-step d-flex align-items-center font-12 text-gray">{{ !empty($installment->upfront) ? (trans('update.amount_upfront',['amount' => handlePrice($installment->getUpfront($itemPrice))]) . ($installment->upfront_type == "percent" ? " ({$installment->upfront}%)" : '')) : trans('update.no_upfront') }}</div>
 
                     @foreach($installment->steps as $installmentStep)
@@ -76,7 +76,7 @@
                     @endforeach
                 </div>
 
-                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-auto">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
+                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-50 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
             </div>
         </div>
     </div>
