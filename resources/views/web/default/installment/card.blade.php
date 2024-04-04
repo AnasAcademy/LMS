@@ -54,22 +54,25 @@
             <div class="installment-card__payments d-flex flex-column w-100 h-100">
 
                 @php
+                // dd($itemId);
                     $totalPayments = $installment->totalPayments($itemPrice ?? 1);
                     $installmentTotalInterest = $installment->totalInterest($itemPrice, $totalPayments);
                 @endphp
 
                 <div class="d-flex align-items-center justify-content-center flex-column">
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
-                    <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
+                    {{-- <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
                             ({{ trans('update.percent_interest',['percent' => $installmentTotalInterest]) }})
-                        @endif</span>
+                        @endif</span> --}}
                 </div>
 
                 <div class="mt-25 mb-15">
                     <div class="installment-step d-flex align-items-center font-12 text-gray">{{ !empty($installment->upfront) ? (trans('update.amount_upfront',['amount' => handlePrice($installment->getUpfront($itemPrice))]) . ($installment->upfront_type == "percent" ? " ({$installment->upfront}%)" : '')) : trans('update.no_upfront') }}</div>
 
                     @foreach($installment->steps as $installmentStep)
-                        <div class="installment-step d-flex align-items-center font-12 text-gray">{{ $installmentStep->getDeadlineTitle($itemPrice) }}</div>
+
+                        <div class="installment-step d-flex align-items-center font-12 text-gray">
+                            {{ $installmentStep->getDeadlineTitle($itemPrice,$itemId) }}</div>
                     @endforeach
                 </div>
 

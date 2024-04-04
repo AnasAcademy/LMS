@@ -75,6 +75,8 @@ return [
     'available_for_in_person_meetings' => 'متاح للاجتماعات الشخصية',
     'available_for_group_meeting' => 'متاح لاجتماعات المجموعة',
     'hourly_amount' => 'السعر بالساعة',
+    'amount_after_n_days' => ':amount  تاريخ استحقاق القسط :days  :percent',
+    'amount_upfront' => ':amount القسط الأول',
     'online_group_meeting_options' => 'خيارات اجتماع المجموعة عبر الإنترنت',
     'in_person_group_meeting_options' => 'خيارات اجتماع المجموعة شخصيًا',
     'minimum_students' => 'الحد الأدنى من الطلاب',
