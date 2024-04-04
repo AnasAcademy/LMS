@@ -30,10 +30,18 @@
 
         <div class="bg-white dashboard-banner-container position-relative px-15 px-ld-35 py-10 panel-shadow rounded-sm">
             <h2 class="font-30 text-primary line-height-1">
-                <span class="d-block">{{ trans('panel.hi') }} {{ $authUser->full_name }},</span>
-                <span class="font-16 text-secondary font-weight-bold">{{ trans('panel.have_event',['count' => !empty($unReadNotifications) ? count($unReadNotifications) : 0]) }}</span>
+                <span class="d-block">{{ trans('panel.hi') }} {{ $authUser->full_name }}</span>
+                <!--<span class="font-16 text-secondary font-weight-bold">{{ trans('panel.have_event',['count' => !empty($unReadNotifications) ? count($unReadNotifications) : 0]) }}</span>-->
             </h2>
+            <ul class="mt-15 unread-notification-lists">
+                <h4>بياناتك الاكاديمية</h4>
+           <li class="mt-1 text-gray font-16 font-weight-bold text-left">كود الطالب : {{ $authUser->user_code }}</li>
+                      <li class="mt-1 text-gray font-16 font-weight-bold text-left">  البريد الاكاديمي : {{ $authUser->user_code }}@anasacademy.uk</li>
 
+           
+           
+            </ul>
+{{--
             <ul class="mt-15 unread-notification-lists">
                 @if(!empty($unReadNotifications) and !$unReadNotifications->isEmpty())
                     @foreach($unReadNotifications->take(5) as $unReadNotification)
@@ -52,6 +60,7 @@
                 <img src="{{ getPageBackgroundSettings('dashboard') }}" alt="" class="img-cover">
             </div>
         </div>
+--}}
     </section>
 
     <section class="dashboard">
@@ -82,8 +91,8 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-6 mt-35">
-                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-15 mt-md-30">
+            <div class="col-12 col-lg-2 mt-5">
+                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                     <div class="stat-icon monthly-sales">
                         <img src="/assets/default/img/icons/meeting.svg" alt="">
                     </div>
