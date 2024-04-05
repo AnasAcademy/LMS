@@ -8,11 +8,14 @@
     <div class="container pt-50 mt-10">
         <div class="text-center">
             @if($installment->needToVerify())
-                <h1 class="font-36">{{ trans('update.verify_your_installments') }}</h1>
-                <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint') }}</p>
+                <h1 class="font-36">مراجعة وتأكيد الأقساط </h1>
+            {{-- {{ trans('update.verify_your_installments') }} --}}
+               {{-- <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint') }}</p> --}}
             @else
-                <h1 class="font-36">{{ trans('update.verify_your_installments2') }}</h1>
-                <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint2') }}</p>
+               <h1 class="font-36">مراجعة وتأكيد الأقساط </h1>
+            {{-- {{ trans('update.verify_your_installments2') }} --}}
+               {{-- <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint2') }}</p> --}}
+             
             @endif
         </div>
 
@@ -22,7 +25,9 @@
             </div>
 
             <div class="ml-lg-25 w-100 mt-20 mt-lg-0">
-                <h2 class="font-24 font-weight-bold text-dark-blue">{{ trans('update.installment_overview') }}</h2>
+                <h2 class="font-24 font-weight-bold text-dark-blue">نظرة عامة على القسط</h2>
+               {{-- <h2 class="font-24 font-weight-bold text-dark-blue">{{ trans('update.installment_overview') }}</h2>--}}
+
                 @if($itemType == 'course')
                     <a href="{{ $item->getUrl() }}" target="_blank" class="font-14 font-weight-500 text-gray">{{ $item->title }}</a>
                 @else
