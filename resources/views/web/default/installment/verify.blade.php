@@ -171,9 +171,11 @@
                 <button type="submit" class="btn btn-sm btn-primary">
                     @if($installment->needToVerify())
                         @if(!empty($installment->upfront))
-                            {{ trans('update.submit_and_checkout') }}
+                            {{-- {{ trans('update.submit_and_checkout') }} --}}
+                    موافق
                         @else
-                            {{ trans('update.submit_request') }}
+                           {{-- {{ trans('update.submit_request') }} --}}
+                    تقديم الطلب
                         @endif
                     @else
                         @if(!empty($installment->upfront))
