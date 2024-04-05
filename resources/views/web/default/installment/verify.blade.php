@@ -179,9 +179,11 @@
                         @endif
                     @else
                         @if(!empty($installment->upfront))
-                            {{ trans('update.proceed_to_checkout') }}
+                           {{-- {{ trans('update.proceed_to_checkout') }} --}}
+                     موافق
                         @else
-                            {{ trans('update.finalize_request') }}
+                          {{--  {{ trans('update.finalize_request') }} --}}
+                    تقديم الطلب
                         @endif
                     @endif
                 </button>
