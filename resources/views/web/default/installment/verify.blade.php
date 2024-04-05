@@ -5,19 +5,33 @@
 @endpush
 
 @section('content')
+
+        {{-- hero section --}}
+         @if($installment->needToVerify())
+                     @include('web.default.includes.hero_section', ['inner'=> "<h1 style='color:#fff' class='font-36'>مراجعة وتاكيد الأقساط</h1>"])
+
+               
+            @else
+                     @include('web.default.includes.hero_section', ['inner'=> "<h1 style='color:#fff' class='font-36'>مراجعة وتاكيد الأقساط</h1>"])
+
+            @endif
+        
     <div class="container pt-50 mt-10">
-        <div class="text-center">
-            @if($installment->needToVerify())
-                <h1 class="font-36">مراجعة وتأكيد الأقساط </h1>
+       {{--  <div class="text-center">--}}
+                
+
+          {{--   @if($installment->needToVerify())--}}
+              {{--  <h1 class="font-36">مراجعة وتأكيد الأقساط </h1>--}}
             {{-- {{ trans('update.verify_your_installments') }} --}}
                {{-- <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint') }}</p> --}}
-            @else
-               <h1 class="font-36">مراجعة وتأكيد الأقساط </h1>
+               
+            {{--   @else--}}
+             {{--  <h1 class="font-36">مراجعة وتأكيد الأقساط </h1 > --}}
             {{-- {{ trans('update.verify_your_installments2') }} --}}
                {{-- <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint2') }}</p> --}}
              
-            @endif
-        </div>
+          {{--  @endif --}}
+       {{-- </div> --}}
 
         <div class="become-instructor-packages d-flex align-items-center flex-column flex-lg-row mt-50 border rounded-lg p-15 p-lg-25">
            {{-- <div class="default-package-icon">
