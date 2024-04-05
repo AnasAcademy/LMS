@@ -5,7 +5,18 @@
     @php
         $siteGeneralSettings = getGeneralSettings();
     @endphp
-
+<style>
+    .content {
+        overflow: auto;
+        display: flex;
+        height: 100vh;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+</style>
     <div class="p-md-4 m-md-3">
         <div class="col-7 col-md-4 p-0 mb-5 mt-3 mt-md-auto">
             <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="100%" class="">
