@@ -20,9 +20,9 @@
         </div>
 
         <div class="become-instructor-packages d-flex align-items-center flex-column flex-lg-row mt-50 border rounded-lg p-15 p-lg-25">
-            <div class="default-package-icon">
+           {{-- <div class="default-package-icon">
                 <img src="/assets/default/img/become-instructor/default.png" class="img-cover" alt="{{ trans('update.installment_overview') }}" width="176" height="144">
-            </div>
+            </div> --}}
 
             <div class="ml-lg-25 w-100 mt-20 mt-lg-0">
                 <h2 class="font-24 font-weight-bold text-dark-blue">نظرة عامة على القسط</h2>
@@ -140,7 +140,7 @@
 
 
             {{-- Installment Terms & Rules --}}
-            <div class="border rounded-lg p-15 mt-30">
+            <div class="border rounded-lg p-35 mt-30">
                 <h3 class="font-16 font-weight-bold text-dark-blue">{{ trans('update.installment_terms_&_rules') }}</h3>
 
                 <div class="font-16 text-gray">{!! nl2br(getInstallmentsTermsSettings('terms_description')) !!}</div>
