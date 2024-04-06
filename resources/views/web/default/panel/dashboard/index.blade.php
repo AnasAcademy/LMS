@@ -51,6 +51,8 @@
                
                 </ul>
         </div>
+        
+    </div>
         <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
                     <div class="text-center">
@@ -75,8 +77,6 @@
                     </div>
                 </div>
         </div>
-    </div>
-        
     </section>
 
     <section class="dashboard">
