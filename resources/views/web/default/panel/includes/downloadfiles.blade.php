@@ -1,24 +1,13 @@
 <style>
-	@import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
-
-* {
-	box-sizing: border-box;
-}
+	
 
 
-
-p {
-	margin: 0;
-	line-height: 1.5;
-}
-
-ol {
+.dl ol {
 	list-style: none;
 	counter-reset: list;
-	padding: 0 1rem;
 }
 
-li {
+.dl li {
 	--stop: calc(100% / var(--length) * var(--i));
 	--l: 62%;
 	--l2: 88%;
@@ -37,7 +26,7 @@ li {
 	background-color: white;
 }
 
-li::before {
+.dl li::before {
 	content: '';
 	display: block;
 	width: 100%;
@@ -48,14 +37,14 @@ li::before {
 	background: linear-gradient(to right, var(--c1) var(--stop), var(--c2) var(--stop));
 }
 
-h3 {
+.dl li h3 {
 	display: flex;
 	align-items: baseline;
 	margin: 0 0 1rem;
 	color: rgb(70 70 70);
 }
 
-h3::before {
+.dl li h3::before {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -71,22 +60,22 @@ h3::before {
 }
 
 @media (min-width: 40em) {
-	li {
+	.dl li {
 		margin: 3rem auto;
 		padding: 3rem 2rem 2rem;
 	}
 	
-	h3 {
+	.dl li h3 {
 		font-size: 2.25rem;
 		margin: 0 0 2rem;
 	}
 	
-	h3::before {
+	.dl li h3::before {
 		margin-right: 1.5rem;
 	}
 }
 </style>
-<ol style="--length: 5" role="list">
+<ol class="dl" style="--length: 5" role="list">
 	<li style="--i: 5">
 		<h3>Discovery and assessment</h3>
 		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Adipiscing diam donec adipiscing tristique risus.</p>
