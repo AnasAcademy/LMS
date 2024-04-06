@@ -48,7 +48,7 @@
                 </div>
             @endif
     
-            <div class="bg-white dashboard-banner-container position-relative p-35 rounded-sm">
+            <div class="bg-white dashboard-banner-container position-relative p-40 rounded-sm">
                 <h2 class="font-30 text-primary line-height-1">
                     <span class="d-block">{{ trans('panel.hi') }} {{ $authUser->full_name }}</span>
                     <!--<span class="font-16 text-secondary font-weight-bold">{{ trans('panel.have_event',['count' => !empty($unReadNotifications) ? count($unReadNotifications) : 0]) }}</span>-->
