@@ -134,7 +134,7 @@
             </div>
             
          {{-- download files --}}
-            <div class="col-12 col-lg-5 mt-5 rounded-sm">
+            <div class="col-12 col-lg-3 mt-5 rounded-sm">
                @include('web.default.panel.includes.downloadfiles')
             </div>
             
