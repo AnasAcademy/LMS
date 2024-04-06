@@ -1,15 +1,4 @@
-<style>
-    svg {
-        min-width: 100%;
-        width: 100%;
-        max-width: 100%;
-        min-height: 100%;
-        height: 100%;
-        max-height: 100%;
-        color: var(--secondary) !important;
-        stroke-width: 1.5px;
-    }
-</style>
+
 @if(!empty($authUser))
 
     <div class="custom-dropdown navbar-auth-user-dropdown position-relative">
@@ -106,7 +95,7 @@
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-danger font-14 bg-transparent">
                         
                              @include('web.default.panel.includes.sidebar_icons.logout')
-                      <span class="ml-5">{{ trans('auth.logout') }}</span> 
+                      <span class="ml-5">تسجل الخروج</span> 
                     </a>
                 </li>
 
