@@ -90,7 +90,7 @@ a {
 }
 
 .weeks span.active {
-	background: #f78536;
+	background: #ED1088;
 	border-radius: 50%;
 }
 
@@ -105,7 +105,7 @@ a {
 
 .event:after {
 	content: '•';
-	color: #f78536;
+	color: #ED1088;
 	font-size: 1.4em;
 	position: absolute;
 	right: -4px;
