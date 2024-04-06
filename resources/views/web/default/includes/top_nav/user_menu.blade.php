@@ -51,9 +51,10 @@
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ ($authUser->isUser()) ? '/panel/webinars/purchases' : '/panel/webinars' }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                                                         @include('web.default.panel.includes.sidebar_icons.studytable')
+                            <span class="ml-5" >جدول المقررات الدراسية</span>
 
                             {{-- <img src="/assets/default/img/icons/user_menu/my_courses.svg" class="icons"> --}}
-                            <span class="ml-5">{{ trans('update.my_courses') }}</span>
+                           {{-- <span class="ml-5">{{ trans('update.my_courses') }}</span> --}}
                         </a>
                     </li>
                     @endcan
@@ -69,9 +70,12 @@
                     @endif
                     @can('show_support')
                     <li class="navbar-auth-user-dropdown-item">
-                        <a href="/panel/support" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            <img src="/assets/default/img/icons/user_menu/support.svg" class="icons">
-                            <span class="ml-5">{{ trans('panel.support') }}</span>
+                        <a href="https://support.anasacademy.uk/" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
+                          
+                            @include('web.default.panel.includes.sidebar_icons.support')
+                            <span class="ml-5">فريق الدعم والتواصل </span>
+                            {{-- <span class="ml-5">{{ trans('panel.support') }}</span> --}}
+                            {{-- <img src="/assets/default/img/icons/user_menu/support.svg" class="icons"> --}
                         </a>
                     </li>
                     @endcan
@@ -86,8 +90,9 @@
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons">
+                             @include('web.default.panel.includes.sidebar_icons.setting')
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
+                           {{--  <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons"> --}
                         </a>
                     </li>
 
@@ -95,8 +100,10 @@
 
                 <li class="navbar-auth-user-dropdown-item">
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-danger font-14 bg-transparent">
-                        <img src="/assets/default/img/icons/user_menu/logout.svg" class="icons">
-                        <span class="ml-5">{{ trans('auth.logout') }}</span>
+                         @include('web.default.panel.includes.sidebar_icons.logout')
+                            <span class="ml-5">{{ trans('auth.logout') }}</span>
+                        {{-- <img src="/assets/default/img/icons/user_menu/logout.svg" class="icons">
+                        <span class="ml-5">{{ trans('auth.logout') }}</span> --}}
                     </a>
                 </li>
 
