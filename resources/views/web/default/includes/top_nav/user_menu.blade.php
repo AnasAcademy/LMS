@@ -31,7 +31,8 @@
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl("/settings") }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons">
+                           {{-- <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons"> --}}
+                                                        @include('web.default.panel.includes.sidebar_icons.settings')
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
@@ -39,7 +40,8 @@
                     @can('show_panel')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            <img src="/assets/default/img/icons/user_menu/dashboard.svg" class="icons">
+                             {{-- <img src="/assets/default/img/icons/user_menu/dashboard.svg" class="icons"> --}}
+                            @include('web.default.panel.includes.sidebar_icons.dashboard')
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
                     </li>
@@ -48,7 +50,9 @@
                     @can('student_showClasses')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ ($authUser->isUser()) ? '/panel/webinars/purchases' : '/panel/webinars' }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            <img src="/assets/default/img/icons/user_menu/my_courses.svg" class="icons">
+                                                        @include('web.default.panel.includes.sidebar_icons.my_courses')
+
+                            {{-- <img src="/assets/default/img/icons/user_menu/my_courses.svg" class="icons"> --}}
                             <span class="ml-5">{{ trans('update.my_courses') }}</span>
                         </a>
                     </li>
