@@ -1,8 +1,3 @@
-
-@php
-    $getPanelSidebarSettings = getPanelSidebarSettings();
-@endphp
-
 <style>
   * {
   list-style: none;
@@ -20,11 +15,11 @@ a {
 .container-cal {
 	align-items: center;
 	display: flex;
-	height: 100%;
+	height: 100% !important;
 	justify-content: center;
 	margin: 0 auto;
-	max-width: 100%;
-	width: 100%;
+	max-width: 100% !important;
+	width: 100% !important;
 }
 
 .calendar {
