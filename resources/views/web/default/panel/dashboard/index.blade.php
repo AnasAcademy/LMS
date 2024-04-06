@@ -48,9 +48,10 @@
                 </h2>
                 <ul class="mt-15 unread-notification-lists">
                     <h4>بياناتك الاكاديمية</h4>
-               <li class="mt-1 text-gray font-16 font-weight-bold text-left">كود الطالب : {{ $authUser->user_code }}</li>
-                          <li class="mt-1 text-gray font-16 font-weight-bold text-left">  البريد الاكاديمي : {{ $authUser->user_code }}@anasacademy.uk</li>
-    
+                    <li class="mt-1 text-gray font-16 font-weight-bold text-left">كود الطالب : {{ $authUser->user_code }}</li>
+                    <li class="mt-1 text-gray font-16 font-weight-bold text-left">  البريد الاكاديمي : {{ $authUser->user_code }}@anasacademy.uk</li>
+                    <li class="mt-1 text-gray font-16 font-weight-bold text-left">  البرنامج الدراسي : {{ $authUser->user_code }}@anasacademy.uk</li>
+
                
                
                 </ul>
