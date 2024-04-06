@@ -8,6 +8,13 @@
     .dashboard-banner-container{
         margin-top:0px !important;
     }
+    .module-box{
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
 </style>
 @section('content')
     <section class="dashboard">
@@ -89,7 +96,7 @@
         
             
              <div class="col-12 col-lg-2 mt-5">
-                <div class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
+                <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                    
                     <div class="d-flex flex-column ml-15">
                         <span class="font-16 text-gray font-weight-500">فريق الدعم والتواصل</span>
