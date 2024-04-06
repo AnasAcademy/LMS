@@ -68,8 +68,7 @@
             <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
                     <div class="text-center">
-                        <img src="/assets/default/img/activity/36.svg" class="account-balance-icon" alt="">
-
+                        @include('web.default.panel.includes.sidebar_icons.financial')
                         <h3 class="font-16 font-weight-500 text-gray mt-25">{{ trans('panel.account_balance') }}</h3>
                         <span class="mt-5 d-block font-30 text-secondary">{{ handlePrice($authUser->getAccountingBalance()) }}</span>
                     </div>
