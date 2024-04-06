@@ -10,26 +10,26 @@
          @if($installment->needToVerify())
                      @include('web.default.includes.hero_section', ['inner'=> "<h1 style='color:#fff' class='font-36'>مراجعة وتاكيد الأقساط</h1>"])
 
-               
+
             @else
                      @include('web.default.includes.hero_section', ['inner'=> "<h1 style='color:#fff' class='font-36'>مراجعة وتاكيد الأقساط</h1>"])
 
             @endif
-        
+
     <div class="container pt-50 mt-10">
        {{--  <div class="text-center">--}}
-                
+
 
           {{--   @if($installment->needToVerify())--}}
               {{--  <h1 class="font-36">مراجعة وتأكيد الأقساط </h1>--}}
             {{-- {{ trans('update.verify_your_installments') }} --}}
                {{-- <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint') }}</p> --}}
-               
+
             {{--   @else--}}
              {{--  <h1 class="font-36">مراجعة وتأكيد الأقساط </h1 > --}}
             {{-- {{ trans('update.verify_your_installments2') }} --}}
                {{-- <p class="mt-10 font-16 text-gray">{{ trans('update.verify_your_installments_hint2') }}</p> --}}
-             
+
           {{--  @endif --}}
        {{-- </div> --}}
 
@@ -67,7 +67,8 @@
 
                     <div class="d-flex align-items-center mt-20">
                         <i data-feather="calendar" width="20" height="20" class="text-gray"></i>
-                        <span class="font-14 text-gray ml-5">{{ $installment->steps->max('deadline') }} {{ trans('update.days_duration') }}</span>
+
+                        <span class="font-14 text-gray ml-5"> ينتهي في {{ dateTimeFormat(($installment->steps->max('deadline')* 86400) + $item->start_date, 'j M Y') }}</span>
                     </div>
 
                 </div>
@@ -155,13 +156,14 @@
 
             {{-- Installment Terms & Rules --}}
             <div class="border rounded-lg p-35 mt-30">
-                <h3 class="font-16 font-weight-bold text-dark-blue">{{ trans('update.installment_terms_&_rules') }}</h3>
-
+                <h3 class="font-16 font-weight-bold text-dark-blue">شروط وقواعد التقسيط </h3>
+<br>
                 <div class="font-16 text-gray">{!! nl2br(getInstallmentsTermsSettings('terms_description')) !!}</div>
 
                 <div class="mt-10 border bg-info-light p-15 rounded-sm">
-                    <h4 class="font-14 text-gray font-weight-bold">{{ trans('update.important') }}</h4>
-                    <p class="mt-5 font-14 text-gray">{{ trans('update.by_purchasing_installment_plans_you_will_accept_installment_terms_and_rules') }}</p>
+                    <h4 class="font-14 text-gray font-weight-bold">هام جدا</h4>
+                    <p class="mt-5 font-14 text-gray">باستخدام خطة الدفع بالتقسيط الخاصة بنا، فإنك توافق على هذه الشروط والقواعد. للمزيد من الاستفسارات، يرجى التواصل مع فريق الدعم لدينا.
+                    </p>
                 </div>
             </div>
 

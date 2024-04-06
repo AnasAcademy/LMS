@@ -14469,7 +14469,7 @@ p {
     color: #171347;
 }
 
-img[alt='Admin']{
+img[alt="Admin"] {
     width: 25%;
 }
 .navbar-brand {
@@ -16197,8 +16197,8 @@ img[alt='Admin']{
     height: 200px;
 }
 .webinar-card.webinar-list.panel-installment-card .image-box {
-    width: 295px;
-    height: 200px;
+    width: 100px;
+    height: 20px;
 }
 .webinar-card.webinar-list.panel-installment-card .image-box:after {
     display: none;

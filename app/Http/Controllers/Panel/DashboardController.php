@@ -85,6 +85,7 @@ class DashboardController extends Controller
             $data['commentsCount'] = count($comments);
             $data['reserveMeetingsCount'] = count($reserveMeetings);
             $data['monthlyChart'] = $this->getMonthlySalesOrPurchase($user);
+            $data['webinars']=$webinars;
         }
 
         $data['giftModal'] = $this->showGiftModal($user);

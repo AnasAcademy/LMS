@@ -54,7 +54,7 @@ class InstallmentStep extends Model implements TranslatableContract
         if(!empty($itemId))
         {
             $bundle=Bundle::where('id',$itemId)->first();
-            return trans('update.amount_after_n_days', ['amount' => handlePrice($this->getPrice($itemPrice)), 'days' => dateTimeFormat(($this->deadline * 86400) + $bundle->start_date, 'j M Y'), 'percent' => $percentText]);
+            return trans('update.amount_after_n_days', ['amount' => handlePrice($this->getPrice($itemPrice))." تاريخ استحقاق ".$this->title, 'days' => dateTimeFormat(($this->deadline * 86400) + $bundle->start_date, 'j M Y'), 'percent' => $percentText]);
 
         }
         // $100 after 30 days
