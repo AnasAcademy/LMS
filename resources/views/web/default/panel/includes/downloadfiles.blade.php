@@ -1,4 +1,11 @@
 <style>
+    .media {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        flex-direction: row;
+    }
     .product-file-type .img-icon {
   width: 46px;
   height: 46px;
