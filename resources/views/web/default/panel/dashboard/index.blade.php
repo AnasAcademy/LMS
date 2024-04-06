@@ -22,9 +22,10 @@
                 @endif
             </div>
          </div>
-        <div class="row p-10">
+        <div class="row p-20">
           
-    
+    <div class="col-12 col-lg-3 mt-35">
+
             @if(!$authUser->financial_approval and !$authUser->isUser())
                 <div class="p-15 mt-20 p-lg-20 not-verified-alert font-weight-500 text-dark-blue rounded-sm panel-shadow">
                     {{ trans('panel.not_verified_alert') }}
@@ -65,7 +66,7 @@
                 </div>
             </div>
     --}}
-            
+        </div>
             <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
                     <div class="text-center">
