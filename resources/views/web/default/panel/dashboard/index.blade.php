@@ -7,8 +7,8 @@
 
 @section('content')
     <section class="dashboard">
-        <div class="row">
-            <div class="col-md-3 d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
+         <div class="row">
+               <div class="d-block align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
                 <h1 class="section-title">{{ trans('panel.dashboard') }}</h1>
     
                 @if(!$authUser->isUser())
@@ -21,6 +21,9 @@
                     </div>
                 @endif
             </div>
+         </div>
+        <div class="row">
+          
     
             @if(!$authUser->financial_approval and !$authUser->isUser())
                 <div class="p-15 mt-20 p-lg-20 not-verified-alert font-weight-500 text-dark-blue rounded-sm panel-shadow">
