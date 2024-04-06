@@ -13,7 +13,7 @@
         align-content: center;
         justify-content: center;
         align-items: center;
-        gap: 10px;
+        gap: 20px;
     }
 </style>
 @section('content')
@@ -104,7 +104,7 @@
         </div>
      {{-- SCT Team --}}
              <div class="col-12 col-lg-3 mt-35 ">
-                <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-25 d-flex align-items-center mt-0">
+                <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-15 d-flex align-items-center mt-0">
                    
                     <div class="d-flex flex-column">
                         <span class="font-16 text-gray font-weight-500 text-center pb-10">فريق الدعم والتواصل</span>
@@ -113,7 +113,7 @@
                     </div>
                    
                 </div>
-                  <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-25 d-flex align-items-center mt-20">
+                  <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-15 d-flex align-items-center mt-20">
                     <div class="d-flex flex-column">
                         <span class="font-16 text-gray font-weight-500 text-center pb-10">برنامج ميكروسوفت تيمز</span>
 
