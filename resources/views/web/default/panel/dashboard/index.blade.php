@@ -104,7 +104,7 @@
         </div>
      {{-- SCT Team --}}
              <div class="col-12 col-lg-3 mt-35 ">
-                <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0">
+                <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-25 d-flex align-items-center mt-0">
                    
                     <div class="d-flex flex-column">
                         <span class="font-16 text-gray font-weight-500">فريق الدعم والتواصل</span>
@@ -113,7 +113,7 @@
                     </div>
                    
                 </div>
-                  <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-20">
+                  <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-25 d-flex align-items-center mt-20">
                     <div class="d-flex flex-column">
                         <span class="font-16 text-gray font-weight-500">برنامج ميكروسوفت تيمز</span>
 
