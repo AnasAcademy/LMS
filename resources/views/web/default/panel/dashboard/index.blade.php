@@ -85,7 +85,7 @@
     </section>
 
     <section class="dashboard">
-        <div class="row">
+        <div class="row p-20">
         
 
             <div class="col-12 col-lg-2 mt-5">
