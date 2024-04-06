@@ -56,8 +56,8 @@
                     @can('student_showFinance')
                         <li class="navbar-auth-user-dropdown-item">
                             <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                                <img src="/assets/default/img/icons/user_menu/sales_history.svg" class="icons">
-                                <span class="ml-5">{{ trans('financial.sales_history') }}</span>
+                            @include('web.default.panel.includes.sidebar_icons.requirements')
+                                <span class="ml-5">متطلبات القبول</span>
                             </a>
                         </li>
                     @endcan
