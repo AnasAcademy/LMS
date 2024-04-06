@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="ar">
 
 @php
     $rtlLanguages = !empty($generalSettings['rtl_languages']) ? $generalSettings['rtl_languages'] : [];
@@ -18,7 +18,6 @@
     <link rel="stylesheet" href="/assets/default/vendors/simplebar/simplebar.css">
     <link rel="stylesheet" href="/assets/default/css/app.css">
     <link rel="stylesheet" href="/assets/default/css/panel.css">
-
     @if($isRtl)
         <link rel="stylesheet" href="/assets/default/css/rtl-app.css">
     @endif
