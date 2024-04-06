@@ -1,12 +1,12 @@
 <style>
-    .custom-dropdown-toggle li a svg {
+    svg {
         min-width: 100%;
         width: 100%;
         max-width: 100%;
         min-height: 100%;
         height: 100%;
         max-height: 100%;
-        color: var(--secondary);
+        color: var(--secondary) !important;
         stroke-width: 1.5px;
     }
 </style>
@@ -74,6 +74,14 @@
                         </li>
                     @endcan
                     @endif
+                     @if((\App\Student::where('user_id',$authUser->id)))
+                       <li class="navbar-auth-user-dropdown-item">
+                            <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
+                            @include('web.default.panel.includes.sidebar_icons.requirements')
+                                <span class="ml-5">متطلبات القبول</span>
+                            </a>
+                        </li>
+                    @endif
                     @can('show_support')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="https://support.anasacademy.uk/" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
@@ -83,14 +91,7 @@
                         </a>
                     </li>
                     @endcan
-                    @if((\App\Student::where('user_id',$authUser->id)))
-                       <li class="navbar-auth-user-dropdown-item">
-                            <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.requirements')
-                                <span class="ml-5">متطلبات القبول</span>
-                            </a>
-                        </li>
-                    @endif
+                   
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
