@@ -4,7 +4,11 @@
     <link rel="stylesheet" href="/assets/default/vendors/chartjs/chart.min.css"/>
     <link rel="stylesheet" href="/assets/default/vendors/apexcharts/apexcharts.css"/>
 @endpush
-
+<style>
+    .dashboard-banner-container{
+        margin-top:0px;
+    }
+</style>
 @section('content')
     <section class="dashboard">
          <div class="row p-10">
@@ -28,7 +32,7 @@
         
 <div class="row p-20">
           
-    <div class="col-12 col-lg-3 mt-35">
+    <div class="col-12 col-lg-5 mt-35">
 
             @if(!$authUser->financial_approval and !$authUser->isUser())
                 <div class="p-15 mt-20 p-lg-20 not-verified-alert font-weight-500 text-dark-blue rounded-sm panel-shadow">
@@ -37,7 +41,7 @@
                 </div>
             @endif
     
-            <div class="bg-white dashboard-banner-container position-relative px-15 px-ld-35 py-10 panel-shadow rounded-sm">
+            <div class="bg-white dashboard-banner-container position-relative p-35 rounded-sm">
                 <h2 class="font-30 text-primary line-height-1">
                     <span class="d-block">{{ trans('panel.hi') }} {{ $authUser->full_name }}</span>
                     <!--<span class="font-16 text-secondary font-weight-bold">{{ trans('panel.have_event',['count' => !empty($unReadNotifications) ? count($unReadNotifications) : 0]) }}</span>-->
@@ -54,7 +58,7 @@
         
     </div>
         <div class="col-12 col-lg-3 mt-35">
-                <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
+                <div class="bg-white account-balance rounded-sm p-35">
                     <div class="text-center">
                         @include('web.default.panel.includes.sidebar_icons.financial')
                         <h3 class="font-16 font-weight-500 text-gray mt-25">{{ trans('panel.account_balance') }}</h3>
