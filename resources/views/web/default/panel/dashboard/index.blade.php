@@ -98,12 +98,12 @@
              <div class="col-12 col-lg-2 mt-5">
                 <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                    
-                    <div class="d-flex flex-column ml-15">
+                    <div class="d-flex flex-column">
                         <span class="font-16 text-gray font-weight-500">فريق الدعم والتواصل</span>
                     </div>
-                    <div class="d-flex flex-column ml-15">
+                    <div class="d-flex flex-column">
 
-                        <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:190px;height:50px" 
+                        <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="" 
                         href="https://support.anasacademy.uk/">قدم طلب</a>
                         
                     </div>
