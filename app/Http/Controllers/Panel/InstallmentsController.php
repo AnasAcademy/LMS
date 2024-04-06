@@ -6,19 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Mixins\Installment\InstallmentAccounting;
 use App\Models\Cart;
 use App\Models\InstallmentOrder;
-use App\Models\Order;
 use App\Models\InstallmentOrderPayment;
-use App\Models\InstallmentStep;
+use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\SelectedInstallmentStep;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\User;
 use App\Models\PaymentChannel;
+use App\Models\SelectedInstallmentStep;
+use App\User;
 
 class InstallmentsController extends Controller
 {
-
     public function index()
     {
         $user = auth()->user();
@@ -31,22 +27,19 @@ class InstallmentsController extends Controller
         $pendingVerificationCount = deepClone($query)->where('status', 'pending_verification')->count();
         $finishedInstallmentsCount = $this->getFinishedInstallments($user);
 
-
         $orders = $query->with([
             'selectedInstallment' => function ($query) {
                 $query->with([
                     'steps' => function ($query) {
                         $query->orderBy('deadline', 'asc');
-                    }
+                    },
                 ]);
                 $query->withCount([
-                    'steps'
+                    'steps',
                 ]);
-            }
+            },
         ])->orderBy('created_at', 'desc')
             ->paginate(10);
-
-
 
         foreach ($orders as $order) {
             $getRemainedInstallments = $this->getRemainedInstallments($order);
@@ -55,7 +48,6 @@ class InstallmentsController extends Controller
             $order->remained_installments_amount = $getRemainedInstallments['amount'];
 
             $order->upcoming_installment = $this->getUpcomingInstallment($order);
-
 
             // is overdue
             $hasOverdue = $order->checkOrderHasOverdue();
@@ -232,13 +224,13 @@ class InstallmentsController extends Controller
                     $query->with([
                         'steps' => function ($query) {
                             $query->orderBy('deadline', 'asc');
-                        }
+                        },
                     ]);
-                }
+                },
             ])
             ->first();
 
-        if (!empty($order) and !in_array($order->status, ['refunded', 'canceled'])) {
+        if (! empty($order) and ! in_array($order->status, ['refunded', 'canceled'])) {
 
             $getRemainedInstallments = $this->getRemainedInstallments($order);
             $getOverdueOrderInstallments = $this->getOverdueOrderInstallments($order);
@@ -268,16 +260,16 @@ class InstallmentsController extends Controller
 
     public function cancelVerification($orderId)
     {
-        if (getInstallmentsSettings("allow_cancel_verification")) {
+        if (getInstallmentsSettings('allow_cancel_verification')) {
             $user = auth()->user();
 
             $order = InstallmentOrder::query()
                 ->where('id', $orderId)
                 ->where('user_id', $user->id)
-                ->where('status', "pending_verification")
+                ->where('status', 'pending_verification')
                 ->first();
 
-            if (!empty($order)) {
+            if (! empty($order)) {
                 $installmentRefund = new InstallmentAccounting();
                 $installmentRefund->refundOrder($order);
 
@@ -301,10 +293,10 @@ class InstallmentsController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-        if (!empty($order)) {
+        if (! empty($order)) {
             $upcomingStep = $this->getUpcomingInstallment($order);
 
-            if (!empty($upcomingStep)) {
+            if (! empty($upcomingStep)) {
                 return $this->handlePayStep($order, $upcomingStep);
             }
         }
@@ -321,16 +313,16 @@ class InstallmentsController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-        if (!empty($order)) {
+        if (! empty($order)) {
             $selectedInstallment = $order->selectedInstallment;
 
-            if (!empty($selectedInstallment)) {
+            if (! empty($selectedInstallment)) {
                 $step = SelectedInstallmentStep::query()
                     ->where('selected_installment_id', $selectedInstallment->id)
                     ->where('id', $stepId)
                     ->first();
 
-                if (!empty($step)) {
+                if (! empty($step)) {
                     return $this->handlePayStep($order, $step);
                 }
             }
@@ -362,16 +354,16 @@ class InstallmentsController extends Controller
         $user = User::findOrFail($order->user_id);
         $paymentChannels = PaymentChannel::where('status', 'active')->get();
 
-        $calculate = $this->calculatePrice($bundle=null,$installment_payment_id, $user,$discountCoupon = null);
+        $calculate = $this->calculatePrice($bundle = null, $installment_payment_id, $user, $discountCoupon = null);
 
-        $order = $this->createOrderAndOrderItems($bundle=null,$installment_payment_id, $calculate, $user, $discountCoupon=null);
+        $order = $this->createOrderAndOrderItems($bundle = null, $installment_payment_id, $calculate, $user, $discountCoupon = null);
 
-        if (!empty($order) and $order->total_amount > 0) {
+        if (! empty($order) and $order->total_amount > 0) {
             $razorpay = false;
-            $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
+            $isMultiCurrency = ! empty(getFinancialCurrencySettings('multi_currency'));
 
             foreach ($paymentChannels as $paymentChannel) {
-                if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                if ($paymentChannel->class_name == 'Razorpay' and (! $isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
                     $razorpay = true;
                 }
             }
@@ -380,11 +372,11 @@ class InstallmentsController extends Controller
                 'pageTitle' => trans('public.checkout_page_title'),
                 'paymentChannels' => $paymentChannels,
                 'carts' => null,
-                'subTotal' => $calculate["sub_total"],
-                'totalDiscount' => $calculate["total_discount"],
-                'tax' => $calculate["tax"],
-                'taxPrice' => $calculate["tax_price"],
-                'total' => $calculate["total"],
+                'subTotal' => $calculate['sub_total'],
+                'totalDiscount' => $calculate['total_discount'],
+                'tax' => $calculate['tax'],
+                'taxPrice' => $calculate['tax_price'],
+                'total' => $calculate['total'],
                 'userGroup' => $user->userGroup ? $user->userGroup->group : null,
                 'order' => $order,
                 'count' => 0,
@@ -394,7 +386,7 @@ class InstallmentsController extends Controller
                 'previousUrl' => url()->previous(),
             ];
 
-            return view(getTemplate() . '.cart.payment', $data);
+            return view(getTemplate().'.cart.payment', $data);
         } else {
 
             return $this->handlePaymentOrderWithZeroTotalAmount($order);
@@ -402,13 +394,14 @@ class InstallmentsController extends Controller
 
         return redirect('/cart');
     }
-    private function calculatePrice($bundle,$installment_payment_id, $user, $discountCoupon)
+
+    private function calculatePrice($bundle, $installment_payment_id, $user, $discountCoupon)
     {
         $financialSettings = getFinancialSettings();
 
         $subTotal = 0;
         $totalDiscount = 0;
-        $tax = (!empty($financialSettings['tax']) and $financialSettings['tax'] > 0) ? $financialSettings['tax'] : 0;
+        $tax = (! empty($financialSettings['tax']) and $financialSettings['tax'] > 0) ? $financialSettings['tax'] : 0;
         $taxPrice = 0;
         $commissionPrice = 0;
         $commission = 0;
@@ -417,11 +410,10 @@ class InstallmentsController extends Controller
         // $cartHasInstallmentPayment = array_filter($carts->pluck('installment_payment_id')->toArray());
 
         $taxIsDifferent = (1
-        // or count($cartHasCertificate) or count($cartHasInstallmentPayment)
-     );
+            // or count($cartHasCertificate) or count($cartHasInstallmentPayment)
+        );
 
-
-        $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent, $discountCoupon);
+        $orderPrices = $this->handleOrderPrices($bundle, $installment_payment_id, $user, $taxIsDifferent, $discountCoupon);
         $subTotal += $orderPrices['sub_total'];
         $totalDiscount += $orderPrices['total_discount'];
         $tax = $orderPrices['tax'];
@@ -429,7 +421,6 @@ class InstallmentsController extends Controller
         $commission += $orderPrices['commission'];
         $commissionPrice += $orderPrices['commission_price'];
         $taxIsDifferent = $orderPrices['tax_is_different'];
-
 
         if ($totalDiscount > $subTotal) {
             $totalDiscount = $subTotal;
@@ -453,49 +444,50 @@ class InstallmentsController extends Controller
             'commission_price' => round($commissionPrice, 2),
             'total' => round($total, 2),
             'product_delivery_fee' => round($productDeliveryFee, 2),
-            'tax_is_different' => $taxIsDifferent
+            'tax_is_different' => $taxIsDifferent,
         ];
     }
-    public function handleOrderPrices($bundle,$installment_payment_id=null, $user, $taxIsDifferent = false, $discountCoupon = null)
+
+    public function handleOrderPrices($bundle, $installment_payment_id, $user, $taxIsDifferent = false, $discountCoupon = null)
     {
         $seller = $bundle->creator ?? null;
         $financialSettings = getFinancialSettings();
 
         $subTotal = 0;
         $totalDiscount = 0;
-        $tax = (!empty($financialSettings['tax']) and $financialSettings['tax'] > 0) ? $financialSettings['tax'] : 0;
+        $tax = (! empty($financialSettings['tax']) and $financialSettings['tax'] > 0) ? $financialSettings['tax'] : 0;
         $taxPrice = 0;
         $commissionPrice = 0;
 
-        if (!empty($seller)) {
+        if (! empty($seller)) {
             $commission = $seller->getCommission();
         } else {
             $commission = 0;
 
-            if (!empty($financialSettings) and !empty($financialSettings['commission'])) {
-                $commission = (int)$financialSettings['commission'];
+            if (! empty($financialSettings) and ! empty($financialSettings['commission'])) {
+                $commission = (int) $financialSettings['commission'];
             }
         }
 
-        if (!empty($bundle)) {
+        if (! empty($bundle)) {
             // $item = !empty($cart->webinar_id) ? $cart->webinar : $cart->bundle;
             $item = $bundle;
 
             $price = $item->price;
-            $discount=null;
+            $discount = null;
             $priceWithoutDiscount = $price - $discount;
 
             if ($tax > 0 and $priceWithoutDiscount > 0) {
                 $taxPrice += $priceWithoutDiscount * $tax / 100;
             }
 
-            if (!empty($commission) and $commission > 0) {
+            if (! empty($commission) and $commission > 0) {
                 $commissionPrice += $priceWithoutDiscount > 0 ? $priceWithoutDiscount * $commission / 100 : 0;
             }
 
             $totalDiscount += $discount;
             $subTotal += $price;
-        } elseif (!empty($installment_payment_id)) {
+        } elseif (! empty($installment_payment_id)) {
             $installmentOrderPayment = InstallmentOrderPayment::findOrFail($installment_payment_id);
             $price = $installmentOrderPayment->amount;
             // $cart->installmentPayment->amount;
@@ -507,7 +499,7 @@ class InstallmentsController extends Controller
                 $taxPrice += $priceWithoutDiscount * $tax / 100;
             }
 
-            if (!empty($commission) and $commission > 0) {
+            if (! empty($commission) and $commission > 0) {
                 $commissionPrice += $priceWithoutDiscount > 0 ? $priceWithoutDiscount * $commission / 100 : 0;
             }
 
@@ -519,7 +511,6 @@ class InstallmentsController extends Controller
             $totalDiscount = $subTotal;
         }
 
-
         return [
             'sub_total' => round($subTotal, 2),
             'total_discount' => round($totalDiscount, 2),
@@ -528,81 +519,80 @@ class InstallmentsController extends Controller
             'commission' => $commission,
             'commission_price' => round($commissionPrice, 2),
             //'product_delivery_fee' => round($productDeliveryFee, 2),
-            'tax_is_different' => $taxIsDifferent
+            'tax_is_different' => $taxIsDifferent,
         ];
     }
-    public function createOrderAndOrderItems($bundle,$installment_payment_id, $calculate, $user, $discountCoupon = null)
+
+    public function createOrderAndOrderItems($bundle, $installment_payment_id, $calculate, $user, $discountCoupon = null)
     {
         $totalCouponDiscount = 0;
 
-        $totalAmount = $calculate["total"] - $totalCouponDiscount;
+        $totalAmount = $calculate['total'] - $totalCouponDiscount;
 
         $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
-            'amount' => $calculate["sub_total"],
-            'tax' => $calculate["tax_price"],
-            'total_discount' => $calculate["total_discount"] + $totalCouponDiscount,
+            'amount' => $calculate['sub_total'],
+            'tax' => $calculate['tax_price'],
+            'total_discount' => $calculate['total_discount'] + $totalCouponDiscount,
             'total_amount' => ($totalAmount > 0) ? $totalAmount : 0,
-            'product_delivery_fee' => $calculate["product_delivery_fee"] ?? null,
+            'product_delivery_fee' => $calculate['product_delivery_fee'] ?? null,
             'created_at' => time(),
         ]);
 
+        $orderPrices = $this->handleOrderPrices($bundle, $installment_payment_id, $user, $taxIsDifferent = false, $discountCoupon);
+        $price = $orderPrices['sub_total'];
+        $totalDiscount = $orderPrices['total_discount'];
+        $tax = $orderPrices['tax'];
+        $taxPrice = $orderPrices['tax_price'];
+        $commission = $orderPrices['commission'];
+        $commissionPrice = $orderPrices['commission_price'];
 
+        $productDeliveryFee = 0;
 
-            $orderPrices = $this->handleOrderPrices($bundle,$installment_payment_id, $user, $taxIsDifferent = false, $discountCoupon);
-            $price = $orderPrices['sub_total'];
-            $totalDiscount = $orderPrices['total_discount'];
-            $tax = $orderPrices['tax'];
-            $taxPrice = $orderPrices['tax_price'];
-            $commission = $orderPrices['commission'];
-            $commissionPrice = $orderPrices['commission_price'];
+        $allDiscountPrice = $totalDiscount;
+        if ($totalCouponDiscount > 0 and $price > 0) {
+            $percent = (($price / $calculate['sub_total']) * 100);
+            $allDiscountPrice += (($totalCouponDiscount * $percent) / 100);
+        }
 
+        $subTotalWithoutDiscount = $price - $allDiscountPrice;
+        $totalAmount = $subTotalWithoutDiscount + $taxPrice + $productDeliveryFee;
 
-            $productDeliveryFee = 0;
-
-            $allDiscountPrice = $totalDiscount;
-            if ($totalCouponDiscount > 0 and $price > 0) {
-                $percent = (($price / $calculate["sub_total"]) * 100);
-                $allDiscountPrice += (($totalCouponDiscount * $percent) / 100);
-            }
-
-            $subTotalWithoutDiscount = $price - $allDiscountPrice;
-            $totalAmount = $subTotalWithoutDiscount + $taxPrice + $productDeliveryFee;
-
-            OrderItem::create([
-                'user_id' => $user->id,
-                'order_id' => $order->id,
-                'webinar_id' => null,
-                'bundle_id' => $bundle ? $bundle->id : null,
-                'certificate_template_id' =>  null,
-                'certificate_bundle_id' =>  null,
-                'product_id' => null,
-                'product_order_id' =>  null,
-                'reserve_meeting_id' => null,
-                'subscribe_id' => null,
-                'promotion_id' => null,
-                'gift_id' =>null,
-                'installment_payment_id' => $installment_payment_id ?? null,
-                'ticket_id' => null,
-                'discount_id' => $discountCoupon ? $discountCoupon->id : null,
-                'amount' => $price,
-                'total_amount' => $totalAmount,
-                'tax' => $tax,
-                'tax_price' => $taxPrice,
-                'commission' => $commission,
-                'commission_price' => $commissionPrice,
-                'product_delivery_fee' => $productDeliveryFee,
-                'discount' => $allDiscountPrice,
-                'created_at' => time(),
-            ]);
+        OrderItem::create([
+            'user_id' => $user->id,
+            'order_id' => $order->id,
+            'webinar_id' => null,
+            'bundle_id' => $bundle ? $bundle->id : null,
+            'certificate_template_id' => null,
+            'certificate_bundle_id' => null,
+            'product_id' => null,
+            'product_order_id' => null,
+            'reserve_meeting_id' => null,
+            'subscribe_id' => null,
+            'promotion_id' => null,
+            'gift_id' => null,
+            'installment_payment_id' => $installment_payment_id ?? null,
+            'ticket_id' => null,
+            'discount_id' => $discountCoupon ? $discountCoupon->id : null,
+            'amount' => $price,
+            'total_amount' => $totalAmount,
+            'tax' => $tax,
+            'tax_price' => $taxPrice,
+            'commission' => $commission,
+            'commission_price' => $commissionPrice,
+            'product_delivery_fee' => $productDeliveryFee,
+            'discount' => $allDiscountPrice,
+            'created_at' => time(),
+        ]);
 
         return $order;
     }
+
     private function handlePaymentOrderWithZeroTotalAmount($order)
     {
         $order->update([
-            'payment_method' => Order::$paymentChannel
+            'payment_method' => Order::$paymentChannel,
         ]);
 
         $paymentController = new PaymentController();
@@ -610,9 +600,9 @@ class InstallmentsController extends Controller
         $paymentController->setPaymentAccounting($order);
 
         $order->update([
-            'status' => Order::$paid
+            'status' => Order::$paid,
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status?order_id='.$order->id);
     }
 }

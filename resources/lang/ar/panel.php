@@ -89,7 +89,7 @@ return [
     'open_meetings' => 'جلسات فتوحة',
     'pending_appointments' => 'جلسات معلقة',
     'total_meetings' => 'مجموع الجلسات',
-    'amount' => 'كمية',
+    'amount' => 'مبلغ',
     'sales' => 'مبيعات',
     'sales_amount' => 'كمية المبيعات',
     'active_hours' => 'الساعات النشطة',

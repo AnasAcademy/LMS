@@ -74,7 +74,7 @@
                         <div class="col-12">
                             <div class="webinar-card webinar-list panel-installment-card d-flex">
                                 <div class="image-box">
-                                    @if(in_array($itemType, ['course', 'bundle']))
+                                    {{-- @if(in_array($itemType, ['course', 'bundle']))
                                         <img src="{{ $orderItem->getImage() }}" class="img-cover" alt="">
                                     @elseif($itemType == 'product')
                                         <img src="{{ $orderItem->thumbnail }}" class="img-cover" alt="">
@@ -86,7 +86,7 @@
                                         <div class="d-flex align-items-center justify-content-center w-100 h-100">
                                             <img src="/assets/default/img/icons/installment/reg_package_default.svg" alt="">
                                         </div>
-                                    @endif
+                                    @endif --}}
 
                                     @if($order->isCompleted())
                                         <span class="badge badge-secondary">{{ trans('update.completed') }}</span>
@@ -115,12 +115,12 @@
 
                                         @if(!in_array($order->status, ['refunded', 'canceled']) or $order->isCompleted())
                                             <div class="btn-group dropdown table-actions">
-                                                <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                {{-- <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <i data-feather="more-vertical" height="20"></i>
-                                                </button>
+                                                </button> --}}
                                                 <div class="dropdown-menu ">
 
-                                                    @if($order->status == "open")
+                                                    {{-- @if($order->status == "open")
                                                         <a href="/panel/financial/installments/{{ $order->id }}/pay_upcoming_part" target="_blank" class="webinar-actions d-block mt-10">{{ trans('update.pay_upcoming_part') }}</a>
                                                     @endif
 
@@ -130,7 +130,7 @@
 
                                                     @if($itemType == "course" and ($order->isCompleted() or $order->status == "open"))
                                                         <a href="{{ $orderItem->getLearningPageUrl() }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('update.learning_page') }}</a>
-                                                    @endif
+                                                    @endif --}}
 
                                                     {{--
                                                         @if($order->isCompleted() or $order->status == "open")
@@ -138,22 +138,22 @@
                                                         @endif
                                                     --}}
 
-                                                    @if($order->status == "pending_verification" and getInstallmentsSettings("allow_cancel_verification"))
+                                                    {{-- @if($order->status == "pending_verification" and getInstallmentsSettings("allow_cancel_verification"))
                                                         <a href="/panel/financial/installments/{{ $order->id }}/cancel" class="webinar-actions d-block mt-10 text-danger delete-action" data-title="{{ trans('public.deleteAlertHint') }}" data-confirm="{{ trans('update.yes_cancel') }}">{{ trans('public.cancel') }}</a>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                             </div>
                                         @endif
 
                                     </div>
 
-                                    <div class="d-flex align-items-center justify-content-between flex-wrap mt-auto">
-                                        <div class="d-flex align-items-start flex-column mt-20 mr-15">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap mt-45">
+                                        {{-- <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                             <span class="stat-title">{{ trans('update.item_type') }}:</span>
                                             <span class="stat-value">{{ trans('update.item_type_'.$itemType) }}</span>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="d-flex align-items-start flex-column mt-20 mr-15">
+                                        <div class="d-flex align-items-start flex-column mt-5 mr-15">
                                             <span class="stat-title">{{ trans('panel.purchase_date') }}:</span>
                                             <span class="stat-value">{{ dateTimeFormat($order->created_at, 'j M Y H:i') }}</span>
                                         </div>
@@ -189,6 +189,109 @@
                                             @endif
                                         @endif
 
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="panel-section-card py-20 px-25 mt-20">
+                                <div class="row">
+                                    <div class="col-12 ">
+                                        <div class="table-responsive">
+                                            <table class="table text-center custom-table">
+                                                <thead>
+                                                <tr>
+                                                    <th>{{ trans('public.title') }}</th>
+                                                    <th class="text-center">{{ trans('panel.amount') }}</th>
+                                                    <th class="text-center">{{ trans('update.due_date') }}</th>
+                                                    <th class="text-center">{{ trans('update.payment_date') }}</th>
+                                                    <th class="text-center">{{ trans('public.status') }}</th>
+                                                    <th class=""></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                @if(!empty($order->selectedInstallment->upfront))
+                                                    @php
+                                                        $upfrontPayment = $order->payments->where('type','upfront')->first();
+                                                    @endphp
+                                                    <tr>
+                                                        <td class="text-left">
+                                                            {{ trans('update.upfront') }}
+                                                            @if($order->selectedInstallment->upfront_type == 'percent')
+                                                                <span class="ml-5">({{ $order->selectedInstallment->upfront }}%)</span>
+                                                            @endif
+                                                        </td>
+
+                                                        <td class="text-center">{{ handlePrice($order->selectedInstallment->getUpfront($itemPrice)) }}</td>
+
+                                                        <td class="text-center">-</td>
+
+                                                        <td class="text-center">{{ !empty($upfrontPayment) ? dateTimeFormat($upfrontPayment->created_at, 'j M Y H:i') : '-' }}</td>
+
+                                                        <td class="text-center">
+                                                            @if(!empty($upfrontPayment))
+                                                                <span class="text-primary">{{ trans('public.paid') }}</span>
+                                                            @else
+                                                                <span class="text-dark-blue">{{ trans('update.unpaid') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-right">
+
+                                                        </td>
+                                                    </tr>
+                                                @endif
+
+                                                @foreach($order->selectedInstallment->steps as $step)
+                                                    @php
+                                                        $stepPayment = $order->payments->where('selected_installment_step_id', $step->id)->where('status', 'paid')->first();
+                                                        $dueAt = ($step->deadline * 86400) + $order->bundle->start_date;
+                                                        $isOverdue = ($dueAt < time() and empty($stepPayment));
+                                                    @endphp
+
+                                                    <tr>
+                                                        <td class="text-left">
+                                                            <div class="d-block font-16 font-weight-500 text-dark-blue">
+                                                                {{ $step->installmentStep->title }}
+
+                                                                @if($step->amount_type == 'percent')
+                                                                <span class="ml-5 font-12 text-gray">({{ $step->amount }}%)</span>
+                                                                @endif
+                                                            </div>
+                                                            <span class="d-block font-12 text-gray">{{ $step->deadline }} أيام بعد بداية الدورة</span>
+                                                        </td>
+
+                                                        <td class="text-center">{{ handlePrice($step->getPrice($itemPrice)) }}</td>
+
+                                                        <td class="text-center">
+                                                            <span class="{{ $isOverdue ? 'text-danger' : '' }}">{{ dateTimeFormat($dueAt, 'j M Y') }}</span>
+                                                        </td>
+
+                                                        <td class="text-center">{{ !empty($stepPayment) ? dateTimeFormat($stepPayment->created_at, 'j M Y H:i') : '-' }}</td>
+
+                                                        <td class="text-center">
+                                                            @if(!empty($stepPayment))
+                                                                <span class="text-primary">{{ trans('public.paid') }}</span>
+                                                            @else
+                                                                <span class="{{ $isOverdue ? 'text-danger' : 'text-dark-blue' }}">{{ trans('update.unpaid') }} {{ $isOverdue ? "(". trans('update.overdue') .")" : '' }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-right">
+                                                            @if(empty($stepPayment))
+                                                                @if(!in_array($order->status, ['refunded', 'canceled']) or $order->isCompleted())
+                                                                    <div class="btn-group dropdown table-actions">
+                                                                        <a href="/panel/financial/installments/{{ $order->id }}/steps/{{ $step->id }}/pay" target="_blank"
+                                                                            class="btn btn-primary">{{ trans('panel.pay') }}</a>
+
+                                                                    </div>
+                                                                @endif
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
