@@ -108,7 +108,7 @@
         <div class="row p-20">
         
             
-             <div class="col-12 col-lg-2 mt-5">
+             {{-- <div class="col-12 col-lg-2 mt-5">
                 <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                    
                     <div class="d-flex flex-column">
@@ -121,8 +121,8 @@
                         
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-2 mt-5">
+            </div> --}}
+            <div class="col-12 col-lg-3 mt-5">
                @include('web.default.panel.includes.calender')
             </div>
             {{-- <div class="col-12 col-lg-3 mt-35">
