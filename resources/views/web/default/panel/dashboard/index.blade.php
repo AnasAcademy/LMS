@@ -100,7 +100,36 @@
                     </div>
                 </a>
             </div>
-
+             <div class="col-12 col-lg-2 mt-5">
+                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
+                    <div class="stat-icon monthly-sales">
+                        <img src="/assets/default/img/icons/meeting.svg" alt="">
+                    </div>
+                    <div class="d-flex flex-column ml-15">
+                        <span class="font-16 text-gray font-weight-500">SCT Team</span>
+                    </div>
+                </a>
+            </div>
+             <div class="col-12 col-lg-2 mt-5">
+                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
+                    <div class="stat-icon monthly-sales">
+                        <img src="/assets/default/img/icons/meeting.svg" alt="">
+                    </div>
+                    <div class="d-flex flex-column ml-15">
+                        <span class="font-16 text-gray font-weight-500">Microsoft Teams app</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-lg-2 mt-5">
+                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
+                    <div class="stat-icon monthly-sales">
+                        <img src="/assets/default/img/icons/meeting.svg" alt="">
+                    </div>
+                    <div class="d-flex flex-column ml-15">
+                        <span class="font-16 text-gray font-weight-500">Links</span>
+                    </div>
+                </a>
+            </div>
             {{-- <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-15 px-10 px-md-20">
                     <div data-percent="{{ !empty($nextBadge) ? $nextBadge['percent'] : 0 }}" data-label="{{ (!empty($nextBadge) and !empty($nextBadge['earned'])) ? $nextBadge['earned']->title : '' }}" id="nextBadgeChart" class="text-center">
