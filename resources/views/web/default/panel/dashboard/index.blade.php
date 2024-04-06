@@ -72,7 +72,7 @@
                         $can_drawable = ($drawable > ((!empty($getFinancialSettings) and !empty($getFinancialSettings['minimum_payout'])) ? (int)$getFinancialSettings['minimum_payout'] : 0))
                     @endphp
 
-                    <div class="mt-20 pt-30 border-top border-gray300 d-flex align-items-center @if($can_drawable) justify-content-between @else justify-content-center @endif">
+                    <div class="mt-20 pt-10 border-top border-gray300 d-flex align-items-center @if($can_drawable) justify-content-between @else justify-content-center @endif">
                         @if($can_drawable)
                             <span class="font-16 font-weight-500 text-gray">{{ trans('panel.with_drawable') }}:</span>
                             <span class="font-16 font-weight-bold text-secondary">{{ handlePrice($drawable) }}</span>
