@@ -66,7 +66,7 @@
         
     </div>
         <div class="col-12 col-lg-3 mt-35">
-                <div class="bg-white account-balance rounded-sm p-35">
+                <div class="bg-white account-balance rounded-sm p-25">
                     <div class="text-center">
                       {{--  @include('web.default.panel.includes.sidebar_icons.financial') --}}
                         <svg width="63" viewBox="0 0 63 50" fill="none" xmlns="http://www.w3.org/2000/svg">
