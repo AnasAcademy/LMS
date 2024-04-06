@@ -50,7 +50,7 @@
                     @can('student_showClasses')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ ($authUser->isUser()) ? '/panel/webinars/purchases' : '/panel/webinars' }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                                                        @include('web.default.panel.includes.sidebar_icons.requirements')
+                                                        @include('web.default.panel.includes.sidebar_icons.studytable')
 
                             {{-- <img src="/assets/default/img/icons/user_menu/my_courses.svg" class="icons"> --}}
                             <span class="ml-5">{{ trans('update.my_courses') }}</span>
