@@ -7,7 +7,7 @@
 
 @section('content')
     <section class="dashboard">
-         <div class="row">
+         <div class="row p-10">
                <div class="d-block align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
                 <h1 class="section-title">{{ trans('panel.dashboard') }}</h1>
     
@@ -22,7 +22,7 @@
                 @endif
             </div>
          </div>
-        <div class="row">
+        <div class="row p-10">
           
     
             @if(!$authUser->financial_approval and !$authUser->isUser())
@@ -65,11 +65,7 @@
                 </div>
             </div>
     --}}
-        </div>
-    </section>
-
-    <section class="dashboard">
-        <div class="row">
+            
             <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
                     <div class="text-center">
@@ -94,6 +90,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+    </section>
+
+    <section class="dashboard">
+        <div class="row">
+        
 
             <div class="col-12 col-lg-2 mt-5">
                 <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
