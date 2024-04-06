@@ -99,17 +99,16 @@
                         <span class="font-16 text-gray font-weight-500">جدول المقررات</span>
                     </div>
                 </a>
-            </div>
-             <div class="col-12 col-lg-2 mt-5">
-                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
+                 <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                     <div class="stat-icon monthly-sales">
                         <img src="/assets/default/img/icons/meeting.svg" alt="">
                     </div>
                     <div class="d-flex flex-column ml-15">
-                        <span class="font-16 text-gray font-weight-500">SCT Team</span>
+                        <span class="font-16 text-gray font-weight-500">فريق الدعم و التواصل</span>
                     </div>
                 </a>
             </div>
+             
              <div class="col-12 col-lg-2 mt-5">
                 <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                     <div class="stat-icon monthly-sales">
