@@ -121,6 +121,12 @@
                          <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="" 
                         href="https://support.anasacademy.uk/">قدم طلب</a>
                     </div>
+                   
+                </div>
+            </div>
+             {{-- Microsoft Teams --}}
+             <div class="col-12 col-lg-3 mt-5 ">
+                <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0">
                     <div class="d-flex flex-column">
                         <span class="font-16 text-gray font-weight-500">برنامج ميكروسوفت تيمز</span>
 
