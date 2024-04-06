@@ -22,7 +22,11 @@
                 @endif
             </div>
          </div>
-        <div class="row p-20">
+
+
+
+        
+<div class="row p-20">
           
     <div class="col-12 col-lg-3 mt-35">
 
@@ -46,28 +50,8 @@
                
                
                 </ul>
-    {{--
-                <ul class="mt-15 unread-notification-lists">
-                    @if(!empty($unReadNotifications) and !$unReadNotifications->isEmpty())
-                        @foreach($unReadNotifications->take(5) as $unReadNotification)
-                            <li class="font-14 mt-1 text-gray">- {{ $unReadNotification->title }}</li>
-                        @endforeach
-    
-                        @if(count($unReadNotifications) > 5)
-                            <li>&nbsp;&nbsp;...</li>
-                        @endif
-                    @endif
-                </ul>
-    
-                <a href="/panel/notifications" class="mt-15 font-weight-500 text-dark-blue d-inline-block">{{ trans('panel.view_all_events') }}</a>
-    
-                <div class="dashboard-banner">
-                    <img src="{{ getPageBackgroundSettings('dashboard') }}" alt="" class="img-cover">
-                </div>
-            </div>
-    --}}
         </div>
-            <div class="col-12 col-lg-3 mt-35">
+        <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
                     <div class="text-center">
                         @include('web.default.panel.includes.sidebar_icons.financial')
@@ -90,8 +74,8 @@
                         @endif
                     </div>
                 </div>
-            </div>
         </div>
+    </div>
         
     </section>
 
