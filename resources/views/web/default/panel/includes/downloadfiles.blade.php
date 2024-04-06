@@ -107,14 +107,14 @@
     margin-bottom: 30px;
 }
 </style>
-<div class="container">
+<div class="">
 <div class="row">
 <div class="col-md-12">
     <div class="card m-b-30">
         <div class="card-header">                                
             <div class="row align-items-center">
                 <div class="col-8">
-                    <h5 class="card-title mb-0">Important Files</h5>
+                    <h5 class="card-title mb-0">ملفات مهمة</h5>
                 </div>
                 <div class="col-4">
                     <ul class="list-inline-group text-right mb-1 pl-0">
@@ -127,31 +127,31 @@
             <div class="product-file-type">
                 <ul class="list-unstyled">
                     <li class="media mb-3">
-                        <span class="mr-3 align-self-center img-icon primary-rgba text-primary">.doc</span>
+                        <span class="ml-3 align-self-center img-icon primary-rgba text-primary">.doc</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Marketing Guidelines<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.doc, 5.3 MB</p>
+                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                     <li class="media mb-3">
-                        <span class="mr-3 align-self-center img-icon success-rgba text-success">.xls</span>
+                        <span class="ml-3 align-self-center img-icon success-rgba text-success">.xls</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Complete Product Sheet<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.xls, 2.5 MB</p>
+                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                     <li class="media mb-3">
-                        <span class="mr-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
+                        <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Annual Sales Report 2018-19<i class="feather icon-download-cloud float-right"></i></h5>
                         <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                     <li class="media">
-                        <span class="mr-3 align-self-center img-icon info-rgba text-info">.zip</span>
+                        <span class="ml-3 align-self-center img-icon info-rgba text-info">.zip</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Brand Photography<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.zip, 53.2 MB</p>
+                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                 </ul>
