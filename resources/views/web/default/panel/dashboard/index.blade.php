@@ -122,7 +122,7 @@
                     </div>
                 </div>
             </div> --}}
-            <div class="col-12 col-lg-3 mt-5">
+            <div class="col-12 col-lg-6 mt-5">
                @include('web.default.panel.includes.calender')
             </div>
             {{-- <div class="col-12 col-lg-3 mt-35">
