@@ -1,3 +1,15 @@
+<style>
+    .custom-dropdown-toggle li a svg {
+        min-width: 100%;
+        width: 100%;
+        max-width: 100%;
+        min-height: 100%;
+        height: 100%;
+        max-height: 100%;
+        color: var(--secondary);
+        stroke-width: 1.5px;
+    }
+</style>
 @if(!empty($authUser))
 
     <div class="custom-dropdown navbar-auth-user-dropdown position-relative">
