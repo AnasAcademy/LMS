@@ -17,37 +17,6 @@
   color: #282828 !important;
 }
 
-.text-muted {
-  color: #8A98AC !important;
-}
-
-.text-primary {
-  color: #6e81dc !important;
-}
-
-.text-secondary {
-  color: #718093 !important;
-}
-
-.text-success {
-  color: #5fc27e !important;
-}
-
-.text-danger {
-  color: #f44455 !important;
-}
-
-.text-warning {
-  color: #fcc100 !important;
-}
-
-.text-info {
-  color: #72d0fb !important;
-}
-
-.text-light {
-  color: #dcdde1 !important;
-}
 
 .text-dark {
   color: #2d3646 !important;
