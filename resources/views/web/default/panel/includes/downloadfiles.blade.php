@@ -130,42 +130,36 @@
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Microsoft Teams Arabic<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Microsoft Teams English<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Outlook Arabic<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">Outlook English<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                      <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">OneDrive English<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                      <li class="media">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
                         <h5 class="font-16 mb-1">OneDrive Arabic<i class="feather icon-download-cloud float-right"></i></h5>
-                        <p>.pdf, 10.5 MB</p>
                         </div>
                     </li>
                 </ul>
