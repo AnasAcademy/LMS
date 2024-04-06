@@ -100,10 +100,9 @@
 
                 <li class="navbar-auth-user-dropdown-item">
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-danger font-14 bg-transparent">
-                         @include('web.default.panel.includes.sidebar_icons.logout')
-                            <span class="ml-5">{{ trans('auth.logout') }}</span>
-                        {{-- <img src="/assets/default/img/icons/user_menu/logout.svg" class="icons"> --}}
-                       {{-- <span class="ml-5">{{ trans('auth.logout') }}</span> --}}
+                        
+                        <img src="/assets/default/img/icons/user_menu/logout.svg" class="icons"> 
+                      <span class="ml-5">{{ trans('auth.logout') }}</span> 
                     </a>
                 </li>
 
