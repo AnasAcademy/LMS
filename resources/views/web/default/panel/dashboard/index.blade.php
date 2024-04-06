@@ -13,7 +13,7 @@
         align-content: center;
         justify-content: center;
         align-items: center;
-        gap: 20px;
+        gap: 10px;
     }
 </style>
 @section('content')
@@ -107,7 +107,7 @@
                 <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-25 d-flex align-items-center mt-0">
                    
                     <div class="d-flex flex-column">
-                        <span class="font-16 text-gray font-weight-500">فريق الدعم والتواصل</span>
+                        <span class="font-16 text-gray font-weight-500 text-center pb-10">فريق الدعم والتواصل</span>
                          <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="" 
                         href="https://support.anasacademy.uk/">قدم طلب</a>
                     </div>
@@ -115,7 +115,7 @@
                 </div>
                   <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-25 d-flex align-items-center mt-20">
                     <div class="d-flex flex-column">
-                        <span class="font-16 text-gray font-weight-500">برنامج ميكروسوفت تيمز</span>
+                        <span class="font-16 text-gray font-weight-500 text-center pb-10">برنامج ميكروسوفت تيمز</span>
 
                        <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="" 
                         href="https://go.microsoft.com/fwlink/?linkid=2187217&amp;clcid=0x409&amp;culture=en-us&amp;country=us/">اضغط هنا لتنزيل البرنامج</a>
