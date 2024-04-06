@@ -75,7 +75,7 @@
                             @include('web.default.panel.includes.sidebar_icons.support')
                             <span class="ml-5">فريق الدعم والتواصل </span>
                             {{-- <span class="ml-5">{{ trans('panel.support') }}</span> --}}
-                            {{-- <img src="/assets/default/img/icons/user_menu/support.svg" class="icons"> --}
+                            {{-- <img src="/assets/default/img/icons/user_menu/support.svg" class="icons"> --}}
                         </a>
                     </li>
                     @endcan
