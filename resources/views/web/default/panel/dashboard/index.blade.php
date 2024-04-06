@@ -133,7 +133,10 @@
                @include('web.default.panel.includes.calender')
             </div>
             
-       
+         {{-- download files --}}
+            <div class="col-12 col-lg-5 mt-5 rounded-sm">
+               @include('web.default.panel.includes.downloadfiles')
+            </div>
             
             {{-- <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-15 px-10 px-md-20">
