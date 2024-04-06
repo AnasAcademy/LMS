@@ -23,7 +23,7 @@ a {
 	height: 100%;
 	justify-content: center;
 	margin: 0 auto;
-	max-width: 600px;
+	max-width: 100%;
 	width: 100%;
 }
 
