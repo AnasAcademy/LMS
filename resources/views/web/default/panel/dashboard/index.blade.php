@@ -107,8 +107,13 @@
     <section class="dashboard">
         <div class="row p-20">
         
+            {{-- Calender --}}
+            <div class="col-12 col-lg-5 mt-5">
+               @include('web.default.panel.includes.calender')
+            </div>
             
-             {{-- <div class="col-12 col-lg-2 mt-5">
+             {{-- SCT Team --}}
+             <div class="col-12 col-lg-2 mt-5">
                 <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                    
                     <div class="d-flex flex-column">
@@ -121,10 +126,8 @@
                         
                     </div>
                 </div>
-            </div> --}}
-            <div class="col-12 col-lg-5 mt-5">
-               @include('web.default.panel.includes.calender')
             </div>
+            
             {{-- <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-15 px-10 px-md-20">
                     <div data-percent="{{ !empty($nextBadge) ? $nextBadge['percent'] : 0 }}" data-label="{{ (!empty($nextBadge) and !empty($nextBadge['earned'])) ? $nextBadge['earned']->title : '' }}" id="nextBadgeChart" class="text-center">
