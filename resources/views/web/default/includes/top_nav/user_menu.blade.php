@@ -63,14 +63,14 @@
                         </li>
                     @endcan --}}
                     @endif
-                     @if((\App\Student::where('user_id',$authUser->id)))
+                   {{--  @if((\App\Student::where('user_id',$authUser->id)))
                        <li class="navbar-auth-user-dropdown-item">
                             <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                             @include('web.default.panel.includes.sidebar_icons.requirements')
                                 <span class="ml-5">متطلبات القبول</span>
                             </a>
                         </li>
-                    @endif
+                    @endif --}}
                     @can('show_support')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="https://support.anasacademy.uk/" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
