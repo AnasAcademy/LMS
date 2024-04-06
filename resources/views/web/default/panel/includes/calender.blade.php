@@ -23,7 +23,7 @@ a {
 }
 
 .calendar {
-	background: #2b4450;
+	background: #5F2B80;
 	border-radius: 4px;
 	box-shadow: 0 5px 20px rgba(0, 0, 0, .3);
 	height: 501px;
