@@ -113,7 +113,7 @@
             </div>
             
              {{-- SCT Team --}}
-             <div class="col-12 col-lg-2 mt-5">
+             <div class="col-12 col-lg-3 mt-5">
                 <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
                    
                     <div class="d-flex flex-column">
