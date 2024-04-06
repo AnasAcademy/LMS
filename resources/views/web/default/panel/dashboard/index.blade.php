@@ -6,7 +6,7 @@
 @endpush
 
 @section('content')
-    <section class="">
+    <section class="d-flex">
         <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
             <h1 class="section-title">{{ trans('panel.dashboard') }}</h1>
 
