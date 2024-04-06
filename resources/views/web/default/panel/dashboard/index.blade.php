@@ -87,32 +87,20 @@
     <section class="dashboard">
         <div class="row p-20">
         
-
-            <div class="col-12 col-lg-2 mt-5">
-                <div class="panes aem-GridColumn aem-GridColumn--default--12" data-component-id="77d468126200ece060f2cbc925df1f8b">
-                    <div id="panes-uid32b6" data-oc="oc37e0">
-                        <div class="row justify-content-center">
-                            <div class="col-12 col-md-12">
-                                <div class="h-100 text-sm-center">
-                                    <div class=" link-group ">
-                                        <a class="btn btn-primary btn " style="color: #fff; background-color: #f70387; border: #f70387; padding: 10px;" href="https://support.anasacademy.uk/" target="_blank" rel="noopener" data-bi-cn="DownloadTeams1" data-bi-ecn="Download Teams" data-bi-ct="button" data-bi-pa="body" data-bi-bhvr="41" data-bi-tags="{&quot;BiLinkName&quot;:&quot;DownloadTeams1&quot;}" data-target="https://go.microsoft.com/fwlink/?linkid=2187217&amp;clcid=0x409&amp;culture=en-us&amp;country=us" aria-label="Download Teams app" data-regenerate-fwlink="true">الدعم والتواصل</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             
+            
              <div class="col-12 col-lg-2 mt-5">
-                <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
-                    <div class="stat-icon monthly-sales">
-                        <img src="/assets/default/img/icons/meeting.svg" alt="">
+                <div class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
+                   
+                    <div class="d-flex flex-column ml-15">
+                        <span class="font-16 text-gray font-weight-500">فريق الدعم والتواصل</span>
                     </div>
                     <div class="d-flex flex-column ml-15">
-                        <span class="font-16 text-gray font-weight-500">Microsoft Teams app</span>
+
+                        <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:190px;height:50px" 
+                        href="https://support.anasacademy.uk/">قدم طلب</a>
+                        
                     </div>
-                </a>
+                </div>
             </div>
             <div class="col-12 col-lg-2 mt-5">
                 <a href="@if($authUser->isUser()) /panel/webinars/purchases @else /panel/requirements @endif" class="dashboard-stats rounded-sm panel-shadow p-10 p-md-20 d-flex align-items-center mt-0 mt-md-30">
