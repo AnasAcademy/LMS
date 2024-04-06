@@ -1,7 +1,9 @@
 @php
     $getPanelSidebarSettings = getPanelSidebarSettings();
 @endphp
-
+<style>
+    
+</style>
 <div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15">
     <div class="user-info d-flex align-items-center justify-content-between">
         <div class="user-avatar bg-gray200">
@@ -43,7 +45,7 @@
         </div>
     </div>
 
-    <div class="d-flex sidebar-user-stats pb-10 ml-20 pb-lg-20 mt-15 mt-lg-30">
+  {{--  <div class="d-flex sidebar-user-stats pb-10 ml-20 pb-lg-20 mt-15 mt-lg-30">
         <div class="sidebar-user-stat-item d-flex flex-column">
             <strong class="text-center">{{ $authUser->webinars()->count() }}</strong>
             <span class="font-12">{{ trans('panel.classes') }}</span>
@@ -62,7 +64,7 @@
                 <span class="font-12">{{ trans('panel.followers') }}</span>
             </div>
         @endif
-    </div>
+    </div> --}}
 
     <ul id="panel-sidebar-scroll"
         class="sidebar-menu pt-10 @if (!empty($authUser->userGroup)) has-user-group @endif @if (empty($getPanelSidebarSettings) or empty($getPanelSidebarSettings['background'])) without-bottom-image @endif"
@@ -751,7 +753,7 @@
             </a>
         </li>
     </ul>
-
+{{--
     @if (!empty($getPanelSidebarSettings) and !empty($getPanelSidebarSettings['background']))
         <div class="sidebar-create-class d-none d-md-block">
             <a href="{{ !empty($getPanelSidebarSettings['link']) ? $getPanelSidebarSettings['link'] : '' }}"
@@ -761,4 +763,5 @@
             </a>
         </div>
     @endif
+    --}}
 </div>
