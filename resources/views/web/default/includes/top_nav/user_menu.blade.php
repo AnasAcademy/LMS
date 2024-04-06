@@ -23,7 +23,6 @@
                 @if($authUser->isAdmin())
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl() }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            {{-- <img src="/assets/default/img/icons/user_menu/dashboard.svg" class="icons"> --}}
                             @include('web.default.panel.includes.sidebar_icons.dashboard')
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
@@ -31,8 +30,7 @@
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl("/settings") }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                           {{-- <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons"> --}}
-                                                        @include('web.default.panel.includes.sidebar_icons.settings')
+                            @include('web.default.panel.includes.sidebar_icons.settings')
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
@@ -40,7 +38,6 @@
                     @can('show_panel')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                             {{-- <img src="/assets/default/img/icons/user_menu/dashboard.svg" class="icons"> --}}
                             @include('web.default.panel.includes.sidebar_icons.dashboard')
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
@@ -50,11 +47,8 @@
                     @can('student_showClasses')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ ($authUser->isUser()) ? '/panel/webinars/purchases' : '/panel/webinars' }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                                                        @include('web.default.panel.includes.sidebar_icons.studytable')
+                            @include('web.default.panel.includes.sidebar_icons.studytable')
                             <span class="ml-5" >جدول المقررات الدراسية</span>
-
-                            {{-- <img src="/assets/default/img/icons/user_menu/my_courses.svg" class="icons"> --}}
-                           {{-- <span class="ml-5">{{ trans('update.my_courses') }}</span> --}}
                         </a>
                     </li>
                     @endcan
@@ -74,8 +68,6 @@
                           
                             @include('web.default.panel.includes.sidebar_icons.support')
                             <span class="ml-5">فريق الدعم والتواصل </span>
-                            {{-- <span class="ml-5">{{ trans('panel.support') }}</span> --}}
-                            {{-- <img src="/assets/default/img/icons/user_menu/support.svg" class="icons"> --}}
                         </a>
                     </li>
                     @endcan
@@ -92,7 +84,6 @@
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
                              @include('web.default.panel.includes.sidebar_icons.setting')
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
-                           {{--  <img src="/assets/default/img/icons/user_menu/settings.svg" class="icons"> --}
                         </a>
                     </li>
 
@@ -101,7 +92,7 @@
                 <li class="navbar-auth-user-dropdown-item">
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-danger font-14 bg-transparent">
                         
-                        <img src="/assets/default/img/icons/user_menu/logout.svg" class="icons"> 
+                             @include('web.default.panel.includes.sidebar_icons.logout')
                       <span class="ml-5">{{ trans('auth.logout') }}</span> 
                     </a>
                 </li>
