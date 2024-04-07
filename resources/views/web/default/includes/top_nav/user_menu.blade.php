@@ -1,4 +1,8 @@
-
+<style>
+.fill-black{
+    fill:black;
+}
+</style>
 @if(!empty($authUser))
 
     <div class="custom-dropdown navbar-auth-user-dropdown position-relative">
@@ -24,10 +28,12 @@
                 @if($authUser->isAdmin())
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl() }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.dashboard')
+
+                            @include('web.default.panel.includes.sidebar_icons.dashboard', ['class'=> "ffill-black"])
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
                     </li>
+
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl("/settings") }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
@@ -39,7 +45,7 @@
                     @can('show_panel')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.dashboard')
+                            @include('web.default.panel.includes.sidebar_icons.dashboard', ['class'=> "fill-black"])
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
                     </li>
@@ -74,13 +80,13 @@
                     @can('show_support')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="https://support.anasacademy.uk/" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                          
+
                             @include('web.default.panel.includes.sidebar_icons.support')
                             <span class="ml-5">فريق الدعم والتواصل </span>
                         </a>
                     </li>
                     @endcan
-                   
+
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
@@ -93,9 +99,9 @@
 
                 <li class="navbar-auth-user-dropdown-item">
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-danger font-14 bg-transparent">
-                        
-                             @include('web.default.panel.includes.sidebar_icons.logout')
-                      <span class="ml-5">تسجل الخروج</span> 
+
+                        @include("web.default.panel.includes.sidebar_icons.logout", ['class'=> "fill-black"])
+                      <span class="ml-5">تسجل الخروج</span>
                     </a>
                 </li>
 

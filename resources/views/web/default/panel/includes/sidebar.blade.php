@@ -2,7 +2,7 @@
     $getPanelSidebarSettings = getPanelSidebarSettings();
 @endphp
 <style>
-    
+
 </style>
 <div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15">
     <div class="user-info d-flex align-items-center justify-content-between">
@@ -74,7 +74,7 @@
             <li class="sidenav-item {{ request()->is('panel') ? 'sidenav-item-active' : '' }}">
                 <a href="/panel" class="d-flex align-items-center">
                     <span class="sidenav-item-icon mr-10">
-                        @include('web.default.panel.includes.sidebar_icons.dashboard')
+                        @include('web.default.panel.includes.sidebar_icons.dashboard', ['class'=>"cls-3"])
                     </span>
                     <span class="font-14 text-dark-blue font-weight-500">الرئيسية</span>
                 </a>
