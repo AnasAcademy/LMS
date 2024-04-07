@@ -43,8 +43,8 @@ class DashboardController extends Controller
                 ->get();
 
             $time = time();
-            $firstDayMonth = strtotime(date('Y-m-01', $time));// First day of the month.
-            $lastDayMonth = strtotime(date('Y-m-t', $time));// Last day of the month.
+            $firstDayMonth = strtotime(date('Y-m-01', $time)); // First day of the month.
+            $lastDayMonth = strtotime(date('Y-m-t', $time)); // Last day of the month.
 
             $monthlySales = Sale::where('seller_id', $user->id)
                 ->whereNull('refund_at')
@@ -80,12 +80,16 @@ class DashboardController extends Controller
                 ->where('status', 'active')
                 ->get();
 
+
+            $bundleSales = Sale::where(['buyer_id' => $user->id, "type" => "bundle"])->whereNotNull(["bundle_id", "order_id"])->get();
+
             $data['webinarsCount'] = count($webinars);
             $data['supportsCount'] = count($supports);
             $data['commentsCount'] = count($comments);
             $data['reserveMeetingsCount'] = count($reserveMeetings);
             $data['monthlyChart'] = $this->getMonthlySalesOrPurchase($user);
-            $data['webinars']=$webinars;
+            $data['webinars'] = $webinars;
+            $data['bundleSales'] = $bundleSales;
         }
 foreach ($webinars as $webinar) {
 // dd($webinar->bundle->title);

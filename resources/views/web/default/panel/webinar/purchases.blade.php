@@ -95,8 +95,8 @@
                                                 @endphp
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>
-                                                        <td>{{ $loop->index + 1 }}</td>
-                                                        <th>{{ mb_substr($bundleWebinar->webinar->title, 1, -3) }}</th>
+                                                        <td>{{ $bundleWebinar->webinar->id }}</td>
+                                                        <th>{{ ($bundleWebinar->webinar->title) }}</th>
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}

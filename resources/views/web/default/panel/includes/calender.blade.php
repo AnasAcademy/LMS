@@ -231,7 +231,8 @@
 </div>
 
 <!-- Popup -->
-<div class="modal fade" id="bundlePopup" tabindex="-1" role="dialog" aria-labelledby="bundlePopupLabel" aria-hidden="true">
+<div class="modal fade" id="bundlePopup" tabindex="-1" role="dialog" aria-labelledby="bundlePopupLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -252,36 +253,42 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-function dateTimeFormat(timestamp) {
-    const date = new Date(timestamp * 1000);
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
+    function dateTimeFormat(timestamp) {
+        const date = new Date(timestamp * 1000);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
 
-    return `${year}-${month}-${day}`;
-}
-$(document).ready(function() {
-    const calendarBody = $('#calendar-body');
-    const bundlePopup = $('#bundlePopup');
-    const currentMonthYear = $('#current-month-year');
+        return `${year}-${month}-${day}`;
+    }
+    $(document).ready(function() {
+        const calendarBody = $('#calendar-body');
+        const bundlePopup = $('#bundlePopup');
+        const currentMonthYear = $('#current-month-year');
 
-    const bundles = @json($webinars); // Assuming $webinars contains your event data
+        const bundles = @json($webinars); // Assuming $webinars contains your event data
 
-    let currentDate = new Date();
-    let currentYear = currentDate.getFullYear();
-    let currentMonth = currentDate.getMonth();
+        let currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        let currentMonth = currentDate.getMonth();
 
-    updateCalendar();
 
-    $('#prev-month').click(function() {
-        if (currentMonth === 0) {
-            currentMonth = 11;
-            currentYear--;
-        } else {
-            currentMonth--;
-        }
+        console.log({
+            currentDate,
+            currentYear,
+            currentMonth
+        });
         updateCalendar();
-    });
+
+        $('#prev-month').click(function() {
+            if (currentMonth === 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else {
+                currentMonth--;
+            }
+            updateCalendar();
+        });
 
     $('#next-month').click(function() {
         if (currentMonth === 11) {
@@ -308,21 +315,25 @@ $(document).ready(function() {
                     if (i === 0 && j < firstDayOfWeek) {
                         row.append('<td></td>');
                     } else if (currentDay <= daysInMonth) {
-                        const date = new Date(currentYear, currentMonth, currentDay);
+                        const date = new Date(`${currentYear}-${currentMonth}-${currentDay}`);
+
                         const formattedDate = formatDate(date);
                         const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
                             1000)) === formattedDate);
                         const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
-
-                        let details = "";
-                        for (bundle of allBundles) {
-                            details += bundle.title + "<br>";
+                        let details=""
+                        if(allBundles.length > 0){
+                             details = "Courses";
                         }
-
+                        // for (bundle of allBundles) {
+                        //     details += bundle.title + "<br>";
+                        // }
+                        console.log({currentDay,date, formattedDate});
                         row.append(`<td class="${dayClass}" data-date="${formattedDate}">
                     ${currentDay}
                     <p class='course-title'>${details}</p>
                 </td>`);
+                console.log("today: " , formatDate(new Date()));
 
                         currentDay++;
                     } else {
@@ -359,4 +370,4 @@ $(document).ready(function() {
 });
 
 
-  </script>
+</script>
