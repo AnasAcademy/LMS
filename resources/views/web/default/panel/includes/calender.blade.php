@@ -306,9 +306,6 @@
 
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
-
-            console.log({daysInMonth, firstDayOfWeek, currentMonthYear});
-
             let dayCount = 1;
             let currentDay = 1;
 
@@ -324,8 +321,10 @@
                         const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
                             1000)) === formattedDate);
                         const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
-
-                        let details = "Courses";
+                        let details=""
+                        if(allBundles.length > 0){
+                             details = "Courses";
+                        }
                         // for (bundle of allBundles) {
                         //     details += bundle.title + "<br>";
                         // }
@@ -354,16 +353,21 @@
                     text += bundle.title + "<br>";
                 }
                 $('#bundleStartDate').html(
-                    `${text}`); // Assuming 'title' is the property containing the event title
+                    `${text}`);
                 bundlePopup.modal('show');
             });
         }
 
+    function formatDate(date) {
+        const date2 = new Date(date);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
 
-        function formatDate(date) {
-            return date.toISOString().slice(0, 10);
-        }
-    });
+        return formattedDate;
+    }
+});
 
 
 </script>
