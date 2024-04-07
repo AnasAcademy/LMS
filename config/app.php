@@ -186,7 +186,7 @@ return [
         App\Providers\MinioStorageServiceProvider::class,
         Gathuku\Mpesa\MpesaServiceProvider::class,
         Ssheduardo\Redsys\RedsysServiceProvider::class,
-        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class, 
+        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
     ],
 
     /*
