@@ -294,36 +294,61 @@ $(document).ready(function() {
     });
 
     function updateCalendar() {
-        currentMonthYear.text(`${currentYear}-${currentMonth + 1}`);
-        calendarBody.empty();
+            currentMonthYear.text(`${currentYear}-${currentMonth + 1}`);
+            calendarBody.empty();
 
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-        for (let i = 1; i <= daysInMonth; i++) {
-            const date = new Date(currentYear, currentMonth, i);
-            const formattedDate = formatDate(date);
-            const bundle = bundles.find(bundle => formatDate(new Date(bundle.start_date * 1000)) === formattedDate);
-            const dayClass = bundle ? 'day-with-bundle' : '';
+            console.log({daysInMonth, firstDayOfWeek, currentMonthYear});
 
-            if (date.getDay() === 0) {
-                calendarBody.append('<tr>');
+            let dayCount = 1;
+            let currentDay = 1;
+
+            for (let i = 0; i < 6; i++) {
+                const row = $('<tr>');
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDayOfWeek) {
+                        row.append('<td></td>');
+                    } else if (currentDay <= daysInMonth) {
+                        const date = new Date(currentYear, currentMonth, currentDay);
+                        const formattedDate = formatDate(date);
+                        const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
+                            1000)) === formattedDate);
+                        const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
+
+                        let details = "";
+                        for (bundle of allBundles) {
+                            details += bundle.title + "<br>";
+                        }
+
+                        row.append(`<td class="${dayClass}" data-date="${formattedDate}">
+                    ${currentDay}
+                    <p class='course-title'>${details}</p>
+                </td>`);
+
+                        currentDay++;
+                    } else {
+                        row.append('<td></td>');
+                    }
+                }
+                calendarBody.append(row);
             }
 
-            calendarBody.append(`<td class="${dayClass}" data-date="${formattedDate}">${i}</td>`);
+            $('.day-with-bundle').off('click').on('click', function() {
+                const date = $(this).data('date');
+                const bundlesData = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
+                    1000)) === date);
 
-            if (date.getDay() === 6) {
-                calendarBody.append('</tr>');
-            }
+                let text = "";
+                for (bundle of bundlesData) {
+                    text += bundle.title + "<br>";
+                }
+                $('#bundleStartDate').html(
+                    `${text}`); // Assuming 'title' is the property containing the event title
+                bundlePopup.modal('show');
+            });
         }
-
-        $('.day-with-bundle').click(function() {
-            const date = $(this).data('date');
-            const bundle = bundles.find(bundle => formatDate(new Date(bundle.start_date * 1000)) === date);
-
-            $('#bundleStartDate').text(`${bundle.title}`); // Assuming 'title' is the property containing the event title
-            bundlePopup.modal('show');
-        });
-    }
 
     function formatDate(date) {
         return date.toISOString().slice(0, 10);
