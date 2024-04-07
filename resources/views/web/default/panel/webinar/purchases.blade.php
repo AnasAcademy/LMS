@@ -96,7 +96,7 @@
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>
                                                         <td>{{ $bundleWebinar->webinar->id }}</td>
-                                                        <th>{{ substr($bundleWebinar->webinar->title, 1, -4)}}</th>
+                                                        <th>{{ substr($bundleWebinar->webinar->title, 1, -3)}}</th>
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
