@@ -71,7 +71,7 @@
                                 @foreach ($bundleSales as $bundleSale)
                                     {{ $bundleSale->bundle->title }}
                                     @if ($loop->index + 1 < $bundleSales->count())
-                                        |
+                                        و
                                     @endif
                                 @endforeach
                             @endif
