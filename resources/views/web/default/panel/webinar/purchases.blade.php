@@ -89,14 +89,14 @@
                                             @php
                                                 $totalHours = 0;
                                             @endphp
-                                            @foreach ($item->bundleWebinars as $bundleWebinar)
+                                            @foreach ($item->bundleWebinars->sortBy('webinar.start_date') as $bundleWebinar)
                                                 @php
                                                     $totalHours += $bundleWebinar->webinar->duration;
                                                 @endphp
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>
                                                         <td>{{ $bundleWebinar->webinar->id }}</td>
-                                                        <th>{{ ($bundleWebinar->webinar->title) }}</th>
+                                                        <th>{{ substr($bundleWebinar->webinar->title, 1, -4)}}</th>
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}

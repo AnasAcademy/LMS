@@ -67,19 +67,19 @@
     <div class="row_cal">
         <div class="col_cal">
             <div class="d-flex_cal justify-content-between_cal">
-                <button class="btn btn-primary" id="prev-month">Previous Month</button>
-                <button class="btn btn-primary" id="next-month">Next Month</button>
+                <button class="btn btn-primary" id="prev-month">الشهر السابق</button>
+                <button class="btn btn-primary" id="next-month">الشهر القادم</button>
             </div>
             <table class="table table-bordered">
                 <thead class="_cal">
                     <tr class="_cal">
-                        <th class="_cal">Sun</th>
-                        <th class="_cal">Mon</th>
-                        <th class="_cal">Tue</th>
-                        <th class="_cal">Wed</th>
-                        <th class="_cal">Thu</th>
-                        <th class="_cal">Fri</th>
-                        <th class="_cal">Sat</th>
+                        <th class="_cal">الأحد</th>
+                        <th class="_cal">الأثنين</th>
+                        <th class="_cal">الثلاثاء</th>
+                        <th class="_cal">الأربعاء</th>
+                        <th class="_cal">الخميس</th>
+                        <th class="_cal">الجمعه</th>
+                        <th class="_cal">السبت</th>
                     </tr>
                 </thead>
                 <tbody id="calendar-body"></tbody>
@@ -101,7 +101,7 @@
             </div>
             <div class="modal-body" id="bundleStartDate"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">غلق</button>
             </div>
         </div>
     </div>
@@ -176,7 +176,7 @@
 
                         let details = "";
                         for (bundle of allBundles) {
-                            details = "courses";
+                            details = "المقررات";
                         }
 
                         row.append(`<td class="${dayClass}" data-date="${formattedDate}">
