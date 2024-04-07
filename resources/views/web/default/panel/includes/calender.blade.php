@@ -1,227 +1,85 @@
 <style>
-    * {
-        list-style: none;
-        margin: 0;
-        outline: none;
-        padding: 0;
-    }
-
-    a {
-        text-decoration: none;
-    }
-
-    .container-cal {
-        align-items: center;
-        display: flex;
-        height: 100% !important;
-        justify-content: center;
+    .container_cal {
+        max-width: 800px;
         margin: 0 auto;
-        max-width: 100% !important;
-        width: 100% !important;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .calendar {
-        background: #2b4450;
-        border-radius: 4px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, .3);
-        height: auto;
-        perspective: 1000;
-        transition: .9s;
-        transform-style: preserve-3d;
-        width: 100%;
+    #current-month-year {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #333;
+        font-size: 24px;
+        margin-top: 0;
     }
 
-    /* Front - Calendar */
-    .front {
-        transform: rotateY(0deg);
-    }
-
-    .current-date {
-        border-bottom: 1px solid rgba(73, 114, 133, .6);
-        display: flex;
-        justify-content: space-between;
-        padding: 30px 40px;
-    }
-
-    .current-date h1 {
-        color: #dfebed;
-        font-size: 1.4em;
-        font-weight: 300;
-    }
-
-    .week-days {
-        color: #dfebed;
-        display: flex;
-        justify-content: space-between;
-        font-weight: 600;
-        padding: 30px 40px;
-    }
-
-    .days {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .weeks {
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        padding: 0 40px;
-    }
-
-    .weeks div {
-        display: flex;
-        font-size: 1.2em;
-        font-weight: 300;
-        justify-content: space-between;
+    .row_cal {
         margin-bottom: 20px;
+    }
+
+    .col_cal {
+        padding: 0 15px;
+    }
+
+    .d-flex_cal {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .table_cal {
         width: 100%;
+        border-collapse: collapse;
     }
 
-    .last-month {
-        opacity: .3;
-    }
-
-    .weeks span {
+    .table_cal th,
+    .table_cal td {
         padding: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
     }
 
-    .weeks span.active {
-        background: #f78536;
-        border-radius: 50%;
+    .table_cal th {
+        background-color: #f2f2f2;
     }
 
-    .weeks span:not(.last-month):hover {
+    button {
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        background-color: #f2f2f2;
         cursor: pointer;
-        font-weight: 600;
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+        border-radius: 3px;
     }
 
-    .event {
-        position: relative;
-    }
-
-    .event:after {
-        content: '•';
-        color: #f78536;
-        font-size: 1.4em;
-        position: absolute;
-        right: -4px;
-        top: -4px;
-    }
-
-    /* Back - Event form */
-
-    .back {
-        height: 100%;
-        transform: rotateY(180deg);
-    }
-
-    .back input {
-        background: none;
-        border: none;
-        border-bottom: 1px solid rgba(73, 114, 133, .6);
-        color: #dfebed;
-        font-size: 1.4em;
-        font-weight: 300;
-        padding: 30px 40px;
-        width: 100%;
-    }
-
-    .info {
-        color: #dfebed;
-        display: flex;
-        flex-direction: column;
-        font-weight: 600;
-        font-size: 1.2em;
-        padding: 30px 40px;
-    }
-
-    .info div:not(.observations) {
-        margin-bottom: 40px;
-    }
-
-    .info span {
-        font-weight: 300;
-    }
-
-    .info .date {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .info .date p {
-        width: 50%;
-    }
-
-    .info .address p {
-        width: 100%;
-    }
-
-    .actions {
-        bottom: 0;
-        border-top: 1px solid rgba(73, 114, 133, .6);
-        display: flex;
-        justify-content: space-between;
-        position: absolute;
-        width: 100%;
-    }
-
-    .actions button {
-        background: none;
-        border: 0;
-        color: #fff;
-        font-weight: 600;
-        letter-spacing: 3px;
-        margin: 0;
-        padding: 30px 0;
-        text-transform: uppercase;
-        width: 50%;
-    }
-
-    .actions button:first-of-type {
-        border-right: 1px solid rgba(73, 114, 133, .6);
-    }
-
-    .actions button:hover {
-        background: #497285;
-        cursor: pointer;
-    }
-
-    .actions button:active {
-        background: #5889a0;
-        outline: none;
-    }
-
-    /* Flip animation */
-
-    .flip {
-        transform: rotateY(180deg);
-    }
-
-    .front,
-    .back {
-        backface-visibility: hidden;
+    button:hover {
+        background-color: #e6e6e6;
     }
 </style>
-<div class="container">
+
+<div class="container_cal">
     <h1 id="current-month-year">Calendar</h1>
-    <div class="row">
-        <div class="col">
-            <div class="d-flex justify-content-between">
-                <button id="prev-month">Previous Month</button>
-                <button id="next-month">Next Month</button>
+    <div class="row_cal">
+        <div class="col_cal">
+            <div class="d-flex_cal justify-content-between_cal">
+                <button class="btn btn-primary" id="prev-month">Previous Month</button>
+                <button class="btn btn-primary" id="next-month">Next Month</button>
             </div>
             <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Sun</th>
-                        <th>Mon</th>
-                        <th>Tue</th>
-                        <th>Wed</th>
-                        <th>Thu</th>
-                        <th>Fri</th>
-                        <th>Sat</th>
+                <thead class="_cal">
+                    <tr class="_cal">
+                        <th class="_cal">Sun</th>
+                        <th class="_cal">Mon</th>
+                        <th class="_cal">Tue</th>
+                        <th class="_cal">Wed</th>
+                        <th class="_cal">Thu</th>
+                        <th class="_cal">Fri</th>
+                        <th class="_cal">Sat</th>
                     </tr>
                 </thead>
                 <tbody id="calendar-body"></tbody>
@@ -266,18 +124,11 @@
         const bundlePopup = $('#bundlePopup');
         const currentMonthYear = $('#current-month-year');
 
-        const bundles = @json($webinars); // Assuming $webinars contains your event data
-
+        const bundles = @json($webinars);
         let currentDate = new Date();
         let currentYear = currentDate.getFullYear();
         let currentMonth = currentDate.getMonth();
 
-
-        console.log({
-            currentDate,
-            currentYear,
-            currentMonth
-        });
         updateCalendar();
 
         $('#prev-month').click(function() {
@@ -290,54 +141,49 @@
             updateCalendar();
         });
 
-    $('#next-month').click(function() {
-        if (currentMonth === 11) {
-            currentMonth = 0;
-            currentYear++;
-        } else {
-            currentMonth++;
-        }
-        updateCalendar();
-    });
+        $('#next-month').click(function() {
+            if (currentMonth === 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else {
+                currentMonth++;
+            }
+            updateCalendar();
+        });
 
-    function updateCalendar() {
+
+
+        function updateCalendar() {
             currentMonthYear.text(`${currentYear}-${currentMonth + 1}`);
             calendarBody.empty();
 
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
-            let dayCount = 1;
+
             let currentDay = 1;
 
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; currentDay <= daysInMonth; i++) {
                 const row = $('<tr>');
                 for (let j = 0; j < 7; j++) {
-                    if (i === 0 && j < firstDayOfWeek) {
+                    if ((i === 0 && j < firstDayOfWeek) || currentDay > daysInMonth) {
                         row.append('<td></td>');
-                    } else if (currentDay <= daysInMonth) {
-                        const date = new Date(`${currentYear}-${currentMonth}-${currentDay}`);
-
+                    } else {
+                        const date = new Date(currentYear, currentMonth, currentDay);
                         const formattedDate = formatDate(date);
                         const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
                             1000)) === formattedDate);
                         const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
-                        let details=""
-                        if(allBundles.length > 0){
-                             details = "Courses";
+
+                        let details = "";
+                        for (bundle of allBundles) {
+                            details = "courses";
                         }
-                        // for (bundle of allBundles) {
-                        //     details += bundle.title + "<br>";
-                        // }
-                        console.log({currentDay,date, formattedDate});
+
                         row.append(`<td class="${dayClass}" data-date="${formattedDate}">
                     ${currentDay}
                     <p class='course-title'>${details}</p>
                 </td>`);
-                console.log("today: " , formatDate(new Date()));
-
                         currentDay++;
-                    } else {
-                        row.append('<td></td>');
                     }
                 }
                 calendarBody.append(row);
@@ -352,22 +198,18 @@
                 for (bundle of bundlesData) {
                     text += bundle.title + "<br>";
                 }
-                $('#bundleStartDate').html(
-                    `${text}`);
+                $('#bundleStartDate').html(`${text}`);
                 bundlePopup.modal('show');
             });
         }
+        function formatDate(date) {
+            const date2 = new Date(date);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const formattedDate = `${year}-${month}-${day}`;
 
-    function formatDate(date) {
-        const date2 = new Date(date);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        const formattedDate = `${year}-${month}-${day}`;
-
-        return formattedDate;
-    }
-});
-
-
+            return formattedDate;
+        }
+    });
 </script>
