@@ -290,22 +290,21 @@
             updateCalendar();
         });
 
-        $('#next-month').click(function() {
-            if (currentMonth === 11) {
-                currentMonth = 0;
-                currentYear++;
-            } else {
-                currentMonth++;
-            }
-            updateCalendar();
-        });
+    $('#next-month').click(function() {
+        if (currentMonth === 11) {
+            currentMonth = 0;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        updateCalendar();
+    });
 
-
-        function updateCalendar() {
+    function updateCalendar() {
             currentMonthYear.text(`${currentYear}-${currentMonth + 1}`);
             calendarBody.empty();
 
-            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
             console.log({daysInMonth, firstDayOfWeek, currentMonthYear});
@@ -325,10 +324,10 @@
                             1000)) === formattedDate);
                         const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
 
-                        let details = "Courses there";
-                        // for (bundle of allBundles) {
-                        //     details += bundle.title + "<br>";
-                        // }
+                        let details = "";
+                        for (bundle of allBundles) {
+                            details += bundle.title + "<br>";
+                        }
 
                         row.append(`<td class="${dayClass}" data-date="${formattedDate}">
                     ${currentDay}
@@ -357,7 +356,6 @@
                 bundlePopup.modal('show');
             });
         }
-
 
         function formatDate(date) {
             return date.toISOString().slice(0, 10);

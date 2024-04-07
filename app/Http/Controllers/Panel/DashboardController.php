@@ -103,7 +103,9 @@ class DashboardController extends Controller
             $data['webinars'] = $webinars;
             $data['bundleSales'] = $bundleSales;
         }
-
+foreach ($webinars as $webinar) {
+// dd($webinar->bundle->title);
+}
         $data['giftModal'] = $this->showGiftModal($user);
 
         return view(getTemplate() . '.panel.dashboard.index', $data);
