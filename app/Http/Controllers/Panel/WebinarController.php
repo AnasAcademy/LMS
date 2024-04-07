@@ -1081,7 +1081,7 @@ class WebinarController extends Controller
             });
 
 
-        $sales = deepClone($query)
+            $sales = deepClone($query)
             ->with([
                 'webinar' => function ($query) {
                     $query->with([
@@ -1093,7 +1093,7 @@ class WebinarController extends Controller
                         'teacher' => function ($query) {
                             $query->select('id', 'full_name');
                         },
-                    ]);
+                    ])->orderBy('start_date', 'asc'); // Order by start_date here
                     $query->withCount([
                         'sales' => function ($query) {
                             $query->whereNull('refund_at');
@@ -1114,6 +1114,7 @@ class WebinarController extends Controller
             ])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
 
         $time = time();
 
