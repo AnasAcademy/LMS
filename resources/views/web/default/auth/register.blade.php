@@ -170,7 +170,7 @@
             <button type="submit" class="btn btn-primary btn-block mt-20">{{ trans('auth.signup') }}</button>
         </form>
 
-        <div class="ft-text text-center mt-20">
+        <div class="ft-text text-center mt-20 mb-35">
             <span class="text-secondary">
                 لديك حساب بالفعل ؟
 
