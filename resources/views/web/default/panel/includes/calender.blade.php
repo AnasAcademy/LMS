@@ -318,21 +318,23 @@
                     if (i === 0 && j < firstDayOfWeek) {
                         row.append('<td></td>');
                     } else if (currentDay <= daysInMonth) {
-                        const date = new Date(currentYear, currentMonth, currentDay);
+                        const date = new Date(`${currentYear}-${currentMonth}-${currentDay}`);
+
                         const formattedDate = formatDate(date);
                         const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
                             1000)) === formattedDate);
                         const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
 
-                        let details = "";
-                        for (bundle of allBundles) {
-                            details += bundle.title + "<br>";
-                        }
-
+                        let details = "Courses";
+                        // for (bundle of allBundles) {
+                        //     details += bundle.title + "<br>";
+                        // }
+                        console.log({currentDay,date, formattedDate});
                         row.append(`<td class="${dayClass}" data-date="${formattedDate}">
                     ${currentDay}
                     <p class='course-title'>${details}</p>
                 </td>`);
+                console.log("today: " , formatDate(new Date()));
 
                         currentDay++;
                     } else {
@@ -357,8 +359,11 @@
             });
         }
 
+
         function formatDate(date) {
             return date.toISOString().slice(0, 10);
         }
     });
+
+
 </script>

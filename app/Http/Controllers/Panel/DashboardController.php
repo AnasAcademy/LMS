@@ -83,18 +83,6 @@ class DashboardController extends Controller
 
             $bundleSales = Sale::where(['buyer_id' => $user->id, "type" => "bundle"])->whereNotNull(["bundle_id", "order_id"])->get();
 
-            $bundleSales2 = Sale::with('saleBundleWebinars')
-                ->where(['buyer_id' => $user->id, "type" => "bundle"])
-                ->whereNotNull(["bundle_id", "order_id"])
-                ->get();
-
-                $saleWebinars = [];
-            foreach ($bundleSales2 as $sale) {
-                // Access the webinars for each sale
-                $webinarsS = $sale->saleBundleWebinars;
-            }
-
-            // dd($webinarsS);
             $data['webinarsCount'] = count($webinars);
             $data['supportsCount'] = count($supports);
             $data['commentsCount'] = count($comments);
