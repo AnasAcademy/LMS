@@ -124,8 +124,7 @@
         const bundlePopup = $('#bundlePopup');
         const currentMonthYear = $('#current-month-year');
 
-        const bundles = @json($webinars); // Assuming $webinars contains your event data
-
+        const bundles = @json($webinars);
         let currentDate = new Date();
         let currentYear = currentDate.getFullYear();
         let currentMonth = currentDate.getMonth();
@@ -152,57 +151,57 @@
             updateCalendar();
         });
 
+
+
         function updateCalendar() {
-    currentMonthYear.text(`${currentYear}-${currentMonth + 1}`);
-    calendarBody.empty();
+            currentMonthYear.text(`${currentYear}-${currentMonth + 1}`);
+            calendarBody.empty();
 
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-    let currentDay = 1;
+            let currentDay = 1;
 
-    for (let i = 0; currentDay <= daysInMonth; i++) {
-        const row = $('<tr>');
-        for (let j = 0; j < 7; j++) {
-            if ((i === 0 && j < firstDayOfWeek) || currentDay > daysInMonth) {
-                row.append('<td></td>');
-            } else {
-                const date = new Date(currentYear, currentMonth, currentDay);
-                const formattedDate = formatDate(date);
-                const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date * 1000)) === formattedDate);
-                const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
+            for (let i = 0; currentDay <= daysInMonth; i++) {
+                const row = $('<tr>');
+                for (let j = 0; j < 7; j++) {
+                    if ((i === 0 && j < firstDayOfWeek) || currentDay > daysInMonth) {
+                        row.append('<td></td>');
+                    } else {
+                        const date = new Date(currentYear, currentMonth, currentDay);
+                        const formattedDate = formatDate(date);
+                        const allBundles = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
+                            1000)) === formattedDate);
+                        const dayClass = (allBundles.length > 0) ? 'day-with-bundle' : '';
 
-                let details = "";
-                for (bundle of allBundles) {
-                    details += bundle.title + "<br>";
-                }
+                        let details = "";
+                        for (bundle of allBundles) {
+                            details = "courses";
+                        }
 
-                row.append(`<td class="${dayClass}" data-date="${formattedDate}">
+                        row.append(`<td class="${dayClass}" data-date="${formattedDate}">
                     ${currentDay}
                     <p class='course-title'>${details}</p>
                 </td>`);
-                currentDay++;
+                        currentDay++;
+                    }
+                }
+                calendarBody.append(row);
             }
+
+            $('.day-with-bundle').off('click').on('click', function() {
+                const date = $(this).data('date');
+                const bundlesData = bundles.filter(bundle => formatDate(new Date(bundle.start_date *
+                    1000)) === date);
+
+                let text = "";
+                for (bundle of bundlesData) {
+                    text += bundle.title + "<br>";
+                }
+                $('#bundleStartDate').html(`${text}`);
+                bundlePopup.modal('show');
+            });
         }
-        calendarBody.append(row);
-    }
-
-    $('.day-with-bundle').off('click').on('click', function() {
-        const date = $(this).data('date');
-        const bundlesData = bundles.filter(bundle => formatDate(new Date(bundle.start_date * 1000)) === date);
-
-        let text = "";
-        for (bundle of bundlesData) {
-            text += bundle.title + "<br>";
-        }
-        $('#bundleStartDate').html(`${text}`);
-        bundlePopup.modal('show');
-    });
-}
-
-
-
-
         function formatDate(date) {
             const date2 = new Date(date);
             const year = date.getFullYear();

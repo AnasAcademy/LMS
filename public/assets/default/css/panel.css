@@ -303,7 +303,7 @@ $custom-control-indicator-bg:$primary;*/
 }
 
 .panel-sidebar .sidebar-menu {
-  height: calc(100% - 405px);
+  /* height: calc(100% - 405px); */
   overflow: auto;
   padding-bottom: 35px;
 }
