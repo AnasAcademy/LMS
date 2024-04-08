@@ -59,7 +59,7 @@
         </div>
     </section> 
 
-    <section class="mt-25">
+   <section class="mt-25">
         @if (!empty($sales) and !$sales->isEmpty())
             @foreach ($sales as $sale)
                 @php
@@ -101,14 +101,14 @@
                                             @php
                                                 $totalHours = 0;
                                             @endphp
-                                            @foreach ($item->bundleWebinars->sortBy('webinar.start_date') as $bundleWebinar)
+                                            @foreach ($item->bundleWebinars as $bundleWebinar)
                                                 @php
                                                     $totalHours += $bundleWebinar->webinar->duration;
                                                 @endphp
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>
-                                                        <td>{{ $bundleWebinar->webinar->id }}</td>
-                                                        <th>{{ substr($bundleWebinar->webinar->title, 1, -3)}}</th>
+                                                        <td>{{ $loop->index + 1 }}</td>
+                                                        <th>{{ mb_substr($bundleWebinar->webinar->title, 1, -3) }}</th>
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
