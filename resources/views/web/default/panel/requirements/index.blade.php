@@ -22,7 +22,7 @@
         font-family: "IBM Plex Sans Arabic" !important;
     }
     .installment-card {
-        background-color: #ececec !important;
+        background-color: #FBFBFB !important;
     }
 </style>
 
