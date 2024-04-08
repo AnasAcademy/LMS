@@ -4,7 +4,7 @@
     <section>
         <h2 class="section-title">{{ trans('update.points_statistics') }}</h2>
 
-        <div class="activities-container mt-25 p-20 p-lg-35">
+        {{--<div class="activities-container mt-25 p-20 p-lg-35">
             <div class="row">
                 <div class="col-4 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>--}}
     </section>
 
     <div class="row mt-20">
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-lg-6 mt-20 mt-lg-0">
+       {{-- <div class="col-12 col-lg-6 mt-20 mt-lg-0">
             <div class="d-flex align-items-center justify-content-between rounded-sm bg-white p-15 shadow-lg">
                 <div class="d-flex align-items-center ">
                     <img src="/assets/default/img/rewards/medal.png" width="51" height="51" alt="medal">
@@ -119,7 +119,7 @@
                     </div>
                 </div>
             @endif
-        </div>
+        </div>--}}
     </div>
 
     <section class="mt-35">
