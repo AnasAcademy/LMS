@@ -537,7 +537,7 @@
             </li>
         @endcan
 
-        @can('show_support')
+       {{-- @can('show_support')
             <li
                 class="sidenav-item {{ (request()->is('panel/support') or request()->is('panel/support/*')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#supportCollapse" role="button"
@@ -563,7 +563,7 @@
                     </ul>
                 </div>
             </li>
-        @endcan
+        @endcan --}}
 
         {{-- @if (!$authUser->isUser() or !empty($referralSettings) and $referralSettings['status'] and $authUser->affiliate or !empty(getRegistrationBonusSettings('status')) and $authUser->enable_registration_bonus)
                 @can('student_showMarkting')
