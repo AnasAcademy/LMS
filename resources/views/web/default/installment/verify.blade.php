@@ -158,7 +158,7 @@
             <div class="border rounded-lg p-35 mt-30">
                 <h3 class="font-16 font-weight-bold text-dark-blue">شروط وقواعد التقسيط </h3>
 <br>
-             {--   <div class="font-16 text-gray">{!! nl2br(getInstallmentsTermsSettings('terms_description')) !!}</div> --}}
+             {{--   <div class="font-16 text-gray">{!! nl2br(getInstallmentsTermsSettings('terms_description')) !!}</div> --}}
                 <div class="font-16 text-gray">
                     مرحبًا بك في أكاديمية إنس للفنون البصرية! نود التأكيد على أهمية مراجعة والموافقة على الشروط والقواعد التالية قبل الاستفادة من ميزة التقسيط لدينا:
                     <br>
