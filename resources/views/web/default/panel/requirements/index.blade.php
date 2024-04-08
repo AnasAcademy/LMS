@@ -13,7 +13,7 @@
     }
 
     .requirement-head {
-        top: 0px;
+        top: 8px;
         right: 30px;
 
     }
