@@ -21,6 +21,9 @@
     .bundle-details {
         font-family: "IBM Plex Sans Arabic" !important;
     }
+    .installment-card {
+        background-color: #ececec !important;
+    }
 </style>
 
 @section('content')
