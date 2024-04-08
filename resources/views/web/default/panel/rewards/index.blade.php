@@ -60,7 +60,7 @@
                                 <button type="button" class="btn btn-sm mr-15 {{ $earnByExchange > 0 ? 'js-exchange-btn  btn-primary' : 'bg-gray300 text-gray disabled' }}" {{ $earnByExchange > 0 ? '' : 'disabled' }}>{{ trans('update.exchange') }}</button>
                             @endif
 
-                            <a href="/reward-courses" class="btn btn-sm btn-outline-primary">{{ trans('update.browse_courses') }}</a>
+                          {{--  <a href="/reward-courses" class="btn btn-sm btn-outline-primary">{{ trans('update.browse_courses') }}</a> --}}
                         </div>
                     </div>
                 </div>
