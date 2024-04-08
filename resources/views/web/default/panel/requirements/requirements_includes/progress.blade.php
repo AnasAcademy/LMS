@@ -15,7 +15,7 @@
 
     @foreach($progressSteps as $key => $step)
         <div class="progress-item d-flex align-items-center">
-            <a href="/panel/requirements/step/{{ $key }}" class="progress-icon p-10 d-flex align-items-center justify-content-center rounded-circle {{ $key == $currentStep ? 'active' : '' }}" data-toggle="tooltip" data-placement="top" title="{{ trans($step['lang']) }}">
+            <a href="/panel/requirements/step/{{ $key }}" style="width:55px" class="progress-icon p-10 d-flex align-items-center justify-content-center rounded-circle {{ $key == $currentStep ? 'active' : '' }}" data-toggle="tooltip" data-placement="top" title="{{ trans($step['lang']) }}">
                 {{-- <img src="/assets/default/img/icons/{{ $step['icon'] }}.svg" class="img-cover" alt=""> --}}
            <svg width="57" height="54" viewBox="0 0 57 54" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_78_2419)">
