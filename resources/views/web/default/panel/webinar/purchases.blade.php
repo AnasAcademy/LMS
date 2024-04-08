@@ -39,15 +39,15 @@
                     </div>
                 </div> 
 
-                {{-- <div class="col-4 d-flex align-items-center justify-content-center">
+              {{--   <div class="col-4 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/hours.svg" width="64" height="64" alt="">
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ convertMinutesToHourAndMinute($hours) }}</strong>
                         <span class="font-16 text-gray font-weight-500">{{ trans('home.hours') }}</span>
                     </div>
-                </div>--}}
+                </div>
 
-             {{--   <div class="col-4 d-flex align-items-center justify-content-center">
+                <div class="col-4 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/upcoming.svg" width="64" height="64" alt="">
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ $upComing }}</strong>
@@ -55,7 +55,7 @@
                     </div>
                 </div> --}}
 
-            </div> --}}
+            </div>
         </div>
     </section> 
 
