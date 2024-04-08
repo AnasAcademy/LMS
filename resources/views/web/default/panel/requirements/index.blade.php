@@ -7,13 +7,13 @@
 
 <style>
     .requirement-card {
-        padding: 40px 25px;
+        padding: 60px 25px;
         box-shadow: 0px 0px 5px 0px #00000073;
 
     }
 
     .requirement-head {
-        top: -15px;
+        top: 0px;
         right: 30px;
 
     }
