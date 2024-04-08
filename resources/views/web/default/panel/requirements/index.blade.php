@@ -8,8 +8,9 @@
 <style>
     .requirement-card {
         padding: 60px 25px;
-        box-shadow: 0px 0px 5px 0px #00000073;
-
+/*         box-shadow: 0px 0px 5px 0px #00000073;
+ */
+        box-shadow: none;
     }
 
     .requirement-head {
