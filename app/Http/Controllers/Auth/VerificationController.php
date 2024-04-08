@@ -58,11 +58,11 @@ class VerificationController extends Controller
                     $verification->sendEmailCode();
                 }
 
-                return redirect('/verification');
+                return redirect('/verification')->with("msg", "تم ارسال الكود مرة اخري بنجاح");
             }
         }
 
-        return redirect('/login');
+        return redirect('/login')->with("msg", "تستطيع تسجيل الدخول الأن");
     }
 
     public function checkConfirmed($user = null, $username, $value)
