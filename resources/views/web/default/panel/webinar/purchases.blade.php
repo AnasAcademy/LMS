@@ -14,11 +14,11 @@
     }
 @endphp
 @section('content')
-   {{-- <section>
+    <section>
         <h2 class="section-title">{{ trans('panel.my_activity') }}</h2>
 
         <div class="activities-container mt-25 p-20 p-lg-35">
-            <div class="row">
+          {{--  <div class="row">
                {{-- <div class="col-12 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/webinars.svg" width="64" height="64" alt="">
@@ -43,9 +43,9 @@
                     </div>
                 </div> --}}
 
-            </div>
+            </div> --}}
         </div>
-    </section> --}}
+    </section> 
 
     <section class="mt-25">
         @if (!empty($sales) and !$sales->isEmpty())
