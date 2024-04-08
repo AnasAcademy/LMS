@@ -496,9 +496,9 @@
                             <a href="/panel/financial/summary">{{ trans('financial.financial_summary') }}</a>
                         </li>
 
-                        <li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
+                        {{--<li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
                             <a href="/panel/financial/payout">استرداد</a>
-                        </li>
+                        </li>--}}
 
                         {{-- <li class="mt-5 {{ request()->is('panel/financial/account') ? 'active' : '' }}">
                         <a href="/panel/financial/account">{{ trans('financial.charge_account') }}</a>
