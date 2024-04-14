@@ -174,7 +174,7 @@
             <div class="col-12 col-lg-3 mt-5 rounded-sm">
                 @include('web.default.panel.includes.downloadfiles')
             </div>
-            <div class="col-12 col-lg-3 mt-35 ">
+            <div class="col-12 col-lg-3 mt-5 ">
                 <div class="module-box dashboard-stats rounded-sm panel-shadow p-10 p-md-15 d-flex align-items-center mt-0">
 
                     <div class="d-flex flex-column pt-35 pb-50" style="align-items: center;">
