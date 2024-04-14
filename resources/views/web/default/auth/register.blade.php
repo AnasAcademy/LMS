@@ -4,7 +4,14 @@
 @endpush
 
 @section('content')
-
+<style>
+      .cs-btn{
+        background-color:#ED1088 !important;
+    }
+    .cs-btn:hover{
+        background-color:#5F2B80 !important;
+    }
+</style>
     @php
         $siteGeneralSettings = getGeneralSettings();
     @endphp
@@ -169,7 +176,7 @@
             @enderror
             <!--end-->
 
-            <button type="submit" class="btn btn-primary btn-block mt-20">{{ trans('auth.signup') }}</button>
+            <button type="submit" class="btn btn-primary btn-block mt-20 cs-btn">{{ trans('auth.signup') }}</button>
         </form>
 
         <div class="ft-text text-center mt-20 mb-35">
