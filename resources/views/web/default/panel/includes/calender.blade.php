@@ -89,6 +89,9 @@
     box-shadow: #5F2B80 !important;
     transition: all 0.3s !important;
 }
+    .course-title{
+            cursor: pointer !important;
+    }
 </style>
 
 <div class="container_cal">
