@@ -1,6 +1,9 @@
 <style>
 .fill-black{
-    fill:black;
+    fill:#818894;
+}
+.fill-brand{
+    fill:#ED1088;
 }
 </style>
 @if(!empty($authUser))
