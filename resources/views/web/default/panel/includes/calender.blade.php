@@ -78,6 +78,17 @@
 }
     ._cal{    font-family: "IBM Plex Sans Arabic" !important;
 }
+.modal-header .close {
+    padding: 0 !important;
+    margin: 0rem 0rem auto !important;
+}
+.btn-secondary:active, .btn-secondary:focus, .btn-secondary:hover, .btn-secondary:not(:disabled):not(.disabled):active {
+    color: #fff !important;
+    background-color: #5F2B80 !important;
+    border-color: #5F2B80 !important;
+    box-shadow: #5F2B80 !important;
+    transition: all 0.3s !important;
+}
 </style>
 
 <div class="container_cal">
