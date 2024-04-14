@@ -8,7 +8,7 @@
     <div class="user-info d-flex align-items-center justify-content-between">
         <div class="user-avatar bg-gray200">
             {{-- <img src="{{ $authUser->getAvatar(100) }}" class="img-cover" alt="{{ $authUser->full_name }}"> --}}
-                        <img src="assets/default/img/img.png" class="img-cover" alt="{{ $authUser->full_name }}">
+                        <img src="public/assets/default/img/img.png" class="img-cover" alt="{{ $authUser->full_name }}">
 
         </div>
 
@@ -32,7 +32,7 @@
 
     <div class="user-info d-flex align-items-center flex-row flex-lg-column justify-content-lg-center">
         <a href="/panel" class="user-avatar bg-gray200">
-            <img src="assets/default/img/img.png" class="img-cover" alt="{{ $authUser->full_name }}">
+            <img src="public/assets/default/img/img.png" class="img-cover" alt="{{ $authUser->full_name }}">
         </a>
 
         <div class="d-flex flex-column align-items-center justify-content-center">
