@@ -7,8 +7,9 @@
 
     <div class="custom-dropdown navbar-auth-user-dropdown position-relative">
         <div class="custom-dropdown-toggle d-flex align-items-center navbar-user cursor-pointer">
-            <img src="{{asset("assets/default/img/img.png")}}" class="rounded-circle" alt="{{ $authUser->full_name }}">
-        {{--    <span class="font-16 user-name ml-10 text-dark-blue font-14">{{ $authUser->full_name }}</span> --}}
+            <img src="{{asset("assets/default/img/img.png")}}" class="rounded-circle" alt="{{ $authUser->full_name }}" style="max-width: 50px;
+    border: 1px solid #5E0A83;">
+        <span class="font-16 user-name ml-10 text-dark-blue font-14">{{ $authUser->full_name }}</span>
         </div>
 
         <div class="custom-dropdown-body pb-10">
