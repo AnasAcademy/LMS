@@ -103,8 +103,8 @@
                 <li class="navbar-auth-user-dropdown-item">
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
 
-                        {{-- @include("web.default.panel.includes.sidebar_icons.logout", ['class'=> "fill-black"]) --}}
-                        <img src="{{asset("assets/default/img/icons/user_menu/logout.svg")}}" alt="">
+                        @include("web.default.panel.includes.sidebar_icons.logout", ['class'=> "fill-black"])
+                       {{-- <img src="{{asset("assets/default/img/icons/user_menu/logout.svg")}}" alt=""> --}}
                       <span class="ml-5">تسجل الخروج</span>
                     </a>
                 </li>
