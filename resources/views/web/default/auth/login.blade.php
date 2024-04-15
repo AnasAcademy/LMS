@@ -16,6 +16,16 @@
         flex-direction: column;
         flex-wrap: wrap;
     }
+    .cs-btn{
+        background-color:#ED1088 !important;
+    }
+    .cs-btn:hover{
+        background-color:#5F2B80 !important;
+    }
+    .registertext a:hover{
+       text-decoration:underline;
+        color:#333;
+    }
 </style>
     <div class="p-md-4 m-md-3">
         <div class="col-7 col-md-7 p-0 mb-5 mt-3 mt-md-auto">
@@ -73,7 +83,7 @@
 
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
+                <button type="submit" class="btn btn-primary btn-lg btn-block cs-btn" tabindex="4">
                     {{ trans('auth.login') }}
                 </button>
             </div>

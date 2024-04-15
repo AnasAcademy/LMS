@@ -1,21 +1,27 @@
 <style>
 .fill-black{
-    fill:black;
+    fill:#818894;
+}
+.fill-brand{
+    fill:#ED1088;
 }
 </style>
 @if(!empty($authUser))
 
     <div class="custom-dropdown navbar-auth-user-dropdown position-relative">
         <div class="custom-dropdown-toggle d-flex align-items-center navbar-user cursor-pointer">
-            <img src="{{ $authUser->getAvatar() }}" class="rounded-circle" alt="{{ $authUser->full_name }}">
-        {{--    <span class="font-16 user-name ml-10 text-dark-blue font-14">{{ $authUser->full_name }}</span> --}}
+            <img src="{{asset("assets/default/img/img.png")}}" class="rounded-circle" alt="{{ $authUser->full_name }}" style="max-width: 50px;
+    border: 1px solid #5E0A83;">
+        <span class="font-16 user-name ml-10 text-dark-blue font-14">{{ $authUser->full_name }}</span>
         </div>
 
         <div class="custom-dropdown-body pb-10">
 
             <div class="dropdown-user-avatar d-flex align-items-center p-15 m-15 mb-10 rounded-sm border">
                 <div class="size-40 rounded-circle position-relative">
-                    <img src="{{ $authUser->getAvatar() }}" class="img-cover rounded-circle" alt="{{ $authUser->full_name }}">
+                 {{--    <img src="{{ $authUser->getAvatar() }}" class="img-cover rounded-circle" alt="{{ $authUser->full_name }}"> --}}
+                                        <img src="{{asset("assets/default/img/img.png")}}" class="img-cover rounded-circle" alt="{{ $authUser->full_name }}">
+
                 </div>
 
                 <div class="ml-5">
@@ -29,7 +35,7 @@
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl() }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
 
-                            @include('web.default.panel.includes.sidebar_icons.dashboard', ['class'=> "ffill-black"])
+                            @include('web.default.panel.includes.sidebar_icons.dashboard', ['class'=> "fill-black"])
                             <span class="ml-5">{{ trans('panel.dashboard') }}</span>
                         </a>
                     </li>
@@ -37,7 +43,7 @@
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ getAdminPanelUrl("/settings") }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.settings')
+                            @include('web.default.panel.includes.sidebar_icons.settings', ['class'=> "fill-black"])
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
@@ -54,7 +60,8 @@
                     @can('student_showClasses')
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="{{ ($authUser->isUser()) ? '/panel/webinars/purchases' : '/panel/webinars' }}" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.studytable')
+                            @include('web.default.panel.includes.sidebar_icons.studytable', ['class'=> "fill-black"])
+                         
                             <span class="ml-5" >جدول المقررات الدراسية</span>
                         </a>
                     </li>
@@ -63,7 +70,7 @@
                    {{-- @can('student_showFinance')
                         <li class="navbar-auth-user-dropdown-item">
                             <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.requirements')
+                            @include('web.default.panel.includes.sidebar_icons.requirements', ['class'=> "fill-black"])
                                 <span class="ml-5">متطلبات القبول</span>
                             </a>
                         </li>
@@ -72,7 +79,7 @@
                    {{--  @if((\App\Student::where('user_id',$authUser->id)))
                        <li class="navbar-auth-user-dropdown-item">
                             <a href="/panel/financial/sales" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                            @include('web.default.panel.includes.sidebar_icons.requirements')
+                            @include('web.default.panel.includes.sidebar_icons.requirements', ['class'=> "fill-black"])
                                 <span class="ml-5">متطلبات القبول</span>
                             </a>
                         </li>
@@ -81,7 +88,7 @@
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="https://support.anasacademy.uk/" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
 
-                            @include('web.default.panel.includes.sidebar_icons.support')
+                            @include('web.default.panel.includes.sidebar_icons.support', ['class'=> "fill-black"])
                             <span class="ml-5">فريق الدعم والتواصل </span>
                         </a>
                     </li>
@@ -90,7 +97,7 @@
 
                     <li class="navbar-auth-user-dropdown-item">
                         <a href="/panel/setting" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
-                             @include('web.default.panel.includes.sidebar_icons.setting')
+                             @include('web.default.panel.includes.sidebar_icons.setting', ['class'=> "fill-black"])
                             <span class="ml-5">{{ trans('panel.settings') }}</span>
                         </a>
                     </li>
@@ -100,8 +107,8 @@
                 <li class="navbar-auth-user-dropdown-item">
                     <a href="/logout" class="d-flex align-items-center w-100 px-15 py-10 text-gray font-14 bg-transparent">
 
-                        {{-- @include("web.default.panel.includes.sidebar_icons.logout", ['class'=> "fill-black"]) --}}
-                        <img src="{{asset("assets/default/img/icons/user_menu/logout.svg")}}" alt="">
+                        @include("web.default.panel.includes.sidebar_icons.logout", ['class'=> "fill-black"])
+                       {{-- <img src="{{asset("assets/default/img/icons/user_menu/logout.svg")}}" alt=""> --}}
                       <span class="ml-5">تسجل الخروج</span>
                     </a>
                 </li>

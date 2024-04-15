@@ -7,6 +7,8 @@
         background-color: #f9f9f9;
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+    font-family: "IBM Plex Sans Arabic" !important;
     }
 
     #current-month-year {
@@ -15,36 +17,44 @@
         color: #333;
         font-size: 24px;
         margin-top: 0;
+            font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     .row_cal {
-        margin-bottom: 20px;
+        margin-bottom: 20px;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     .col_cal {
-        padding: 0 15px;
+        padding: 0 15px;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     .d-flex_cal {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
+        margin-bottom: 10px;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     .table_cal {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: collapse;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     .table_cal th,
     .table_cal td {
         padding: 10px;
         border: 1px solid #ccc;
-        text-align: center;
+        text-align: center;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     .table_cal th {
-        background-color: #f2f2f2;
+        background-color: #f2f2f2;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     button {
@@ -54,11 +64,33 @@
         cursor: pointer;
         color: #333;
         transition: background-color 0.3s, color 0.3s;
-        border-radius: 3px;
+        border-radius: 3px;    font-family: "IBM Plex Sans Arabic" !important;
+
     }
 
     button:hover {
-        background-color: #e6e6e6;
+        background-color: #e6e6e6;    font-family: "IBM Plex Sans Arabic" !important;
+
+    }
+    h5{    font-family: "IBM Plex Sans Arabic" !important;
+}
+    button{    font-family: "IBM Plex Sans Arabic" !important;
+}
+    ._cal{    font-family: "IBM Plex Sans Arabic" !important;
+}
+.modal-header .close {
+    padding: 0 !important;
+    margin: 0rem 0rem auto !important;
+}
+.btn-secondary:active, .btn-secondary:focus, .btn-secondary:hover, .btn-secondary:not(:disabled):not(.disabled):active {
+    color: #fff !important;
+    background-color: #5F2B80 !important;
+    border-color: #5F2B80 !important;
+    box-shadow: #5F2B80 !important;
+    transition: all 0.3s !important;
+}
+    .course-title{
+            cursor: pointer !important;
     }
 </style>
 

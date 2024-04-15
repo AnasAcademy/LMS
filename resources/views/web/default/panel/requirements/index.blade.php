@@ -7,19 +7,23 @@
 
 <style>
     .requirement-card {
-        padding: 40px 25px;
-        box-shadow: 0px 0px 5px 0px #00000073;
-
+        padding: 60px 25px;
+/*         box-shadow: 0px 0px 5px 0px #00000073;
+ */
+        box-shadow: none;
     }
 
     .requirement-head {
-        top: -15px;
+        top: 8px;
         right: 30px;
 
     }
 
     .bundle-details {
         font-family: "IBM Plex Sans Arabic" !important;
+    }
+    .installment-card {
+        background-color: #FBFBFB !important;
     }
 </style>
 

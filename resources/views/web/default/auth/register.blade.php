@@ -4,7 +4,14 @@
 @endpush
 
 @section('content')
-
+<style>
+      .cs-btn{
+        background-color:#ED1088 !important;
+    }
+    .cs-btn:hover{
+        background-color:#5F2B80 !important;
+    }
+</style>
     @php
         $siteGeneralSettings = getGeneralSettings();
     @endphp
@@ -15,17 +22,19 @@
         $selectRolesDuringRegistration = getFeaturesSettings('select_the_role_during_registration') ?? null;
     @endphp
     <div class="p-md-4 m-md-3">
-        <div class="col-7 col-md-4 p-0 mb-5 mt-3 mt-md-auto">
+        <div class="col-7 col-md-7 p-0 mb-5 mt-3 mt-md-auto">
             <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="100%" class="">
         </div>
 
-        <h1 class="font-20 font-weight-bold mb-3"><svg width="34" height="29" viewBox="0 0 34 29" fill="none"
+        <h1 class="font-20 font-weight-bold mb-3">
+            <svg width="34" height="29" viewBox="0 0 34 29"   fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M22 27C22 23.3181 17.5228 20.3333 12 20.3333C6.47715 20.3333 2 23.3181 2 27M32 12L25.3333 18.6667L22 15.3333M12 15.3333C8.3181 15.3333 5.33333 12.3486 5.33333 8.66667C5.33333 4.98477 8.3181 2 12 2C15.6819 2 18.6667 4.98477 18.6667 8.66667C18.6667 12.3486 15.6819 15.3333 12 15.3333Z"
                     stroke="#5E0A83" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            {{ trans('auth.signup') }}</h1>
+            {{ trans('auth.signup') }}
+        </h1>
 
         {{-- show messages --}}
         @if (!empty(session()->has('msg')))
@@ -167,7 +176,7 @@
             @enderror
             <!--end-->
 
-            <button type="submit" class="btn btn-primary btn-block mt-20">{{ trans('auth.signup') }}</button>
+            <button type="submit" class="btn btn-primary btn-block mt-20 cs-btn">{{ trans('auth.signup') }}</button>
         </form>
 
         <div class="ft-text text-center mt-20 mb-35">
