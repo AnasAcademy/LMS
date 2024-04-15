@@ -16,7 +16,7 @@
 @section('content')
    {{-- <section>
         <h2 class="section-title">{{ trans('panel.my_activity') }}</h2>
-        
+
         <div class="activities-container mt-25 p-20 p-lg-35">
            <div class="row">
                <div class="col-12 d-flex align-items-center justify-content-center">
@@ -37,7 +37,7 @@
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5"> {{ $totalWebinars }}</strong>
                         <span class="font-16 text-gray font-weight-500">إجمالي عدد المقررات</span>
                     </div>
-                </div> 
+                </div>
 
                  <div class="col-4 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
@@ -53,7 +53,7 @@
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ $upComing }}</strong>
                         <span class="font-16 text-gray font-weight-500">{{ trans('panel.upcoming') }}</span>
                     </div>
-                </div> 
+                </div>
 
             </div>
         </div>
@@ -107,8 +107,13 @@
                                                 @endphp
                                                 @if (!empty($bundleWebinar->webinar->title))
                                                     <tr>
+
+                                                        {{-- <td>{{ $bundleWebinar->webinar->id }}</td>
+                                                        <th>{{ substr($bundleWebinar->webinar->title, 1, -3)}}</th> --}}
+
                                                         <td>{{ $loop->index + 1 }}</td>
                                                         <th>{{ mb_substr($bundleWebinar->webinar->title, 1, -3) }}</th>
+
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
