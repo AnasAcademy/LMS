@@ -22,7 +22,7 @@
         $selectRolesDuringRegistration = getFeaturesSettings('select_the_role_during_registration') ?? null;
     @endphp
     <div class="p-md-4 m-md-3">
-        <div class="col-7 col-md-7 p-0 mb-5 mt-3 mt-md-auto">
+        <div class="col-6 col-md-6 p-0 mb-5 mt-3 mt-md-auto">
             <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="100%" class="">
         </div>
 
