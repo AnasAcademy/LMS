@@ -101,7 +101,9 @@
                                             @php
                                                 $totalHours = 0;
                                             @endphp
-                                            @foreach ($item->bundleWebinars as $bundleWebinar)
+                                            @foreach ($item->bundleWebinars->sortBy(function ($bundleWebinar) {
+                                                return optional($bundleWebinar->webinar)->start_date ?? PHP_INT_MAX;
+                                            }) as $bundleWebinar)
                                                 @php
                                                     $totalHours += $bundleWebinar->webinar->duration;
                                                 @endphp

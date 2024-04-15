@@ -1093,7 +1093,7 @@ class WebinarController extends Controller
                         'teacher' => function ($query) {
                             $query->select('id', 'full_name');
                         },
-                    ])->orderBy('start_date', 'asc');
+                    ]);
                     $query->withCount([
                         'sales' => function ($query) {
                             $query->whereNull('refund_at');
