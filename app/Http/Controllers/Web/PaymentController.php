@@ -98,8 +98,7 @@ class PaymentController extends Controller
 
             $redirect_url = $channelManager->paymentRequest($order);
 
-            if($paymentChannel->class_name=='Mada')
-            {
+            if ($paymentChannel->class_name == 'Mada') {
                 return $redirect_url;
             }
 
@@ -119,7 +118,7 @@ class PaymentController extends Controller
             ];
             return back()->with(['toast' => $toastData]);
         }
-         return redirect('/panel');
+        return redirect('/panel');
     }
 
     public function paymentVerify(Request $request, $gateway)
@@ -215,75 +214,75 @@ class PaymentController extends Controller
         try {
             //code...
 
-        $cashbackAccounting = new CashbackAccounting();
+            $cashbackAccounting = new CashbackAccounting();
 
-        if ($order->is_charge_account) {
-            Accounting::charge($order);
+            if ($order->is_charge_account) {
+                Accounting::charge($order);
 
-            $cashbackAccounting->rechargeWallet($order);
-        } else {
-            foreach ($order->orderItems as $orderItem) {
+                $cashbackAccounting->rechargeWallet($order);
+            } else {
+                foreach ($order->orderItems as $orderItem) {
 
-                $sale = Sale::createSales($orderItem, $order->payment_method);
+                    $sale = Sale::createSales($orderItem, $order->payment_method);
 
-                if (!empty($orderItem->reserve_meeting_id)) {
-                    $reserveMeeting = ReserveMeeting::where('id', $orderItem->reserve_meeting_id)->first();
-                    $reserveMeeting->update([
-                        'sale_id' => $sale->id,
-                        'reserved_at' => time()
-                    ]);
+                    if (!empty($orderItem->reserve_meeting_id)) {
+                        $reserveMeeting = ReserveMeeting::where('id', $orderItem->reserve_meeting_id)->first();
+                        $reserveMeeting->update([
+                            'sale_id' => $sale->id,
+                            'reserved_at' => time()
+                        ]);
 
-                    $reserver = $reserveMeeting->user;
+                        $reserver = $reserveMeeting->user;
 
-                    if ($reserver) {
-                        $this->handleMeetingReserveReward($reserver);
+                        if ($reserver) {
+                            $this->handleMeetingReserveReward($reserver);
+                        }
+                    }
+
+                    if (!empty($orderItem->gift_id)) {
+                        $gift = $orderItem->gift;
+
+                        $gift->update([
+                            'status' => 'active'
+                        ]);
+
+                        $gift->sendNotificationsWhenActivated($orderItem->total_amount);
+                    }
+
+                    if (!empty($orderItem->subscribe_id)) {
+                        Accounting::createAccountingForSubscribe($orderItem, $type);
+                    } elseif (!empty($orderItem->promotion_id)) {
+                        Accounting::createAccountingForPromotion($orderItem, $type);
+                    } elseif (!empty($orderItem->registration_package_id)) {
+                        Accounting::createAccountingForRegistrationPackage($orderItem, $type);
+
+                        if (!empty($orderItem->become_instructor_id)) {
+                            BecomeInstructor::where('id', $orderItem->become_instructor_id)
+                                ->update([
+                                        'package_id' => $orderItem->registration_package_id
+                                    ]);
+                        }
+                    } elseif (!empty($orderItem->installment_payment_id)) {
+                        Accounting::createAccountingForInstallmentPayment($orderItem, $type);
+
+                        $this->updateInstallmentOrder($orderItem, $sale);
+                    } else {
+                        // webinar and meeting and product and bundle
+
+                        Accounting::createAccounting($orderItem, $type);
+                        TicketUser::useTicket($orderItem);
+
+                        if (!empty($orderItem->product_id)) {
+                            $this->updateProductOrder($sale, $orderItem);
+                        }
                     }
                 }
 
-                if (!empty($orderItem->gift_id)) {
-                    $gift = $orderItem->gift;
-
-                    $gift->update([
-                        'status' => 'active'
-                    ]);
-
-                    $gift->sendNotificationsWhenActivated($orderItem->total_amount);
-                }
-
-                if (!empty($orderItem->subscribe_id)) {
-                    Accounting::createAccountingForSubscribe($orderItem, $type);
-                } elseif (!empty($orderItem->promotion_id)) {
-                    Accounting::createAccountingForPromotion($orderItem, $type);
-                } elseif (!empty($orderItem->registration_package_id)) {
-                    Accounting::createAccountingForRegistrationPackage($orderItem, $type);
-
-                    if (!empty($orderItem->become_instructor_id)) {
-                        BecomeInstructor::where('id', $orderItem->become_instructor_id)
-                            ->update([
-                                'package_id' => $orderItem->registration_package_id
-                            ]);
-                    }
-                } elseif (!empty($orderItem->installment_payment_id)) {
-                    Accounting::createAccountingForInstallmentPayment($orderItem, $type);
-
-                    $this->updateInstallmentOrder($orderItem, $sale);
-                } else {
-                    // webinar and meeting and product and bundle
-
-                    Accounting::createAccounting($orderItem, $type);
-                    TicketUser::useTicket($orderItem);
-
-                    if (!empty($orderItem->product_id)) {
-                        $this->updateProductOrder($sale, $orderItem);
-                    }
-                }
+                // Set Cashback Accounting For All Order Items
+                $cashbackAccounting->setAccountingForOrderItems($order->orderItems);
             }
-
-            // Set Cashback Accounting For All Order Items
-            $cashbackAccounting->setAccountingForOrderItems($order->orderItems);
-        }
-     } catch (\Exception $exception) {
-        dd($exception);
+        } catch (\Exception $exception) {
+            dd($exception);
         }
         // Cart::emptyCart($order->user_id);
     }
@@ -309,82 +308,89 @@ class PaymentController extends Controller
 
             $user = auth()->user();
             $sale = Sale::where('order_id', $order->id)
-            ->where('type', 'form_fee')
-            ->where('buyer_id', $user->id)
-            ->first();
+                ->where('type', 'form_fee')
+                ->where('buyer_id', $user->id)
+                ->first();
 
-            if($sale && $sale->order->user_id == $user->id  && $sale->order->status == 'paid' )
-            {
-                //add as student
-                try{
-                $lastCode = Code::latest()->first();
-                if(!empty( $lastCode)){
-                    if(empty($lastCode->lst_sd_code)){
-                        $lastCode->lst_sd_code=$lastCode->student_code;
-                    }
-                    $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-                    do {
-                        $nextCodeAsInt = $lastCodeAsInt + 1;
-                        $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-
-                        $codeExists = User::where('user_code', $nextCode)->exists();
-
-                        if ($codeExists) {
-                            $lastCodeAsInt = $nextCodeAsInt;
-                        } else {
-                            break;
-                        }
-                    } while (true);
-
-                                $userData = $request->cookie('user_data');
-                                if ($userData) {
-                                $userData = json_decode($userData, true);
-                                $studentData = collect($userData)->except(['category_id', 'bundle_id','terms'])->toArray();
-                                }
-                                $student = Student::where('user_id', auth()->user()->id)->first();
-                                if (!$student) {
-                                    $student = Student::create($studentData);
-                                    $user = User::where('id', $user->id)->update([
-                                        'user_code' => $nextCode,
-                                    ]);
-                                    $lastCode->update(['lst_sd_code' => $nextCode]);
-                                }
-
-                                $bundleId = $userData['bundle_id'];
-
-                                // Check if the student already has the bundle ID attached
-                                if (!$student->bundles->contains($bundleId)) {
-                                    $student->bundles()->attach($bundleId);
-                                    }
-                            }
-
-                        }catch (\Exception $exception) {
-                        dd($exception);
-                        }
-            }
-            else{
-                $sale = Sale::where('order_id', $order->id)
+            $bundle_sale = Sale::where('order_id', $order->id)
                 ->where('type', 'bundle')
                 ->where('buyer_id', $user->id)
                 ->first();
-                if($sale && $sale->order->user_id == $user->id  && $sale->order->status == 'paid' ){
-                    $user = User::where('id', $user->id)->first();
-                    $user->update([
-                        'role_id' => 1,
-                        'role_name' => 'user',
-                    ]);
+            $pivotId = null;
+            if ($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') {
+                //add as student
+                try {
+                    $lastCode = Code::latest()->first();
+                    if (!empty($lastCode)) {
+                        if (empty($lastCode->lst_sd_code)) {
+                            $lastCode->lst_sd_code = $lastCode->student_code;
+                        }
+                        $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
+                        do {
+                            $nextCodeAsInt = $lastCodeAsInt + 1;
+                            $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+
+                            $codeExists = User::where('user_code', $nextCode)->exists();
+
+                            if ($codeExists) {
+                                $lastCodeAsInt = $nextCodeAsInt;
+                            } else {
+                                break;
+                            }
+                        } while (true);
+
+                        $userData = $request->cookie('user_data');
+                        if ($userData) {
+                            $userData = json_decode($userData, true);
+                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms'])->toArray();
+                        }
+                        $student = Student::where('user_id', auth()->user()->id)->first();
+                        if (!$student) {
+                            $student = Student::create($studentData);
+                            $user = User::where('id', $user->id)->update([
+                                'user_code' => $nextCode,
+                            ]);
+                            $lastCode->update(['lst_sd_code' => $nextCode]);
+                        }
+
+                        $bundleId = $userData['bundle_id'];
+
+                        // Check if the student already has the bundle ID attached
+                        if (!$student->bundles->contains($bundleId)) {
+                            $student->bundles()->attach($bundleId);
+                            $pivotId = \DB::table('bundle_student')
+                                ->where('student_id', $student->id)
+                                ->where('bundle_id', $bundleId)
+                                ->value('id');
+                        }
+
+                    }
+
+                } catch (\Exception $exception) {
+                    dd($exception);
                 }
+            } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
+                $user = User::where('id', $user->id)->first();
+                $user->update([
+                    'role_id' => 1,
+                    'role_name' => 'user',
+                ]);
             }
 
-            if(!empty($data['order']) && $data['order']->status === Order::$paid){
+            if (!empty($data['order']) && $data['order']->status === Order::$paid) {
                 $toastData = [
                     'title' => trans('cart.success_pay_title'),
                     'msg' => trans('cart.success_pay_msg'),
                     'status' => 'success'
                 ];
-                return redirect('/panel/requirements')->with(['toast' => $toastData]);
-            }
-            else if(!empty($data['order']) && $data['order']->status === Order::$fail){
+                if (empty($sale)) {
+                    return redirect('/panel')->with(['toast' => $toastData]);
+                }
+                if (!empty($sale) && isset($pivotId)) {
+                    return redirect('/panel/bundles/' . $pivotId . '/requirements')->with(['toast' => $toastData]);
+                }
+                return redirect('/')->with(['toast' => $toastData]);
+            } else if (!empty($data['order']) && $data['order']->status === Order::$fail) {
                 $toastData = [
                     'title' => trans('cart.failed_pay_title'),
                     'msg' => trans('cart.failed_pay_msg'),
