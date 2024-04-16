@@ -76,7 +76,7 @@
                     @endforeach
                 </div>
 
-                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-50 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
+                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-md-45 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
             </div>
         </div>
     </div>

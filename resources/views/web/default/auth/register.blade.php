@@ -157,7 +157,7 @@
                 <input type="checkbox" name="term" value="1"
                     {{ (!empty(old('term')) and old('term') == '1') ? 'checked' : '' }}
                     class="custom-control-input @error('term') is-invalid @enderror" id="term">
-                <label class="custom-control-label font-14" for="term">
+                <label class="custom-control-label font-14 mr-20" for="term">
                     <p class="term">
                         {{ trans('auth.i_agree_with') }}
 
