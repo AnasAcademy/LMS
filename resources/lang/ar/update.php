@@ -78,7 +78,7 @@ return [
     'amount_after_n_days' => ':amount  :days  :percent',
     'amount_upfront' => ':amount القسط الأول',
     'upfront'=>'القسط الأول',
-    'installments'=>'تقسيط',
+    'installments'=>'أقساط',
     'online_group_meeting_options' => 'خيارات اجتماع المجموعة عبر الإنترنت',
     'in_person_group_meeting_options' => 'خيارات اجتماع المجموعة شخصيًا',
     'minimum_students' => 'الحد الأدنى من الطلاب',
