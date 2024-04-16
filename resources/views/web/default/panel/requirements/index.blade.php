@@ -6,23 +6,6 @@
 @endpush
 
 <style>
-    .requirement-card {
-        padding: 60px 25px;
-        /*         box-shadow: 0px 0px 5px 0px #00000073;
- */
-        box-shadow: none;
-    }
-
-    .requirement-head {
-        top: 8px;
-        right: 30px;
-
-    }
-
-    .bundle-details {
-        font-family: "IBM Plex Sans Arabic" !important;
-    }
-
     .installment-card {
         background-color: #FBFBFB !important;
     }
@@ -42,8 +25,8 @@
                     $count++;
                 @endphp
                 <section
-                    class="requirement-card bg-white position-relative col-lg-9 col-11 d-flex justify-content-center align-items-center rounded-sm mb-80">
-                    <h2 class="position-absolute bg-white p-5 requirement-head">
+                    class="bg-white position-relative col-xl-9 col-12 justify-content-center align-items-center rounded-sm mb-80 py-35 px-0">
+                    <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}</h2>
                     @if (empty($bundleData['bundle']->studentRequirement))
                         <div class="w-100 text-center">
@@ -114,7 +97,7 @@
                                                                             class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
                                                                             {{ $realPrice['price'] }}
                                                                         </span>
-                                                                        <p class="text-center text-danger mt-15">
+                                                                        <p class="font-12 font-weight-bold text-center text-danger mt-15">
                                                                             خصم 23% عند دفع كامل الرسوم مرة واحده
                                                                         </p>
                                                                     @endif
@@ -179,7 +162,7 @@
                                                                     @if (!$canSale)
                                                                         {{ trans('update.disabled_add_to_cart') }}
                                                                     @else
-                                                                        لدفع رسوم البرنامج كاملة اضغط هنا
+                                                                        لدفع الرسوم كاملة اضغط هنا
                                                                     @endif
                                                                 </button>
 
@@ -202,7 +185,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{-- jkkkkkkkkkh --}}
+
+                                {{-- installment --}}
                                 @if (!empty($bundleData['installments']) && count($bundleData['installments']))
                                     <div class="col-12 col-md-6">
 
