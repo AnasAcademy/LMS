@@ -2167,7 +2167,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
 
         switch ($currencyPosition) {
             case 'left':
-                $price = $currency . $price;
+                $price = $currency .' '. $price;
                 break;
 
             case 'left_with_space':
@@ -2175,7 +2175,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
                 break;
 
             case 'right':
-                $price = $price . $currency;
+                $price = $price .' '. $currency;
                 break;
 
             case 'right_with_space':
@@ -2183,7 +2183,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
                 break;
 
             default:
-                $price = $currency . $price;
+                $price = $currency .' '. $price;
         }
     }
 

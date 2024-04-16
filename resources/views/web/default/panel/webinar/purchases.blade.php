@@ -93,7 +93,7 @@
 
                                             <tr>
                                                 <th>ID</th>
-                                                <th>{{ trans('public.title') }}</th>
+                                                <th>اسم المقرر</th>
                                                 <th class="text-left">{{ trans('public.instructor') }}</th>
                                                 <th>{{ trans('public.start_date') }}</th>
                                                 <th>الإجراءات</th>
@@ -131,7 +131,7 @@
 
                                                                 <a class="btn btn-primary"
                                                                     href="{{ $bundleWebinar->getWebinarUrl() }}"
-                                                                    target="_blank" rel="noopener noreferrer">للذهاب للتسجيل</a>
+                                                                    target="_blank" rel="noopener noreferrer">المحاضره المسجله</a>
                                                             @endif
                                                         </td>
                                                     </tr>

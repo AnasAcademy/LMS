@@ -75,7 +75,7 @@ return [
     'my_purchases' => 'مشترياتي',
     'no_result_purchases' => 'لا يوجد فصول تم شراؤها!',
     'no_result_purchases_hint' => 'ابدأ التعلم مع افضل المعلمين واستمتع...',
-    'purchase_date' => 'تاريخ الشراء',
+    'purchase_date' => 'تاريخ التسجيل',
     'purchased' => 'تم الشراء',
 
     'favorites' => 'المفضلات',
