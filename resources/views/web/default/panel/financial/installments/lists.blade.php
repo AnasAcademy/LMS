@@ -158,14 +158,14 @@
                                             <span class="stat-value">{{ dateTimeFormat($order->created_at, 'j M Y H:i') }}</span>
                                         </div>
 
-                                        <div class="d-flex align-items-start flex-column mt-20 mr-15">
+                                        {{-- <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                             <span class="stat-title">{{ trans('update.upfront') }}:</span>
                                             <span class="stat-value">{{ !empty($order->selectedInstallment->upfront) ? handlePrice($order->selectedInstallment->getUpfront($itemPrice)) : '-' }}</span>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                             <span class="stat-title">{{ trans('update.total_installments') }}:</span>
-                                            <span class="stat-value">{{ trans('update.total_parts_count', ['count' => $order->selectedInstallment->steps_count]) }} ({{ handlePrice($order->selectedInstallment->totalPayments($itemPrice, false)) }})</span>
+                                            <span class="stat-value">{{ trans('update.total_parts_count', ['count' => $order->selectedInstallment->steps_count+1]) }} ({{ handlePrice($order->selectedInstallment->totalPayments($itemPrice, false)+(!empty($order->selectedInstallment->upfront) ? $order->selectedInstallment->getUpfront($itemPrice) : 0) )}})</span>
                                         </div>
 
                                         @if($order->status == "open" or $order->status == "pending_verification")
@@ -258,7 +258,7 @@
                                                                 <span class="ml-5 font-12 text-gray">({{ $step->amount }}%)</span>
                                                                 @endif
                                                             </div>
-                                                            <span class="d-block font-12 text-gray">{{ $step->deadline }} أيام بعد بداية الدورة</span>
+                                                            {{-- <span class="d-block font-12 text-gray">{{ $step->deadline }} أيام بعد بداية الدورة</span> --}}
                                                         </td>
 
                                                         <td class="text-center">{{ handlePrice($step->getPrice($itemPrice)) }}</td>

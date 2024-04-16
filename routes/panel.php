@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\InstallmentOrder;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -236,7 +237,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
     Route::group(['prefix' => 'financial','middleware'=>'can:student_showFinance'], function () {
         Route::get('/sales', 'SaleController@index');
-        Route::get('/summary', 'AccountingController@index');
+        // Route::get('/summary', 'AccountingController@index');
         Route::get('/payout', 'PayoutController@index');
         Route::post('/request-payout', 'PayoutController@requestPayout');
         Route::get('/account', 'AccountingController@account');
@@ -261,7 +262,17 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         });
 
         Route::group(['prefix' => 'installments'], function () {
-            Route::get('/', 'InstallmentsController@index');
+            // Route::get('/', 'InstallmentsController@index');
+            Route::get('/', function () {
+                $user_id = auth()->user()->id;
+
+                if (InstallmentOrder::where('user_id', $user_id)->where('status', '!=', 'paying')->exists()) {
+                    return app('App\Http\Controllers\Panel\InstallmentsController')->index();
+                }
+
+                return  view("errors.404", ['pageTitle' => trans('public.error_404_page_title')]);
+            })->name('installments.index');
+
             Route::get('/{id}/details', 'InstallmentsController@show');
             Route::get('/{id}/cancel', 'InstallmentsController@cancelVerification');
             Route::get('/{id}/pay_upcoming_part', 'InstallmentsController@payUpcomingPart');

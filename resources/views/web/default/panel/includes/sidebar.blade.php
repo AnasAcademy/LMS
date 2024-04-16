@@ -494,9 +494,9 @@
                             </li>
                         @endif
 
-                        <li class="mt-5 {{ request()->is('panel/financial/summary') ? 'active' : '' }}">
+                        {{-- <li class="mt-5 {{ request()->is('panel/financial/summary') ? 'active' : '' }}">
                             <a href="/panel/financial/summary">{{ trans('financial.financial_summary') }}</a>
-                        </li>
+                        </li> --}}
 
                         {{--<li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
                             <a href="/panel/financial/payout">استرداد</a>
@@ -518,9 +518,14 @@
                         @endif
 
                         @if (getInstallmentsSettings('status'))
-                            <li class="mt-5 {{ request()->is('panel/financial/installments*') ? 'active' : '' }}">
-                                <a href="/panel/financial/installments">أقساط البرنامج</a>
-                            </li>
+                            @if(\App\Models\InstallmentOrder::query()
+                            ->where('user_id', auth()->user()->id)
+                            ->where('status', '!=', 'paying')
+                            ->exists())
+                                <li class="mt-5 {{ request()->is('panel/financial/installments*') ? 'active' : '' }}">
+                                    <a href="/panel/financial/installments">أقساط البرنامج</a>
+                                </li>
+                            @endif
                         @endif
                         @php
                             $rewardSetting = getRewardsSettings();

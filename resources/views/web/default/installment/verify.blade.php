@@ -50,14 +50,14 @@
 
                 <div class="d-flex flex-wrap align-items-center justify-content-between w-100">
 
-                    <div class="d-flex align-items-center mt-20">
+                    {{-- <div class="d-flex align-items-center mt-20">
                         <i data-feather="check-square" width="20" height="20" class="text-gray"></i>
                         <span class="font-14 text-gray ml-5">{{ !empty($installment->upfront) ? handlePrice($installment->getUpfront($itemPrice)).' '. trans('update.upfront') : trans('update.no_upfront') }}</span>
-                    </div>
+                    </div> --}}
 
                     <div class="d-flex align-items-center mt-20">
                         <i data-feather="menu" width="20" height="20" class="text-gray"></i>
-                        <span class="font-14 text-gray ml-5">{{ $installment->steps_count }} {{ trans('update.installments') }} ({{ handlePrice($installment->totalPayments($itemPrice, false)) }})</span>
+                        <span class="font-14 text-gray ml-5">{{ $installment->steps_count+1 }} {{ trans('update.installments') }} ({{ handlePrice($installment->totalPayments($itemPrice, false)+(!empty($installment->upfront) ? $installment->getUpfront($itemPrice) : 0)) }})</span>
                     </div>
 
                     <div class="d-flex align-items-center mt-20">
