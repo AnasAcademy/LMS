@@ -155,7 +155,7 @@
 
                                         <div class="d-flex align-items-start flex-column mt-5 mr-15">
                                             <span class="stat-title">{{ trans('panel.purchase_date') }}:</span>
-                                            <span class="stat-value">{{ dateTimeFormat($order->created_at, 'j M Y H:i') }}</span>
+                                            <span class="stat-value mt-20">{{ dateTimeFormat($order->created_at, 'j M Y H:i') }}</span>
                                         </div>
 
                                         {{-- <div class="d-flex align-items-start flex-column mt-20 mr-15">
@@ -165,26 +165,26 @@
 
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                             <span class="stat-title">{{ trans('update.total_installments') }}:</span>
-                                            <span class="stat-value">{{ trans('update.total_parts_count', ['count' => $order->selectedInstallment->steps_count+1]) }} ({{ handlePrice($order->selectedInstallment->totalPayments($itemPrice, false)+(!empty($order->selectedInstallment->upfront) ? $order->selectedInstallment->getUpfront($itemPrice) : 0) )}})</span>
+                                            <span class="stat-value mt-20">{{ trans('update.total_parts_count', ['count' => $order->selectedInstallment->steps_count+1]) }} ({{ handlePrice($order->selectedInstallment->totalPayments($itemPrice, false)+(!empty($order->selectedInstallment->upfront) ? $order->selectedInstallment->getUpfront($itemPrice) : 0) )}})</span>
                                         </div>
 
                                         @if($order->status == "open" or $order->status == "pending_verification")
                                             <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                                 <span class="stat-title">{{ trans('update.remained_installments') }}:</span>
-                                                <span class="stat-value">{{ trans('update.total_parts_count', ['count' => $order->remained_installments_count]) }} ({{ handlePrice($order->remained_installments_amount) }})</span>
+                                                <span class="stat-value mt-20">{{ trans('update.total_parts_count', ['count' => $order->remained_installments_count]) }} ({{ handlePrice($order->remained_installments_amount) }})</span>
                                             </div>
 
                                             @if(!empty($order->upcoming_installment))
                                                 <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                                     <span class="stat-title">{{ trans('update.upcoming_installment') }}:</span>
-                                                    <span class="stat-value">{{ dateTimeFormat((($order->upcoming_installment->deadline * 86400) + $order->bundle->start_date), 'j M Y') }} ({{ handlePrice($order->upcoming_installment->getPrice($itemPrice)) }})</span>
+                                                    <span class="stat-value mt-20">{{ dateTimeFormat((($order->upcoming_installment->deadline * 86400) + $order->bundle->start_date), 'j M Y') }} ({{ handlePrice($order->upcoming_installment->getPrice($itemPrice)) }})</span>
                                                 </div>
                                             @endif
 
                                             @if($order->has_overdue)
                                                 <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                                     <span class="stat-title">{{ trans('update.overdue_installments') }}:</span>
-                                                    <span class="stat-value">{{ $order->overdue_count }} ({{ handlePrice($order->overdue_amount) }})</span>
+                                                    <span class="stat-value mt-20">{{ $order->overdue_count }} ({{ handlePrice($order->overdue_amount) }})</span>
                                                 </div>
                                             @endif
                                         @endif
@@ -195,6 +195,8 @@
 
                             </div>
                             <div class="panel-section-card py-20 px-25 mt-20">
+                                <h3 class="font-16 text-dark-blue font-weight-bold mb-20">جدول تقسيط رسوم البرنامج</h3>
+
                                 <div class="row">
                                     <div class="col-12 ">
                                         <div class="table-responsive">
@@ -217,7 +219,8 @@
                                                     @endphp
                                                     <tr>
                                                         <td class="text-left">
-                                                            {{ trans('update.upfront') }}
+                                                            <span class="d-block font-16 font-weight-500 text-dark-blue">  {{ trans('update.upfront') }}</span>
+
                                                             @if($order->selectedInstallment->upfront_type == 'percent')
                                                                 <span class="ml-5">({{ $order->selectedInstallment->upfront }}%)</span>
                                                             @endif
