@@ -78,7 +78,7 @@
 
                                 {{-- direct buy --}}
 
-                                <div class="col-12 col-md-6 mb-md-0 mb-20">
+                                <div class="col-12 mb-md-0 mb-20 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }}">
                                     <div class="installment-card p-15 w-100 h-100">
                                         <div class="row">
                                             <div class="col-12">

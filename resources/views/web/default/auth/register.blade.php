@@ -11,6 +11,10 @@
     .cs-btn:hover{
         background-color:#5F2B80 !important;
     }
+    .custom-control-label::after, .custom-control-label::before {
+        left: initial !important;
+        right: -1.5rem !important;
+     }
 </style>
     @php
         $siteGeneralSettings = getGeneralSettings();
