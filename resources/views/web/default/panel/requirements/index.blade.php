@@ -61,41 +61,11 @@
 
                                 {{-- direct buy --}}
 
-                                    <section class="mt-20 text-start col-12">
-                                        @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                            <h4 class="font-16 font-weight-bold text-dark-blue">
-                                                دفع الرسوم كاملة
-                                            </h4>
-                                            <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة</p>
-                                        @endif
-                                        {{-- <div class="mt-20 d-flex align-items-center">
-                                            <div class="progress card-progress flex-grow-1">
-                                                <span class="progress-bar rounded-sm bg-primary" style="width: 100%"></span>
-                                            </div>
-                                            <div class="ml-10 font-12 text-danger">100% of capacity reached</div>
-                                        </div> --}}
-                                        {{-- bundle Price --}}
-                                        @if ($bundleData['bundle']->bundle->price > 0)
-                                            <div id="priceBox"
-                                                class="order-1 col-12 text-center d-flex align-items-center justify-content-center mt-20 {{ !empty($activeSpecialOffer) ? ' flex-column ' : '' }}">
-                                                <div class="text-center">
-                                                    @php
-                                                        $realPrice = handleCoursePagePrice(
-                                                            $bundleData['bundle']->bundle->price,
-                                                        );
-                                                    @endphp
-                                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                                      <p style="text-decoration: line-through;"> {{  explode(".", (handleCoursePagePrice($bundleData['bundle']->bundle->price / (1-0.2324))['price'] ))[0] }}</p>
-                                                        <span id="realPrice"
-                                                            data-value="{{ $bundleData['bundle']->bundle->price }}"
-                                                            data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
-                                                            class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
-                                                            {{ $realPrice['price'] }}
-                                                        </span>
-                                                        <p class="text-center text-danger mt-15">
-                                                            خصم 23% عند دفع كامل الرسوم مرة واحده
-                                                        </p>
-                                                    @endif
+                                <div class="col-12 mb-md-0 mb-20 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }}">
+                                    <div class="installment-card p-15 w-100 h-100">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="font-16 font-weight-bold text-dark-blue">دفع الرسوم كاملة</h4>
 
                                                 <div class="">
                                                     <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة
