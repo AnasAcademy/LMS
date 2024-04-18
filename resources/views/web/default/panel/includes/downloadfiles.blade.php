@@ -105,37 +105,51 @@
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
-                        <h5 class="font-16 mb-1">Microsoft Teams Arabic<i class="feather icon-download-cloud float-right"></i></h5>
+                       <a href="https://lms.anasacademy.uk/store/1162/%D9%85%D9%84%D9%81%D8%A7%D8%AA%20%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC/Microsoft%20Teams%20Arabic.pdf"
+                           target="_blank">
+                           <h5 class="font-16 mb-1">Microsoft Teams Arabic<i class="feather icon-download-cloud float-right"></i></h5>
+                       </a>
                         </div>
                     </li>
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
+                            <a href="https://lms.anasacademy.uk/store/1162/%D9%85%D9%84%D9%81%D8%A7%D8%AA%20%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC/Microsoft%20Teams%20English.pdf"
+                           target="_blank">
                         <h5 class="font-16 mb-1">Microsoft Teams English<i class="feather icon-download-cloud float-right"></i></h5>
+                            </a>
                         </div>
                     </li>
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
-                        <h5 class="font-16 mb-1">Outlook Arabic<i class="feather icon-download-cloud float-right"></i></h5>
+                             <a href="https://lms.anasacademy.uk/store/1162/%D9%85%D9%84%D9%81%D8%A7%D8%AA%20%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC/Outlook%20Arabic.pdf"
+                           target="_blank">
+                        <h5 class="font-16 mb-1">Outlook Arabic<i class="feather icon-download-cloud float-right"></i></h5></a>
                         </div>
                     </li>
                     <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
-                        <h5 class="font-16 mb-1">Outlook English<i class="feather icon-download-cloud float-right"></i></h5>
+                             <a href="https://lms.anasacademy.uk/store/1162/%D9%85%D9%84%D9%81%D8%A7%D8%AA%20%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC/Outlook%20English.pdf"
+                           target="_blank">
+                        <h5 class="font-16 mb-1">Outlook English<i class="feather icon-download-cloud float-right"></i></h5></a>
                         </div>
                     </li>
                      <li class="media mb-3">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
-                        <h5 class="font-16 mb-1">OneDrive English<i class="feather icon-download-cloud float-right"></i></h5>
+                             <a href="https://lms.anasacademy.uk/store/1162/%D9%85%D9%84%D9%81%D8%A7%D8%AA%20%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC/OneDrive%20English.pdf"
+                           target="_blank">
+                        <h5 class="font-16 mb-1">OneDrive English<i class="feather icon-download-cloud float-right"></i></h5></a>
                         </div>
                     </li>
                      <li class="media">
                         <span class="ml-3 align-self-center img-icon danger-rgba text-danger">.pdf</span>
                         <div class="media-body">
-                        <h5 class="font-16 mb-1">OneDrive Arabic<i class="feather icon-download-cloud float-right"></i></h5>
+                             <a href="https://lms.anasacademy.uk/store/1162/%D9%85%D9%84%D9%81%D8%A7%D8%AA%20%D8%B4%D8%B1%D8%AD%20%D8%A7%D9%84%D8%A8%D8%B1%D8%A7%D9%85%D8%AC/OneDrive%20Arabic.pdf"
+                           target="_blank">
+                        <h5 class="font-16 mb-1">OneDrive Arabic<i class="feather icon-download-cloud float-right"></i></h5></a>
                         </div>
                     </li>
                 </ul>
