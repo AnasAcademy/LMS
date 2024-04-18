@@ -4,7 +4,18 @@
 @endpush
 
 @section('content')
-
+<style>
+      .cs-btn{
+        background-color:#ED1088 !important;
+    }
+    .cs-btn:hover{
+        background-color:#5F2B80 !important;
+    }
+    .custom-control-label::after, .custom-control-label::before {
+        left: initial !important;
+        right: -1.5rem !important;
+     }
+</style>
     @php
         $siteGeneralSettings = getGeneralSettings();
     @endphp
@@ -15,7 +26,7 @@
         $selectRolesDuringRegistration = getFeaturesSettings('select_the_role_during_registration') ?? null;
     @endphp
     <div class="p-md-4 m-md-3">
-        <div class="col-7 col-md-7 p-0 mb-5 mt-3 mt-md-auto">
+        <div class="col-6 col-md-6 p-0 mb-5 mt-3 mt-md-auto">
             <img src="{{ $siteGeneralSettings['logo'] ?? '' }}" alt="logo" width="100%" class="">
         </div>
 
@@ -146,7 +157,7 @@
                 <input type="checkbox" name="term" value="1"
                     {{ (!empty(old('term')) and old('term') == '1') ? 'checked' : '' }}
                     class="custom-control-input @error('term') is-invalid @enderror" id="term">
-                <label class="custom-control-label font-14" for="term">
+                <label class="custom-control-label font-14 mr-20" for="term">
                     <p class="term">
                         {{ trans('auth.i_agree_with') }}
 
@@ -169,7 +180,7 @@
             @enderror
             <!--end-->
 
-            <button type="submit" class="btn btn-primary btn-block mt-20">{{ trans('auth.signup') }}</button>
+            <button type="submit" class="btn btn-primary btn-block mt-20 cs-btn">{{ trans('auth.signup') }}</button>
         </form>
 
         <div class="ft-text text-center mt-20 mb-35">

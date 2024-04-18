@@ -143,7 +143,7 @@ class ApplyController extends Controller
                     'user_id' => $user->id,
                     'order_id' => $order->id,
                     'webinar_id' => null,
-                    'bundle_id' => null,
+                    'bundle_id' => $request->bundle_id ?? null,
                     'certificate_template_id' =>  null,
                     'certificate_bundle_id' => null,
                     'form_fee' => 1,

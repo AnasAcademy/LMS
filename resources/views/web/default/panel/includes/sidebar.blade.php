@@ -7,7 +7,9 @@
 <div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15">
     <div class="user-info d-flex align-items-center justify-content-between">
         <div class="user-avatar bg-gray200">
-            <img src="{{ $authUser->getAvatar(100) }}" class="img-cover" alt="{{ $authUser->full_name }}">
+            {{-- <img src="{{ $authUser->getAvatar(100) }}" class="img-cover" alt="{{ $authUser->full_name }}"> --}}
+                        <img src="{{asset("assets/default/img/img.png")}}" class="img-cover" alt="{{ $authUser->full_name }}">
+
         </div>
 
         <div class="user-name ml-15">
@@ -30,7 +32,7 @@
 
     <div class="user-info d-flex align-items-center flex-row flex-lg-column justify-content-lg-center">
         <a href="/panel" class="user-avatar bg-gray200">
-            <img src="{{ $authUser->getAvatar(100) }}" class="img-cover" alt="{{ $authUser->full_name }}">
+            <img src="{{asset("assets/default/img/img.png")}}" class="img-cover" alt="{{ $authUser->full_name }}">
         </a>
 
         <div class="d-flex flex-column align-items-center justify-content-center">
@@ -496,9 +498,9 @@
                             <a href="/panel/financial/summary">{{ trans('financial.financial_summary') }}</a>
                         </li>
 
-                        <li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
+                        {{--<li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
                             <a href="/panel/financial/payout">استرداد</a>
-                        </li>
+                        </li>--}}
 
                         {{-- <li class="mt-5 {{ request()->is('panel/financial/account') ? 'active' : '' }}">
                         <a href="/panel/financial/account">{{ trans('financial.charge_account') }}</a>
@@ -537,7 +539,7 @@
             </li>
         @endcan
 
-        @can('show_support')
+       {{-- @can('show_support')
             <li
                 class="sidenav-item {{ (request()->is('panel/support') or request()->is('panel/support/*')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#supportCollapse" role="button"
@@ -563,7 +565,7 @@
                     </ul>
                 </div>
             </li>
-        @endcan
+        @endcan --}}
 
         {{-- @if (!$authUser->isUser() or !empty($referralSettings) and $referralSettings['status'] and $authUser->affiliate or !empty(getRegistrationBonusSettings('status')) and $authUser->enable_registration_bonus)
                 @can('student_showMarkting')
@@ -710,7 +712,7 @@
         @endif
 
 
-        @can('show_notifications')
+       {{-- @can('show_notifications')
             <li class="sidenav-item {{ request()->is('panel/notifications') ? 'sidenav-item-active' : '' }}">
                 <a href="/panel/notifications" class="d-flex align-items-center">
                     <span class="sidenav-notification-icon sidenav-item-icon mr-10">
@@ -719,7 +721,7 @@
                     <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.notifications') }}</span>
                 </a>
             </li>
-        @endcan
+        @endcan --}}
 
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">
             <a href="/panel/setting" class="d-flex align-items-center">

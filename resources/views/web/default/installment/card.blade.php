@@ -59,7 +59,7 @@
                     $installmentTotalInterest = $installment->totalInterest($itemPrice, $totalPayments);
                 @endphp
 
-                <div class="d-flex align-items-center justify-content-center flex-column order-1">
+                <div class="d-flex align-items-center justify-content-center flex-column order-1 mb-20">
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
                     {{-- <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
                             ({{ trans('update.percent_interest',['percent' => $installmentTotalInterest]) }})
@@ -76,7 +76,7 @@
                     @endforeach
                 </div>
 
-                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-50 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
+                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-md-45 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
             </div>
         </div>
     </div>

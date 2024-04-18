@@ -19,7 +19,7 @@
         <h2 class="section-title">{{ trans('update.installments_overview') }}</h2>
 
         <div class="activities-container mt-25 p-20 p-lg-35">
-            <div class="row">
+          {{--  <div class="row">
                 <div class="col-6 col-md-3 mt-30 mt-md-0 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/127.png" width="64" height="64" alt="">
@@ -51,7 +51,7 @@
                         <span class="font-16 text-gray font-weight-500">{{ trans('update.overdue_amount') }}</span>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </section>
 

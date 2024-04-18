@@ -15,7 +15,7 @@
     @endif
 
     {{-- Installments Overview --}}
-    <section>
+   {{-- <section>
         <h2 class="section-title">{{ trans('update.installments_overview') }}</h2>
 
         <div class="activities-container mt-25 p-20 p-lg-35">
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section>--}}
 
 
     <section class="mt-25">

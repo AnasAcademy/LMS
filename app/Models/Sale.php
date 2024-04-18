@@ -114,12 +114,12 @@ class Sale extends Model
             $orderType = Order::$registrationPackage;
         } elseif (!empty($orderItem->product_id)) {
             $orderType = Order::$product;
+        }elseif (!empty($orderItem->form_fee)) {
+            $orderType = Order::$formFee;
         } elseif (!empty($orderItem->bundle_id)) {
             $orderType = Order::$bundle;
         }elseif (!empty($orderItem->certificate_template_id)) {
             $orderType = Order::$certificate;
-        }elseif (!empty($orderItem->form_fee)) {
-            $orderType = Order::$formFee;
         }elseif (!empty($orderItem->installment_payment_id)) {
             $orderType = Order::$installmentPayment;
         }

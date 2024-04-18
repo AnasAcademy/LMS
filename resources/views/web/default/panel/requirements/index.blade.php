@@ -6,20 +6,8 @@
 @endpush
 
 <style>
-    .requirement-card {
-        padding: 40px 25px;
-        box-shadow: 0px 0px 5px 0px #00000073;
-
-    }
-
-    .requirement-head {
-        top: -15px;
-        right: 30px;
-
-    }
-
-    .bundle-details {
-        font-family: "IBM Plex Sans Arabic" !important;
+    .installment-card {
+        background-color: #FBFBFB !important;
     }
 </style>
 
@@ -37,8 +25,8 @@
                     $count++;
                 @endphp
                 <section
-                    class="requirement-card bg-white position-relative col-lg-9 col-11 d-flex justify-content-center align-items-center rounded-sm mb-80">
-                    <h2 class="position-absolute bg-white p-5 requirement-head">
+                    class="bg-white position-relative col-xl-9 col-12 justify-content-center align-items-center rounded-sm mb-80 py-35 px-0">
+                    <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}</h2>
                     @if (empty($bundleData['bundle']->studentRequirement))
                         <div class="w-100 text-center">
@@ -72,111 +60,133 @@
                                 </div>
 
                                 {{-- direct buy --}}
-                                <div class="px-20 pb-30 col-12 row mx-0 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }} installment-card mb-md-0 mb-20"
-                                    style="background-color: #fbfbfb">
 
-                                    <section class="mt-20 text-start col-12">
-                                        @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                            <h4 class="font-16 font-weight-bold text-dark-blue">
-                                                دفع الرسوم كاملة
-                                            </h4>
-                                            <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة</p>
-                                        @endif
-                                        {{-- <div class="mt-20 d-flex align-items-center">
-                                            <div class="progress card-progress flex-grow-1">
-                                                <span class="progress-bar rounded-sm bg-primary" style="width: 100%"></span>
-                                            </div>
-                                            <div class="ml-10 font-12 text-danger">100% of capacity reached</div>
-                                        </div> --}}
-                                        {{-- bundle Price --}}
-                                        @if ($bundleData['bundle']->bundle->price > 0)
-                                            <div id="priceBox"
-                                                class="order-1 col-12 text-center d-flex align-items-center justify-content-center mt-20 {{ !empty($activeSpecialOffer) ? ' flex-column ' : '' }}">
-                                                <div class="text-center">
-                                                    @php
-                                                        $realPrice = handleCoursePagePrice(
-                                                            $bundleData['bundle']->bundle->price,
-                                                        );
-                                                    @endphp
-                                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                                      <p style="text-decoration: line-through;"> {{ handleCoursePagePrice($bundleData['bundle']->bundle->price + ($bundleData['bundle']->bundle->price*0.23))['price'] }}</p>
-                                                        <span id="realPrice"
-                                                            data-value="{{ $bundleData['bundle']->bundle->price }}"
-                                                            data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
-                                                            class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
-                                                            {{ $realPrice['price'] }}
-                                                        </span>
-                                                        <p class="text-center text-danger mt-15">
-                                                            خصم 23% عند دفع كامل الرسوم مرة واحده
-                                                        </p>
-                                                    @endif
+                                <div class="col-12 mb-md-0 mb-20 {{ !empty($bundleData['installments']) && count($bundleData['installments']) ? 'col-md-6' : '' }}">
+                                    <div class="installment-card p-15 w-100 h-100">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h4 class="font-16 font-weight-bold text-dark-blue">دفع الرسوم كاملة</h4>
 
-                                                    @if (!empty($realPrice['tax']) and empty($activeSpecialOffer))
-                                                        <span class="d-block font-14 text-gray">+ {{ $realPrice['tax'] }}
-                                                            tax</span>
-                                                    @endif
+                                                <div class="">
+                                                    <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة
+                                                    </p>
                                                 </div>
                                             </div>
-                                        @else
-                                            <div class="d-flex align-items-center justify-content-center mt-20 order-1 col-12 ">
-                                                <span class="font-36 text-primary">{{ trans('public.free') }}</span>
+
+                                            <div class="col-12 p-0">
+                                                <div class="installment-card__payments d-flex flex-column w-100 pt-0">
+
+                                                    <div
+                                                        class="d-flex align-items-center justify-content-center flex-column order-1">
+                                                        @if ($bundleData['bundle']->bundle->price > 0)
+                                                            <div id="priceBox"
+                                                                class="order-1 col-12 text-center d-flex align-items-center justify-content-center mt-20 {{ !empty($activeSpecialOffer) ? ' flex-column ' : '' }}">
+                                                                <div class="text-center">
+                                                                    @php
+                                                                        $realPrice = handleCoursePagePrice(
+                                                                            $bundleData['bundle']->bundle->price,
+                                                                        );
+                                                                    @endphp
+                                                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
+                                                                        <p style="text-decoration: line-through;">
+                                                                            {{ handleCoursePagePrice($bundleData['bundle']->bundle->price + $bundleData['bundle']->bundle->price * 0.23)['price'] }}
+                                                                        </p>
+                                                                        <span id="realPrice"
+                                                                            data-value="{{ $bundleData['bundle']->bundle->price }}"
+                                                                            data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
+                                                                            class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
+                                                                            {{ $realPrice['price'] }}
+                                                                        </span>
+                                                                        <p class="font-12 font-weight-bold text-center text-danger mt-15">
+                                                                            خصم 23% عند دفع كامل الرسوم مرة واحده
+                                                                        </p>
+                                                                    @endif
+
+                                                                    @if (!empty($realPrice['tax']) and empty($activeSpecialOffer))
+                                                                        <span class="d-block font-14 text-gray">+
+                                                                            {{ $realPrice['tax'] }}
+                                                                            tax</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <div
+                                                                class="d-flex align-items-center justify-content-center mt-20 order-1 col-12 ">
+                                                                <span
+                                                                    class="font-36 text-primary">{{ trans('public.free') }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+
+
+                                                    <div class=" mb-15 order-3">
+                                                        <div
+                                                            class="d-flex align-items-center font-12 text-gray">
+                                                            @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
+                                                                <section class="bundle-details mt-3 order-3 col-12">
+                                                                    <p class="bundle-details text-gray mt-10">
+                                                                        الدبلومة عن بعد 100%
+                                                                    </p>
+
+                                                                    <p class="bundle-details text-gray mt-10">
+                                                                        مكونة من
+                                                                        {{ $bundleData['bundle']->bundle->bundleWebinars->count() }}
+                                                                        فصول دراسية
+                                                                    </p>
+                                                                    <p class="bundle-details text-gray mt-10">
+                                                                        مكونة من
+                                                                        {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
+                                                                        ساعات دراسية
+                                                                    </p>
+                                                                </section>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+
+                                                    <form action="{{ route('purchase_bundle') }}" method="POST"
+                                                        class="order-2 col-12">
+                                                        {{ csrf_field() }}
+                                                        <input type="hidden" name="item_id"
+                                                            value="{{ $bundleData['bundle']->bundle->id }}">
+
+
+
+                                                        <div class="mt-20 d-flex flex-column">
+                                                            @if ($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder()))
+                                                                <button type="button" class="btn btn-primary"
+                                                                    disabled>{{ trans('panel.purchased') }}</button>
+                                                            @elseif($bundleData['bundle']->bundle->price > 0)
+                                                                <button type="{{ $canSale ? 'submit' : 'button' }}"
+                                                                    @if (!$canSale) disabled @endif
+                                                                    class="btn btn-primary">
+                                                                    @if (!$canSale)
+                                                                        {{ trans('update.disabled_add_to_cart') }}
+                                                                    @else
+                                                                        لدفع الرسوم كاملة اضغط هنا
+                                                                    @endif
+                                                                </button>
+
+
+                                                                @if ($canSale and !empty(getFeaturesSettings('direct_bundles_payment_button_status')))
+                                                                    <button type="button"
+                                                                        class="btn btn-outline-danger js-bundle-direct-payment">
+                                                                        {{ trans('update.buy_now') }}
+                                                                    </button>
+                                                                @endif
+                                                            @else
+                                                                <a href="{{ $canSale ? '/bundles/' . $bundleData['bundle']->bundle->slug . '/free' : '#' }}"
+                                                                    class="btn btn-primary @if (!$canSale) disabled @endif">{{ trans('update.enroll_on_bundle') }}</a>
+                                                            @endif
+                                                        </div>
+
+                                                    </form>
+                                                </div>
                                             </div>
-                                        @endif
-                                    </section>
-                                    @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                       <section class="bundle-details mt-3 order-3 col-12">
-                                        <p class="bundle-details text-gray mt-10">
-                                            الدبلومة عن بعد 100%
-                                        </p>
-
-                                        <p class="bundle-details text-gray mt-10">
-                                            مكونة من
-                                            {{ $bundleData['bundle']->bundle->bundleWebinars->count() }} فصول دراسية
-                                        </p>
-                                        <p class="bundle-details text-gray mt-10">
-                                            مكونة من
-                                            {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
-                                            ساعات دراسية
-                                        </p>
-                                       </section>
-                                    @endif
-                                    <form action="{{ route('purchase_bundle') }}" method="POST" class="order-2 col-12">
-                                        {{ csrf_field() }}
-                                        <input type="hidden" name="item_id"
-                                            value="{{ $bundleData['bundle']->bundle->id }}">
-
-
-
-                                        <div class="mt-20 d-flex flex-column">
-                                            @if ($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder()))
-                                                <button type="button" class="btn btn-primary"
-                                                    disabled>{{ trans('panel.purchased') }}</button>
-                                            @elseif($bundleData['bundle']->bundle->price > 0)
-                                                <button type="{{ $canSale ? 'submit' : 'button' }}"
-                                                    @if (!$canSale) disabled @endif
-                                                    class="btn btn-primary">
-                                                    @if (!$canSale)
-                                                        {{ trans('update.disabled_add_to_cart') }}
-                                                    @else
-                                                        لدفع رسوم البرنامج كاملة اضغط هنا
-                                                    @endif
-                                                </button>
-
-                                                @if ($canSale and !empty(getFeaturesSettings('direct_bundles_payment_button_status')))
-                                                    <button type="button"
-                                                        class="btn btn-outline-danger mt-20 js-bundle-direct-payment">
-                                                        {{ trans('update.buy_now') }}
-                                                    </button>
-                                                @endif
-                                            @else
-                                                <a href="{{ $canSale ? '/bundles/' . $bundleData['bundle']->bundle->slug . '/free' : '#' }}"
-                                                    class="btn btn-primary @if (!$canSale) disabled @endif">{{ trans('update.enroll_on_bundle') }}</a>
-                                            @endif
                                         </div>
-
-                                    </form>
+                                    </div>
                                 </div>
 
+                                {{-- installment --}}
                                 @if (!empty($bundleData['installments']) && count($bundleData['installments']))
                                     <div class="col-12 col-md-6">
 

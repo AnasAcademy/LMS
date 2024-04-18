@@ -4,11 +4,13 @@
     <section>
         <h2 class="section-title">{{ trans('update.points_statistics') }}</h2>
 
-        <div class="activities-container mt-25 p-20 p-lg-35">
+        {{--<div class="activities-container mt-25 p-20 p-lg-35">
             <div class="row">
                 <div class="col-4 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/trophy_cup.png" width="64" height="64" alt="">
+                     
+
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ $availablePoints }}</strong>
                         <span class="font-16 text-gray font-weight-500">{{ trans('update.available_points') }}</span>
                     </div>
@@ -30,7 +32,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>--}}
     </section>
 
     <div class="row mt-20">
@@ -60,14 +62,14 @@
                                 <button type="button" class="btn btn-sm mr-15 {{ $earnByExchange > 0 ? 'js-exchange-btn  btn-primary' : 'bg-gray300 text-gray disabled' }}" {{ $earnByExchange > 0 ? '' : 'disabled' }}>{{ trans('update.exchange') }}</button>
                             @endif
 
-                            <a href="/reward-courses" class="btn btn-sm btn-outline-primary">{{ trans('update.browse_courses') }}</a>
+                          {{--  <a href="/reward-courses" class="btn btn-sm btn-outline-primary">{{ trans('update.browse_courses') }}</a> --}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-lg-6 mt-20 mt-lg-0">
+       {{-- <div class="col-12 col-lg-6 mt-20 mt-lg-0">
             <div class="d-flex align-items-center justify-content-between rounded-sm bg-white p-15 shadow-lg">
                 <div class="d-flex align-items-center ">
                     <img src="/assets/default/img/rewards/medal.png" width="51" height="51" alt="medal">
@@ -119,7 +121,7 @@
                     </div>
                 </div>
             @endif
-        </div>
+        </div>--}}
     </div>
 
     <section class="mt-35">
