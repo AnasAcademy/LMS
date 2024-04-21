@@ -387,7 +387,7 @@ return [
     'email_count' => 'رسائل البريد الإلكتروني المرسلة',
     'attachment' => 'المرفق',
     'attach_the_payment_photo' => 'إرفاق إيصال الدفع',
-    'path' => 'طريق',
+    'path' => 'لينك المحاضرا',
     'passed_grade' => 'درجة ناجح',
     'attempts' => 'محاولات',
     'currency_position' => 'وضع العملة',

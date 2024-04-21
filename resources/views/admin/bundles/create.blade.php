@@ -76,7 +76,7 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('update.required_points') }}</label>
                                                 <input type="text" name="points" value="{{ !empty($bundle) ? $bundle->points : old('points') }}" class="form-control @error('points')  is-invalid @enderror" placeholder="Empty means inactive this mode"/>
                                                 <div class="text-muted text-small mt-1">{{ trans('update.product_points_hint') }}</div>
@@ -86,8 +86,8 @@
                                                 </div>
                                                 @enderror
                                             </div>
-                                          
-                                            <div class="col-12 col-md-12 js-start_date">
+
+                                            <div class="form-group mt-15 js-start_date">
                                                         <div class="form-group">
                                                             <label class="input-label">{{ trans('public.start_date') }}</label>
                                                             <div class="input-group">
@@ -96,7 +96,7 @@
                                                                         <i class="fa fa-calendar-alt "></i>
                                                                     </span>
                                                                 </div>
-                                                                
+
                                                                 <input type="text" name="start_date" value="{{ (!empty($bundle) and $bundle->start_date) ? dateTimeFormat($bundle->start_date, 'Y-m-d H:i', false, false,getTimezone()) : old('start_date') }}" class="form-control @error('start_date')  is-invalid @enderror datetimepicker" aria-describedby="dateInputGroupPrepend"/>
                                                                 @error('start_date')
                                                                 <div class="invalid-feedback">
@@ -162,7 +162,7 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display:none">
                                                 <label class="input-label">{{ trans('public.thumbnail_image') }}</label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
@@ -170,7 +170,7 @@
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text" name="thumbnail" id="thumbnail" value="{{ !empty($bundle) ? $bundle->thumbnail : old('thumbnail') }}" class="form-control @error('thumbnail')  is-invalid @enderror"/>
+                                                    <input type="text" name="thumbnail" id="thumbnail" value="test" class="form-control @error('thumbnail')  is-invalid @enderror"/>
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view" data-input="thumbnail">
                                                             <i class="fa fa-eye"></i>
@@ -185,7 +185,7 @@
                                             </div>
 
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display:none">
                                                 <label class="input-label">{{ trans('public.cover_image') }}</label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
@@ -193,7 +193,7 @@
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text" name="image_cover" id="cover_image" value="{{ !empty($bundle) ? $bundle->image_cover : old('image_cover') }}" class="form-control @error('image_cover')  is-invalid @enderror"/>
+                                                    <input type="text" name="image_cover" id="cover_image" value="test" class="form-control @error('image_cover')  is-invalid @enderror"/>
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view" data-input="cover_image">
                                                             <i class="fa fa-eye"></i>
@@ -207,7 +207,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mt-25">
+                                            <div class="form-group mt-25" style="display:none">
                                                 <label class="input-label">{{ trans('public.demo_video') }} ({{ trans('public.optional') }})</label>
 
 
@@ -266,17 +266,17 @@
                                     <div class="row">
                                         <div class="col-12 col-md-6">
 
-                                            <div class="form-group mt-3 d-flex align-items-center justify-content-between">
-                                                <label class="" for="subscribeSwitch">{{ trans('public.subscribe') }}</label>
-                                                <div class="custom-control custom-switch">
+                                            <div class="form-group mt-3 d-flex align-items-center justify-content-between" >
+                                                <label class="" for="subscribeSwitch" style="display:none">{{ trans('public.subscribe') }}</label>
+                                                <div class="custom-control custom-switch" style="display:none">
                                                     <input type="checkbox" name="subscribe" class="custom-control-input" id="subscribeSwitch" {{ !empty($bundle) && $bundle->subscribe ? 'checked' : ''  }}>
                                                     <label class="custom-control-label" for="subscribeSwitch"></label>
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display:none">
                                                 <label class="input-label">{{ trans('update.access_days') }}</label>
-                                                <input type="text" name="access_days" value="{{ !empty($bundle) ? $bundle->access_days : old('access_days') }}" class="form-control @error('access_days')  is-invalid @enderror"/>
+                                                <input type="text" name="access_days" value="500" class="form-control @error('access_days')  is-invalid @enderror"/>
                                                 @error('access_days')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -295,7 +295,7 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display:none">
                                                 <label class="input-label d-block">{{ trans('public.tags') }}</label>
                                                 <input type="text" name="tags" data-max-tag="5" value="{{ !empty($bundle) ? implode(',',$bundleTags) : '' }}" class="form-control inputtags" placeholder="{{ trans('public.type_tag_name_and_press_enter') }} ({{ trans('admin/main.max') }} : 5)"/>
                                             </div>
@@ -331,10 +331,10 @@
 
                                                 <select id="certificates" class="custom-select @error('certificate_template_id')  is-invalid @enderror" name="certificate_template_id" >
                                                     <option value="" {{ !empty($bundle) ? '' : 'selected' }}disabled >اختر الشهادة</option>
-                                                   
+
                                                     @foreach($certificates as $certificate)
                                                         @if(!empty($certificate))
-                                                            <option value="{{ $certificate->id }}" {{ (!empty($bundle) and $bundle->certificate_template_id == $certificate->id) ? 'selected' : '' }}>{{ $certificate->name }}</option>
+                                                            <option value="{{ $certificate->id }}" {{ (!empty($bundle) and $bundle->certificate_template_id == $certificate->id) ? 'selected' : '' }}>{{ $certificate->title }}</option>
                                                         @endif
                                                     @endforeach
                                                 </select>
@@ -381,12 +381,12 @@
 
                                 @if(!empty($bundle))
                                     <section class="mt-30">
-                                        <div class="d-flex justify-content-between align-items-center">
+                                        {{-- <div class="d-flex justify-content-between align-items-center">
                                             <h2 class="section-title after-line">{{ trans('admin/main.price_plans') }}</h2>
                                             <button id="webinarAddTicket" type="button" class="btn btn-primary btn-sm mt-3">{{ trans('admin/main.add_price_plan') }}</button>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="row mt-10">
+                                        {{-- <div class="row mt-10">
                                             <div class="col-12">
 
                                                 @if(!empty($tickets) and !$tickets->isEmpty())
@@ -427,7 +427,7 @@
                                                     ])
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </section>
 
 

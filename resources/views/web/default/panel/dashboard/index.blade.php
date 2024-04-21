@@ -67,15 +67,18 @@
                             {{ $authUser->user_code }}@anasacademy.uk</li>
                         <li class="mt-1 text-gray font-16 font-weight-bold text-left"> البرنامج الدراسي :
 
-                            @if (!empty($bundleSales) and !$bundleSales->isEmpty())
+                            @if ($bundleSales->isNotEmpty())
                                 @foreach ($bundleSales as $bundleSale)
-                                    {{ $bundleSale->bundle->title }}
-                                    @if ($loop->index + 1 < $bundleSales->count())
+                                    {{ !empty($bundleSale->bundle->title) ? $bundleSale->bundle->title : "لم يتم التسجيل بعد" }}
+                                    @if (!$loop->last)
                                         و
                                     @endif
                                 @endforeach
+                            @else
+                                لم يتم التسجيل بعد
                             @endif
                         </li>
+
 
 
                     </ul>
@@ -186,7 +189,7 @@
                         <span class="font-16 text-gray font-weight-500 text-center pb-10">فريق الدعم والتواصل </span>
                         <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
                             href="https://support.anasacademy.uk/">
-لتقديم طلب اضغط هنا                        
+لتقديم طلب اضغط هنا
                         </a>
                           <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
                             href="https://support.anasacademy.uk/search">
@@ -194,7 +197,7 @@
                     </div>
 
                 </div>
-               
+
             </div>
 
             {{-- <div class="col-12 col-lg-3 mt-35">
