@@ -83,7 +83,7 @@
                                             </div>
 
                                             <div class="form-group mt-15">
-                                                <label class="input-label">{{ trans('public.title') }}</label>
+                                                <label class="input-label">اسم المقرر</label>
                                                 <input type="text" name="title" value="{{ !empty($webinar) ? $webinar->title : old('title') }}" class="form-control @error('title')  is-invalid @enderror" placeholder=""/>
                                                 @error('title')
                                                 <div class="invalid-feedback">
@@ -92,7 +92,7 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            {{-- <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('update.points') }}</label>
                                                 <input type="number" name="points" value="{{ !empty($webinar) ? $webinar->points : old('points') }}" class="form-control @error('points')  is-invalid @enderror" placeholder="Empty means inactive this mode"/>
                                                 @error('points')
@@ -100,7 +100,7 @@
                                                     {{ $message }}
                                                 </div>
                                                 @enderror
-                                            </div>
+                                            </div> --}}
 
                                             <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('admin/main.class_url') }}</label>
@@ -156,15 +156,15 @@
                                                 @enderror
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('public.thumbnail_image') }}</label>
-                                                <div class="input-group">
+                                                <div class="input-group" >
                                                     <div class="input-group-prepend">
                                                         <button type="button" class="input-group-text admin-file-manager" data-input="thumbnail" data-preview="holder">
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text" name="thumbnail" id="thumbnail" value="{{ !empty($webinar) ? $webinar->thumbnail : old('thumbnail') }}" class="form-control @error('thumbnail')  is-invalid @enderror"/>
+                                                    <input type="text" name="thumbnail" id="thumbnail" value="test" class="form-control @error('thumbnail')  is-invalid @enderror"/>
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view" data-input="thumbnail">
                                                             <i class="fa fa-eye"></i>
@@ -179,7 +179,7 @@
                                             </div>
 
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('public.cover_image') }}</label>
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
@@ -187,7 +187,7 @@
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text" name="image_cover" id="cover_image" value="{{ !empty($webinar) ? $webinar->image_cover : old('image_cover') }}" class="form-control @error('image_cover')  is-invalid @enderror"/>
+                                                    <input type="text" name="image_cover" id="cover_image" value="test" class="form-control @error('image_cover')  is-invalid @enderror"/>
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view" data-input="cover_image">
                                                             <i class="fa fa-eye"></i>
@@ -201,7 +201,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mt-25">
+                                            <div class="form-group mt-25" style="display: none">
                                                 <label class="input-label">{{ trans('public.demo_video') }} ({{ trans('public.optional') }})</label>
 
 
@@ -220,7 +220,7 @@
                                             <div class="form-group mt-0">
                                                 <label class="input-label font-12">{{ trans('update.path') }}</label>
                                                 <div class="input-group js-video-demo-path-input">
-                                                    <div class="input-group-prepend">
+                                                    {{-- <div class="input-group-prepend">
                                                         <button type="button" class="js-video-demo-path-upload input-group-text admin-file-manager {{ (empty($webinar) or empty($webinar->video_demo_source) or $webinar->video_demo_source == 'upload') ? '' : 'd-none' }}" data-input="demo_video" data-preview="holder">
                                                             <i class="fa fa-upload"></i>
                                                         </button>
@@ -228,7 +228,7 @@
                                                         <button type="button" class="js-video-demo-path-links rounded-left input-group-text input-group-text-rounded-left  {{ (empty($webinar) or empty($webinar->video_demo_source) or $webinar->video_demo_source == 'upload') ? 'd-none' : '' }}">
                                                             <i class="fa fa-link"></i>
                                                         </button>
-                                                    </div>
+                                                    </div> --}}
                                                     <input type="text" name="video_demo" id="demo_video" value="{{ !empty($webinar) ? $webinar->video_demo : old('video_demo') }}" class="form-control @error('video_demo')  is-invalid @enderror"/>
                                                     @error('video_demo')
                                                     <div class="invalid-feedback">
@@ -261,9 +261,9 @@
                                         <div class="col-12 col-md-6">
 
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('public.capacity') }}</label>
-                                                <input type="number" name="capacity" value="{{ !empty($webinar) ? $webinar->capacity : old('capacity') }}" class="form-control @error('capacity')  is-invalid @enderror"/>
+                                                <input type="number" name="capacity" value="500" class="form-control @error('capacity')  is-invalid @enderror"/>
                                                 @error('capacity')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -272,7 +272,7 @@
                                             </div>
 
                                             <div class="row mt-15">
-                                             
+
                                                     <div class="col-12 col-md-6 js-start_date">
                                                         <div class="form-group">
                                                             <label class="input-label">{{ trans('public.start_date') }}</label>
@@ -291,7 +291,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                           
+
 
                                                 <div class="col-12 col-md-6">
                                                     <div class="form-group">
@@ -340,7 +340,7 @@
                                             @endif
 
                                             @if(!empty($webinar) and $webinar->creator->isOrganization())
-                                                <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+                                                <div class="form-group mt-30 d-flex align-items-center justify-content-between" style="display: none">
                                                     <label class="" for="privateSwitch">{{ trans('webinars.private') }}</label>
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" name="private" class="custom-control-input" id="privateSwitch" {{ (!empty($webinar) and $webinar->private) ? 'checked' :  '' }}>
@@ -349,7 +349,7 @@
                                                 </div>
                                             @endif
 
-                                            <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+                                            {{-- <div class="form-group mt-30 d-flex align-items-center justify-content-between" >
                                                 <label class="" for="supportSwitch">{{ trans('panel.support') }}</label>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" name="support" class="custom-control-input" id="supportSwitch" {{ !empty($webinar) && $webinar->support ? 'checked' : '' }}>
@@ -357,7 +357,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+                                            <div class="form-group mt-30 d-flex align-items-center justify-content-between" >
                                                 <label class="" for="includeCertificateSwitch">{{ trans('update.include_certificate') }}</label>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" name="certificate" class="custom-control-input" id="includeCertificateSwitch" {{ !empty($webinar) && $webinar->certificate ? 'checked' : '' }}>
@@ -371,7 +371,7 @@
                                                     <input type="checkbox" name="downloadable" class="custom-control-input" id="downloadableSwitch" {{ !empty($webinar) && $webinar->downloadable ? 'checked' : '' }}>
                                                     <label class="custom-control-label" for="downloadableSwitch"></label>
                                                 </div>
-                                            </div>
+                                            </div> --}}
 
                                             <div class="form-group mt-30 d-flex align-items-center justify-content-between">
                                                 <label class="" for="partnerInstructorSwitch">{{ trans('public.partner_instructor') }}</label>
@@ -381,7 +381,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mt-30 d-flex align-items-center justify-content-between">
+                                            {{-- <div class="form-group mt-30 d-flex align-items-center justify-content-between">
                                                 <label class="" for="forumSwitch">{{ trans('update.course_forum') }}</label>
                                                 <div class="custom-control custom-switch">
                                                     <input type="checkbox" name="forum" class="custom-control-input" id="forumSwitch" {{ !empty($webinar) && $webinar->forum ? 'checked' : ''  }}>
@@ -411,11 +411,11 @@
                                                     <input type="checkbox" name="enable_waitlist" class="custom-control-input" id="enable_waitlistSwitch" {{ (!empty($webinar) and $webinar->enable_waitlist) ? 'checked' : ''  }}>
                                                     <label class="custom-control-label" for="enable_waitlistSwitch"></label>
                                                 </div>
-                                            </div>
+                                            </div> --}}
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('update.access_days') }}</label>
-                                                <input type="text" name="access_days" value="{{ !empty($webinar) ? $webinar->access_days : old('access_days') }}" class="form-control @error('access_days')  is-invalid @enderror"/>
+                                                <input type="text" name="access_days" value="" class="form-control @error('access_days')  is-invalid @enderror"/>
                                                 @error('access_days')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -424,9 +424,9 @@
                                                 <p class="mt-1">- {{ trans('update.access_days_input_hint') }}</p>
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('public.price') }} ({{ $currency }})</label>
-                                                <input type="text" name="price" value="{{ (!empty($webinar) and !empty($webinar->price)) ? convertPriceToUserCurrency($webinar->price) : old('price') }}" class="form-control @error('price')  is-invalid @enderror" placeholder="{{ trans('public.0_for_free') }}"/>
+                                                <input type="text" name="price" value="" class="form-control @error('price')  is-invalid @enderror" placeholder="{{ trans('public.0_for_free') }}"/>
                                                 @error('price')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
@@ -467,7 +467,7 @@
                                                 <div class="text-muted text-small mt-1">{{ trans('admin/main.select_a_partner_hint') }}</div>
                                             </div>
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label d-block">{{ trans('public.tags') }}</label>
                                                 <input type="text" name="tags" data-max-tag="5" value="{{ !empty($webinar) ? implode(',',$webinarTags) : '' }}" class="form-control inputtags" placeholder="{{ trans('public.type_tag_name_and_press_enter') }} ({{ trans('admin/main.max') }} : 5)"/>
                                             </div>
@@ -532,12 +532,12 @@
 
                                 @if(!empty($webinar))
                                     <section class="mt-30">
-                                        <div class="d-flex justify-content-between align-items-center">
+                                        {{-- <div class="d-flex justify-content-between align-items-center">
                                             <h2 class="section-title after-line">{{ trans('admin/main.price_plans') }}</h2>
                                             <button id="webinarAddTicket" type="button" class="btn btn-primary btn-sm mt-3">{{ trans('admin/main.add_price_plan') }}</button>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="row mt-10">
+                                        {{-- <div class="row mt-10">
                                             <div class="col-12">
 
                                                 @if(!empty($tickets) and !$tickets->isEmpty())
@@ -578,7 +578,7 @@
                                                     ])
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </section>
 
 

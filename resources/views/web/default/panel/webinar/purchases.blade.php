@@ -114,7 +114,7 @@
                                                         <th>{{ substr($bundleWebinar->webinar->title, 1, -3)}}</th> --}}
 
                                                         <td>{{ $loop->index + 1 }}</td>
-                                                        <th>{{ mb_substr($bundleWebinar->webinar->title, 1, -3) }}</th>
+                                                        <th>{{ $bundleWebinar->webinar->title }}</th>
 
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>

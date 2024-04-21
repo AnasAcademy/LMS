@@ -89,7 +89,7 @@
                                                                     @endphp
                                                                     @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
                                                                         <p style="text-decoration: line-through;">
-                                                                            {{ handleCoursePagePrice($bundleData['bundle']->bundle->price + $bundleData['bundle']->bundle->price * 0.23)['price'] }}
+                                                                            {{ explode(".", handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - 0.2324)))['price'])[0] }}
                                                                         </p>
                                                                         <span id="realPrice"
                                                                             data-value="{{ $bundleData['bundle']->bundle->price }}"
