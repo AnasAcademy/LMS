@@ -40,7 +40,7 @@ class Authenticate
             return $next($request);
         }
         if ($this->auth->guard('api')->guest()) {
-            return apiResponse2(0,'unauthorized',trans('auth.unauthorized')) ;
+            return apiResponse2(0,'unauthorized',"Unauthorized, login first") ;
         }
 
         return $next($request);

@@ -45,14 +45,18 @@ class RegisterController extends Controller
         $username = $this->username();
 
         if ($registerMethod !== $username && $username) {
-            return apiResponse2(0, 'invalid_register_method', trans('api.auth.invalid_register_method'));
+            // return apiResponse2(0, 'invalid_register_method', trans('api.auth.invalid_register_method'));
+            return apiResponse2(0, 'invalid_register_method', "invalid register method, you can only register through email or mobile");
         }
 
         $rules = [
-            'country_code' => ($username == 'mobile') ? 'required' : 'nullable',
+            // 'country_code' => ($username == 'mobile') ? 'required' : 'nullable',
+            'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
             // if the username is unique check
             //   $username => ($username == 'mobile') ? 'required|numeric|unique:users' : 'required|string|email|max:255|unique:users',
-            $username => ($username == 'mobile') ? 'required|numeric' : 'required|string|email|max:255',
+            // $username => ($username == 'mobile') ? 'required|numeric' : 'required|string|email|max:255',
+            'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users',
+            'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
         ];
@@ -70,7 +74,8 @@ class RegisterController extends Controller
 
             if ($checkConfirmed['status'] == 'verified') {
                 if ($userCase->full_name) {
-                    return apiResponse2(0, 'already_registered', trans('api.auth.already_registered'));
+                    // return apiResponse2(0, 'already_registered', trans('api.auth.already_registered'));
+                    return apiResponse2(0, 'already_registered', "this user is already registered");
                 } else {
                     $userCase->update(['password' => Hash::make($data['password'])]);
                     return apiResponse2(0, 'go_step_3', trans('api.auth.go_step_3'), [
@@ -79,7 +84,10 @@ class RegisterController extends Controller
                 }
             } else {
                 $userCase->update(['password' => Hash::make($data['password'])]);
-                return apiResponse2(0, 'go_step_2', trans('api.auth.go_step_2'), [
+                // return apiResponse2(0, 'go_step_2', trans('api.auth.go_step_2'), [
+                //     'user_id' => $userCase->id
+                // ]);
+                return apiResponse2(0, 'go_step_2', "Go to Step 2 to Varify your account through sending the varification code", [
                     'user_id' => $userCase->id
                 ]);
             }
@@ -103,8 +111,16 @@ class RegisterController extends Controller
         $verificationController = new VerificationController();
         $verificationController->checkConfirmed($user, $username, $data[$username]);
 
+        $notifyOptions = [
+            '[u.name]' => $user->full_name,
+            '[u.role]' => trans("update.role_{$user->role_name}"),
+            '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
+        ];
 
-        return apiResponse2('1', 'stored', trans('api.public.stored'), [
+        event(new Registered($user));
+        sendNotification("new_registration", $notifyOptions, 1);
+
+        return apiResponse2('1', 'stored', "user created successfully, Go to Step 2 to Varify your account through sending the verification code", [
             'user_id' => $user->id
         ]);
     }
@@ -114,7 +130,7 @@ class RegisterController extends Controller
         $data = $request->all();
         validateParam($data, [
             'user_id' => 'required|exists:users,id',
-            //  'code'=>
+
         ]);
 
         $user = User::find($data['user_id']);
@@ -163,7 +179,7 @@ class RegisterController extends Controller
             }
         }
 
-        return $this->username ?? '';
+        return $this->username ?? 'bb';
     }
 
 

@@ -130,7 +130,7 @@ class VerificationController extends Controller
                 $authUser->update([
                     'status' => User::$active,
                 ]);
-                return apiResponse2(1, 'verified', trans('api.auth.verified'));
+                return apiResponse2(1, 'verified', "account is verified successfully");
             }
 
            // return $loginController->sendFailedLoginResponse($request);
