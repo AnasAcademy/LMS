@@ -57,7 +57,7 @@ class LoginController extends Controller
 
 
         if (!$token = auth('api')->attempt($credentials)) {
-            return apiResponse2(0, 'incorrect', trans('auth.incorrect'));
+            return apiResponse2(0, 'invalid', "invalid email or password");
         }
         return $this->afterLogged($request, $token);
     }
@@ -71,7 +71,7 @@ class LoginController extends Controller
             $endBan = $user->ban_end_at;
             if (!empty($endBan) and $endBan > $time) {
                 auth('api')->logout();
-                return apiResponse2(0, 'banned_account', trans('auth.banned_account'));
+                return apiResponse2(0, 'banned_account', "your account has been banned");
             } elseif (!empty($endBan) and $endBan < $time) {
                 $user->update([
                     'ban' => false,
@@ -91,7 +91,7 @@ class LoginController extends Controller
 
             if ($checkConfirmed['status'] == 'send') {
 
-                return apiResponse2(0, 'not_verified', trans('api.auth.not_verified'));
+                return apiResponse2(0, 'not_verified', "can't login before verify your acount");
 
             } elseif ($checkConfirmed['status'] == 'verified') {
                 $user->update([
@@ -118,7 +118,7 @@ class LoginController extends Controller
             $data['profile_completion'] = $profile_completion;
         }
 
-        return apiResponse2(1, 'login', trans('auth.login'), $data);
+        return apiResponse2(1, 'login', "user login successfully", $data);
 
 
     }
