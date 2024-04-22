@@ -119,7 +119,7 @@
 
     {{-- hero section --}}
     @include('web.default.includes.hero_section', ['inner'=> "<h1 class='form-title font-36'>نموذج قبول طلب جديد وحجز مقعد دراسي</h1>"])
-    
+
     <div class="application container">
         <div class="col-12 col-lg-10 col-md-11 px-0">
             <div class="col-lg-12 col-md-12 px-0">
@@ -241,7 +241,7 @@
                                                     {{ old('nationality', $student->nationality ?? null) == $nationality ? 'selected' : '' }}>
                                                     {{ $nationality }}</option>
                                             @endforeach
-                                            <option value="أخرى" id="anotherNationality">أخرى</option>
+                                            <option value="اخري" id="anotherNationality">اخري</option>
                                         </select>
                                     </div>
 
@@ -318,7 +318,7 @@
                                                     {{ old('country', $student->country ?? null) == $country ? 'selected' : '' }}>
                                                     {{ $country }}</option>
                                             @endforeach
-                                            <option value="أخرى" id="anotherCountry">أخرى</option>
+                                            <option value="اخري" id="anotherCountry">اخري</option>
 
                                         </select>
                                     </div>
@@ -410,9 +410,9 @@
                                                     {{ $country }}</option>
                                             @endforeach
 
-                                            <option value="أخرى"
+                                            <option value="اخري"
                                                 {{ $student && !in_array($student->educational_qualification_country, $countries) ? 'selected' : '' }}
-                                                id="anotherEducationCountryOption">أخرى</option>
+                                                id="anotherEducationCountryOption">اخري</option>
                                         </select>
                                     </div>
 
@@ -956,12 +956,12 @@
                 region.style.display = "none";
             }
 
-            if (select.value === "أخرى") {
+            if (select.value === "اخري") {
                 anotherCountrySection.style.display = "block";
                 anotherCountryOption.value = hiddenInput2.value;
             } else {
                 anotherCountrySection.style.display = "none";
-                anotherCountryOption.value = "أخرى";
+                anotherCountryOption.value = "اخري";
 
             }
             if (select && cityLabel && town) {
@@ -1065,14 +1065,14 @@
             let nationality = document.getElementById("nationality");
             let other_nationality = document.getElementById("other_nationality");
             let anotherNationalityOption = document.getElementById("anotherNationality");
-            if (nationality && nationality.value == "أخرى") {
+            if (nationality && nationality.value == "اخري") {
                 other_nationality_section.style.display = "block";
 
                 // nationality.value = other_nationality.value;
                 anotherNationalityOption.value = other_nationality.value;
             } else {
                 other_nationality_section.style.display = "none";
-                anotherNationalityOption.value = "أخرى";
+                anotherNationalityOption.value = "اخري";
             }
         }
 
@@ -1097,13 +1097,13 @@
             let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
             let educationalQualificationCountry = document.getElementById("educational_qualification_country");
 
-            if (educationalQualificationCountry && educationalQualificationCountry.value == "أخرى") {
+            if (educationalQualificationCountry && educationalQualificationCountry.value == "اخري") {
                 anotherEducationCountrySection.style.display = "block";
                 anotherEducationCountryOption.value = anotherEducationCountry.value;
 
             } else {
                 anotherEducationCountrySection.style.display = "none";
-                anotherEducationCountryOption.value = "أخرى";
+                anotherEducationCountryOption.value = "اخري";
             }
 
         }

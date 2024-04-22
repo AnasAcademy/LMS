@@ -14,7 +14,7 @@ return [
         'gender'=>'الجنس',
         'health_proplem'=>'هل لديك مشكله صحيه ',
         'nationality'=>'الجنسية',
-        'status'=>'الحالةالعملية',
+        'status'=>'الحالة العملية',
         'working'=>'أعمل',
         'not_working'=>'لا أعمل',
         'referral_name'=>'اسم الشخص للتواصل معه عند الضرورة',
@@ -29,6 +29,6 @@ return [
         'agree_terms_conditions'=>'اقرار',
         'submit'=>'تسجيل',
         'personal data'=>'البيانات الشخصية',
-        
+
 
     ];

@@ -474,6 +474,7 @@
             @endcan --}}
         @endif
         @can('student_showFinance')
+        @if (\App\Models\InstallmentOrder::where('user_id', $authUser->id)->where('status', '!=', 'paying')->exists())
             <li
                 class="sidenav-item {{ (request()->is('panel/financial') or request()->is('panel/financial/*') or request()->is('panel/rewards')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#financialCollapse" role="button"
@@ -542,6 +543,7 @@
                     </ul>
                 </div>
             </li>
+            @endif
         @endcan
 
        {{-- @can('show_support')

@@ -190,6 +190,7 @@ class ApplyController extends Controller
                     'total' => 230,
                     'userGroup' => $user->userGroup ? $user->userGroup->group : null,
                     'order' => $order,
+                    'type'=>$order->orderItems[0]->form_fee,
                     'count' => 0,
                     'userCharge' => $user->getAccountingCharge(),
                     'razorpay' => $razorpay,

@@ -173,7 +173,10 @@ class Accounting extends Model
         if (!empty($orderItem->webinar_id)) {
             $notifyOptions['[c.title]'] = $orderItem->webinar->title;
         }elseif (!empty($orderItem->form_fee)) {
-            $notifyOptions['[c.title]'] = " رسوم حجز مقعد ";
+            $notifyOptions['[c.title]'] = " رسوم حجز مقعد دراسي";
+        } elseif (!empty($orderItem->installment_payment_id)) {
+            $notifyOptions['[c.title]'] = trans('update.installment');
+            $notifyOptions['[c.bundle]']= $orderItem->bundle->title ?? null;
         }elseif (!empty($orderItem->bundle_id)) {
             $notifyOptions['[c.title]'] = $orderItem->bundle->title;
         }elseif (!empty($orderItem->certificate_template_id)) {
@@ -182,8 +185,6 @@ class Accounting extends Model
             $notifyOptions['[c.title]'] = trans('meeting.reservation_appointment');
         } elseif (!empty($orderItem->product_id)) {
             $notifyOptions['[c.title]'] = $orderItem->product->title;
-        } elseif (!empty($orderItem->installment_payment_id)) {
-            $notifyOptions['[c.title]'] = ($orderItem->installmentPayment->type == 'upfront') ? trans('update.installment_upfront') : trans('update.installment');
         } else if (!empty($orderItem->subscribe_id)) {
             $notifyOptions['[c.title]'] = $orderItem->subscribe->title . ' ' . trans('financial.subscribe');
         } else if (!empty($orderItem->promotion_id)) {
