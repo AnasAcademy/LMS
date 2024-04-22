@@ -172,12 +172,12 @@ class Accounting extends Model
 
         if (!empty($orderItem->webinar_id)) {
             $notifyOptions['[c.title]'] = $orderItem->webinar->title;
-        } elseif (!empty($orderItem->bundle_id)) {
+        }elseif (!empty($orderItem->form_fee)) {
+            $notifyOptions['[c.title]'] = " رسوم حجز مقعد ";
+        }elseif (!empty($orderItem->bundle_id)) {
             $notifyOptions['[c.title]'] = $orderItem->bundle->title;
         }elseif (!empty($orderItem->certificate_template_id)) {
             $notifyOptions['[c.title]'] = "certificate";
-        }elseif (!empty($orderItem->form_fee)) {
-            $notifyOptions['[c.title]'] = " رسوم حجز مقعد ";
         }elseif (!empty($orderItem->reserve_meeting_id)) {
             $notifyOptions['[c.title]'] = trans('meeting.reservation_appointment');
         } elseif (!empty($orderItem->product_id)) {
