@@ -4,9 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([], function () {
 
-    Route::get('/', function () {
-        return 'test panel';
-    });
+    Route::get('/', 'DashboardController@dashboard');
     Route::group(['prefix' => '/comments'], function () {
         Route::get('/', ['uses' => 'CommentsController@list']);
         Route::post('/', ['uses' => 'CommentsController@store', 'middleware' => 'api.request.type']);
