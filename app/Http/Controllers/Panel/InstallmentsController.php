@@ -356,7 +356,7 @@ class InstallmentsController extends Controller
 
         $calculate = $this->calculatePrice($bundle = null, $installment_payment_id, $user, $discountCoupon = null);
 
-        $order = $this->createOrderAndOrderItems($bundle = null, $installment_payment_id, $calculate, $user, $discountCoupon = null);
+        $order = $this->createOrderAndOrderItems($bundle = $order->bundle ?? null, $installment_payment_id, $calculate, $user, $discountCoupon = null);
 
         if (! empty($order) and $order->total_amount > 0) {
             $razorpay = false;

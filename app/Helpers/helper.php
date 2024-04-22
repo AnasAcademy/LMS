@@ -1666,8 +1666,9 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
+        ($options['[c.title]']=="سند سداد") ?  $notificationTemplate->template="تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
-
+        //dd($notificationTemplate->template);
         $check = \App\Models\Notification::where('user_id', $user_id)
             ->where('group_id', $group_id)
             ->where('title', $title)

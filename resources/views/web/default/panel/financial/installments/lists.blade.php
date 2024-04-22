@@ -218,8 +218,9 @@
                                                         $upfrontPayment = $order->payments->where('type','upfront')->first();
                                                     @endphp
                                                     <tr>
-                                                        <td class="text-left">
-                                                            <span class="d-block font-16 font-weight-500 text-dark-blue">  {{ trans('update.upfront') }}</span>
+                                                        <td class="">
+                                                            <span class="font-16 font-weight-500 text-dark-blue text-left">  {{ trans('update.upfront') }}</span>
+                                                            <span class="text-center"> (للتسجيل)</span>
 
                                                             @if($order->selectedInstallment->upfront_type == 'percent')
                                                                 <span class="ml-5">({{ $order->selectedInstallment->upfront }}%)</span>

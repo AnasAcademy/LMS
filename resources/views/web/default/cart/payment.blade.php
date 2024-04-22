@@ -21,8 +21,12 @@
 
         if ($count > 0) {
             $subTitle .= ($total) . ' ريال سعودي ' . trans('cart.for_items', ['count' => $count]);
-        } else {
-            $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
+        } else if(!empty($type)&&$type==1) {
+            $subTitle .= 'رسوم حجز مقعد : '.($total).' ريال سعودي';
+            // $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
+        }
+        else{
+             $subTitle .= 'الرسوم الدراسية للبرنامج '.($order->orderItems[0]->bundle->title).': '.($total).' ريال سعودي';
         }
         // close subtitle
         $subTitle .= '</span>';
@@ -65,7 +69,7 @@
                         @if (!$isMultiCurrency or !empty($paymentChannel->currencies) and in_array($userCurrency, $paymentChannel->currencies))
                             <div class="col-6 col-lg-4 mb-40 charge-account-radio">
                                 <input type="radio" name="gateway" id="{{ $paymentChannel->title }}"
-                                    data-class="{{ $paymentChannel->class_name }}" value="{{ $paymentChannel->id }}">
+                                    data-class="{{ $paymentChannel->class_name }}" value="{{ $paymentChannel->id }}" checked>
                                 <label for="{{ $paymentChannel->title }}"
                                     class="rounded-sm p-20 p-lg-45 d-flex flex-column align-items-center justify-content-center">
                                     <img src="{{ $paymentChannel->image }}" width="120" height="60" alt="">
@@ -84,7 +88,7 @@
                     @endforeach
                 @endif
 
-                <div class="col-6 col-lg-4 mb-40 charge-account-radio">
+                {{-- <div class="col-6 col-lg-4 mb-40 charge-account-radio">
                     <input type="radio" @if (empty($userCharge) or $total > $userCharge) disabled @endif name="gateway" id="offline"
                         value="credit">
                     <label for="offline"
@@ -98,7 +102,7 @@
 
                         <span class="mt-5">{{ handlePrice($userCharge) }}</span>
                     </label>
-                </div>
+                </div> --}}
             </div>
 
             @if (!empty($invalidChannels))
@@ -133,7 +137,7 @@
             <div class="d-flex align-items-center justify-content-between mt-45">
                 <span class="font-16 font-weight-500 text-gray">{{ trans('financial.total_amount') }}
                     {{ handlePrice($total) }}</span>
-                <button type="button" id="paymentSubmit" disabled
+                <button type="button" id="paymentSubmit" 
                     class="btn btn-sm btn-primary">{{ trans('public.start_payment') }}</button>
             </div>
         </form>

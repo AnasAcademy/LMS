@@ -146,8 +146,8 @@
                                 @else
                                     @include('admin.includes.no-result', [
                                         'file_name' => 'comment.png',
-                                        'title' => trans('update.bundle_webinar_no_result'),
-                                        'hint' => trans('update.bundle_webinar_no_result_hint'),
+                                        'title' => 'لم يتم بدأ المقررات بعد',
+                                        'hint' => '',
                                     ])
                                 @endif
                             </div>
@@ -158,8 +158,8 @@
         @else
             @include(getTemplate() . '.includes.no-result', [
                 'file_name' => 'student.png',
-                'title' => trans('panel.no_result_purchases'),
-                'hint' => trans('panel.no_result_purchases_hint'),
+                'title' => 'لم يتم بدأ المقررات بعد',
+                'hint' => '',
                 'btn' => ['url' => '/classes?sort=newest', 'text' => trans('panel.start_learning')],
             ])
         @endif

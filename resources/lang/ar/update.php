@@ -69,6 +69,7 @@ return [
     'group' => 'مجموعة',
     'group_meeting' => 'اجتماع فريق',
     'address' => 'تبوك',
+    "installment" => "سند سداد",
     'manage_meetings' => 'إدارة الاجتماعات',
     'in_person_meetings' => 'اجتماعات شخصية',
     'in_person_meetings_unavailable' => 'الاجتماعات الشخصية غير متوفرة',

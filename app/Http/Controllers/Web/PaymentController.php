@@ -48,32 +48,32 @@ class PaymentController extends Controller
             $reserveMeeting->update(['locked_at' => time()]);
         }
 
-        if ($gateway === 'credit') {
+        // if ($gateway === 'credit') {
 
-            if ($user->getAccountingCharge() < $order->total_amount) {
-                $order->update(['status' => Order::$fail]);
+        //     if ($user->getAccountingCharge() < $order->total_amount) {
+        //         $order->update(['status' => Order::$fail]);
 
-                session()->put($this->order_session_key, $order->id);
+        //         session()->put($this->order_session_key, $order->id);
 
-                return redirect('/payments/status');
-            }
+        //         return redirect('/payments/status');
+        //     }
 
-            $order->update([
-                'payment_method' => Order::$credit
-            ]);
+        //     $order->update([
+        //         'payment_method' => Order::$credit
+        //     ]);
 
-            $this->setPaymentAccounting($order, 'credit');
+        //     $this->setPaymentAccounting($order, 'credit');
 
-            $order->update([
-                'status' => Order::$paid
-            ]);
+        //     $order->update([
+        //         'status' => Order::$paid
+        //     ]);
 
 
 
-            session()->put($this->order_session_key, $order->id);
+        //     session()->put($this->order_session_key, $order->id);
 
-            return redirect('/payments/status');
-        }
+        //     return redirect('/payments/status');
+        // }
 
 
         $paymentChannel = PaymentChannel::where('id', $gateway)
