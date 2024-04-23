@@ -1588,7 +1588,6 @@ function getThemeFontsSettings()
                       src: url({$settings[$type]['medium']}) format('woff2');
                     }";
             }
-
         }
     }
 
@@ -1649,7 +1648,7 @@ function getDefaultLocale()
 
 function deepClone($object)
 {
-    $cloned = clone($object);
+    $cloned = clone ($object);
     foreach ($cloned as $key => $val) {
         if (is_object($val) || (is_array($val))) {
             $cloned->{$key} = unserialize(serialize($val));
@@ -1666,7 +1665,9 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
-        ($options['[c.title]']=="سند سداد") ?  $notificationTemplate->template="تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+        if (!empty($options['[c.title]'])) {
+            ($options['[c.title]'] == "سند سداد") ?  $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+        }
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
         //dd($notificationTemplate->template);
         $check = \App\Models\Notification::where('user_id', $user_id)
@@ -1693,11 +1694,10 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
                 if (!empty($user) and !empty($user->email)) {
-                $name=$user->student ? $user->student->ar_name : $user->fullname;
+                    $name = $user->student ? $user->student->ar_name : $user->fullname;
                     try {
 
-                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$name]));
-
+                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $name]));
                     } catch (Exception $exception) {
                         // dd($exception)
                     }
@@ -1723,7 +1723,7 @@ function sendNotificationToEmail($template, $options, $data)
 
         if (env('APP_ENV') == 'production') {
             try {
-                \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$data['name']]));
+                \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $data['name']]));
             } catch (Exception $exception) {
                 // dd($exception)
             }
@@ -1911,7 +1911,8 @@ function getTranslateAttributeValue($model, $key, $loca = null)
 
     $isEditModel = ($isAdminUrl and !empty($contentLocale) and is_array($contentLocale) and $contentLocale['table'] == $model->getTable() and $contentLocale['item_id'] == $model->id);
 
-    if ($isAdminUrl and
+    if (
+        $isAdminUrl and
         !empty($contentLocale) and
         is_array($contentLocale) and
         (
@@ -1991,7 +1992,7 @@ function getUserCurrencyItem($user = null, $userCurrency = null)
 {
     $multiCurrency = new MultiCurrency();
     $currencies = $multiCurrency->getCurrencies();
-// dd($userCurrency);
+    // dd($userCurrency);
     if (empty($userCurrency)) {
         $userCurrency = currency($user);
         // dd($userCurrency);
@@ -2168,7 +2169,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
 
         switch ($currencyPosition) {
             case 'left':
-                $price = $currency .' '. $price;
+                $price = $currency . ' ' . $price;
                 break;
 
             case 'left_with_space':
@@ -2176,7 +2177,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
                 break;
 
             case 'right':
-                $price = $price .' '. $currency;
+                $price = $price . ' ' . $currency;
                 break;
 
             case 'right_with_space':
@@ -2184,7 +2185,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
                 break;
 
             default:
-                $price = $currency .' '. $price;
+                $price = $currency . ' ' . $price;
         }
     }
 
