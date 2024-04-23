@@ -22,6 +22,27 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 use App\Http\Controllers\Api\UploadFileManager;
+use App\Mixins\Installment\InstallmentPlans;
+
+use App\Mixins\RegistrationPackage\UserPackage;
+use App\Models\DeleteAccountRequest;
+use App\Models\Meeting;
+use App\Models\Region;
+use App\Models\ReserveMeeting;
+use App\Models\Role;
+use App\Models\UserBank;
+use App\Models\UserOccupation;
+use App\Models\UserSelectedBank;
+use App\Models\UserSelectedBankSpecification;
+use App\Student;
+use App\StudentRequirement;
+use App\BundleStudent;
+use App\Models\Accounting;
+use App\Models\OfflineBank;
+use App\Models\OfflinePayment;
+use App\Models\PaymentChannel;
+use App\Http\Controllers\Web\traits\InstallmentsTrait;
+use App\Models\Bundle;
 
 
 class UsersController extends Controller
@@ -31,13 +52,14 @@ class UsersController extends Controller
     public function setting()
     {
         $user = apiAuth();
-        return apiResponse2(1, 'retrieved', trans('api.public.retrieved'),
+        return apiResponse2(
+            1,
+            'retrieved',
+            trans('api.public.retrieved'),
             [
                 'user' => $user->details
             ]
         );
-
-
     }
 
     public function updateImages(Request $request)
@@ -58,7 +80,6 @@ class UsersController extends Controller
             $user->update([
                 'identity_scan' => $storage->storage_path,
             ]);
-
         }
 
         if ($request->file('certificate')) {
@@ -68,13 +89,9 @@ class UsersController extends Controller
             $user->update([
                 'certificate' => $storage->storage_path,
             ]);
-
-
         }
 
         return apiResponse2(1, 'updated', trans('api.public.updated'));
-
-
     }
 
 
@@ -100,7 +117,7 @@ class UsersController extends Controller
             'timezone' => ['string', Rule::in(getListOfTimezones())],
             'public_message' => 'boolean',
             'newsletter' => 'boolean',
-           // 'password' => 'required|string|min:6',
+            // 'password' => 'required|string|min:6',
 
             'account_type' => Rule::in(getOfflineBanksTitle()),
             'iban' => 'required_with:account_type',
@@ -156,7 +173,6 @@ class UsersController extends Controller
                         'created_at' => time()
                     ]
                 );
-
             } else {
                 UserZoomApi::where('user_id', $user->id)->delete();
             }
@@ -222,11 +238,8 @@ class UsersController extends Controller
             return apiResponse2(1, 'updated', trans('api.public.updated'), [
                 'token' => $token
             ]);
-
         }
         return apiResponse2(0, 'incorrect', trans('api.public.profile_setting.incorrect'));
-
-
     }
 
     private function updateMeta($updateUserMeta)
@@ -285,23 +298,17 @@ class UsersController extends Controller
                 ]);
 
                 $followStatus = true;
-
             }
             return apiResponse2(1, 'followed', trans('api.user.followed'));
-
-
         }
 
         if (!empty($follow)) {
 
             $follow->delete();
             return apiResponse2(1, 'unfollowed', trans('api.user.unfollowed'));
-
         }
 
         return apiResponse2(0, 'not_followed', trans('api.user.not_followed'));
-
-
     }
 
     public function createImage($user, $img)
@@ -323,5 +330,140 @@ class UsersController extends Controller
         //  return Storage::disk('public')->url($folderPath . $file);
     }
 
+    // requirement index
+    public function requirementIndex($step = 1)
+    {
 
+
+        $user = auth("api")->user();
+
+        $student = $user->Student;
+
+        if (!$student) {
+            return apiResponse2(0, 'not_student', "you need to apply to diploma first");
+        }
+
+        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
+
+        /* Installments */
+        $bundleInstallments = [];
+
+        foreach ($studentBundles as $studentBundle) {
+            $hasBought = $studentBundle->bundle->checkUserHasBought($user);
+            $canSale = ($studentBundle->bundle->canSale() && !$hasBought);
+
+            // Check if the bundle meets the conditions
+            if ($canSale && !empty($studentBundle->bundle->price) && $studentBundle->bundle->price > 0 && getInstallmentsSettings('status') && (empty($user) || $user->enable_installments)) {
+                $installmentPlans = new InstallmentPlans($user);
+                $installments = $installmentPlans->getPlans('bundles', $studentBundle->bundle->id, $studentBundle->bundle->type, $studentBundle->bundle->category_id, $studentBundle->bundle->teacher_id);
+
+                $bundleInstallments[$studentBundle->id] = [
+                    'bundle' => $studentBundle,
+                    'installments' => $installments,
+                ];
+            } else {
+
+                $bundleInstallments[$studentBundle->id] = [
+                    'bundle' => $studentBundle,
+                    'installments' => null,
+                ];
+            }
+        }
+        return apiResponse2(1, 'requirements_details', "all data retireved successfully", ['studentBundles' => $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+
+        // return view(getTemplate() . '.panel.requirements.index', ['studentBundles' => $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+    }
+
+     // create requirement function
+     public function createRequirement( $studentBundleId)
+     {
+         $user = auth("api")->user();
+
+         $student = $user->Student;
+
+         $studentBundle = BundleStudent::find($studentBundleId);
+
+         if (!$student || !$studentBundle ) {
+            return apiResponse2(0, 'not_student', "you need to apply to diploma first");
+         }
+
+         $data = [
+             "user_code" => $user->user_code,
+             "program" => $studentBundle->bundle->category,
+             'currentStep' => 1,
+             'requirementUploaded' => false,
+             'requirementStatus' => StudentRequirement::pending,
+             'bundle' => $studentBundle->bundle,
+             'studentBundleId' =>$studentBundleId
+         ];
+
+        $studentRequirments = $studentBundle->studentRequirement;
+
+         if ($studentRequirments) {
+             if($studentRequirments->status !="rejected"){
+                 return redirect('/panel/requirements');
+             }
+             $data["requirementUploaded"] = true;
+             $data["requirementStatus"] = $studentRequirments->status;
+         }
+
+         return apiResponse2(0, 'create_requirement', "retieve what you need to upload requirements", $data);
+     }
+
+
+    // store requirements
+    public function storeRequirement(Request $request, $studentBundleId)
+    {
+        $rules =[
+            'user_code' => 'required|string',
+            'program' => 'required|string',
+            'specialization' => 'required|string',
+            'identity_type' => 'required|string',
+            'identity_attachment' => 'required|file|mimes:jpeg,jpg,png,pdf',
+            'admission_attachment' => 'required|file|mimes:pdf|max:20480',
+        ];
+        validateParam($request->all(), $rules);
+        $user = auth("api")->user();
+
+        $student = $user->Student;
+
+        $studentBundle = BundleStudent::find($studentBundleId);
+
+        if (!$student || !$studentBundle) {
+            return apiResponse2(0, 'not_student', "you need to apply to diploma first");
+        }
+
+
+        $studentRequirments = $studentBundle->studentRequirement;
+
+
+        $identity_attachment = $request->file('identity_attachment');
+        $identity_attachmentName =  $user->user_code . '_' . $request['identity_type'] . '.' . $identity_attachment->getClientOriginalExtension();
+        $identity_attachmentPath = $identity_attachment->storeAs('studentRequirements', $identity_attachmentName);
+
+        $admission_attachment = $request->file('admission_attachment');
+        $admission_attachmentName =  $user->user_code . '_addmission.' . $admission_attachment->getClientOriginalExtension();
+        $admission_attachmentPath = $admission_attachment->storeAs('studentRequirements', $admission_attachmentName);
+
+
+
+        $data = [
+            'bundle_student_id' => $studentBundle->id,
+            'identity_type' => $request['identity_type'],
+            'identity_attachment' => $identity_attachmentPath,
+            'admission_attachment' => $admission_attachmentPath,
+        ];
+
+        if ($studentRequirments) {
+            $data['status'] = StudentRequirement::pending;
+            $studentRequirments->update($data);
+        } else {
+            StudentRequirement::create($data);
+        }
+        return apiResponse2(1, 'success', "requirements uploaded successfully, wait to be reviewed");
+
+        //  return redirect('/panel/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
+    }
+
+    
 }

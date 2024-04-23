@@ -1588,7 +1588,6 @@ function getThemeFontsSettings()
                       src: url({$settings[$type]['medium']}) format('woff2');
                     }";
             }
-
         }
     }
 
@@ -1668,6 +1667,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
         if (!empty($options['[c.title]'])) {
             ($options['[c.title]'] == "سند سداد") ? $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+
         }
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
         //dd($notificationTemplate->template);
