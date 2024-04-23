@@ -96,6 +96,7 @@
                                                 <th>اسم المقرر</th>
                                                 <th class="text-left">{{ trans('public.instructor') }}</th>
                                                 <th>{{ trans('public.start_date') }}</th>
+                                                <th>المهام</th>
                                                 <th>الإجراءات</th>
                                             </tr>
                                             @php
@@ -121,12 +122,15 @@
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
                                                         </td>
                                                         <td>
+                                                            <button type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;" disabled>لا يوجد مهام بعد</button>
+                                                        </td>
+                                                        <td>
                                                             @if($bundleWebinar->webinar->duration !=0)
                                                                 @if($bundleWebinar->webinar->video_demo)
                                                                     <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:190px;height:50px"
                                                                     href="{{ $bundleWebinar->webinar->video_demo }}">اضغط هنا للذهاب للمحاضرا</a>
                                                                 @else
-                                                                    <button class="btn btn-primary" style="width:190px;height:50px" disabled>اضغط هنا للذهاب للمحاضرا</button>
+                                                                    <button class="btn btn-primary" style="width:190px;height:50px; background-color: #808080;" disabled>اضغط هنا للذهاب للمحاضرا</button>
                                                                 @endif
 
                                                                 <a class="btn btn-primary"

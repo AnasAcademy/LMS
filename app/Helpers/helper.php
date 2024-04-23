@@ -1106,7 +1106,7 @@ function getCountriesMobileCode()
 // Truncate a string only at a whitespace
 function truncate($text, $length, $withTail = true)
 {
-    $length = abs((int)$length);
+    $length = abs((int) $length);
     if (strlen($text) > $length) {
         $text = preg_replace("/^(.{1,$length})(\s.*|$)/s", ($withTail ? '\\1 ...' : '\\1'), $text);
     }
@@ -1629,7 +1629,7 @@ function getDefaultLocale()
 
         $value = [];
 
-        if (!empty($setting) and !empty($setting->value) and isset($setting->value)) {
+        if (!empty ($setting) and !empty ($setting->value) and isset ($setting->value)) {
             $value = json_decode($setting->value, true);
         }
 
@@ -1649,7 +1649,7 @@ function getDefaultLocale()
 
 function deepClone($object)
 {
-    $cloned = clone($object);
+    $cloned = clone ($object);
     foreach ($cloned as $key => $val) {
         if (is_object($val) || (is_array($val))) {
             $cloned->{$key} = unserialize(serialize($val));
@@ -1666,7 +1666,9 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
-        ($options['[c.title]']=="سند سداد") ?  $notificationTemplate->template="تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+        if (!empty($options['[c.title]'])) {
+            ($options['[c.title]'] == "سند سداد") ? $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+        }
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
         //dd($notificationTemplate->template);
         $check = \App\Models\Notification::where('user_id', $user_id)
@@ -1693,10 +1695,10 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
                 if (!empty($user) and !empty($user->email)) {
-                $name=$user->student ? $user->student->ar_name : $user->fullname;
+                    $name = $user->student ? $user->student->ar_name : $user->fullname;
                     try {
 
-                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$name]));
+                        Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $name]));
 
                     } catch (Exception $exception) {
                         // dd($exception)
@@ -1723,7 +1725,7 @@ function sendNotificationToEmail($template, $options, $data)
 
         if (env('APP_ENV') == 'production') {
             try {
-                \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message,'name'=>$data['name']]));
+                \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $data['name']]));
             } catch (Exception $exception) {
                 // dd($exception)
             }
@@ -1813,7 +1815,7 @@ function random_str($length, $includeNumeric = true, $includeChar = true)
         $str .= $keyspace[rand(0, $max)];
     }
 
-    return ($includeNumeric and !$includeChar) ? (int)$str : $str;
+    return ($includeNumeric and !$includeChar) ? (int) $str : $str;
 }
 
 function checkCourseForSale($course, $user)
@@ -1911,7 +1913,8 @@ function getTranslateAttributeValue($model, $key, $loca = null)
 
     $isEditModel = ($isAdminUrl and !empty($contentLocale) and is_array($contentLocale) and $contentLocale['table'] == $model->getTable() and $contentLocale['item_id'] == $model->id);
 
-    if ($isAdminUrl and
+    if (
+        $isAdminUrl and
         !empty($contentLocale) and
         is_array($contentLocale) and
         (
@@ -1980,9 +1983,34 @@ function removeContentLocale()
 function getAgoraResolutions(): array
 {
     return [
-        '160_120', '120_120', '320_180', '180_180', '240_180', '320_240', '240_240', '424_240', '640_360', '360_360',
-        '640_360', '360_360', '480_360', '480_360', '640_480', '480_480', '640_480', '480_480', '848_480', '848_480',
-        '640_480', '1280_720', '1280_720', '960_720', '960_720', '1920_1080', '1920_1080', '1920_1080'
+        '160_120',
+        '120_120',
+        '320_180',
+        '180_180',
+        '240_180',
+        '320_240',
+        '240_240',
+        '424_240',
+        '640_360',
+        '360_360',
+        '640_360',
+        '360_360',
+        '480_360',
+        '480_360',
+        '640_480',
+        '480_480',
+        '640_480',
+        '480_480',
+        '848_480',
+        '848_480',
+        '640_480',
+        '1280_720',
+        '1280_720',
+        '960_720',
+        '960_720',
+        '1920_1080',
+        '1920_1080',
+        '1920_1080'
     ];
 }
 
@@ -1991,7 +2019,7 @@ function getUserCurrencyItem($user = null, $userCurrency = null)
 {
     $multiCurrency = new MultiCurrency();
     $currencies = $multiCurrency->getCurrencies();
-// dd($userCurrency);
+    // dd($userCurrency);
     if (empty($userCurrency)) {
         $userCurrency = currency($user);
         // dd($userCurrency);
@@ -2168,7 +2196,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
 
         switch ($currencyPosition) {
             case 'left':
-                $price = $currency .' '. $price;
+                $price = $currency . ' ' . $price;
                 break;
 
             case 'left_with_space':
@@ -2176,7 +2204,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
                 break;
 
             case 'right':
-                $price = $price .' '. $currency;
+                $price = $price . ' ' . $currency;
                 break;
 
             case 'right_with_space':
@@ -2184,7 +2212,7 @@ function addCurrencyToPrice($price, $userCurrencyItem = null)
                 break;
 
             default:
-                $price = $currency .' '. $price;
+                $price = $currency . ' ' . $price;
         }
     }
 

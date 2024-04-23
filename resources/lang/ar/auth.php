@@ -12,7 +12,7 @@ return [
     'throttle' => 'الكثير من محاولات تسجيل الدخول الرجاء المحاولة مرة اخري بعد :seconds ثواني.',
     'admin_panel' => 'لوحة تحكم الادمن',
     'welcome' => 'اهلا بك في',
-    'admin_tagline' => 'الرجاء تسجيل الدخول للوحة التحكم للتحكم في كل شئ!',  
+    'admin_tagline' => 'الرجاء تسجيل الدخول للوحة التحكم للتحكم في كل شئ!',
     'email' => 'الايميل',
     'mobile' => 'رقم الموبايل',
     'country' => 'الدولة',
@@ -73,7 +73,7 @@ return [
     'fail_login_by_facebook' => 'فشل تسجيل الدخول عن طريق فيسبوك!',
 
     'email_confirmation' => 'التحقق من الايميل',
-    'email_confirmation_template_body' => 'للتحقق من الايميل :email., اكتب الكود التالي علي :site website.',
+    'email_confirmation_template_body' => 'للتحقق من الايميل :email., اكتب الكود التالي :',
     'in' => 'الي',
 
     'verification' => 'تحقق',

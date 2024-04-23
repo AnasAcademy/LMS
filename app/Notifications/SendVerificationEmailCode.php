@@ -45,7 +45,7 @@ class SendVerificationEmailCode extends Notification
         $subject = trans('auth.email_confirmation');
         $name=$notifiable->student ? $notifiable->student->ar_name : $notifiable->full_name;        ;
         $confirm = [
-            'title' => $subject . ' ' . trans('auth.in') . ' ' . $generalSettings['site_name'],
+            'title' => $subject,
             'message' => trans('auth.email_confirmation_template_body', ['email' => $notifiable->email, 'site' => $generalSettings['site_name']]),
             'code' => $notifiable->code,
             'name'=> $name

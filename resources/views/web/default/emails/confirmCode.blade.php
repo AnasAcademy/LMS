@@ -25,7 +25,7 @@
             <p style="font-family: cairo, sans-serif; direction: rtl !important; text-align: right;">
                 {!! nl2br($confirm['message']) !!}
             </p>
-            <p class="code">{{ $confirm['code'] }}</p>
+            <p class="code" style="text-align: center; font-size: 14px; font-weight: bold; color: #333;">{{ $confirm['code'] }}</p>
         </div>
     </td>
 @endsection
