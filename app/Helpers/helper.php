@@ -1106,7 +1106,7 @@ function getCountriesMobileCode()
 // Truncate a string only at a whitespace
 function truncate($text, $length, $withTail = true)
 {
-    $length = abs((int)$length);
+    $length = abs((int) $length);
     if (strlen($text) > $length) {
         $text = preg_replace("/^(.{1,$length})(\s.*|$)/s", ($withTail ? '\\1 ...' : '\\1'), $text);
     }
@@ -1628,7 +1628,7 @@ function getDefaultLocale()
 
         $value = [];
 
-        if (!empty($setting) and !empty($setting->value) and isset($setting->value)) {
+        if (!empty ($setting) and !empty ($setting->value) and isset ($setting->value)) {
             $value = json_decode($setting->value, true);
         }
 
@@ -1666,7 +1666,8 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
         if (!empty($options['[c.title]'])) {
-            ($options['[c.title]'] == "سند سداد") ?  $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+            ($options['[c.title]'] == "سند سداد") ? $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+
         }
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
         //dd($notificationTemplate->template);
@@ -1698,6 +1699,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                     try {
 
                         Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $name]));
+
                     } catch (Exception $exception) {
                         // dd($exception)
                     }
@@ -1813,7 +1815,7 @@ function random_str($length, $includeNumeric = true, $includeChar = true)
         $str .= $keyspace[rand(0, $max)];
     }
 
-    return ($includeNumeric and !$includeChar) ? (int)$str : $str;
+    return ($includeNumeric and !$includeChar) ? (int) $str : $str;
 }
 
 function checkCourseForSale($course, $user)
@@ -1981,9 +1983,34 @@ function removeContentLocale()
 function getAgoraResolutions(): array
 {
     return [
-        '160_120', '120_120', '320_180', '180_180', '240_180', '320_240', '240_240', '424_240', '640_360', '360_360',
-        '640_360', '360_360', '480_360', '480_360', '640_480', '480_480', '640_480', '480_480', '848_480', '848_480',
-        '640_480', '1280_720', '1280_720', '960_720', '960_720', '1920_1080', '1920_1080', '1920_1080'
+        '160_120',
+        '120_120',
+        '320_180',
+        '180_180',
+        '240_180',
+        '320_240',
+        '240_240',
+        '424_240',
+        '640_360',
+        '360_360',
+        '640_360',
+        '360_360',
+        '480_360',
+        '480_360',
+        '640_480',
+        '480_480',
+        '640_480',
+        '480_480',
+        '848_480',
+        '848_480',
+        '640_480',
+        '1280_720',
+        '1280_720',
+        '960_720',
+        '960_720',
+        '1920_1080',
+        '1920_1080',
+        '1920_1080'
     ];
 }
 
