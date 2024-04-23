@@ -122,7 +122,12 @@
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
                                                         </td>
                                                         <td>
-                                                            <button type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;" disabled>لا يوجد مهام بعد</button>
+                                                            @php
+                                                                // dd($bundleWebinar->webinar->assignments);
+                                                            @endphp
+                                                            @if(!empty($bundleWebinar->webinar->assignments))
+                                                                <button type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;" disabled>لا يوجد مهام بعد</button>
+                                                            @endif
                                                         </td>
                                                         <td>
                                                             @if($bundleWebinar->webinar->duration !=0)
