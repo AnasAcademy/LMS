@@ -12,7 +12,6 @@ Route::group([], function () {
         Route::put('/{id}', ['uses' => 'CommentsController@update', 'middleware' => 'api.request.type']);
         Route::post('/{id}/reply', ['uses' => 'CommentsController@reply', 'middleware' => 'api.request.type']);
         Route::post('/{id}/report', ['uses' => 'CommentsController@report', 'middleware' => 'api.request.type']);
-
     });
     Route::get('/quick-info', ['uses' => 'SummaryController@list']);
     Route::post('/webinars/{id}/free', ['uses' => 'WebinarsController@free']);
@@ -22,7 +21,6 @@ Route::group([], function () {
         Route::post('/web_pay', ['uses' => 'SubscribesController@webPayGenerator']);
         Route::post('/apply', ['uses' => 'SubscribesController@apply']);
         Route::post('/general_apply', ['uses' => 'SubscribesController@generalApply']);
-
     });
     Route::get('/webinars/purchases', ['uses' => 'WebinarsController@indexPurchases']);
     Route::get('/webinars/organization', ['uses' => 'WebinarsController@indexOrganizations']);
@@ -73,7 +71,6 @@ Route::group([], function () {
         Route::get('requests', ['uses' => 'ReserveMeetingsController@requests']);
         Route::get('/', ['uses' => 'ReserveMeetingsController@index']);
         Route::get('/{id}', ['uses' => 'ReserveMeetingsController@show']);
-
     });
     Route::group(['prefix' => '/rewards'], function () {
 
@@ -82,7 +79,6 @@ Route::group([], function () {
         Route::post('/webinar/{id}/apply', ['uses' => 'RewardsController@buyWithPoint']);
         //    Route::get('/{slug}/points/apply', 'WebinarController@buyWithPoint');
         Route::get('/reward-courses', ['uses' => 'RewardsController@courses']);
-
     });
     Route::group(['prefix' => '/registration-packages', 'middleware' => ['api.level-access:teacher']], function () {
 
@@ -101,14 +97,14 @@ Route::group([], function () {
         //    Route::get('results/{quizResultId}/download', 'CertificatesController@download');
         Route::get('results/{quizResultId}/show', 'CertificatesController@makeCertificate');
 
-        Route::post('results/{quizResultId}/review',
-            ['uses' => 'QuizzesResultController@updateResult', 'middleware' => ['api.level-access:teacher']]);
+        Route::post(
+            'results/{quizResultId}/review',
+            ['uses' => 'QuizzesResultController@updateResult', 'middleware' => ['api.level-access:teacher']]
+        );
 
 
         Route::get('/{id}/start', ['uses' => 'QuizzesResultController@start']);
         Route::post('{id}/store-result', ['uses' => 'QuizzesResultController@quizzesStoreResult']);
-
-
     });
     Route::get('certificates/achievements', ['uses' => 'CertificatesController@achievements']);
     Route::get('certificates/created', ['uses' => 'CertificatesController@created', 'middleware' => ['api.level-access:teacher']]);
@@ -123,8 +119,6 @@ Route::group([], function () {
         Route::post('store', ['uses' => 'CartController@store']);
         Route::post('/', ['uses' => 'AddCartController@store']);
         Route::post('web_checkout', ['uses' => 'CartController@webCheckoutGenerator']);
-
-
     });
     Route::group(['prefix' => 'financial'], function () {
 
@@ -140,16 +134,13 @@ Route::group([], function () {
         Route::group(['prefix' => 'payout'], function () {
             Route::get('/', ['uses' => 'PayoutsController@index']);
             Route::post('/', ['uses' => 'PayoutsController@requestPayout']);
-
         });
         Route::group(['prefix' => 'offline-payments'], function () {
             Route::get('/', ['uses' => 'OfflinePayments@index']);
             Route::put('{id}', ['uses' => 'OfflinePayments@update']);
             Route::delete('{id}/', ['uses' => 'OfflinePayments@destroy']);
             Route::post('/', ['uses' => 'OfflinePayments@store']);
-
         });
-
     });
     Route::group(['prefix' => 'payments'], function () {
         Route::post('/request', 'PaymentsController@paymentRequest');
@@ -171,11 +162,9 @@ Route::group([], function () {
             Route::get('/products/{id}', ['uses' => 'ProductController@show']);
             Route::get('/sales', ['uses' => 'ProductOrderController@index']);
             Route::get('/sales/customers', ['uses' => 'ProductOrderController@getBuyers']);
-
         });
         Route::get('/purchases', 'ProductOrderController@getPurchases');
         Route::get('/purchases/comments', 'ProductController@purchasedComment');
-
     });
 
     Route::group(['prefix' => 'my_assignments'], function () {
@@ -207,7 +196,6 @@ Route::group([], function () {
 
         Route::post('{id}/buyWithPoint', ['uses' => 'BundleController@buyWithPoint']);
         Route::post('{id}/free', ['uses' => 'BundleController@free']);
-
     });
     /***** Reviews  *****/
     Route::group(['prefix' => '/reviews3'], function () {
@@ -247,5 +235,16 @@ Route::group([], function () {
     Route::get('/text-lessons/{lesson}/navigation', ['uses' => 'WebinarTextLessonController@index']);
     Route::get('/assignments/{assignment}', ['uses' => 'WebinarAssignmentController@show'])->name('assignment.show');
     Route::get('/quizzes/{quiz}', ['uses' => 'QuizzesController@show'])->name('quiz.show');
+
+    // requirements Routes
+    Route::get('/requirements', 'UsersController@requirementIndex');
+
+    Route::get('bundles/{studentBundleId}/requirements', 'UsersController@createRequirement');
+    Route::post('bundles/{studentBundleId}/requirements', 'UsersController@storeRequirement');
+
+
+    // apply to bundle or diploma
+    Route::get('/apply', 'ApplyController@index');
+    Route::post('/apply', 'ApplyController@checkout');
 
 });
