@@ -247,4 +247,8 @@ Route::group([], function () {
     Route::get('/apply', 'ApplyController@index');
     Route::post('/apply', 'ApplyController@checkout');
 
+
+    // webinars
+    Route::get('/webinars/purchases', 'WebinarsController@purchases');
+
 });
