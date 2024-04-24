@@ -68,7 +68,7 @@
                                                 <h4 class="font-16 font-weight-bold text-dark-blue">دفع الرسوم كاملة</h4>
 
                                                 <div class="">
-                                                    <p class="text-gray font-14 text-ellipsis">كاملة شاملة الضريبة
+                                                    <p class="text-gray font-14 text-ellipsis">السعر شامل الضريبه
                                                     </p>
                                                 </div>
                                             </div>
@@ -89,7 +89,7 @@
                                                                     @endphp
                                                                     @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
                                                                         <p style="text-decoration: line-through;">
-                                                                            {{ explode(".", handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - 0.2324)))['price'])[0] }}
+                                                                            {{   handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - 0.25)))['price'] }}
                                                                         </p>
                                                                         <span id="realPrice"
                                                                             data-value="{{ $bundleData['bundle']->bundle->price }}"
@@ -98,7 +98,7 @@
                                                                             {{ $realPrice['price'] }}
                                                                         </span>
                                                                         <p class="font-12 font-weight-bold text-center text-danger mt-15">
-                                                                            خصم 23% عند دفع كامل الرسوم مرة واحده
+                                                                            خصم 25% عند دفع كامل الرسوم مرة واحده
                                                                         </p>
                                                                     @endif
 
