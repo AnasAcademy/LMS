@@ -60,7 +60,13 @@
                 @endphp
 
                 <div class="d-flex align-items-center justify-content-center flex-column order-1 mb-20">
+                    <p style="text-decoration: line-through;">
+                        {{ handlePrice(($totalPayments / (1 - 0.2511)))}}
+                    </p>
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
+                    <p class="font-12 font-weight-bold text-center text-danger mt-15">
+                        خصم 25% عند دفع كامل الرسوم مرة واحده
+                    </p>
                     {{-- <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
                             ({{ trans('update.percent_interest',['percent' => $installmentTotalInterest]) }})
                         @endif</span> --}}

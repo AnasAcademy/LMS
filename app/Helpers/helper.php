@@ -2138,6 +2138,8 @@ function handlePrice($price, $showCurrency = true, $format = true, $coursePagePr
     } elseif ($format) {
         $price = handlePriceFormat($price, $decimal, $decimalSeparator, $thousandsSeparator);
     }
+    //convert price to int value
+    $price = (int)str_replace([$thousandsSeparator, $decimalSeparator], ['', '.'], $price);
 
     if ($coursePagePrice) {
         return [
