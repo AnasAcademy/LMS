@@ -11,6 +11,7 @@ use App\Models\WebinarChapter;
 use App\Models\WebinarPartnerTeacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Gift;
 
 class WebinarsController extends Controller
 {
@@ -204,10 +205,10 @@ class WebinarsController extends Controller
 
     public function purchases()
     {
-        $user = apiAuth();
+        $user = auth("api")->user();
         $webinarIds = $user->getPurchasedCoursesIds();
 
-        $webinars = Sale::where('sales.buyer_id', $user->id)
+        $webinars = Sale::where('sales.buyer_id', $user->id)->where("type", "bundle")
             ->whereNull('sales.refund_at')
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
@@ -306,7 +307,7 @@ class WebinarsController extends Controller
     }
 
 
-    public function purchases(Request $request)
+    public function purchases2(Request $request)
     {
         $user = auth("api")->user();
 

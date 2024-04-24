@@ -400,9 +400,7 @@ class UsersController extends Controller
         $studentRequirments = $studentBundle->studentRequirement;
 
          if ($studentRequirments) {
-             if($studentRequirments->status !="rejected"){
-                 return redirect('/panel/requirements');
-             }
+             
              $data["requirementUploaded"] = true;
              $data["requirementStatus"] = $studentRequirments->status;
          }
@@ -430,7 +428,7 @@ class UsersController extends Controller
         $studentBundle = BundleStudent::find($studentBundleId);
 
         if (!$student || !$studentBundle) {
-            return apiResponse2(0, 'not_student', "you need to apply to diploma first");
+            return apiResponse2(0, 'not_applied', "you didn't apply to this diploma");
         }
 
 
@@ -455,6 +453,9 @@ class UsersController extends Controller
         ];
 
         if ($studentRequirments) {
+            if($studentRequirments->status != StudentRequirement::rejected){
+                return apiResponse2(1, 'already_upload', "You upload requirements before successfully, go to requirements section to view its status");
+            }
             $data['status'] = StudentRequirement::pending;
             $studentRequirments->update($data);
         } else {
@@ -465,5 +466,5 @@ class UsersController extends Controller
         //  return redirect('/panel/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
     }
 
-    
+
 }
