@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\InstallmentOrder;
 
 Route::group([], function () {
 
@@ -249,6 +250,17 @@ Route::group([], function () {
 
 
     // webinars
-    Route::get('/webinars/purchases', 'WebinarsController@purchases');
+    Route::get('/webinars/purchases/v2', 'WebinarsController@purchases2');
+
+    // installments
+    Route::group(['prefix' => 'financial/installments'], function () {
+        // Route::get('/', 'InstallmentsController@index');
+        Route::get('/',"InstallmentsController@index");
+
+        Route::get('/{id}/details', 'InstallmentsController@show');
+        Route::get('/{id}/cancel', 'InstallmentsController@cancelVerification');
+        Route::get('/{id}/pay_upcoming_part', 'InstallmentsController@payUpcomingPart');
+        Route::get('/{id}/steps/{step_id}/pay', 'InstallmentsController@payStep');
+    });
 
 });
