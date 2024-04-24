@@ -87,7 +87,7 @@ class RegisterController extends Controller
                 // return apiResponse2(0, 'go_step_2', trans('api.auth.go_step_2'), [
                 //     'user_id' => $userCase->id
                 // ]);
-                return apiResponse2(0, 'go_step_2', "Go to Step 2 to Varify your account through sending the varification code", [
+                return apiResponse2(0, 'go_step_2', "you are already registed, Go to Step 2 to Varify your account through sending the varification code", [
                     'user_id' => $userCase->id
                 ]);
             }
