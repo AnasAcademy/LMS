@@ -89,7 +89,7 @@
                                                                     @endphp
                                                                     @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
                                                                         <p style="text-decoration: line-through;">
-                                                                            {{   handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - 0.25)))['price'] }}
+                                                                            {{   handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - $bundleData['bundle']->bundle->discount_rate)))['price'] }}
                                                                         </p>
                                                                         <span id="realPrice"
                                                                             data-value="{{ $bundleData['bundle']->bundle->price }}"
@@ -98,7 +98,8 @@
                                                                             {{ $realPrice['price'] }}
                                                                         </span>
                                                                         <p class="font-12 font-weight-bold text-center text-danger mt-15">
-                                                                            خصم 25% عند دفع كامل الرسوم مرة واحده
+                                                                            خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
+                                                                            % عند دفع كامل الرسوم مرة واحده
                                                                         </p>
                                                                     @endif
 
