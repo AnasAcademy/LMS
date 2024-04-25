@@ -9,6 +9,9 @@
     .installment-card {
         background-color: #FBFBFB !important;
     }
+    .discount{
+        min-height: 17px;
+    }
 </style>
 
 @section('content')
@@ -30,7 +33,7 @@
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}</h2>
                     @if (empty($bundleData['bundle']->studentRequirement))
                         <div class="w-100 text-center">
-                            <p class="alert alert-info text-center">
+                            <p class="alert alert-info text-center mx-30">
                                 لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
                             </p>
                             <a href="/panel/bundles/{{ $bundleData['bundle']->id }}/requirements"
@@ -39,7 +42,7 @@
                     @else
                         @if ($bundleData['bundle']->studentRequirement->status == 'pending')
                             <div class="w-100 text-center">
-                                <p class="alert alert-info text-center">
+                                <p class="alert alert-info text-center mx-30">
                                     لقد تم بالفعل رفع متطلبات القبول يرجي الانتظار حتي يتم مراجعتها
                                 </p>
                             </div>
@@ -94,10 +97,10 @@
                                                                         <span id="realPrice"
                                                                             data-value="{{ $bundleData['bundle']->bundle->price }}"
                                                                             data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
-                                                                            class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-30 text-primary @endif">
+                                                                            class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-36 text-primary @endif">
                                                                             {{ $realPrice['price'] }}
                                                                         </span>
-                                                                        <p class="font-12 font-weight-bold text-center text-danger mt-15">
+                                                                        <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
                                                                             خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
                                                                             % عند دفع كامل الرسوم مرة واحده
                                                                         </p>
@@ -223,7 +226,7 @@
                                 @endif
                             </section>
                         @elseif ($bundleData['bundle']->studentRequirement->status == 'rejected')
-                            <div class="w-100 text-center">
+                            <div class="w-100 text-center mx-30">
                                 <p class="alert alert-danger text-center text-white">
                                     لقد تم رفض الملفات التي قمت برفعها يرجي مراجعة الميل لمشاهدة السبب ثم ارفع الملفات مرة
                                     اخري
@@ -238,7 +241,7 @@
             @endforeach
         @else
             <section class="w-100 text-center">
-                <p class="alert alert-info text-center">
+                <p class="alert alert-info text-center mx-30">
                     لم يتم التسجيل في اي دبلومه بعد
                 </p>
                 <a href="/apply" class="btn bg-secondary text-white p-5 mt-20">للتسجيل اضغط علي هذا اللينك</a>
