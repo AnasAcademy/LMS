@@ -4,7 +4,7 @@
 <style>
 
 </style>
-<div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15">
+<div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15 pt-30">
     <div class="user-info d-flex align-items-center justify-content-between">
         <div class="user-avatar bg-gray200">
             {{-- <img src="{{ $authUser->getAvatar(100) }}" class="img-cover" alt="{{ $authUser->full_name }}"> --}}
