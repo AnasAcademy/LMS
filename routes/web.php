@@ -82,7 +82,18 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 
     // application
     Route::group(['middleware' => 'web.auth'], function () {
-        Route::get('/', 'ApplyController@index');
+        // Route::get('/', 'ApplyController@index');
+
+        Route::get('/', function(){
+            if (auth()->check() && auth()->user()->student) {
+                return app()->call('App\Http\Controllers\Panel\DashboardController@dashboard');
+            } else {
+                return app()->call('App\Http\Controllers\Web\ApplyController@index');
+            }
+        });
+
+
+
         Route::get('/apply', 'ApplyController@index');
         Route::post('/apply', 'ApplyController@checkout')->name('payFee');
     });

@@ -155,12 +155,40 @@
 
                             {{-- specialization --}}
                             <div class="form-group col-12 col-sm-6">
-                                <label class="hidden-element" id="hiddenLabel1" for="name">
+                                <label class="hidden-element" id="hiddenLabel1" for="bundle_id">
                                     {{ trans('application_form.specialization') }}*
                                 </label>
                                 <input type="text" id="bundle_id" name="bundle_id" required
                                     class="hidden-element form-control"
                                     value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
+                            </div>
+
+                            {{-- certificate --}}
+                            <div class="form-group col-12  d-none" id="certificate_section" >
+                                <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
+
+                                <span class="text-danger font-12 font-weight-bold">سوف تحصل علي خصم 23% في حاله حجزك لها الان</span>
+
+                                <div class="row mr-5 mt-5">
+                                    {{-- want certificate --}}
+                                    <div class="col-sm-4 col">
+                                        <label for="want_certificate">
+                                            <input type="radio" id="want_certificate" name="certificate" value="1"
+                                                required
+                                                {{ old('certificate', $student->certificate ?? null) ==1 ? 'checked' : '' }}>
+                                           نعم
+                                        </label>
+                                    </div>
+
+                                    {{-- does not want certificate --}}
+                                    <div class="col">
+                                        <label for="doesn't_want_certificate">
+                                            <input type="radio" id="doesn't_want_certificate" name="certificate"  value="0" required
+                                                {{ old('certificate', $student->certificate ?? null) == 0 ? 'checked' : '' }}>
+                                            لا
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <h1 class=" mt-50 mb-25">بيانات المتدرب الأساسية</h1>
@@ -241,7 +269,7 @@
                                                     {{ old('nationality', $student->nationality ?? null) == $nationality ? 'selected' : '' }}>
                                                     {{ $nationality }}</option>
                                             @endforeach
-                                            <option value="اخري" id="anotherNationality">اخري</option>
+                                            <option value="اخري"  id="anotherNationality">اخري</option>
                                         </select>
                                     </div>
 
@@ -546,7 +574,7 @@
                                             {{-- not working status --}}
                                             <div class="col">
                                                 <label for="not_working">
-                                                    <input type="radio" id="not_working" name="status" required
+                                                    <input type="radio" id="not_working" name="status" required value="not_working"
                                                         {{ old('status', $student->job ?? null) == null ? 'checked' : '' }}>
                                                     {{ trans('application_form.not_working') }}
                                                 </label>
@@ -886,6 +914,7 @@
             let education = document.getElementById("education");
             let high_education = document.getElementsByClassName("high_education");
             let secondary_education = document.getElementsByClassName("secondary_education");
+            let certificateSection = document.getElementById("certificate_section");
 
             if (select.value && hiddenLabel && hiddenInput) {
                 var categoryId = select.value;
@@ -912,7 +941,7 @@
                 var selectedText = selectedOption.textContent;
                 education.style.display = "block";
 
-                if (selectedText.trim() == "دبلوم متوسط") {
+                if (selectedText.trim() == "دبلوم متوسط مشترك") {
                     secondary_education.forEach(function(element) {
                         element.style.display = "block";
                     });
@@ -929,6 +958,14 @@
                     high_education.forEach(function(element) {
                         element.style.display = "block";
                     });
+
+                }
+
+                if(selectedText.trim() == "الدبلوم التخصصي المتوسط"){
+                    certificateSection.classList.remove("d-none");
+                }
+                else{
+                    certificateSection.classList.add("d-none");
 
                 }
             }

@@ -27,15 +27,12 @@ class RegisterController extends Controller
     {
         if ($step == 1) {
             return $this->stepOne($request);
-
         } elseif ($step == 2) {
             return $this->stepTwo($request);
-
         } elseif ($step == 3) {
             return $this->stepThree($request);
         }
         abort(404);
-
     }
 
     private function stepOne(Request $request)
@@ -51,22 +48,22 @@ class RegisterController extends Controller
 
         $rules = [
             // 'country_code' => ($username == 'mobile') ? 'required' : 'nullable',
-            'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
-            // if the username is unique check
-            //   $username => ($username == 'mobile') ? 'required|numeric|unique:users' : 'required|string|email|max:255|unique:users',
-            // $username => ($username == 'mobile') ? 'required|numeric' : 'required|string|email|max:255',
-            'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users',
+            'full_name' => 'required|string|min:3',
             'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
+            'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users',
+            'country_code' => 'required_with:mobile'
+            // if the username is unique check
+            //   $username => ($username == 'mobile') ? 'required|numeric|unique:users' : 'required|string|email|max:255|unique:users',
+            // $username => ($username == 'mobile') ? 'required|numeric' : 'required|string|email|max:255',
         ];
 
         validateParam($data, $rules);
-        if ($username == 'mobile') {
-            $data[$username] = ltrim($data['country_code'], '+') . ltrim($data[$username], '0');
-
+        if (!empty($data['mobile'])) {
+           $data['mobile'] = ltrim($data['country_code'], '+') . ltrim($data['mobile'], '0');
         }
-        $userCase = User::where($username, $data[$username])->first();
+        $userCase = User::where($username,$data['email']?? $data['mobile'])->first();
         if ($userCase) {
             //  $userCase->update(['password' => Hash::make($data['password'])]);
             $verificationController = new VerificationController();
@@ -91,7 +88,6 @@ class RegisterController extends Controller
                     'user_id' => $userCase->id
                 ]);
             }
-
         }
 
 
@@ -101,10 +97,13 @@ class RegisterController extends Controller
         $user = User::create([
             'role_name' => Role::$user,
             'role_id' => Role::getUserRoleId(),
-            $username => $data[$username],
+            'full_name' => $data['full_name']?? null,
+            'email' => $data['email']?? null,
+            'mobile' => $data['mobile']?? null,
             'status' => User::$pending,
             'password' => Hash::make($data['password']),
             'affiliate' => $usersAffiliateStatus,
+            'timezone' => $data['timezone'] ?? null,
             'created_at' => time()
         ]);
 
@@ -162,7 +161,6 @@ class RegisterController extends Controller
         $data['token'] = $token;
         $data['user_id'] = $user->id;
         return apiResponse2(1, 'login', trans('api.auth.login'), $data);
-
     }
 
     public function username()
@@ -172,15 +170,13 @@ class RegisterController extends Controller
         $data = request()->all();
 
         if (empty($this->username)) {
-            if (in_array('mobile', array_keys($data))) {
-                $this->username = 'mobile';
-            } else if (in_array('email', array_keys($data))) {
+            if (in_array('email', array_keys($data))) {
                 $this->username = 'email';
+            } else if (in_array('mobile', array_keys($data))) {
+                $this->username = 'mobile';
             }
         }
 
-        return $this->username ?? 'bb';
+        return $this->username ?? '';
     }
-
-
 }

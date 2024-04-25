@@ -55,6 +55,7 @@ class ApplyController extends Controller
         $categoryTitle=$category->title;
         $student = Student::where('user_id', auth()->user()->id)->first();
 
+
         if ($student) {
             $validatedData = $request->validate([
                 'user_id'=>'required',
@@ -70,7 +71,8 @@ class ApplyController extends Controller
                         }
                     },
                 ],
-                'terms' => 'accepted'
+                'terms' => 'accepted',
+                'certificate' => 'required|boolean',
             ]);
         }else{
             $validatedData = $request->validate([
@@ -98,16 +100,16 @@ class ApplyController extends Controller
                 'birthdate' => 'required|date',
                 'phone' => 'required|min:5|max:20',
                 'mobile' => 'required|min:5|max:20',
-                'educational_qualification_country'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'secondary_school_gpa'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
+                'educational_qualification_country'=>$categoryTitle != "دبلوم متوسط مشترك" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'secondary_school_gpa'=>$categoryTitle == "دبلوم متوسط مشترك" ? 'required|string|max:255|min:1':'',
                 'educational_area'=>'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'secondary_graduation_year'=>$categoryTitle == "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
-                'school'=>$categoryTitle == "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'university'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'faculty'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'education_specialization'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'graduation_year'=>$categoryTitle != "دبلوم متوسط" ? 'required|numeric|regex:/^\d{3,10}$/':'',
-                'gpa'=>$categoryTitle != "دبلوم متوسط" ? 'required|string|max:255|min:1':'',
+                'secondary_graduation_year'=>$categoryTitle == "دبلوم متوسط مشترك" ? 'required|numeric|regex:/^\d{3,10}$/':'',
+                'school'=>$categoryTitle == "دبلوم متوسط مشترك" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'university'=>$categoryTitle != "دبلوم متوسط مشترك" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'faculty'=>$categoryTitle != "دبلوم متوسط مشترك" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'education_specialization'=>$categoryTitle != "دبلوم متوسط مشترك" ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
+                'graduation_year'=>$categoryTitle != "دبلوم متوسط مشترك" ? 'required|numeric|regex:/^\d{3,10}$/':'',
+                'gpa'=>$categoryTitle != "دبلوم متوسط مشترك" ? 'required|string|max:255|min:1':'',
                 'deaf' => 'required|in:0,1',
                 'disabled_type'=>$request->disabled == 1 ?'required|string|max:255|min:3':'nullable',
                 'gender' => 'required|in:male,female',
@@ -121,10 +123,11 @@ class ApplyController extends Controller
                 'referral_phone' => 'required|min:3|max:20',
                 'about_us' => 'required|string|min:3|max:255',
                 'terms' => 'accepted',
+                'certificate' => 'required|boolean',
             ]);
         }
 
-
+        dd($validatedData);
         Cookie::queue('user_data', json_encode($validatedData));
         $user = auth()->user();
 

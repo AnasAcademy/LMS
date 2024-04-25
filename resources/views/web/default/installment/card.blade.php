@@ -51,7 +51,7 @@
         </div>
 
         <div class="col-12 p-0">
-            <div class="installment-card__payments d-flex flex-column w-100 h-100">
+            <div class="installment-card__payments d-flex flex-column w-100 h-100 pt-0">
 
                 @php
                 // dd($itemId);
@@ -59,20 +59,20 @@
                     $installmentTotalInterest = $installment->totalInterest($itemPrice, $totalPayments);
                 @endphp
 
-                <div class="d-flex align-items-center justify-content-center flex-column order-1 mb-20">
-                    <p style="text-decoration: line-through;">
+                <div class="d-flex align-items-center justify-content-center flex-column order-1 mt-20">
+                    {{-- <p style="text-decoration: line-through;">
                         @if ($bundleData['bundle']->bundle->discount_rate==0.2511)
                             {{ handlePrice(($totalPayments / (1 - 0.2511))) }}
                         @else
                             {{ handlePrice(($totalPayments / (1 - 0.2324))) }}
                         @endif
 
-                    </p>
+                    </p> --}}
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
-                    <p class="font-12 font-weight-bold text-center text-danger mt-15">
+                    {{-- <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
                         خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
                         % عند دفع كامل الرسوم مرة واحده
-                    </p>
+                    </p> --}}
                     {{-- <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
                             ({{ trans('update.percent_interest',['percent' => $installmentTotalInterest]) }})
                         @endif</span> --}}
@@ -88,7 +88,7 @@
                     @endforeach
                 </div>
 
-                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-md-45 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
+                <a href="/installments/{{ $installment->id }}?item={{ $itemId }}&item_type={{ $itemType }}&{{ http_build_query(request()->all()) }}" target="_blank" class="btn btn-primary btn-block mt-20 order-2">{{ "لدفع الرسوم بالتقسيط اضغط هنا"}}</a>
             </div>
         </div>
     </div>
