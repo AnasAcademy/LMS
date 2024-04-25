@@ -73,13 +73,13 @@
                 @include('web.default.auth.register_includes.mobile_field')
 
                 @if ($showOtherRegisterMethod)
-                    @include('web.default.auth.register_includes.email_field', ['optional' => true])
+                    @include('web.default.auth.register_includes.email_field', ['optional' => false])
                 @endif
             @else
                 @include('web.default.auth.register_includes.email_field')
 
                 @if ($showOtherRegisterMethod)
-                    @include('web.default.auth.register_includes.mobile_field', ['optional' => true])
+                    @include('web.default.auth.register_includes.mobile_field', ['optional' => false])
                 @endif
             @endif
 
