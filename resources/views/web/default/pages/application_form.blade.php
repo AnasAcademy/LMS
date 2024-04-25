@@ -819,7 +819,7 @@
                                     ، مما يترتب عليه كامل الأحقية للاكاديمية في مسائلتي عن تلك المخالفات والتصرفات
                                     المخالفة
                                     للوائح المشار إليها في عقد اتفاقية التحاق متدربـ/ـة <a target="_blank"
-                                        href="https://anasacademy.uk/wp-content/uploads/2024/02/Contract.pdf">انقر
+                                        href="https://anasacademy.uk/wp-content/uploads/2024/04/contract.pdf">انقر
                                         هنا
                                         لمشاهدة</a>
 
