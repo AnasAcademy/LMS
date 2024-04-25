@@ -42,7 +42,7 @@ return [
     'facebook_login' => 'تسجيل الدخول بفيسبوك',
 
 
-    'i_agree_with' => 'انا اوافق علي',
+    'i_agree_with' => 'انا اوافق على',
     'terms_and_rules' => 'الشروط والاحكام',
     'already_have_an_account' => 'لدي حساب بالفعل?',
 

@@ -981,7 +981,7 @@
             if(certificateOption.value === "1"){
                 messageSection.innerHTML = "سوف تحصل على خصم 23%"
             }else if(certificateOption.value === "0"){
-                messageSection.innerHTML = "لا تضيع فرصة الحصول علي خصم 23%"
+                messageSection.innerHTML = "بيفوتك الحصول على خصم 23%"
 
             }else{
                 messageSection.innerHTML = ""
