@@ -127,7 +127,7 @@ class ApplyController extends Controller
             ]);
         }
 
-        dd($validatedData);
+        
         Cookie::queue('user_data', json_encode($validatedData));
         $user = auth()->user();
 
