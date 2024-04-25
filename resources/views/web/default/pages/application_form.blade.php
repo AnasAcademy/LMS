@@ -167,7 +167,7 @@
                             <div class="form-group col-12  d-none" id="certificate_section" >
                                 <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
 
-                                <span class="text-danger font-12 font-weight-bold">سوف تحصل علي خصم 23% في حاله حجزك لها الان</span>
+                                <span class="text-danger font-12 font-weight-bold">لا تضيع فرصة الحصول علي خصم 23%</span>
 
                                 <div class="row mr-5 mt-5">
                                     {{-- want certificate --}}
