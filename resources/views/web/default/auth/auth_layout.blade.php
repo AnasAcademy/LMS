@@ -56,7 +56,7 @@
         }
 
         .auth-hero {
-            background-image: url("{{asset('assets/default/img/auth/BGhome - Copy.png')}}");
+            background-image: url("{{asset('assets/default/img/auth/BG.png')}}");
             background-position: center center;
             background-repeat: no-repeat;
             background-size: cover;
