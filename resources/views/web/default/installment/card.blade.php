@@ -60,19 +60,19 @@
                 @endphp
 
                 <div class="d-flex align-items-center justify-content-center flex-column order-1 mt-20">
-                    <p style="text-decoration: line-through;">
+                    {{-- <p style="text-decoration: line-through;">
                         @if ($bundleData['bundle']->bundle->discount_rate==0.2511)
                             {{ handlePrice(($totalPayments / (1 - 0.2511))) }}
                         @else
                             {{ handlePrice(($totalPayments / (1 - 0.2324))) }}
                         @endif
 
-                    </p>
+                    </p> --}}
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
-                    <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
+                    {{-- <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
                         خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
                         % عند دفع كامل الرسوم مرة واحده
-                    </p>
+                    </p> --}}
                     {{-- <span class="mt-10 font-12 text-gray">{{ trans('update.total_payment') }} @if($installmentTotalInterest > 0)
                             ({{ trans('update.percent_interest',['percent' => $installmentTotalInterest]) }})
                         @endif</span> --}}

@@ -91,19 +91,19 @@
                                                                         );
                                                                     @endphp
                                                                     @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                                                        <p style="text-decoration: line-through;">
+                                                                        {{-- <p style="text-decoration: line-through;">
                                                                             {{   handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - $bundleData['bundle']->bundle->discount_rate)))['price'] }}
-                                                                        </p>
+                                                                        </p> --}}
                                                                         <span id="realPrice"
                                                                             data-value="{{ $bundleData['bundle']->bundle->price }}"
                                                                             data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
                                                                             class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-36 text-primary @endif">
                                                                             {{ $realPrice['price'] }}
                                                                         </span>
-                                                                        <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
+                                                                        {{-- <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
                                                                             خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
                                                                             % عند دفع كامل الرسوم مرة واحده
-                                                                        </p>
+                                                                        </p> --}}
                                                                     @endif
 
                                                                     @if (!empty($realPrice['tax']) and empty($activeSpecialOffer))
