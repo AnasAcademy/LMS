@@ -26,7 +26,7 @@ return [
         'snapchat'=>'سناب تشات',
         'facebook'=>'فيسبوك',
         'friend'=>'صديق',
-        'other'=>'اخري',
+        'other'=>'اخرى',
         'agree_terms_conditions'=>'اقرار',
         'submit'=>'تسجيل',
         'personal data'=>'البيانات الشخصية',
