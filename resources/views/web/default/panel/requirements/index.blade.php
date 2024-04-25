@@ -68,7 +68,7 @@
                                     <div class="installment-card p-15 w-100 h-100">
                                         <div class="row">
                                             <div class="col-12">
-                                                <h4 class="font-16 font-weight-bold text-dark-blue">دفع الرسوم كاملة</h4>
+                                                <h4 class="font-16 font-weight-bold text-dark-blue">رسوم التسجيل المبكر</h4>
 
                                                 <div class="">
                                                     <p class="text-gray font-14 text-ellipsis">السعر شامل الضريبه
