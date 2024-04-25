@@ -86,7 +86,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 
         Route::get('/', function(){
             if (auth()->check() && auth()->user()->student) {
-                return app()->call('App\Http\Controllers\Panel\DashboardController@dashboard');
+                return app()->call('App\Http\Controllers\Panel\UserController@requirementIndex');
             } else {
                 return app()->call('App\Http\Controllers\Web\ApplyController@index');
             }

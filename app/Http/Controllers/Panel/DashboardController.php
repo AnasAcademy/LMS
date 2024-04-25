@@ -82,7 +82,6 @@ class DashboardController extends Controller
 
 
             $bundleSales = Sale::where(['buyer_id' => $user->id, "type" => "bundle"])->whereNotNull(["bundle_id", "order_id"])->get();
-
             $data['webinarsCount'] = count($webinars);
             $data['supportsCount'] = count($supports);
             $data['commentsCount'] = count($comments);
@@ -91,9 +90,9 @@ class DashboardController extends Controller
             $data['webinars'] = $webinars;
             $data['bundleSales'] = $bundleSales;
         }
-foreach ($webinars as $webinar) {
-// dd($webinar->bundle->title);
-}
+// foreach ($webinars as $webinar) {
+// // dd($webinar->bundle->title);
+// }
         $data['giftModal'] = $this->showGiftModal($user);
 
         return view(getTemplate() . '.panel.dashboard.index', $data);

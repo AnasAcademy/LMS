@@ -166,7 +166,6 @@
                             {{-- certificate --}}
                             <div class="form-group col-12  d-none" id="certificate_section" >
                                 <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
-
                                 <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
 
                                 <div class="row mr-5 mt-5">
@@ -982,7 +981,7 @@
             if(certificateOption.value === "1"){
                 messageSection.innerHTML = "سوف تحصل على خصم 23%"
             }else if(certificateOption.value === "0"){
-                messageSection.innerHTML = "سوف يفوتك خصم ال 23%"
+                messageSection.innerHTML = "لا تضيع فرصة الحصول علي خصم 23%"
 
             }else{
                 messageSection.innerHTML = ""
