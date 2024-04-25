@@ -15,6 +15,23 @@
         left: initial !important;
         right: -1.5rem !important;
      }
+    .iti__country-list {
+        position: absolute;
+        z-index: 2;
+        list-style: none;
+        text-align: left;
+        padding: 0;
+        margin: 0 0 0 -1px;
+        box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+        background-color: #fff;
+        border: 1px solid #ccc;
+        white-space: nowrap;
+        max-height: 200px;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        left: 0 !important;
+        direction: ltr !important;
+    }
 </style>
     @php
         $siteGeneralSettings = getGeneralSettings();
