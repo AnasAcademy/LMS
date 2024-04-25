@@ -150,15 +150,15 @@
                             <div class="form-group col-12  d-none" id="certificate_section" >
                                 <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
 
-                                <span class="text-danger font-12 font-weight-bold">سوف تحصل علي خصم 23% في حاله حجزك لها الان</span>
+                                <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
 
                                 <div class="row mr-5 mt-5">
                                     {{-- want certificate --}}
                                     <div class="col-sm-4 col">
                                         <label for="want_certificate">
-                                            <input type="radio" id="want_certificate" name="certificate" value="1"
-                                                required
-                                                {{ old('certificate', $student->certificate ?? null) ==1 ? 'checked' : '' }}>
+                                            <input type="radio" id="want_certificate" name="certificate" value="1" onchange="showCertificateMessage()"
+                                                
+                                                {{ old('certificate', $student->certificate ?? null) === "1" ? 'checked' : '' }}>
                                            نعم
                                         </label>
                                     </div>
@@ -166,8 +166,8 @@
                                     {{-- does not want certificate --}}
                                     <div class="col">
                                         <label for="doesn't_want_certificate">
-                                            <input type="radio" id="doesn't_want_certificate" name="certificate"  value="0" required
-                                                {{ old('certificate', $student->certificate ?? null) == 0 ? 'checked' : '' }}>
+                                            <input type="radio" id="doesn't_want_certificate" name="certificate"  onchange="showCertificateMessage()" value="0"
+                                                {{ old('certificate', $student->certificate ?? null) === "0" ? 'checked' : '' }}>
                                             لا
                                         </label>
                                     </div>
@@ -293,7 +293,7 @@
                 }
                 var selectedOption = select.options[select.selectedIndex];
                 var selectedText = selectedOption.textContent;
-                
+
                 if(selectedText.trim() == "الدبلوم التخصصي المتوسط"){
                     certificateSection.classList.remove("d-none");
                 }
@@ -305,5 +305,22 @@
             }
         }
         toggleHiddenInput();
+
+
+        function showCertificateMessage(){
+            let messageSection = document.getElementById("certificate_message");
+            let certificateOption = document.querySelector("input[name='certificate']:checked");
+            if(certificateOption.value === "1"){
+                messageSection.innerHTML = "سوف تحصل على خصم 23%"
+            }else if(certificateOption.value === "0"){
+                messageSection.innerHTML = "سوف يفوتك خصم ال 23%"
+
+            }else{
+                messageSection.innerHTML = ""
+
+            }
+        }
+
+        showCertificateMessage();
     </script>
 @endpush
