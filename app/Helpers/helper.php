@@ -2139,7 +2139,7 @@ function handlePrice($price, $showCurrency = true, $format = true, $coursePagePr
         $price = handlePriceFormat($price, $decimal, $decimalSeparator, $thousandsSeparator);
     }
     //convert price to int value
-    $price = (int)str_replace([$thousandsSeparator, $decimalSeparator], ['', '.'], $price);
+    $price = (int)round(str_replace([$thousandsSeparator, $decimalSeparator], ['', '.'], $price));
 
     if ($coursePagePrice) {
         return [
