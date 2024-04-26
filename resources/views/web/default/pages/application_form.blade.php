@@ -277,7 +277,7 @@
                                                     {{ old('nationality', $student->nationality ?? null) == $nationality ? 'selected' : '' }}>
                                                     {{ $nationality }}</option>
                                             @endforeach
-                                            <option value="اخري"  id="anotherNationality">اخري</option>
+                                            <option value="اخرى"  id="anotherNationality">اخرى</option>
                                         </select>
                                     </div>
 
@@ -354,7 +354,7 @@
                                                     {{ old('country', $student->country ?? null) == $country ? 'selected' : '' }}>
                                                     {{ $country }}</option>
                                             @endforeach
-                                            <option value="اخري" id="anotherCountry">اخري</option>
+                                            <option value="اخرى" id="anotherCountry">اخرى</option>
 
                                         </select>
                                     </div>
@@ -446,9 +446,9 @@
                                                     {{ $country }}</option>
                                             @endforeach
 
-                                            <option value="اخري"
+                                            <option value="اخرى"
                                                 {{ $student && !in_array($student->educational_qualification_country, $countries) ? 'selected' : '' }}
-                                                id="anotherEducationCountryOption">اخري</option>
+                                                id="anotherEducationCountryOption">اخرى</option>
                                         </select>
                                     </div>
 
@@ -834,7 +834,6 @@
                                 </label>
                             </div>
 
-
                             {{-- display errors --}}
                             @if ($errors->any())
                                 <div class="alert alert-danger">
@@ -1021,12 +1020,12 @@
                 region.style.display = "none";
             }
 
-            if (select.value === "اخري") {
+            if (select.value === "اخرى") {
                 anotherCountrySection.style.display = "block";
                 anotherCountryOption.value = hiddenInput2.value;
             } else {
                 anotherCountrySection.style.display = "none";
-                anotherCountryOption.value = "اخري";
+                anotherCountryOption.value = "اخرى";
 
             }
             if (select && cityLabel && town) {
@@ -1130,14 +1129,14 @@
             let nationality = document.getElementById("nationality");
             let other_nationality = document.getElementById("other_nationality");
             let anotherNationalityOption = document.getElementById("anotherNationality");
-            if (nationality && nationality.value == "اخري") {
+            if (nationality && nationality.value == "اخرى") {
                 other_nationality_section.style.display = "block";
 
                 // nationality.value = other_nationality.value;
                 anotherNationalityOption.value = other_nationality.value;
             } else {
                 other_nationality_section.style.display = "none";
-                anotherNationalityOption.value = "اخري";
+                anotherNationalityOption.value = "اخرى";
             }
         }
 
@@ -1162,13 +1161,13 @@
             let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
             let educationalQualificationCountry = document.getElementById("educational_qualification_country");
 
-            if (educationalQualificationCountry && educationalQualificationCountry.value == "اخري") {
+            if (educationalQualificationCountry && educationalQualificationCountry.value == "اخرى") {
                 anotherEducationCountrySection.style.display = "block";
                 anotherEducationCountryOption.value = anotherEducationCountry.value;
 
             } else {
                 anotherEducationCountrySection.style.display = "none";
-                anotherEducationCountryOption.value = "اخري";
+                anotherEducationCountryOption.value = "اخرى";
             }
 
         }
