@@ -357,7 +357,7 @@ class PaymentController extends Controller
 
                         // Check if the student already has the bundle ID attached
                         if (!$student->bundles->contains($bundleId)) {
-                            $student->bundles()->attach($bundleId, ['certificate' =>$studentData['certificate'] ]);
+                            $student->bundles()->attach($bundleId,  ['certificate' =>(!empty($studentData['certificate'])) ? $studentData['certificate']:null ]);
                             $pivotId = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
                                 ->where('bundle_id', $bundleId)
