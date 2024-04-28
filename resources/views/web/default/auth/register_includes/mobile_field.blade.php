@@ -27,22 +27,22 @@
         <div class="form-group">
             <!--<input name="mobile" type="text" class="form-control @error('mobile') is-invalid @enderror"-->
             <!--       value="{{ old('mobile') }}" id="mobile" aria-describedby="mobileHelp">-->
-            
-            
-            
+
+
+
             <div class="mb-3">
             <label class="input-label d-block" for="mobile">{{ trans('auth.mobile') }} {{ !empty($optional) ? "(". trans('public.optional') .")" : '' }}*</label>
                         <!-- Phone number input field -->
                         <input type="tel" id="phone" name="mobile" value="{{ old('mobile') }}" aria-describedby="mobileHelp" class="form-control @error('mobile') is-invalid @enderror" placeholder="5xxxxxxxxx">
             </div>
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
             @error('mobile')
-            <div class="invalid-feedback">
+            <div class="invalid-feedback d-block">
                 {{ $message }}
             </div>
             @enderror
