@@ -76,7 +76,7 @@ class ApplyController extends Controller
                     },
                 ],
                 'terms' => 'accepted',
-                'certificate' => $categoryTitle == "الدبلوم التخصصي المتوسط" ? 'required|boolean' : "",
+                'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
             ]);
         }else{
             $validatedData = $request->validate([
