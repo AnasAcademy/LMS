@@ -37,6 +37,15 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ExcelImport;
 class UserController extends Controller
 {
+
+    public function transform($user_id,$bundle,$transformedBundle){
+        $sale = Sale::where('bundle_id', $bundle)
+            ->where('type', 'form_fee')
+            ->where('buyer_id', $user_id)
+            ->get();
+
+      dd($sale);
+    }
     public function staffs(Request $request)
     {
         $this->authorize('admin_staffs_list');
@@ -151,6 +160,11 @@ class UserController extends Controller
         if ($is_export_excel) {
             return $users;
         }
+
+        // $purchasedFormBundle=null;
+        // $purchasedUserFormBundle=Sale::where('type', 'form_fee')
+        //         ->where('buyer_id', $user->id)
+        //         ->first();
 
         $data = [
             'pageTitle' => trans('public.students'),
