@@ -330,11 +330,20 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
+                                                        @php
+                                                            $purchasedFormBundles = $user->purchasedFormBundle();
+                                                        @endphp
                                                         <label class="input-label">محول من برنامج :</label>
                                                         <select class="form-control" name="diploma1" id="diploma1">
-                                                            <option value="diploma1_option1">Diploma 1 </option>
-                                                            <option value="diploma1_option2">Diploma 1 </option>
-                                                            <option value="diploma1_option3">Diploma 1 </option>
+                                                            @foreach ($purchasedFormBundles as $bundleSale)
+                                                                @php
+                                                                    $bundle = optional($bundleSale->bundle);
+                                                                @endphp
+                                                                @if ($bundle)
+                                                                    <option value="{{ $bundle->id }}">{{ $bundle->title }}
+                                                                    </option>
+                                                                @endif
+                                                            @endforeach
                                                         </select><br>
                                                         <label class="input-label">محول الي برنامج :</label>
                                                         <select class="form-control" name="diploma2" id="diploma2">
