@@ -166,9 +166,12 @@ class UserController extends Controller
         //         ->where('buyer_id', $user->id)
         //         ->first();
 
+        $category=Category::where('parent_id','!=', null)->get();
+
         $data = [
             'pageTitle' => trans('public.students'),
             'users' => $users,
+            'category'=>$category,
             'totalStudents' => $totalStudents,
             'inactiveStudents' => $inactiveStudents,
             'banStudents' => $banStudents,

@@ -160,7 +160,8 @@
                                     <div class="col-sm-4 col">
                                         <label for="want_certificate">
                                             <input type="radio" id="want_certificate" name="certificate" value="1"
-                                                onchange="showCertificateMessage()"   class=" @error('certificate') is-invalid @enderror"
+                                                onchange="showCertificateMessage()"
+                                                class=" @error('certificate') is-invalid @enderror"
                                                 {{ old('certificate', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
                                             نعم
                                         </label>
@@ -170,39 +171,14 @@
                                     <div class="col">
                                         <label for="doesn't_want_certificate">
                                             <input type="radio" id="doesn't_want_certificate" name="certificate"
-                                                onchange="showCertificateMessage()" value="0"  class="@error('certificate') is-invalid @enderror"
+                                                onchange="showCertificateMessage()" value="0"
+                                                class="@error('certificate') is-invalid @enderror"
                                                 {{ old('certificate', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
                                             لا
                                         </label>
                                     </div>
                                 </div>
                             </div>
-
-                            @php
-                                $countries = [
-                                    'السعودية',
-                                    'الامارات العربية المتحدة',
-                                    'الاردن',
-                                    'البحرين',
-                                    'الجزائر',
-                                    'العراق',
-                                    'المغرب',
-                                    'اليمن',
-                                    'السودان',
-                                    'الصومال',
-                                    'الكويت',
-                                    'جنوب السودان',
-                                    'سوريا',
-                                    'لبنان',
-                                    'مصر',
-                                    'تونس',
-                                    'فلسطين',
-                                    'جزرالقمر',
-                                    'جيبوتي',
-                                    'عمان',
-                                    'موريتانيا',
-                                ];
-                            @endphp
 
 
                             <label class="mt-30">
@@ -220,6 +196,8 @@
                                     لمشاهدة</a>
 
                             </label>
+                            <button type="submit" class="btn btn-primary">{{ trans('application_form.submit') }}</button>
+                        </form>
                     </div>
 
 
@@ -233,14 +211,11 @@
                             </ul>
                         </div>
                     @endif --}}
-                    <button type="submit" class="btn btn-primary">{{ trans('application_form.submit') }}</button>
-                    </form>
+                </Section>
             </div>
-            </Section>
+
+
         </div>
-
-
-    </div>
     </div>
 @endsection
 
@@ -283,14 +258,14 @@
                         return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
                     }).join('');
 
-                    hiddenInput.outerHTML = '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
+                    hiddenInput.outerHTML =
+                        '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
                         '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
                     hiddenLabel.style.display = "block";
 
-                }
-                else {
+                } else {
                     hiddenInput.outerHTML =
                         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
                     hiddenLabel.style.display = "none";
@@ -302,13 +277,10 @@
             }
         }
         toggleHiddenInput();
-
-
-
     </script>
 
 
-{{-- Certificate Section Toggle --}}
+    {{-- Certificate Section Toggle --}}
     <script>
         function CertificateSectionToggle() {
             let certificateSection = document.getElementById("certificate_section");
@@ -323,15 +295,15 @@
             }
         }
 
-        function showCertificateMessage(){
+        function showCertificateMessage() {
             let messageSection = document.getElementById("certificate_message");
             let certificateOption = document.querySelector("input[name='certificate']:checked");
-            if(certificateOption.value === "1"){
+            if (certificateOption.value === "1") {
                 messageSection.innerHTML = "سوف تحصل على خصم 23%"
-            }else if(certificateOption.value === "0"){
-                messageSection.innerHTML = "سوف يفوتك خصم ال 23%"
+            } else if (certificateOption.value === "0") {
+                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
 
-            }else{
+            } else {
                 messageSection.innerHTML = ""
 
             }
@@ -342,5 +314,4 @@
 
         CertificateSectionToggle();
     </script>
-
 @endpush

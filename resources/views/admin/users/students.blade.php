@@ -345,12 +345,88 @@
                                                                 @endif
                                                             @endforeach
                                                         </select><br>
-                                                        <label class="input-label">محول الي برنامج :</label>
-                                                        <select class="form-control" name="diploma2" id="diploma2">
+                                                        <label class="input-label">تحويل الي برنامج :</label><br>
+                                                        <div class="container_form mt-25">
+                                                            <form action="/apply" method="POST" id="myForm">
+                                                                @csrf
+                                                                <input type="hidden" name="user_id"
+                                                                    value="{{ $user->id }}">
+
+                                                                {{-- diploma --}}
+                                                                <div class="form-group">
+                                                                    <label for="application"
+                                                                        class="form-label">{{ trans('application_form.application') }}*</label>
+                                                                    <select id="mySelect1" name="category_id" required
+                                                                        class="form-control" onchange="toggleHiddenInput()">
+                                                                        <option disabled selected hidden value="">اختر
+                                                                            الدرجة العلمية التي تريد دراستها في
+                                                                            اكاديمية انس للفنون </option>
+                                                                        @foreach ($category as $item)
+                                                                            <option value="{{ $item->id }}"
+                                                                                {{ old('category_id', $user->student->category_id ?? null) == $item->id ? 'selected' : '' }}>
+                                                                                {{ $item->title }} </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+
+                                                                {{-- specialization --}}
+                                                                <div class="form-group">
+                                                                    <label class="hidden-element" id="hiddenLabel1"
+                                                                        for="name">
+                                                                        {{ trans('application_form.specialization') }}*
+                                                                    </label>
+                                                                    <input type="text" id="bundle_id" name="bundle_id"
+                                                                        required class="hidden-element form-control"
+                                                                        value="{{ old('bundle_id', $user->student ? $user->student->bundle_id : '') }}">
+                                                                </div>
+
+                                                                {{-- certificate --}}
+                                                                <div class="form-group col-12  d-none"
+                                                                    id="certificate_section">
+                                                                    <label>{{ trans('application_form.want_certificate') }} ؟
+                                                                        *</label>
+                                                                    <span class="text-danger font-12 font-weight-bold"
+                                                                        id="certificate_message"> </span>
+                                                                    @error('certificate')
+                                                                        <div class="invalid-feedback d-block">
+                                                                            {{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                    <div class="row mr-5 mt-5">
+                                                                        {{-- want certificate --}}
+                                                                        <div class="col-sm-4 col">
+                                                                            <label for="want_certificate">
+                                                                                <input type="radio" id="want_certificate"
+                                                                                    name="certificate" value="1"
+                                                                                    onchange="showCertificateMessage()"
+                                                                                    class=" @error('certificate') is-invalid @enderror"
+                                                                                    {{ old('certificate', $user->student->certificate ?? null) === '1' ? 'checked' : '' }}>
+                                                                                نعم
+                                                                            </label>
+                                                                        </div>
+
+                                                                        {{-- does not want certificate --}}
+                                                                        <div class="col">
+                                                                            <label for="doesn't_want_certificate">
+                                                                                <input type="radio"
+                                                                                    id="doesn't_want_certificate"
+                                                                                    name="certificate"
+                                                                                    onchange="showCertificateMessage()"
+                                                                                    value="0"
+                                                                                    class="@error('certificate') is-invalid @enderror"
+                                                                                    {{ old('certificate', $user->student->certificate ?? null) === '0' ? 'checked' : '' }}>
+                                                                                لا
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        {{-- <select class="form-control" name="diploma2" id="diploma2">
                                                             <option value="diploma2_option1">Diploma 2 </option>
                                                             <option value="diploma2_option2">Diploma 2 </option>
                                                             <option value="diploma2_option3">Diploma 2 </option>
-                                                        </select>
+                                                        </select> --}}
 
                                                     </div>
                                                     <div class="modal-footer">
@@ -418,7 +494,8 @@
                     <div class="media-body">
                         <div class="text-primary mt-0 mb-1 font-weight-bold">
                             {{ trans('admin/main.students_hint_title_2') }}</div>
-                        <div class=" text-small font-600-bold">{{ trans('admin/main.students_hint_description_2') }}</div>
+                        <div class=" text-small font-600-bold">{{ trans('admin/main.students_hint_description_2') }}
+                        </div>
                     </div>
                 </div>
 
@@ -436,3 +513,100 @@
         </div>
     </section>
 @endsection
+
+@php
+    $bundlesByCategory = [];
+    foreach ($category as $item) {
+        $bundlesByCategory[$item->id] = $item->bundles;
+    }
+@endphp
+
+@push('scripts_bottom')
+    <script src="/assets/default/vendors/daterangepicker/daterangepicker.min.js"></script>
+
+    <script>
+        var undefinedActiveSessionLang = '{{ trans('webinars.undefined_active_session') }}';
+        var saveSuccessLang = '{{ trans('webinars.success_store') }}';
+        var selectChapterLang = '{{ trans('update.select_chapter') }}';
+    </script>
+
+    <script src="/assets/default/js/panel/make_next_session.min.js"></script>
+    {{-- bundle toggle and education section toggle --}}
+    <script>
+        function toggleHiddenInput() {
+            var bundles = @json($bundlesByCategory);
+            var select = document.getElementById("mySelect1");
+            var hiddenInput = document.getElementById("bundle_id");
+            var hiddenLabel = document.getElementById("hiddenLabel1");
+            let education = document.getElementById("education");
+            let high_education = document.getElementsByClassName("high_education");
+            let secondary_education = document.getElementsByClassName("secondary_education");
+            let certificateSection = document.getElementById("certificate_section");
+            if (select.value && hiddenLabel && hiddenInput) {
+                var categoryId = select.value;
+                var categoryBundles = bundles[categoryId];
+
+                if (categoryBundles) {
+                    var options = categoryBundles.map(function(bundle) {
+                        var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
+                            'selected' : '';
+                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
+                    }).join('');
+
+                    hiddenInput.outerHTML =
+                        '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
+                        '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
+                        options +
+                        '</select>';
+                    hiddenLabel.style.display = "block";
+
+                } else {
+                    hiddenInput.outerHTML =
+                        '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
+                    hiddenLabel.style.display = "none";
+                }
+                var selectedOption = select.options[select.selectedIndex];
+                var selectedText = selectedOption.textContent;
+
+
+            }
+        }
+        toggleHiddenInput();
+    </script>
+
+
+    {{-- Certificate Section Toggle --}}
+    <script>
+        function CertificateSectionToggle() {
+            let certificateSection = document.getElementById("certificate_section");
+            let bundleSelect = document.getElementById("bundle_id");
+            // Get the selected option
+            var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
+            if (selectedOption.getAttribute('has_certificate') == 1) {
+                certificateSection.classList.remove("d-none");
+            } else {
+                certificateSection.classList.add("d-none");
+
+            }
+        }
+
+        function showCertificateMessage() {
+            let messageSection = document.getElementById("certificate_message");
+            let certificateOption = document.querySelector("input[name='certificate']:checked");
+            if (certificateOption.value === "1") {
+                messageSection.innerHTML = "سوف تحصل على خصم 23%"
+            } else if (certificateOption.value === "0") {
+                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
+
+            } else {
+                messageSection.innerHTML = ""
+
+            }
+        }
+
+        showCertificateMessage();
+
+
+        CertificateSectionToggle();
+    </script>
+@endpush
