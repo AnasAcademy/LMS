@@ -312,133 +312,22 @@
                             <td class="text-center mb-2" width="120">
                                 @can('admin_users_transform')
                                     @if (!empty($user->student))
-                                        <button {{-- href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/transform/30/31" --}} class="btn-transparent  text-primary"
-                                            data-toggle="modal" data-target="#exampleModal" title="تحويل الدبلومة">
-                                            <i class="fa fa-arrows-alt"></i>
-                                        </button>
-
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="exampleModal" tabindex="-1"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">تحويل الدبلومة</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        @php
-                                                            $purchasedFormBundles = $user->purchasedFormBundle();
-                                                        @endphp
-                                                        <label class="input-label">محول من برنامج :</label>
-                                                        <select class="form-control" name="diploma1" id="diploma1">
-                                                            @foreach ($purchasedFormBundles as $bundleSale)
-                                                                @php
-                                                                    $bundle = optional($bundleSale->bundle);
-                                                                @endphp
-                                                                @if ($bundle)
-                                                                    <option value="{{ $bundle->id }}">{{ $bundle->title }}
-                                                                    </option>
-                                                                @endif
-                                                            @endforeach
-                                                        </select><br>
-                                                        <label class="input-label">تحويل الي برنامج :</label><br>
-                                                        <div class="container_form mt-25">
-                                                            <form action="/apply" method="POST" id="myForm">
-                                                                @csrf
-                                                                <input type="hidden" name="user_id"
-                                                                    value="{{ $user->id }}">
-
-                                                                {{-- diploma --}}
-                                                                <div class="form-group">
-                                                                    <label for="application"
-                                                                        class="form-label">{{ trans('application_form.application') }}*</label>
-                                                                    <select id="mySelect1" name="category_id" required
-                                                                        class="form-control" onchange="toggleHiddenInput()">
-                                                                        <option disabled selected hidden value="">اختر
-                                                                            الدرجة العلمية التي تريد دراستها في
-                                                                            اكاديمية انس للفنون </option>
-                                                                        @foreach ($category as $item)
-                                                                            <option value="{{ $item->id }}"
-                                                                                {{ old('category_id', $user->student->category_id ?? null) == $item->id ? 'selected' : '' }}>
-                                                                                {{ $item->title }} </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-
-                                                                {{-- specialization --}}
-                                                                <div class="form-group">
-                                                                    <label class="hidden-element" id="hiddenLabel1"
-                                                                        for="name">
-                                                                        {{ trans('application_form.specialization') }}*
-                                                                    </label>
-                                                                    <input type="text" id="bundle_id" name="bundle_id"
-                                                                        required class="hidden-element form-control"
-                                                                        value="{{ old('bundle_id', $user->student ? $user->student->bundle_id : '') }}">
-                                                                </div>
-
-                                                                {{-- certificate --}}
-                                                                <div class="form-group col-12  d-none"
-                                                                    id="certificate_section">
-                                                                    <label>{{ trans('application_form.want_certificate') }} ؟
-                                                                        *</label>
-                                                                    <span class="text-danger font-12 font-weight-bold"
-                                                                        id="certificate_message"> </span>
-                                                                    @error('certificate')
-                                                                        <div class="invalid-feedback d-block">
-                                                                            {{ $message }}
-                                                                        </div>
-                                                                    @enderror
-                                                                    <div class="row mr-5 mt-5">
-                                                                        {{-- want certificate --}}
-                                                                        <div class="col-sm-4 col">
-                                                                            <label for="want_certificate">
-                                                                                <input type="radio" id="want_certificate"
-                                                                                    name="certificate" value="1"
-                                                                                    onchange="showCertificateMessage()"
-                                                                                    class=" @error('certificate') is-invalid @enderror"
-                                                                                    {{ old('certificate', $user->student->certificate ?? null) === '1' ? 'checked' : '' }}>
-                                                                                نعم
-                                                                            </label>
-                                                                        </div>
-
-                                                                        {{-- does not want certificate --}}
-                                                                        <div class="col">
-                                                                            <label for="doesn't_want_certificate">
-                                                                                <input type="radio"
-                                                                                    id="doesn't_want_certificate"
-                                                                                    name="certificate"
-                                                                                    onchange="showCertificateMessage()"
-                                                                                    value="0"
-                                                                                    class="@error('certificate') is-invalid @enderror"
-                                                                                    {{ old('certificate', $user->student->certificate ?? null) === '0' ? 'checked' : '' }}>
-                                                                                لا
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        {{-- <select class="form-control" name="diploma2" id="diploma2">
-                                                            <option value="diploma2_option1">Diploma 2 </option>
-                                                            <option value="diploma2_option2">Diploma 2 </option>
-                                                            <option value="diploma2_option3">Diploma 2 </option>
-                                                        </select> --}}
-
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">اغلاق</button>
-                                                        <button type="button" class="btn btn-primary">حفظ </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    @include('admin.includes.confirm_transform_button', [
+                                                            'url' =>
+                                                                getAdminPanelUrl() .
+                                                                '/users/' .
+                                                                $user->id .
+                                                                '/transform',
+                                                            'btnClass' =>
+                                                                'btn-transparent  text-primary',
+                                                            'btnText' =>
+                                                                ' <i class="fa fa-arrows-alt"></i>',
+                                                            'hideDefaultClass' => true,
+                                                            'id' => $user->id
+                                                        ])
                                     @endif
                                 @endcan
+
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/impersonate" target="_blank"
                                         class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
@@ -486,7 +375,8 @@
                     <div class="media-body">
                         <div class="text-primary mt-0 mb-1 font-weight-bold">
                             {{ trans('admin/main.students_hint_title_1') }}</div>
-                        <div class=" text-small font-600-bold">{{ trans('admin/main.students_hint_description_1') }}</div>
+                        <div class=" text-small font-600-bold">{{ trans('admin/main.students_hint_description_1') }}
+                        </div>
                     </div>
                 </div>
 
@@ -548,13 +438,13 @@
 
                 if (categoryBundles) {
                     var options = categoryBundles.map(function(bundle) {
-                        var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
+                        var isSelected = bundle.id == "{{ old('toDiploma', $student->bundle_id ?? null) }}" ?
                             'selected' : '';
                         return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
                     }).join('');
 
                     hiddenInput.outerHTML =
-                        '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
+                        '<select id="bundle_id" name="toDiploma"  class="form-control" onchange="CertificateSectionToggle()" required>' +
                         '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
@@ -562,7 +452,7 @@
 
                 } else {
                     hiddenInput.outerHTML =
-                        '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
+                        '<input type="text" id="bundle_id" name="toDiploma" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
                     hiddenLabel.style.display = "none";
                 }
                 var selectedOption = select.options[select.selectedIndex];
@@ -609,4 +499,5 @@
 
         CertificateSectionToggle();
     </script>
+    
 @endpush

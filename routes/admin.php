@@ -89,7 +89,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/delete', 'UserController@destroy');
             Route::get('/{id}/acceptRequestToInstructor', 'UserController@acceptRequestToInstructor');
             Route::get('/{user_id}/impersonate', 'UserController@impersonate');
-            Route::get('/{user_id}/transform/{bundle}/{transformedBundle}', 'UserController@transform');
+            Route::post('/{user_id}/transform', 'UserController@transform');
             Route::get('/{user_id}/disable_cashback_toggle', 'UserController@disableCashbackToggle');
             Route::get('/{user_id}/disable_registration_bonus', 'UserController@disableRegitrationBonusStatus');
             Route::get('/{user_id}/disable_installment_approval', 'UserController@disableInstallmentApproval');
