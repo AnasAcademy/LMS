@@ -525,6 +525,11 @@ class User extends Authenticatable
 
         return Sale::whereIn('webinar_id', $webinarIds)->sum('amount');
     }
+    public function purchasedFormBundle(){
+        return Sale::where('type', 'form_fee')
+                ->where('buyer_id', $this->id)
+                ->get();
+    }
 
     public function salesCount()
     {
