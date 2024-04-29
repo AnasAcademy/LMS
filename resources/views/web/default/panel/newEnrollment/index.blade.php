@@ -147,27 +147,31 @@
                             </div>
 
                             {{-- certificate --}}
-                            <div class="form-group col-12  d-none" id="certificate_section" >
+                            <div class="form-group col-12  d-none" id="certificate_section">
                                 <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
-
                                 <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
-
+                                @error('certificate')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                                 <div class="row mr-5 mt-5">
                                     {{-- want certificate --}}
                                     <div class="col-sm-4 col">
                                         <label for="want_certificate">
-                                            <input type="radio" id="want_certificate" name="certificate" value="1" onchange="showCertificateMessage()"
-                                                
-                                                {{ old('certificate', $student->certificate ?? null) === "1" ? 'checked' : '' }}>
-                                           نعم
+                                            <input type="radio" id="want_certificate" name="certificate" value="1"
+                                                onchange="showCertificateMessage()"   class=" @error('certificate') is-invalid @enderror"
+                                                {{ old('certificate', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
+                                            نعم
                                         </label>
                                     </div>
 
                                     {{-- does not want certificate --}}
                                     <div class="col">
                                         <label for="doesn't_want_certificate">
-                                            <input type="radio" id="doesn't_want_certificate" name="certificate"  onchange="showCertificateMessage()" value="0"
-                                                {{ old('certificate', $student->certificate ?? null) === "0" ? 'checked' : '' }}>
+                                            <input type="radio" id="doesn't_want_certificate" name="certificate"
+                                                onchange="showCertificateMessage()" value="0"  class="@error('certificate') is-invalid @enderror"
+                                                {{ old('certificate', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
                                             لا
                                         </label>
                                     </div>
@@ -220,7 +224,7 @@
 
 
                     {{-- display errors --}}
-                    @if ($errors->any())
+                    {{-- @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -228,7 +232,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif --}}
                     <button type="submit" class="btn btn-primary">{{ trans('application_form.submit') }}</button>
                     </form>
             </div>
@@ -276,10 +280,10 @@
                     var options = categoryBundles.map(function(bundle) {
                         var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
                             'selected' : '';
-                        return `<option value="${bundle.id}" ${isSelected}>${bundle.title}</option>`;
+                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
                     }).join('');
 
-                    hiddenInput.outerHTML = '<select id="bundle_id" name="bundle_id"  class="form-control">' +
+                    hiddenInput.outerHTML = '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
                         '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
@@ -294,18 +298,30 @@
                 var selectedOption = select.options[select.selectedIndex];
                 var selectedText = selectedOption.textContent;
 
-                if(selectedText.trim() == "الدبلوم التخصصي المتوسط"){
-                    certificateSection.classList.remove("d-none");
-                }
-                else{
-                    certificateSection.classList.add("d-none");
-
-                }
 
             }
         }
         toggleHiddenInput();
 
+
+
+    </script>
+
+
+{{-- Certificate Section Toggle --}}
+    <script>
+        function CertificateSectionToggle() {
+            let certificateSection = document.getElementById("certificate_section");
+            let bundleSelect = document.getElementById("bundle_id");
+            // Get the selected option
+            var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
+            if (selectedOption.getAttribute('has_certificate') == 1) {
+                certificateSection.classList.remove("d-none");
+            } else {
+                certificateSection.classList.add("d-none");
+
+            }
+        }
 
         function showCertificateMessage(){
             let messageSection = document.getElementById("certificate_message");
@@ -322,5 +338,9 @@
         }
 
         showCertificateMessage();
+
+
+        CertificateSectionToggle();
     </script>
+
 @endpush

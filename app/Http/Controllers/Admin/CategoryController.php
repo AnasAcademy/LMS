@@ -17,8 +17,7 @@ class CategoryController extends Controller
 
         $this->authorize('admin_categories_list');
 
-        $categories = Category::where('parent_id', null)
-            ->with([
+        $categories = Category::with([
                 'subCategories'
             ])
             ->orderBy('id', 'desc')
