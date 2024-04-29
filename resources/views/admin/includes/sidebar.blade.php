@@ -86,6 +86,20 @@
                 </li>
             @endcan()
 
+            <li
+                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/onlyRegistered*', false)) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>{{ 'التسجيلات' }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/students/onlyRegistered', false)) ? 'active' : '' }}">
+                        <a class="nav-link @if (!empty($sidebarBeeps['onlyRegistered']) and $sidebarBeeps['onlyRegistered']) beep beep-sidebar @endif"
+                            href="{{ getAdminPanelUrl() }}/students/onlyRegistered/">{{ 'نموذج التسجيلات' }}</a>
+                    </li>
+                </ul>
+            </li>
             @can('admin_webinars')
                 <li
                     class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/webinars*', false)) and !request()->is(getAdminPanelUrl('/webinars/comments*', false))) ? 'active' : '' }}">
