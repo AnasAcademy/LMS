@@ -63,7 +63,7 @@ class UserController extends Controller
                 'certificate' => $toDiploma->has_certificate ? 'required|boolean' : '',
             ]);
             $user = User::where('id', $user_id)->first();
-            $accounting = Accounting::where('form_fee', 1)
+            $accounting = Accounting::where('form_fee', 1)->where('user_id', $user_id)
                 ->where('bundle_id', $validatedData['fromDiploma'])
                 ->first();
             $sale = $user->purchasedFormBundle()->where('bundle_id', $validatedData['fromDiploma'])->first();
