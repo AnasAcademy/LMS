@@ -32,93 +32,18 @@
 
   <section class="row p-20">
     <div class="col-12 col-lg-4 mt-35 ">
-        <div class="module-box dashboard-stats rounded-sm panel-shadow py-30 d-flex align-items-center justify-content-center mt-0">
-
-            <div class="d-flex flex-column service-card" style="align-items: center;">
-                @include('web.default.panel.includes.sidebar_icons.requests')
-
-                <span class="font-16 text-gray font-weight-500 text-center pb-10">لطلب شهادة ACP</span>
-                <p>
-                    تكلف 120 ريال سعودي
-                </p>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/">
-                    لتقديم طلب اضغط هنا
-                </a>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/search">
-                    لمتابعة طلب سابق اضغط هنا </a>
-            </div>
-
-        </div>
-
+            @include('web.default.panel.services.includes.service_card', ['title'=> 'طلب شهادة CPR', 'description'=>'', 'price'=>100, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
     </div>
     <div class="col-12 col-lg-4 mt-35 ">
-        <div class="module-box dashboard-stats rounded-sm panel-shadow py-30 d-flex align-items-center justify-content-center mt-0">
-
-            <div class="d-flex flex-column service-card" style="align-items: center; fill: gray">
-                @include('web.default.panel.includes.sidebar_icons.requests')
-
-                <span class="font-16 text-gray font-weight-500 text-center pb-10">التحويل من دبلومة لأخري</span>
-                <p>
-                    تكلف 120 ريال سعودي
-                </p>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/">
-                    لتقديم طلب اضغط هنا
-                </a>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/search">
-                    لمتابعة طلب سابق اضغط هنا </a>
-            </div>
-
-        </div>
-
+            @include('web.default.panel.services.includes.service_card', ['title'=> 'التحويل إلى برنامج آخر', 'price'=>120, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
     </div>
     <div class="col-12 col-lg-4 mt-35 ">
-        <div class="module-box dashboard-stats rounded-sm panel-shadow py-30 d-flex align-items-center justify-content-center mt-0">
-
-            <div class="d-flex flex-column service-card" style="align-items: center; fill: gray">
-                @include('web.default.panel.includes.sidebar_icons.requests')
-
-                <span class="font-16 text-gray font-weight-500 text-center pb-10">استرداد ثمن دبلومة</span>
-                <p>
-                   هذة الخدمة مجانية
-                </p>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/">
-                    لتقديم طلب اضغط هنا
-                </a>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/search">
-                    لمتابعة طلب سابق اضغط هنا </a>
-            </div>
-
-        </div>
-
+            @include('web.default.panel.services.includes.service_card', ['title'=> 'استرداد رسوم البرنامج', 'description'=> '', 'price'=>0, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
     </div>
     <div class="col-12 col-lg-4 mt-35 ">
-        <div class="module-box dashboard-stats rounded-sm panel-shadow py-30 d-flex align-items-center justify-content-center mt-0">
-
-            <div class="d-flex flex-column service-card" style="align-items: center; fill: gray">
-                @include('web.default.panel.includes.sidebar_icons.requests')
-
-                <span class="font-16 text-gray font-weight-500 text-center pb-10">تأجيل الإلتحاق بدبلومة لوقت لاحق</span>
-                <p>
-                    تكلف 120 ريال سعودي
-                </p>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/">
-                    لتقديم طلب اضغط هنا
-                </a>
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10" style=""
-                    href="https://support.anasacademy.uk/search">
-                    لمتابعة طلب سابق اضغط هنا </a>
-            </div>
-
-        </div>
-
+            @include('web.default.panel.services.includes.service_card', ['title'=> 'تجميد الإشتراك بالبرنامج', 'description'=> '', 'price'=>200, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
     </div>
+
   </section>
 
 
