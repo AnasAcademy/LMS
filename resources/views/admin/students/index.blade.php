@@ -288,7 +288,7 @@
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td> --}}
                             <td>
-                                {{ !empty($user->student) ? 'تم دفع رسوم التسجيل' : 'لم يتم حجز مقعد' }}
+                                {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
                             </td>
                             {{-- <td>
                                 {{ $user->user_code }}
