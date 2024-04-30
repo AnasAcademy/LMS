@@ -55,7 +55,23 @@
                                             <td class="text-left">{{ $requirement->bundleStudent->student->registeredUser->user_code }}
                                             </td>
                                             <td class="text-left">
-                                                {{ $requirement->bundleStudent->student ? $requirement->bundleStudent->student->en_name : '' }}
+                                                <div class="d-flex align-items-center">
+                                                    <figure class="avatar mr-2">
+                                                        <img src="{{ $requirement->bundleStudent->student->registeredUser->getAvatar() }}" alt="{{ $requirement->bundleStudent->student->registeredUser->full_name }}">
+                                                    </figure>
+                                                    <div class="media-body ml-1">
+                                                        <div class="mt-0 mb-1 font-weight-bold">{{ $requirement->bundleStudent->student ? $requirement->bundleStudent->student->ar_name : $requirement->bundleStudent->student->registeredUser->full_name }}
+                                                        </div>
+
+                                                        @if ($requirement->bundleStudent->student->registeredUser->mobile)
+                                                            <div class="text-primary text-small font-600-bold">{{ $requirement->bundleStudent->student->registeredUser->mobile }}</div>
+                                                        @endif
+
+                                                        @if ($requirement->bundleStudent->student->registeredUser->email)
+                                                            <div class="text-primary text-small font-600-bold">{{ $requirement->bundleStudent->student->registeredUser->email }}</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
 
                                             </td>
 
@@ -88,7 +104,20 @@
                                                 @elseif($requirement->status=="approved")
                                                 <span class="text-primary"> تم الموافقة عليه</span>
                                                 @elseif($requirement->status=="rejected")
-                                                <span class="text-danger"> تم رفضه</span>
+                                                <div class="text-danger">
+                                                    <span class=""> تم رفضه</span>
+                                                    @include('admin.includes.message_button', [
+                                                            'url' => '#',
+                                                            'btnClass' =>
+                                                                'd-flex align-items-center mt-1',
+                                                            'btnText' =>'<span class="ml-2">' .
+                                                                ' سبب الرفض</span>',
+                                                            'hideDefaultClass' => true,
+                                                            'deleteConfirmMsg'=> 'هذا سبب الرفض',
+                                                            'message' => $requirement->message,
+                                                            'id' => $requirement->id,
+                                                        ])
+                                                </div>
                                                 @endif
                                             </td>
 

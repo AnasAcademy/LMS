@@ -95,14 +95,15 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li
-                        class="{{ request()->is(getAdminPanelUrl('/students/onlyRegistered', false)) ? 'active' : '' }}">
-                        <a class="nav-link @if (!empty($sidebarBeeps['onlyRegistered']) and $sidebarBeeps['onlyRegistered']) beep beep-sidebar @endif"
-                            href="{{ getAdminPanelUrl() }}/students/onlyRegistered/">{{ 'نموذج التسجيلات' }}</a>
+                        class="{{ request()->is(getAdminPanelUrl('/students/registered_users', false)) ? 'active' : '' }}">
+                        <a class="nav-link @if (!empty($sidebarBeeps['registered_users']) and $sidebarBeeps['registered_users']) beep beep-sidebar @endif"
+                            href="{{ getAdminPanelUrl() }}/students/registered_users/">{{ 'نموذج إنشاء حساب' }}</a>
                     </li>
+
                     <li
-                        class="{{ request()->is(getAdminPanelUrl('/students/onlyRegistered', false)) ? 'active' : '' }}">
-                        <a class="nav-link @if (!empty($sidebarBeeps['registered']) and $sidebarBeeps['registered']) beep beep-sidebar @endif"
-                            href="{{ getAdminPanelUrl() }}/students/registered/">{{ 'نموذج التسجيلات المدفوعه' }}</a>
+                        class="{{ request()->is(getAdminPanelUrl('/students/users', false)) ? 'active' : '' }}">
+                        <a class="nav-link @if (!empty($sidebarBeeps['users']) and $sidebarBeeps['users']) beep beep-sidebar @endif"
+                            href="{{ getAdminPanelUrl() }}/students/users">{{ 'نموذج حجز مقعد' }}</a>
                     </li>
                 </ul>
             </li>
