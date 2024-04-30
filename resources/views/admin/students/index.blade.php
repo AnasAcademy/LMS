@@ -153,7 +153,7 @@
                         </div>
 
 
-                        <div class="col-md-3">
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.organization') }}</label>
                                 <select name="organization_id" data-plugin-selectTwo class="form-control populate">
@@ -165,9 +165,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <div class="col-md-3">
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.users_group') }}</label>
                                 <select name="group_id" data-plugin-selectTwo class="form-control populate">
@@ -179,7 +179,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
 
                         <div class="col-md-3">
@@ -228,13 +228,13 @@
                     <tr>
                         <th>ID</th>
                         <th>{{ trans('admin/main.name') }}</th>
-                        <th>{{ trans('admin/main.classes') }}</th>
+                        {{-- <th>{{ trans('admin/main.classes') }}</th>
                         <th>{{ trans('admin/main.appointments') }}</th>
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
                         <th>{{ trans('admin/main.income') }}</th>
-                        <th>{{ trans('admin/main.user_group') }}</th>
+                        <th>{{ trans('admin/main.user_group') }}</th> --}}
                         <th>حاله الدفع</th>
-                        <th>كود الطالب</th>
+                        {{-- <th>كود الطالب</th> --}}
                         <th>{{ trans('admin/main.register_date') }}</th>
                         <th>{{ trans('admin/main.status') }}</th>
                         <th width="120">{{ trans('admin/main.actions') }}</th>
@@ -262,7 +262,7 @@
                                 </div>
                             </td>
 
-                            <td>
+                            {{-- <td>
                                 <div class="media-body">
                                     <div class="text-primary mt-0 mb-1 font-weight-bold">
                                         {{ $user->classesPurchasedsCount }}</div>
@@ -286,13 +286,13 @@
 
                             <td>
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
-                            </td>
+                            </td> --}}
                             <td>
-                                {{ !empty($user->student) ? 'تم دفع رسوم التسجيل' : 'لم يتم الدفع' }}
+                                {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
                             </td>
-                            <td>
+                            {{-- <td>
                                 {{ $user->user_code }}
-                            </td>
+                            </td> --}}
 
                             <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
 
@@ -499,5 +499,5 @@
 
         CertificateSectionToggle();
     </script>
-    
+
 @endpush

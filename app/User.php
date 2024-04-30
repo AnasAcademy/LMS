@@ -27,6 +27,7 @@ use App\Models\Webinar;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use App\Models\OrderItem;
 
 class User extends Authenticatable
 {
@@ -525,6 +526,11 @@ class User extends Authenticatable
 
         return Sale::whereIn('webinar_id', $webinarIds)->sum('amount');
     }
+    public function purchasedFormBundle(){
+        return Sale::where('type', 'form_fee')
+                ->where('buyer_id', $this->id)
+                ->get();
+    }
 
     public function salesCount()
     {
@@ -937,5 +943,9 @@ class User extends Authenticatable
     public function StudentRequirement()
     {
         return $this->hasMany(StudentRequirement::class, "approved_by");
+    }
+
+    Public function OrderItems(){
+        return $this->hasMany(OrderItem::class, "user_id");
     }
 }
