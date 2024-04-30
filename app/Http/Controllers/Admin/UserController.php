@@ -1505,7 +1505,7 @@ class UserController extends Controller
         return back()->with(['toast' => $toastData]);
     }
 
-    public function onlyRegisteredUsers(Request $request, $is_export_excel=false) {
+    public function RegisteredUsers(Request $request, $is_export_excel=false) {
         $this->authorize('admin_users_list');
 
        $query= User::where(['role_name'=> Role::$registered_user])->whereDoesntHave('student');
@@ -1566,7 +1566,7 @@ class UserController extends Controller
 
         return view('admin.students.index', $data);
     }
-    public function RegisteredUsers(Request $request, $is_export_excel=false) {
+    public function Users(Request $request, $is_export_excel=false) {
         $this->authorize('admin_users_list');
 
     //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
