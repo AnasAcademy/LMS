@@ -85,7 +85,10 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         // Route::get('/', 'ApplyController@index');
 
         Route::get('/', function(){
-            if (auth()->check() && auth()->user()->student) {
+            if (auth()->check() && auth()->user()->role_name == 'admin') {
+                return redirect('/admin');
+            }
+            else if (auth()->check() && auth()->user()->student) {
                 return app()->call('App\Http\Controllers\Panel\UserController@requirementIndex');
             } else {
                 return app()->call('App\Http\Controllers\Web\ApplyController@index');

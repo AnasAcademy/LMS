@@ -309,9 +309,7 @@
             }
         }
 
-        showCertificateMessage();
-
-
         CertificateSectionToggle();
+        showCertificateMessage();
     </script>
 @endpush
