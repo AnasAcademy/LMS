@@ -87,8 +87,14 @@
                     {{ trans('auth.login') }}
                 </button>
             </div>
-            <div class="text-left forgetpw">
+            <div class="text-left forgetpw d-flex justify-content-around text-center text-secondary">
                 <a href="/forget-password" target="_blank">نسيت كلمة المرور ؟</a>
+                <span class="text-dark"> | </span>
+                {{-- <span style="width: 2px; height: 22px;" class="bg-dark"></span> --}}
+                <a href="https://anasacademy.uk/certificate/certificate-check.php" target="_blank">التحقق من الشهادات</a>
+            </div>
+            <div class="text-center mt-40">
+                <a href="https://support.anasacademy.uk/" target="_blank" >الدعم الفني والتقني</a>
             </div>
         </form>
 
