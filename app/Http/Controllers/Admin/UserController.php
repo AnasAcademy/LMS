@@ -1614,7 +1614,8 @@ class UserController extends Controller
         //         ->first();
 
         $category = Category::where('parent_id', '!=', null)->get();
-
+        // $requirement=$users[3]->student;
+        // dd($requirement);
         $data = [
             'pageTitle' => trans('public.students'),
             'users' => $users,
