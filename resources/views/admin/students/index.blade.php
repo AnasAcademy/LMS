@@ -333,7 +333,7 @@
                                         @include('admin.includes.confirm_transform_button', [
                                             'url' => getAdminPanelUrl() . '/users/' . $user->id . '/transform',
                                             'btnClass' => 'btn-transparent  text-primary',
-                                            'btnText' => ' <i class="fa fa-arrows-alt"></i>',
+                                            'btnText' => '<i class="fa fa-retweet"></i>',
                                             'hideDefaultClass' => true,
                                             'id' => $user->id,
                                         ])
@@ -500,3 +500,4 @@
         }
     </script>
 @endpush
+

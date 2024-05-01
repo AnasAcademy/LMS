@@ -130,7 +130,7 @@ class RequirementController extends Controller
             'created_at' => time()
         ]);
 
-        if (!empty($data['user_id']) and env('APP_ENV') == 'production' or env('APP_ENV') == 'develepment') {
+        if (!empty($data['user_id']) and env('APP_ENV') == 'production') {
             $user = User::where('id', $data['user_id'])->first();
             if (!empty($user) and !empty($user->email)) {
                 Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'],'name' => $data['name']]));
