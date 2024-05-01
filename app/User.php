@@ -28,6 +28,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use App\Models\OrderItem;
+use App\Models\Service;
 
 class User extends Authenticatable
 {
@@ -947,5 +948,14 @@ class User extends Authenticatable
 
     Public function OrderItems(){
         return $this->hasMany(OrderItem::class, "user_id");
+    }
+
+
+    public function services(){
+        return $this->hasMany(Service::class);
+    }
+
+    public function createdService(){
+        return $this->hasMany(Service::class,"created_by");
     }
 }
