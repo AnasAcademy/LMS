@@ -88,7 +88,7 @@
                     {{-- certificate --}}
                     <div class="form-group col-12  d-none"
                         id="certificate_section">
-                        <label>{{ trans('application_form.want_certificate') }} ؟
+                        <label style="width: auto">{{ trans('application_form.want_certificate') }} ؟
                             *</label>
                         <span class="text-danger font-12 font-weight-bold"
                             id="certificate_message"> </span>
@@ -103,7 +103,7 @@
                                 <label for="want_certificate">
                                     <input type="radio" id="want_certificate"
                                         name="certificate" value="1"
-                                        onchange="showCertificateMessage()"
+                                        onchange="showCertificateMessage(event)"
                                         class=" @error('certificate') is-invalid @enderror"
                                         {{ old('certificate', $user->student->certificate ?? null) === '1' ? 'checked' : '' }}>
                                     نعم
@@ -116,7 +116,7 @@
                                     <input type="radio"
                                         id="doesn't_want_certificate"
                                         name="certificate"
-                                        onchange="showCertificateMessage()"
+                                        onchange="showCertificateMessage(event)"
                                         value="0"
                                         class="@error('certificate') is-invalid @enderror"
                                         {{ old('certificate', $user->student->certificate ?? null) === '0' ? 'checked' : '' }}>

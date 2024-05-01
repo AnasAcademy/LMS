@@ -484,13 +484,14 @@
             }
         }
 
-        function showCertificateMessage() {
-            let messageSection = document.getElementById("certificate_message");
-            let certificateOption = document.querySelector("input[name='certificate']:checked");
+        function showCertificateMessage(event) {
+            let myForm = event.target.closest('form');
+            let messageSection = myForm.querySelector("#certificate_message");
+            let certificateOption = myForm.querySelector("input[name='certificate']:checked");
             if (certificateOption.value === "1") {
-                messageSection.innerHTML = "سوف تحصل على خصم 23%"
+                messageSection.innerHTML = "سوف يحصل على خصم 23%"
             } else if (certificateOption.value === "0") {
-                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
+                messageSection.innerHTML = "بيفوته الحصول علي خصم 23%"
 
             } else {
                 messageSection.innerHTML = ""
