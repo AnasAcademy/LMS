@@ -422,7 +422,7 @@
                                                     <input type="hidden" name="has_certificate" value="0">
                                                     <input type="checkbox" name="has_certificate" id="has_certificate"
                                                         style="accent-color:var(--primary)"
-                                                        @if ($bundle->has_certificate) checked @endif value="1">
+                                                        @if (isset($bundle->has_certificate)) checked @endif value="1">
 
                                                     <label for="has_certificate"
                                                         class="form-check-label mr-2 font-weight-bold"> يضم شهادة الشهادة

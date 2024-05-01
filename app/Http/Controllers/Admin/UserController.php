@@ -975,7 +975,6 @@ class UserController extends Controller
 
         $this->validate($request, [
             'full_name' => 'required|min:3|max:128',
-            'user_code' => 'required',
             'role_id' => 'required|exists:roles,id',
             'email' => (! empty($user->email)) ? 'required|email|unique:users,email,'.$user->id.',id,deleted_at,NULL' : 'nullable|email|unique:users',
             'mobile' => (! empty($user->mobile)) ? 'required|numeric|unique:users,mobile,'.$user->id.',id,deleted_at,NULL' : 'nullable|numeric|unique:users',
@@ -1019,7 +1018,6 @@ class UserController extends Controller
         }
 
         $user->full_name = ! empty($data['full_name']) ? $data['full_name'] : null;
-        $user->user_Code = ! empty($data['user_code']) ? $data['user_code'] : null;
         $user->role_name = $role->name;
         $user->role_id = $role->id;
         $user->timezone = $data['timezone'] ?? null;
@@ -1069,7 +1067,7 @@ class UserController extends Controller
             sendNotification('user_role_change', $notifyOptions, $user->id);
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
     }
 
     private function handleUserCertificateAdditional($userId, $value)
@@ -1108,7 +1106,8 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('msg', 'تم تعديل الصورة بنجاح');
+
     }
 
     public function financialUpdate(Request $request, $id)
@@ -1155,7 +1154,8 @@ class UserController extends Controller
             }
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
+
     }
 
     public function occupationsUpdate(Request $request, $id)
