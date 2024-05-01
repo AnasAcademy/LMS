@@ -246,10 +246,10 @@
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
-                                        <img src="{{ $user->getAvatar() }}" alt="{{ $user->student->ar_name }}">
+                                        <img src="{{ $user->getAvatar() }}" alt="{{ ($user->student) ? $user->student->ar_name : $user->full_name }}">
                                     </figure>
                                     <div class="media-body ml-1">
-                                        <div class="mt-0 mb-1 font-weight-bold">{{ $user->student->ar_name }}</div>
+                                        <div class="mt-0 mb-1 font-weight-bold">{{($user->student) ? $user->student->ar_name : $user->full_name }}</div>
 
                                         @if ($user->mobile)
                                             <div class="text-primary text-small font-600-bold">{{ $user->mobile }}</div>
@@ -288,8 +288,12 @@
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td> --}}
                             <td>
+
                                 @foreach ($user->purchasedFormBundle() as $purchasedFormBundle)
-                                    {{ $purchasedFormBundle->bundle->title }} و
+                                    {{ $purchasedFormBundle->bundle->title }}
+                                    @if (!$loop->last)
+                                    &nbsp;و&nbsp;
+                                    @endif
                                 @endforeach
                             </td>
                             <td>

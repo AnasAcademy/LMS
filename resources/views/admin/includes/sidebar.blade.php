@@ -85,10 +85,10 @@
                     </ul>
                 </li>
             @endcan()
-
+            {{-- @can('students_info') --}}
             {{-- register user --}}
             <li
-                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/onlyRegistered*', false)) ? 'active' : '' }}">
+                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                     <i class="fas fa-graduation-cap"></i>
                     <span>{{ 'التسجيلات' }}</span>
@@ -107,6 +107,7 @@
                     </li>
                 </ul>
             </li>
+            {{-- @endcan --}}
             @can('admin_webinars')
                 <li
                     class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/webinars*', false)) and !request()->is(getAdminPanelUrl('/webinars/comments*', false))) ? 'active' : '' }}">
