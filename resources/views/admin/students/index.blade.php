@@ -233,7 +233,11 @@
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
                         <th>{{ trans('admin/main.income') }}</th>
                         <th>{{ trans('admin/main.user_group') }}</th> --}}
-                        <th>حاله الدفع</th>
+                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                            <th> الدبلومات المسجلة</th>
+                        @endif
+
+                        {{-- <th>حاله الدفع</th> --}}
                         {{-- <th>كود الطالب</th> --}}
                         <th>{{ trans('admin/main.register_date') }}</th>
                         <th>{{ trans('admin/main.status') }}</th>
@@ -246,10 +250,12 @@
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
-                                        <img src="{{ $user->getAvatar() }}" alt="{{ ($user->student) ? $user->student->ar_name : $user->full_name }}">
+                                        <img src="{{ $user->getAvatar() }}"
+                                            alt="{{ $user->student ? $user->student->ar_name : $user->full_name }}">
                                     </figure>
                                     <div class="media-body ml-1">
-                                        <div class="mt-0 mb-1 font-weight-bold">{{($user->student) ? $user->student->ar_name : $user->full_name }}</div>
+                                        <div class="mt-0 mb-1 font-weight-bold">
+                                            {{ $user->student ? $user->student->ar_name : $user->full_name }}</div>
 
                                         @if ($user->mobile)
                                             <div class="text-primary text-small font-600-bold">{{ $user->mobile }}</div>
@@ -287,18 +293,21 @@
                             <td>
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td> --}}
-                            <td>
+                            @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                                <td>
 
-                                @foreach ($user->purchasedFormBundle() as $purchasedFormBundle)
-                                    {{ $purchasedFormBundle->bundle->title }}
-                                    @if (!$loop->last)
-                                    &nbsp;و&nbsp;
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td>
+                                    @foreach ($user->purchasedFormBundle() as $purchasedFormBundle)
+                                        {{ $purchasedFormBundle->bundle->title }}
+                                        @if (!$loop->last)
+                                            &nbsp;و&nbsp;
+                                        @endif
+                                    @endforeach
+                                </td>
+                            @endif
+
+                            {{-- <td>
                                 {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
-                            </td>
+                            </td> --}}
                             {{-- <td>
                                 {{ $user->user_code }}
                             </td> --}}
