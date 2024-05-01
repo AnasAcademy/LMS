@@ -17,6 +17,7 @@ use App\Models\ForumTopic;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\Meeting;
+use App\Models\Notification;
 use App\Models\Region;
 use App\Models\ReserveMeeting;
 use App\Models\Role;
@@ -35,6 +36,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
 
 class UserController extends Controller
 {
@@ -42,6 +45,7 @@ class UserController extends Controller
     {
         $student = Student::where('user_id', $user_id)->first();
         $toDiploma = Bundle::where('id', $request->toDiploma ?? null)->first();
+        $fromDiploma =Bundle::where('id', $request->fromDiploma ?? null)->first();
         try {
             $validatedData = $request->validate([
                 'category_id' => 'required',
@@ -91,11 +95,23 @@ class UserController extends Controller
             $student->bundles()->attach($validatedData['toDiploma'],  ['certificate' =>(!empty($validatedData['certificate'])) ? $validatedData['certificate']:null ]);
 
 
+
             $toastData = [
                 'title' => '',
                 'msg' => 'تم التحويل بنجاح',
                 'status' => 'success',
             ];
+
+            $data['user_id'] = $user->id;
+            $data['name'] = $user->full_name;
+            $data['receiver'] = $user->email;
+            $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+            $data['fromName'] = env('MAIL_FROM_NAME');
+            $data['subject'] = 'تحويل الدبلومة';
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي تحويل الدبلومه المسجلة '.$fromDiploma->title.'  الي '.$toDiploma->title.'  يرجي الذهاب للموقع الخاص بنا للمتابعه باقي الخطوات';
+
+            $this->sendNotification($data);
+
             return redirect()->back()->with(['toast' => $toastData]);
         } catch (\Throwable $th) {
             // dd($th->getMessage());
@@ -109,6 +125,31 @@ class UserController extends Controller
         }
 
     }
+
+    protected function sendNotification($data)
+    {
+        $this->authorize('admin_notifications_send');
+
+        Notification::create([
+            'user_id' => !empty($data['user_id']) ? $data['user_id'] : null,
+            'sender_id' => auth()->id(),
+            'title' => "تحويل الدبلومة",
+            'message' => $data['body'],
+            'sender' => Notification::$AdminSender,
+            'type' => "single",
+            'created_at' => time()
+        ]);
+
+        if (!empty($data['user_id']) and env('APP_ENV') == 'production') {
+            $user = User::where('id', $data['user_id'])->first();
+            if (!empty($user) and !empty($user->email)) {
+                Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'],'name' => $data['name']]));
+            }
+        }
+
+        return true;
+    }
+
 
     public function staffs(Request $request)
     {

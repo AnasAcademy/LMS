@@ -333,7 +333,7 @@
                                         @include('admin.includes.confirm_transform_button', [
                                             'url' => getAdminPanelUrl() . '/users/' . $user->id . '/transform',
                                             'btnClass' => 'btn-transparent  text-primary',
-                                            'btnText' => ' <i class="fa fa-arrows-alt"></i>',
+                                            'btnText' => '<i class="fa fa-retweet"></i>',
                                             'hideDefaultClass' => true,
                                             'id' => $user->id,
                                         ])
@@ -416,99 +416,6 @@
     </section>
 @endsection
 
-@php
-    $bundlesByCategory = [];
-    foreach ($category as $item) {
-        $bundlesByCategory[$item->id] = $item->bundles;
-    }
-@endphp
-
-@push('scripts_bottom')
-    <script src="/assets/default/vendors/daterangepicker/daterangepicker.min.js"></script>
-
-    <script>
-        var undefinedActiveSessionLang = '{{ trans('webinars.undefined_active_session') }}';
-        var saveSuccessLang = '{{ trans('webinars.success_store') }}';
-        var selectChapterLang = '{{ trans('update.select_chapter') }}';
-    </script>
-
-    <script src="/assets/default/js/panel/make_next_session.min.js"></script>
-    {{-- bundle toggle and education section toggle --}}
-    <script>
-        function toggleHiddenInput() {
-            var bundles = @json($bundlesByCategory);
-            var select = document.getElementById("mySelect1");
-            var hiddenInput = document.getElementById("bundle_id");
-            var hiddenLabel = document.getElementById("hiddenLabel1");
-            let education = document.getElementById("education");
-            let high_education = document.getElementsByClassName("high_education");
-            let secondary_education = document.getElementsByClassName("secondary_education");
-            let certificateSection = document.getElementById("certificate_section");
-            if (select.value && hiddenLabel && hiddenInput) {
-                var categoryId = select.value;
-                var categoryBundles = bundles[categoryId];
-
-                if (categoryBundles) {
-                    var options = categoryBundles.map(function(bundle) {
-                        var isSelected = bundle.id == "{{ old('toDiploma', $student->bundle_id ?? null) }}" ?
-                            'selected' : '';
-                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
-                    }).join('');
-
-                    hiddenInput.outerHTML =
-                        '<select id="bundle_id" name="toDiploma"  class="form-control" onchange="CertificateSectionToggle()" required>' +
-                        '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
-                        options +
-                        '</select>';
-                    hiddenLabel.style.display = "block";
-
-                } else {
-                    hiddenInput.outerHTML =
-                        '<input type="text" id="bundle_id" name="toDiploma" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
-                    hiddenLabel.style.display = "none";
-                }
-                var selectedOption = select.options[select.selectedIndex];
-                var selectedText = selectedOption.textContent;
 
 
-            }
-        }
-        toggleHiddenInput();
-    </script>
 
-
-    {{-- Certificate Section Toggle --}}
-    <script>
-        function CertificateSectionToggle() {
-            let certificateSection = document.getElementById("certificate_section");
-            let bundleSelect = document.getElementById("bundle_id");
-            // Get the selected option
-            var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
-            if (selectedOption.getAttribute('has_certificate') == 1) {
-                certificateSection.classList.remove("d-none");
-            } else {
-                certificateSection.classList.add("d-none");
-
-            }
-        }
-
-        function showCertificateMessage() {
-            let messageSection = document.getElementById("certificate_message");
-            let certificateOption = document.querySelector("input[name='certificate']:checked");
-            if (certificateOption.value === "1") {
-                messageSection.innerHTML = "سوف تحصل على خصم 23%"
-            } else if (certificateOption.value === "0") {
-                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
-
-            } else {
-                messageSection.innerHTML = ""
-
-            }
-        }
-
-        showCertificateMessage();
-
-
-        CertificateSectionToggle();
-    </script>
-@endpush
