@@ -416,6 +416,87 @@
     </section>
 @endsection
 
+@php
+    $bundlesByCategory = [];
+    foreach ($category as $item) {
+        $bundlesByCategory[$item->id] = $item->bundles;
+    }
+@endphp
+
+@push('scripts_bottom')
+    <script src="/assets/default/vendors/daterangepicker/daterangepicker.min.js"></script>
+
+    <script>
+        var undefinedActiveSessionLang = '{{ trans('webinars.undefined_active_session') }}';
+        var saveSuccessLang = '{{ trans('webinars.success_store') }}';
+        var selectChapterLang = '{{ trans('update.select_chapter') }}';
+    </script>
+
+    <script src="/assets/default/js/panel/make_next_session.min.js"></script>
+    {{-- bundle toggle and education section toggle --}}
+    <script>
+        function toggleHiddenInput(event) {
+            var bundles = @json($bundlesByCategory);
+
+            let selectInput = event.target;
+            let myForm = selectInput.closest('form');
+            let hiddenInput = myForm.bundle_id;
+            let certificateSection = myForm.certificate_section;
+
+            if (selectInput.value && hiddenInput) {
+                var categoryId = selectInput.value;
+                var categoryBundles = bundles[categoryId];
+
+                if (categoryBundles) {
+                    var options = categoryBundles.map(function(bundle) {
+                        var isSelected = bundle.id == "{{ old('toDiploma', $student->bundle_id ?? null) }}" ?
+                            'selected' : '';
+                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
+                    }).join('');
+
+                    hiddenInput.outerHTML =
+                        '<select id="bundle_id" name="toDiploma"  class="form-control" onchange="CertificateSectionToggle(event)" required>' +
+                        '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
+                        options +
+                        '</select>';
+                }
+            }
+        }
+
+    </script>
 
 
+    {{-- Certificate Section Toggle --}}
+    <script>
+        function CertificateSectionToggle(event) {
+
+            let myForm = event.target.closest('form');
+
+            let certificateSection = myForm.querySelector("#certificate_section");
+            let bundleSelect = myForm.querySelector("#bundle_id");
+            // Get the selected option
+            var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
+            if (selectedOption.getAttribute('has_certificate') == 1) {
+                certificateSection.classList.remove("d-none");
+            } else {
+                certificateSection.classList.add("d-none");
+
+            }
+        }
+
+        function showCertificateMessage() {
+            let messageSection = document.getElementById("certificate_message");
+            let certificateOption = document.querySelector("input[name='certificate']:checked");
+            if (certificateOption.value === "1") {
+                messageSection.innerHTML = "سوف تحصل على خصم 23%"
+            } else if (certificateOption.value === "0") {
+                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
+
+            } else {
+                messageSection.innerHTML = ""
+
+            }
+        }
+    </script>
+@endpush
 

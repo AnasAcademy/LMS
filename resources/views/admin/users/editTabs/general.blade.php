@@ -20,9 +20,9 @@
                 <div class="form-group">
                     <label>كود الطالب</label>
                     <input type="text" name="user_code"
-                           class="form-control  @error('user_code') is-invalid @enderror"
+                           class="form-control  @error('user_code') is-invalid @enderror" disabled
                            value="{{ !empty($user) ? $user->user_code : old('user_code') }}"
-                           placeholder="ادخل كود الطالب"/>
+                           placeholder=" كود المستخدم"/>
                     @error('user_code')
                     <div class="invalid-feedback">
                         {{ $message }}
