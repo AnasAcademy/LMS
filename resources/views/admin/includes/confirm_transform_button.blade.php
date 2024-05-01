@@ -22,7 +22,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm">
+            <form class="modal-body" method="post" action="{{ $url }}" id="form{{$id}}">
                 @csrf
                 @php
                     $purchasedFormBundles = $user->purchasedFormBundle();
@@ -51,8 +51,8 @@
                     <div class="form-group">
                         <label for="application"
                             class="form-label">{{ trans('application_form.application') }}*</label>
-                        <select id="mySelect1" name="category_id" required
-                            class="form-control" onchange="toggleHiddenInput()">
+                        <select id="mySelect{{$id}}" name="category_id" required
+                            class="form-control" onchange="toggleHiddenInput(event)">
                             <option disabled selected hidden value="">اختر
                                 الدرجة العلمية التي تريد دراستها في اكاديمية انس
                                 للفنون </option>
@@ -97,7 +97,7 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                        <div class="row mr-5 mt-5">
+                        <div class="row mr-5 mt-3">
                             {{-- want certificate --}}
                             <div class="col-sm-4 col">
                                 <label for="want_certificate">
