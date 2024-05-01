@@ -85,7 +85,7 @@
                     </ul>
                 </li>
             @endcan()
-            {{-- @can('students_info') --}}
+            @can('students_info')
             {{-- register user --}}
             <li
                 class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
@@ -107,7 +107,7 @@
                     </li>
                 </ul>
             </li>
-            {{-- @endcan --}}
+            @endcan
             @can('admin_webinars')
                 <li
                     class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/webinars*', false)) and !request()->is(getAdminPanelUrl('/webinars/comments*', false))) ? 'active' : '' }}">
