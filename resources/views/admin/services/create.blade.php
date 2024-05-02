@@ -55,7 +55,7 @@
                         <div class="card-body">
 
                             <form method="post"
-                                action="{{ getAdminPanelUrl() }}/services/{{ !empty($service) ? $service->id  :  ''}}"
+                                action="{{ getAdminPanelUrl() }}/services{{ !empty($service) ? "/".$service->id  :  ''}}"
                                 id="serviceForm" class="service-form">
                                @csrf()
                                @if (!empty($service))
