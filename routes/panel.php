@@ -299,11 +299,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
     // services Routes
     Route::group(['prefix' => 'services'], function () {
-        Route::get('/', 'serviceController@index');
-        Route::post('/', 'serviceController@store');
-        Route::get('/create', 'serviceController@create');
-        // Route::post('/{id}/update', 'serviceController@update');
-        Route::get('/{id}/delete', 'serviceController@destroy');
+        Route::get('/', 'ServiceController@index');
+       
     });
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
