@@ -5,7 +5,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Service;
-use App\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
 {
@@ -45,7 +46,20 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         //
-        return back();
+        $authUser = Auth::user();
+       $request->validate([
+        'title' => 'required|string|min:3',
+        'description' => 'nullable|string|min:10',
+        'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
+        'apply_link' => 'required|url',
+        'review_link' => 'required|url',
+        'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
+
+       ]);
+
+       $request['created_by'] =$authUser->id;
+       Service::create($request->all());
+       return back()->with('success', 'تم إنشاء الخدمة بنجاح');
     }
 
     /**
@@ -54,22 +68,22 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Service $service)
     {
         //
-        return view('admin.services.show');
+        return view('admin.services.show',  compact('service'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Service $service)
     {
         //
-        return view('admin.services.edit');
+        return view('admin.services.create', compact('service'));
     }
 
     /**
@@ -79,10 +93,24 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Service $service)
     {
         //
-        return back();
+        $authUser = Auth::user();
+        $request->validate([
+            'title' => 'required|string|min:3',
+            'description' => 'nullable|string|min:10',
+            'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
+            'apply_link' => 'required|url',
+            'review_link' => 'required|url',
+            'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
+
+           ]);
+
+           $request['created_by'] =$authUser->id;
+
+           $service->update($request->all());
+        return back()->with('success', 'تم تعديل الخدمة بنجاح');
     }
 
     /**
@@ -91,9 +119,10 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Service $service)
     {
         //
-        return back();
+        $service->delete();
+        return redirect('admin/services')->with('success', 'تم حذف الخدمة بنجاح');
     }
 }

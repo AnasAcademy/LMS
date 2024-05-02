@@ -11,12 +11,12 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $gaurded = ['id'];
+    protected $fillable = ['title', 'description','price', 'apply_link', 'review_link', 'details', 'created_by', 'status'];
 
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
 

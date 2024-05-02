@@ -108,6 +108,29 @@
                 </ul>
             </li>
             @endcan
+
+            {{-- services --}}
+            {{-- <li
+                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>{{ 'الخدمات الإلكترونية' }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/services', false)) ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ getAdminPanelUrl() }}/services">{{ 'قائمة' }}</a>
+                    </li>
+
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/services/create', false)) ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ getAdminPanelUrl() }}/services/create">{{ 'جديد' }}</a>
+                    </li>
+                </ul>
+            </li> --}}
+
             @can('admin_webinars')
                 <li
                     class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/webinars*', false)) and !request()->is(getAdminPanelUrl('/webinars/comments*', false))) ? 'active' : '' }}">
