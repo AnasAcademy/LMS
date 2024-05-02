@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Service;
 
 class ServiceController extends Controller
 {
@@ -15,7 +16,8 @@ class ServiceController extends Controller
     public function index()
     {
         //
-        return view(getTemplate() . '.panel.services.index');
+        $services = Service::where('status', 'active')->get();
+        return view(getTemplate() . '.panel.services.index', compact('services'));
     }
 
     /**

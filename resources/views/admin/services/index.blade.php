@@ -5,6 +5,17 @@
     <section class="section">
         <div class="section-header">
             <h1>قائمة بالخدمات الإالكترونية</h1>
+            <div class="section-header-breadcrumb">
+                <div class="breadcrumb-item active"><a
+                        href="{{ getAdminPanelUrl() }}">{{ trans('admin/main.dashboard') }}</a>
+                </div>
+                <div class="breadcrumb-item active">
+                    <a href="{{ getAdminPanelUrl() }}/services">الخدمات الإلكترونية</a>
+                </div>
+                <div class="breadcrumb-item">
+                    قائمة
+                </div>
+            </div>
         </div>
 
 
@@ -32,135 +43,52 @@
                             <div class="table-responsive">
                                 <table class="table table-striped font-14 ">
                                     <tr>
-                                        <th>{{ 'Index' }}</th>
-                                        <th class="text-left">{{ 'الإسم' }}</th>
-                                        <th class="text-left">{{ 'الوصف' }}</th>
-                                        <th>{{ 'الثمن' }}</th>
-                                        <th>{{ 'الحالة' }}</th>
-                                        <th>{{ 'المنشئ' }}</th>
-                                        <th>{{ 'تاريخ الإنشاء ' }}</th>
+                                        <th class="text-center">{{ 'Index' }}</th>
+                                        <th class="text-center">{{ 'العنوان' }}</th>
+                                        <th class="text-center">{{ 'الوصف' }}</th>
+                                        <th class="text-center">{{ 'السعر' }}</th>
+                                        <th class="text-center">{{ 'الحالة' }}</th>
+                                        <th class="text-center">{{ 'المنشئ' }}</th>
+                                        <th class="text-center">{{ 'تاريخ الإنشاء ' }}</th>
 
                                         <th width="120">{{ 'الأجراءات' }}</th>
                                     </tr>
-                                    @foreach ($services as $index => $service)
+                                    @foreach ($services as $service)
                                         <tr class="text-center">
-                                            <td>{{ ++$index }}</td>
-                                            <td class="text-left">{{ $service->bundleStudent->student->registeredUser->user_code }}
-                                            </td>
-                                            <td class="text-left">
-                                                <div class="d-flex align-items-center">
-                                                    <figure class="avatar mr-2">
-                                                        <img src="{{ $service->bundleStudent->student->registeredUser->getAvatar() }}" alt="{{ $service->bundleStudent->student->registeredUser->full_name }}">
-                                                    </figure>
-                                                    <div class="media-body ml-1">
-                                                        <div class="mt-0 mb-1 font-weight-bold">{{ $service->bundleStudent->student ? $service->bundleStudent->student->ar_name : $service->bundleStudent->student->registeredUser->full_name }}
-                                                        </div>
-
-                                                        @if ($service->bundleStudent->student->registeredUser->mobile)
-                                                            <div class="text-primary text-small font-600-bold">{{ $service->bundleStudent->student->registeredUser->mobile }}</div>
-                                                        @endif
-
-                                                        @if ($service->bundleStudent->student->registeredUser->email)
-                                                            <div class="text-primary text-small font-600-bold">{{ $service->bundleStudent->student->registeredUser->email }}</div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-
-                                            </td>
-
-
-                                            <td>{{ $service->bundleStudent->bundle->category->slug }}</td>
-
-                                            <td>{{ $service->bundleStudent->bundle->title }}</td>
-
-                                            <td>
-                                                <a href="/store/{{ $service->identity_attachment }}" target="_blank">
-                                                    @if (pathinfo($service->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
-                                                        <img src="/store/{{ $service->identity_attachment }}"
-                                                            alt="identity_attachment" width="100px">
-                                                    @else
-                                                        pdf ملف <i class="fas fa-file font-20"></i>
-
-                                                    @endif
-                                                </a>
-                                            </td>
-
-                                            <td>
-                                                <a href="/store/{{ $service->admission_attachment }}" target="_blank" class="text-black">
-                                                    pdf ملف <i class="fas fa-file font-20"></i>
-                                                </a>
-                                            </td>
-
-                                            <td>
-                                                @if ($service->status=="pending")
-                                                <span class="text-success"> معلق</span>
-                                                @elseif($service->status=="approved")
-                                                <span class="text-primary"> تم الموافقة عليه</span>
-                                                @elseif($service->status=="rejected")
-                                                <div class="text-danger">
-                                                    <span class=""> تم رفضه</span>
-                                                    @include('admin.includes.message_button', [
-                                                            'url' => '#',
-                                                            'btnClass' =>
-                                                                'd-flex align-items-center mt-1',
-                                                            'btnText' =>'<span class="ml-2">' .
-                                                                ' سبب الرفض</span>',
-                                                            'hideDefaultClass' => true,
-                                                            'deleteConfirmMsg'=> 'هذا سبب الرفض',
-                                                            'message' => $service->message,
-                                                            'id' => $service->id,
-                                                        ])
-                                                </div>
-                                                @endif
-                                            </td>
-
-                                            <td>{{ $service->admin ? $service->admin->full_name : '' }}
-                                            </td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td class="text-center">{{ $service->title }}</td>
+                                            <td class="text-center">{{ $service->description }}</td>
+                                            <td class="text-center">{{ $service->price }}</td>
+                                            <td class="text-center">{{ trans('admin/main.'.$service->status) }}</td>
+                                            <td class="text-center">{{ $service->created_by ?  $service->createdBy->full_name  : '' }}</td>
 
                                             <td class="font-12">
-                                                {{ (Carbon\Carbon::parse($service->created_at))
-                                                    ->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}</td>
+                                                {{ Carbon\Carbon::parse($service->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                            </td>
 
                                             {{-- actions --}}
                                             <td width="200" class="">
 
                                                 <div class="d-flex justify-content-center align-items-baseline gap-3">
-                                                    @can('admin_services_approve')
-                                                        {{-- <a href="{{getAdminPanelUrl().'/services/'.$service->id.'/approve'}}" class="btn btn-primary d-flex align-items-center btn-sm mt-1"> <i class="fa fa-check"></i><span class="ml-2"> قبول</a> --}}
 
-                                                        {{-- <a href="{{getAdminPanelUrl().'/services/'.$service->id.'/reject'}}" class="btn btn-danger d-flex align-items-center btn-sm mt-1"> <i class="fa fa-check"></i><span class="ml-2"> رفض</a> --}}
-                                                        @include('admin.includes.delete_button', [
-                                                            'url' =>
-                                                                getAdminPanelUrl() .
-                                                                '/services/' .
-                                                                $service->id .
-                                                                '/approve',
-                                                            'btnClass' =>
-                                                                'btn btn-primary d-flex align-items-center btn-sm mt-1 ml-3',
-                                                            'btnText' =>
-                                                                '<i class="fa fa-check"></i><span class="ml-2"> قبول' .
-                                                                // trans('admin/main.approve') .
-                                                                '</span>',
-                                                            'hideDefaultClass' => true,
-                                                        ])
-                                                    @endcan
-                                                    @can('admin_services_reject')
-                                                        @include('admin.includes.confirm_delete_button', [
-                                                            'url' =>
-                                                                getAdminPanelUrl() .
-                                                                '/services/' .
-                                                                $service->id .
-                                                                '/reject',
-                                                            'btnClass' =>
-                                                                'btn btn-danger d-flex align-items-center btn-sm mt-1',
-                                                            'btnText' =>
-                                                                '<i class="fa fa-times"></i><span class="ml-2">' .
-                                                                trans('admin/main.reject') .
-                                                                '</span>',
-                                                            'hideDefaultClass' => true,
-                                                            'id' => $service->id
-                                                        ])
-                                                    @endcan
+                                                    {{-- <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}" class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a> --}}
+
+                                                    @include('admin.services.show', [
+                                                        'url' => getAdminPanelUrl() . '/services/' . $service->id,
+                                                        'btnClass' => 'btn-transparent  text-primary',
+                                                        'btnText' => '<i class="fa fa-eye"></i>',
+                                                        'hideDefaultClass' => true,
+                                                        'service' => $service,
+                                                    ])
+
+                                                    <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}/edit" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+
+                                                    @include('admin.includes.delete_button',['url' => getAdminPanelUrl().'/services/'.$service->id.'/delete' , 'btnClass' => '', 'deleteConfirmMsg' => trans('admin/main.delete_confirm_msg')])
+
                                                 </div>
                                             </td>
                                         </tr>

@@ -4,50 +4,40 @@
     <link rel="stylesheet" href="/assets/default/vendors/select2/select2.min.css">
     <link rel="stylesheet" href="/assets/default/vendors/daterangepicker/daterangepicker.min.css">
     <style>
-        .service-card svg{
-            width: 40px; !important;
-            height: 40px; !important;
+        .service-card svg {
+            width: 40px;
+            !important;
+            height: 40px;
+            !important;
             fill: var(--secondary);
         }
 
         /* .module-box:hover{
-            background-color: var(--secondary) !important;
+                background-color: var(--secondary) !important;
 
-        }
-        /* .module-box:hover a{
-            background-color: var(--secondary);
-        } */
+            }
+            /* .module-box:hover a{
+                background-color: var(--secondary);
+            } */
 
-        .module-box:hover .service-card svg{
+        .module-box:hover .service-card svg {
             fill: var(--primary);
-        } */
+        }
 
-
+        */
     </style>
 @endpush
 
 @section('content')
+    @include('web.default.panel.services.includes.progress')
 
-  @include('web.default.panel.services.includes.progress')
-
-  <section class="row p-20">
-    <div class="col-12 col-lg-4 mt-35 ">
-            @include('web.default.panel.services.includes.service_card', ['title'=> 'طلب شهادة CPR', 'description'=>'', 'price'=>100, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
-    </div>
-    <div class="col-12 col-lg-4 mt-35 ">
-            @include('web.default.panel.services.includes.service_card', ['title'=> 'التحويل إلى برنامج آخر', 'price'=>120, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
-    </div>
-    <div class="col-12 col-lg-4 mt-35 ">
-            @include('web.default.panel.services.includes.service_card', ['title'=> 'استرداد رسوم البرنامج', 'description'=> '', 'price'=>0, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
-    </div>
-    <div class="col-12 col-lg-4 mt-35 ">
-            @include('web.default.panel.services.includes.service_card', ['title'=> 'تجميد الإشتراك بالبرنامج', 'description'=> '', 'price'=>200, 'newRequestUrl'=> 'gg', 'reviewOldRequestUrl'=> ''])
-    </div>
-
-  </section>
-
-
-
+    <section class="row p-20">
+        @foreach ($services as $service)
+            <div class="col-12 col-lg-4 mt-35 ">
+                @include('web.default.panel.services.includes.service_card', ['service' =>$service])
+            </div>
+        @endforeach
+    </section>
 @endsection
 @push('scripts_bottom')
     <script src="/assets/vendors/cropit/jquery.cropit.js"></script>

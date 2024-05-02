@@ -320,9 +320,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // services routes
          Route::group(['prefix' => 'services'], function () {
-           Route::resource('/','ServiceController');
-
-
+            Route::resource('', 'ServiceController')->parameters(['' => 'service']);
+            Route::get('/{service}/delete', 'ServiceController@destroy');
         });
 
         Route::group(['prefix' => 'quizzes'], function () {

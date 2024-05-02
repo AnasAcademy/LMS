@@ -153,6 +153,12 @@ return [
         'about_us' => 'كيف عرفت عنا',
         'terms' => 'الشروط',
         'certificate' => 'الشهادة',
+        'title' => 'العنوان',
+        'description' => 'الوصف',
+        'price' => 'السعر',
+        'apply_link' => 'رابط التقديم',
+        'review_link' => 'رابط المراجعه',
+        'status' => 'الحالة',
     ],
 
 ];
