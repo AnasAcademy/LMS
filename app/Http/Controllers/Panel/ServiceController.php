@@ -16,7 +16,7 @@ class ServiceController extends Controller
     public function index()
     {
         //
-        $services = Service::get();
+        $services = Service::where('status', 'active')->get();
         return view(getTemplate() . '.panel.services.index', compact('services'));
     }
 
