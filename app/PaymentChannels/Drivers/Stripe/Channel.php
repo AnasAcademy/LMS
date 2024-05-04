@@ -36,9 +36,8 @@ class Channel extends BasePaymentChannel implements IChannel
         $price = $this->makeAmountByCurrency($order->total_amount, $this->currency);
         $generalSettings = getGeneralSettings();
         $currency = currency();
-        
+
         Stripe::setApiKey($this->api_secret);
-//  dd($this->currency);
         $checkout = Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
