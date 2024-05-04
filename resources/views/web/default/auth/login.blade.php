@@ -22,9 +22,13 @@
     .cs-btn:hover{
         background-color:#5F2B80 !important;
     }
-    .registertext a:hover{
+    a:hover{
        text-decoration:underline;
-        color:#333;
+        color:#ED1088 !important;
+    }
+
+    a, .registertext a {
+        color:#5f2b80 !important;
     }
 </style>
     <div class="p-md-4 m-md-3">
@@ -87,8 +91,15 @@
                     {{ trans('auth.login') }}
                 </button>
             </div>
-            <div class="text-left forgetpw">
+            <div class="text-left forgetpw d-flex justify-content-around text-center text-secondary">
                 <a href="/forget-password" target="_blank">نسيت كلمة المرور ؟</a>
+                <span class="text-dark"> | </span>
+                {{-- <span style="width: 2px; height: 22px;" class="bg-dark"></span> --}}
+                <a href="https://anasacademy.uk/certificate/certificate-check.php" target="_blank">التحقق من الشهادات</a>
+            </div>
+            <div class="text-center mt-30 mb-50">
+                <a href="https://support.anasacademy.uk/" target="_blank" >فريق الدعم والتواصل</a>
+
             </div>
         </form>
 

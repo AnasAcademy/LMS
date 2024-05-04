@@ -299,6 +299,7 @@ class BundleController extends Controller
             'status' => Bundle::$pending,
             'created_at' => time(),
             'updated_at' => time(),
+            'has_certificate' => $data['has_certificate'],
         ]);
 
         if ($bundle) {
@@ -521,6 +522,7 @@ class BundleController extends Controller
             'message_for_reviewer' => $data['message_for_reviewer'] ?? null,
             'status' => $data['status'],
             'updated_at' => time(),
+            'has_certificate' => $data['has_certificate'],
         ]);
 
         if ($bundle) {

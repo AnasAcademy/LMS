@@ -97,8 +97,10 @@ class RequirementController extends Controller
                 $data['subject'] = 'الرد علي متطلبات القبول المرسلة';
                 // $data['body'] = 'نود اعلامك علي انه يوجد مشكلة في الملفات التي قمت برفعها يرجي الذهاب للموقع لرفعها مرة اخري بشكل صحيح ';
                 $data['body'] = "لقد تم رفض طلبك بسبب ".$request['reason'];
+                $requirements->message =  $request['reason']. "<br>";
                 if(isset($request['message'])){
                     $data['body'] =  $data['body'] . "\n" . $request['message'];
+                    $requirements->message.= $request['message'];
                 }
 
                 $this->sendNotification($data);
@@ -128,7 +130,7 @@ class RequirementController extends Controller
             'created_at' => time()
         ]);
 
-        if (!empty($data['user_id']) and env('APP_ENV') == 'production' or env('APP_ENV') == 'develepment') {
+        if (!empty($data['user_id']) and env('APP_ENV') == 'production') {
             $user = User::where('id', $data['user_id'])->first();
             if (!empty($user) and !empty($user->email)) {
                 Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'],'name' => $data['name']]));

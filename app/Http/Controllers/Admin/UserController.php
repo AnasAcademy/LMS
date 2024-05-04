@@ -17,6 +17,7 @@ use App\Models\ForumTopic;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\Meeting;
+use App\Models\Notification;
 use App\Models\Region;
 use App\Models\ReserveMeeting;
 use App\Models\Role;
@@ -34,6 +35,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
 
 class UserController extends Controller
 {
@@ -41,6 +45,7 @@ class UserController extends Controller
     {
         $student = Student::where('user_id', $user_id)->first();
         $toDiploma = Bundle::where('id', $request->toDiploma ?? null)->first();
+        $fromDiploma =Bundle::where('id', $request->fromDiploma ?? null)->first();
         try {
             $validatedData = $request->validate([
                 'category_id' => 'required',
@@ -63,7 +68,7 @@ class UserController extends Controller
                 'certificate' => $toDiploma->has_certificate ? 'required|boolean' : '',
             ]);
             $user = User::where('id', $user_id)->first();
-            $accounting = Accounting::where('form_fee', 1)
+            $accounting = Accounting::where('form_fee', 1)->where('user_id', $user_id)
                 ->where('bundle_id', $validatedData['fromDiploma'])
                 ->first();
             $sale = $user->purchasedFormBundle()->where('bundle_id', $validatedData['fromDiploma'])->first();
@@ -90,11 +95,23 @@ class UserController extends Controller
             $student->bundles()->attach($validatedData['toDiploma'],  ['certificate' =>(!empty($validatedData['certificate'])) ? $validatedData['certificate']:null ]);
 
 
+
             $toastData = [
                 'title' => '',
                 'msg' => 'تم التحويل بنجاح',
                 'status' => 'success',
             ];
+
+            $data['user_id'] = $user->id;
+            $data['name'] = $user->full_name;
+            $data['receiver'] = $user->email;
+            $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+            $data['fromName'] = env('MAIL_FROM_NAME');
+            $data['subject'] = 'تحويل الدبلومة';
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي تحويل الدبلومه المسجلة '.$fromDiploma->title.'  الي '.$toDiploma->title.'  يرجي الذهاب للموقع الخاص بنا للمتابعه باقي الخطوات';
+
+            $this->sendNotification($data);
+
             return redirect()->back()->with(['toast' => $toastData]);
         } catch (\Throwable $th) {
             // dd($th->getMessage());
@@ -108,6 +125,31 @@ class UserController extends Controller
         }
 
     }
+
+    protected function sendNotification($data)
+    {
+        $this->authorize('admin_notifications_send');
+
+        Notification::create([
+            'user_id' => !empty($data['user_id']) ? $data['user_id'] : null,
+            'sender_id' => auth()->id(),
+            'title' => "تحويل الدبلومة",
+            'message' => $data['body'],
+            'sender' => Notification::$AdminSender,
+            'type' => "single",
+            'created_at' => time()
+        ]);
+
+        if (!empty($data['user_id']) and env('APP_ENV') == 'production') {
+            $user = User::where('id', $data['user_id'])->first();
+            if (!empty($user) and !empty($user->email)) {
+                Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'],'name' => $data['name']]));
+            }
+        }
+
+        return true;
+    }
+
 
     public function staffs(Request $request)
     {
@@ -974,7 +1016,6 @@ class UserController extends Controller
 
         $this->validate($request, [
             'full_name' => 'required|min:3|max:128',
-            'user_code' => 'required',
             'role_id' => 'required|exists:roles,id',
             'email' => (! empty($user->email)) ? 'required|email|unique:users,email,'.$user->id.',id,deleted_at,NULL' : 'nullable|email|unique:users',
             'mobile' => (! empty($user->mobile)) ? 'required|numeric|unique:users,mobile,'.$user->id.',id,deleted_at,NULL' : 'nullable|numeric|unique:users',
@@ -1018,7 +1059,6 @@ class UserController extends Controller
         }
 
         $user->full_name = ! empty($data['full_name']) ? $data['full_name'] : null;
-        $user->user_Code = ! empty($data['user_code']) ? $data['user_code'] : null;
         $user->role_name = $role->name;
         $user->role_id = $role->id;
         $user->timezone = $data['timezone'] ?? null;
@@ -1068,7 +1108,7 @@ class UserController extends Controller
             sendNotification('user_role_change', $notifyOptions, $user->id);
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
     }
 
     private function handleUserCertificateAdditional($userId, $value)
@@ -1107,7 +1147,8 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('msg', 'تم تعديل الصورة بنجاح');
+
     }
 
     public function financialUpdate(Request $request, $id)
@@ -1154,7 +1195,8 @@ class UserController extends Controller
             }
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
+
     }
 
     public function occupationsUpdate(Request $request, $id)
@@ -1502,5 +1544,131 @@ class UserController extends Controller
         ];
 
         return back()->with(['toast' => $toastData]);
+    }
+
+    public function RegisteredUsers(Request $request, $is_export_excel=false) {
+        $this->authorize('admin_users_list');
+
+       $query= User::where(['role_name'=> Role::$registered_user])->whereDoesntHave('student');
+
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+            ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+            ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+                ->paginate(10);
+        }
+
+        $users = $this->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        // $purchasedFormBundle=null;
+        // $purchasedUserFormBundle=Sale::where('type', 'form_fee')
+        //         ->where('buyer_id', $user->id)
+        //         ->first();
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+        ];
+
+        return view('admin.students.index', $data);
+    }
+    public function Users(Request $request, $is_export_excel=false) {
+        $this->authorize('admin_users_list');
+
+    //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
+    //         $item->where('form_fee', true);
+    //     });
+        $query= User::where(['role_name'=> Role::$registered_user])->whereHas('student');
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+            ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+            ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+                ->paginate(10);
+        }
+
+        $users = $this->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        // $purchasedFormBundle=null;
+        // $purchasedUserFormBundle=Sale::where('type', 'form_fee')
+        //         ->where('buyer_id', $user->id)
+        //         ->first();
+
+        $category = Category::where('parent_id', '!=', null)->get();
+        // $requirement=$users[3]->student;
+        // dd($requirement);
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+        ];
+
+        return view('admin.students.index', $data);
     }
 }

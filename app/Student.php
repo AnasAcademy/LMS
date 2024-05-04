@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
+use App\StudentRequirement;
 use App\Models\Bundle;
 
 class Student extends Model
@@ -20,6 +21,11 @@ class Student extends Model
     public function bundles()
     {
         return $this->belongsToMany(Bundle::class);
+    }
+    public function bundleStudent(){
+
+        return $this->hasMany(BundleStudent::class,'student_id');
+
     }
 
 }
