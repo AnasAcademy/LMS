@@ -314,6 +314,7 @@ class PaymentController extends Controller
 
             $bundle_sale = Sale::where('order_id', $order->id)
                 ->where('type', 'bundle')
+                ->orWhere('type', 'installment_payment')
                 ->where('buyer_id', $user->id)
                 ->first();
             $pivotId = null;
