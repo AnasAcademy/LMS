@@ -437,7 +437,7 @@
             @if (
                 $authUser->can('admin_users') or
                     $authUser->can('admin_roles') or
-                    $authUser->can('admin_users_not_access_content') or
+                    // $authUser->can('admin_users_not_access_content') or
                     $authUser->can('admin_group') or
                     $authUser->can('admin_users_badges') or
                     $authUser->can('admin_become_instructors_list') or
