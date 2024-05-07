@@ -297,6 +297,11 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/step/2', 'UserController@account');
     });
 
+    // services Routes
+    Route::group(['prefix' => 'services'], function () {
+        Route::get('/', 'ServiceController@index');
+       
+    });
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
         Route::get('/', 'SupportsController@index');

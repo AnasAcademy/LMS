@@ -19,6 +19,9 @@ return [
         'secret' => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
+    'google_analytics' => [
+        'tracking_id' => env('GOOGLE_ANALYTICS_TRACKING_ID'),
+    ],
 
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),

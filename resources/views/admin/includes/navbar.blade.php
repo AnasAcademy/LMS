@@ -73,7 +73,24 @@
                 <img alt="image" src="{{ $authUser->getAvatar() }}" class="rounded-circle mr-1">
                 <div class="d-sm-none d-lg-inline-block">{{ $authUser->full_name }}</div>
             </a>
-            
+
+            <div class="dropdown-menu dropdown-menu-right">
+
+                <a href="/" class="dropdown-item has-icon">
+                   <i class="fas fa-globe"></i> {{ trans('admin/main.show_website') }}
+               </a>
+
+               <a href="{{ getAdminPanelUrl() }}/users/{{ $authUser->id }}/edit" class="dropdown-item has-icon">
+                   <i class="fas fa-cog"></i> {{ trans('admin/main.change_password') }}
+               </a>
+
+               <div class="dropdown-divider"></div>
+               <a href="{{ getAdminPanelUrl() }}/logout" class="dropdown-item has-icon text-danger">
+                   <i class="fas fa-sign-out-alt"></i> {{ trans('admin/main.logout') }}
+               </a>
+           </div>
+
+
         </li>
     </ul>
 </nav>

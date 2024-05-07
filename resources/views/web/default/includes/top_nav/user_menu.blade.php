@@ -6,6 +6,15 @@
     fill:#ED1088;
 }
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WSVP27XBX1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WSVP27XBX1');
+</script>
 @if(!empty($authUser))
 
     <div class="custom-dropdown navbar-auth-user-dropdown position-relative">

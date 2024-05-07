@@ -11,6 +11,7 @@ use App\Models\WebinarChapter;
 use App\Models\WebinarPartnerTeacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Gift;
 
 class WebinarsController extends Controller
 {
@@ -204,10 +205,10 @@ class WebinarsController extends Controller
 
     public function purchases()
     {
-        $user = apiAuth();
+        $user = auth("api")->user();
         $webinarIds = $user->getPurchasedCoursesIds();
 
-        $webinars = Sale::where('sales.buyer_id', $user->id)
+        $webinars = Sale::where('sales.buyer_id', $user->id)->where("type", "bundle")
             ->whereNull('sales.refund_at')
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
@@ -303,6 +304,151 @@ class WebinarsController extends Controller
                 'webinars' => $this->organizations()
             ]);
 
+    }
+
+
+    public function purchases2(Request $request)
+    {
+        $user = auth("api")->user();
+
+        $giftsIds = Gift::query()->where('email', $user->email)
+            ->where('status', 'active')
+            ->whereNull('product_id')
+            ->where(function ($query) {
+                $query->whereNull('date');
+                $query->orWhere('date', '<', time());
+            })
+            ->whereHas('sale')
+            ->pluck('id')
+            ->toArray();
+
+        $query = Sale::query()
+            ->where(function ($query) use ($user, $giftsIds) {
+                $query->where('sales.buyer_id', $user->id);
+                $query->orWhereIn('sales.gift_id', $giftsIds);
+            })
+            ->whereNull('sales.refund_at')
+            ->where('access_to_purchased_item', true)
+            ->where(function ($query) {
+                $query->Where(function ($query) {
+                    $query->whereNotNull('sales.bundle_id')
+                        ->where('sales.type', 'bundle')
+                        ->whereHas('bundle', function ($query) {
+                            $query->where('status', 'active');
+                        });
+                });
+                $query->orWhere(function ($query) {
+                    $query->whereNotNull('gift_id');
+                    $query->whereHas('gift');
+                });
+            });
+
+
+            $sales = deepClone($query)
+            ->with([
+                'webinar' => function ($query) {
+                    $query->with([
+                        'files',
+                        'reviews' => function ($query) {
+                            $query->where('status', 'active');
+                        },
+                        'category',
+                        'teacher' => function ($query) {
+                            $query->select('id', 'full_name');
+                        },
+                    ]);
+                    $query->withCount([
+                        'sales' => function ($query) {
+                            $query->whereNull('refund_at');
+                        }
+                    ]);
+                },
+                'bundle' => function ($query) {
+                    $query->with([
+                        'reviews' => function ($query) {
+                            $query->where('status', 'active');
+                        },
+                        'category',
+                        'teacher' => function ($query) {
+                            $query->select('id', 'full_name');
+                        },
+                    ]);
+                }
+            ])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+
+        $time = time();
+
+        $giftDurations = 0;
+        $giftUpcoming = 0;
+        $giftPurchasedCount = 0;
+
+        foreach ($sales as $sale) {
+            if (!empty($sale->gift_id)) {
+                $gift = $sale->gift;
+
+                $sale->webinar_id = $gift->webinar_id;
+                $sale->bundle_id = $gift->bundle_id;
+
+                $sale->webinar = !empty($gift->webinar_id) ? $gift->webinar : null;
+                $sale->bundle = !empty($gift->bundle_id) ? $gift->bundle : null;
+
+                $sale->gift_recipient = !empty($gift->receipt) ? $gift->receipt->full_name : $gift->name;
+                $sale->gift_sender = $sale->buyer->full_name;
+                $sale->gift_date = $gift->date;;
+
+                $giftPurchasedCount += 1;
+
+                if (!empty($sale->webinar)) {
+                    $giftDurations += $sale->webinar->duration;
+
+                    if ($sale->webinar->start_date > $time) {
+                        $giftUpcoming += 1;
+                    }
+                }
+
+                if (!empty($sale->bundle)) {
+                    $bundleWebinars = $sale->bundle->bundleWebinars;
+
+                    foreach ($bundleWebinars as $bundleWebinar) {
+                        $giftDurations += $bundleWebinar->webinar->duration;
+                    }
+                }
+            }
+        }
+
+        $purchasedCount = deepClone($query)
+            ->where(function ($query) {
+                $query->whereHas('webinar');
+                $query->orWhereHas('bundle');
+            })
+            ->count();
+
+        $webinarsHours = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
+            ->select(DB::raw('sum(webinars.duration) as duration'))
+            ->sum('duration');
+        $bundlesHours = deepClone($query)->join('bundle_webinars', 'bundle_webinars.bundle_id', 'sales.bundle_id')
+            ->join('webinars', 'webinars.id', 'bundle_webinars.webinar_id')
+            ->select(DB::raw('sum(webinars.duration) as duration'))
+            ->sum('duration');
+
+        $hours = $webinarsHours + $bundlesHours + $giftDurations;
+
+        $upComing = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
+            ->where('webinars.start_date', '>', $time)
+            ->count();
+
+        $data = [
+            'pageTitle' => trans('webinars.webinars_purchases_page_title'),
+            'sales' => $sales,
+            'purchasedCount' => $purchasedCount + $giftPurchasedCount,
+            'hours' => $hours,
+            'upComing' => $upComing + $giftUpcoming
+        ];
+
+        return apiResponse2(1, 'purchased_webinars', "all purchases webinars are retrieved", $data);
     }
 
 

@@ -4,7 +4,7 @@
 <style>
 
 </style>
-<div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15">
+<div class="xs-panel-nav d-flex d-lg-none justify-content-between py-5 px-15 pt-30">
     <div class="user-info d-flex align-items-center justify-content-between">
         <div class="user-avatar bg-gray200">
             {{-- <img src="{{ $authUser->getAvatar(100) }}" class="img-cover" alt="{{ $authUser->full_name }}"> --}}
@@ -730,6 +730,17 @@
             </li>
         @endcan --}}
 
+            {{-- services --}}
+        {{-- <li class="sidenav-item {{ request()->is('panel/services') ? 'sidenav-item-active' : '' }}">
+            <a href="/panel/services" class="d-flex align-items-center">
+                <span class="sidenav-setting-icon sidenav-item-icon mr-10">
+                    @include('web.default.panel.includes.sidebar_icons.service', ['class' => 'cls-1'])
+                </span>
+                <span class="font-14 text-dark-blue font-weight-500">الخدمات  الإلكترونية</span>
+            </a>
+        </li> --}}
+
+        {{-- Setting --}}
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">
             <a href="/panel/setting" class="d-flex align-items-center">
                 <span class="sidenav-setting-icon sidenav-item-icon mr-10">
@@ -738,7 +749,6 @@
                 <span class="font-14 text-dark-blue font-weight-500">{{ trans('panel.settings') }}</span>
             </a>
         </li>
-
 
 
         @if ($authUser->isTeacher() or $authUser->isOrganization())

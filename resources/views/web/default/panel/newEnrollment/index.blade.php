@@ -146,32 +146,39 @@
                                     value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
                             </div>
 
-                            {{--  education --}}
-                            @php
-                                $countries = [
-                                    'السعودية',
-                                    'الامارات العربية المتحدة',
-                                    'الاردن',
-                                    'البحرين',
-                                    'الجزائر',
-                                    'العراق',
-                                    'المغرب',
-                                    'اليمن',
-                                    'السودان',
-                                    'الصومال',
-                                    'الكويت',
-                                    'جنوب السودان',
-                                    'سوريا',
-                                    'لبنان',
-                                    'مصر',
-                                    'تونس',
-                                    'فلسطين',
-                                    'جزرالقمر',
-                                    'جيبوتي',
-                                    'عمان',
-                                    'موريتانيا',
-                                ];
-                            @endphp
+                            {{-- certificate --}}
+                            <div class="form-group col-12  d-none" id="certificate_section">
+                                <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
+                                <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
+                                @error('certificate')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                                <div class="row mr-5 mt-5">
+                                    {{-- want certificate --}}
+                                    <div class="col-sm-4 col">
+                                        <label for="want_certificate">
+                                            <input type="radio" id="want_certificate" name="certificate" value="1"
+                                                onchange="showCertificateMessage()"
+                                                class=" @error('certificate') is-invalid @enderror"
+                                                {{ old('certificate', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
+                                            نعم
+                                        </label>
+                                    </div>
+
+                                    {{-- does not want certificate --}}
+                                    <div class="col">
+                                        <label for="doesn't_want_certificate">
+                                            <input type="radio" id="doesn't_want_certificate" name="certificate"
+                                                onchange="showCertificateMessage()" value="0"
+                                                class="@error('certificate') is-invalid @enderror"
+                                                {{ old('certificate', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
+                                            لا
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
 
 
                             <label class="mt-30">
@@ -189,11 +196,13 @@
                                     لمشاهدة</a>
 
                             </label>
+                            <button type="submit" class="btn btn-primary">{{ trans('application_form.submit') }}</button>
+                        </form>
                     </div>
 
 
                     {{-- display errors --}}
-                    @if ($errors->any())
+                    {{-- @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
                                 @foreach ($errors->all() as $error)
@@ -201,15 +210,12 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
-                    <button type="submit" class="btn btn-primary">{{ trans('application_form.submit') }}</button>
-                    </form>
+                    @endif --}}
+                </Section>
             </div>
-            </Section>
+
+
         </div>
-
-
-    </div>
     </div>
 @endsection
 
@@ -240,7 +246,7 @@
             let education = document.getElementById("education");
             let high_education = document.getElementsByClassName("high_education");
             let secondary_education = document.getElementsByClassName("secondary_education");
-
+            let certificateSection = document.getElementById("certificate_section");
             if (select.value && hiddenLabel && hiddenInput) {
                 var categoryId = select.value;
                 var categoryBundles = bundles[categoryId];
@@ -249,25 +255,61 @@
                     var options = categoryBundles.map(function(bundle) {
                         var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
                             'selected' : '';
-                        return `<option value="${bundle.id}" ${isSelected}>${bundle.title}</option>`;
+                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
                     }).join('');
 
-                    hiddenInput.outerHTML = '<select id="bundle_id" name="bundle_id"  class="form-control">' +
+                    hiddenInput.outerHTML =
+                        '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
                         '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
                     hiddenLabel.style.display = "block";
 
-                }
-                else {
+                } else {
                     hiddenInput.outerHTML =
                         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
                     hiddenLabel.style.display = "none";
                 }
+                var selectedOption = select.options[select.selectedIndex];
+                var selectedText = selectedOption.textContent;
 
 
             }
         }
         toggleHiddenInput();
+    </script>
+
+
+    {{-- Certificate Section Toggle --}}
+    <script>
+        function CertificateSectionToggle() {
+            let certificateSection = document.getElementById("certificate_section");
+            let bundleSelect = document.getElementById("bundle_id");
+            // Get the selected option
+            var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
+            if (selectedOption.getAttribute('has_certificate') == 1) {
+                certificateSection.classList.remove("d-none");
+            } else {
+                certificateSection.classList.add("d-none");
+
+            }
+        }
+
+        function showCertificateMessage() {
+            let messageSection = document.getElementById("certificate_message");
+            let certificateOption = document.querySelector("input[name='certificate']:checked");
+            if (certificateOption.value === "1") {
+                messageSection.innerHTML = "سوف تحصل على خصم 23%"
+            } else if (certificateOption.value === "0") {
+                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
+
+            } else {
+                messageSection.innerHTML = ""
+
+            }
+        }
+
+        CertificateSectionToggle();
+        showCertificateMessage();
     </script>
 @endpush

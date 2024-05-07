@@ -25,7 +25,8 @@ class DashboardController extends Controller
 
         $data = [
             'pageTitle' => trans('panel.dashboard'),
-            'nextBadge' => $nextBadge
+            'nextBadge' => $nextBadge,
+            'user' => $user
         ];
 
         if (!$user->isUser()) {

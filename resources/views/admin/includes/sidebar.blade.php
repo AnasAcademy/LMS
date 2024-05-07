@@ -85,6 +85,51 @@
                     </ul>
                 </li>
             @endcan()
+            @can('students_info')
+            {{-- register user --}}
+            <li
+                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>{{ 'التسجيلات' }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/students/registered_users', false)) ? 'active' : '' }}">
+                        <a class="nav-link @if (!empty($sidebarBeeps['registered_users']) and $sidebarBeeps['registered_users']) beep beep-sidebar @endif"
+                            href="{{ getAdminPanelUrl() }}/students/registered_users/">{{ 'نموذج إنشاء حساب' }}</a>
+                    </li>
+
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/students/users', false)) ? 'active' : '' }}">
+                        <a class="nav-link @if (!empty($sidebarBeeps['users']) and $sidebarBeeps['users']) beep beep-sidebar @endif"
+                            href="{{ getAdminPanelUrl() }}/students/users">{{ 'نموذج حجز مقعد' }}</a>
+                    </li>
+                </ul>
+            </li>
+            @endcan
+
+            {{-- services --}}
+            {{-- <li
+                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>{{ 'الخدمات الإلكترونية' }}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/services', false)) ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ getAdminPanelUrl() }}/services">{{ 'قائمة' }}</a>
+                    </li>
+
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/services/create', false)) ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ getAdminPanelUrl() }}/services/create">{{ 'جديد' }}</a>
+                    </li>
+                </ul>
+            </li> --}}
 
             @can('admin_webinars')
                 <li

@@ -57,8 +57,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@staffs');
         });
 
+
+
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
+            Route::get('/registered_users', 'UserController@RegisteredUsers');
+            Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelStudents');
         });
 
@@ -89,6 +93,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/delete', 'UserController@destroy');
             Route::get('/{id}/acceptRequestToInstructor', 'UserController@acceptRequestToInstructor');
             Route::get('/{user_id}/impersonate', 'UserController@impersonate');
+            Route::post('/{user_id}/transform', 'UserController@transform');
             Route::get('/{user_id}/disable_cashback_toggle', 'UserController@disableCashbackToggle');
             Route::get('/{user_id}/disable_registration_bonus', 'UserController@disableRegitrationBonusStatus');
             Route::get('/{user_id}/disable_installment_approval', 'UserController@disableInstallmentApproval');
@@ -310,8 +315,13 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/new', 'RequirementController@create')->middleware('can:admin_requirements_new');
             Route::get('/{id}/approve', 'RequirementController@approve')->middleware('can:admin_requirements_approve');
             Route::get('/{id}/reject', 'RequirementController@reject')->middleware('can:admin_requirements_reject');
+        });
 
 
+         // services routes
+         Route::group(['prefix' => 'services'], function () {
+            Route::resource('', 'ServiceController')->parameters(['' => 'service']);
+            Route::get('/{service}/delete', 'ServiceController@destroy');
         });
 
         Route::group(['prefix' => 'quizzes'], function () {

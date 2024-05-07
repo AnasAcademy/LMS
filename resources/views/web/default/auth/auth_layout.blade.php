@@ -56,7 +56,7 @@
         }
 
         .auth-hero {
-            background-image: url("{{asset('assets/default/img/auth/BGhome - Copy.png')}}");
+            background-image: url("{{asset('assets/default/img/auth/BG.png')}}");
             background-position: center center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="col-lg-8 col-12 order-lg-2 order-1 position-relative overlay-gradient-bottom min-vh-100 auth_hero_2 d-none d-md-block"
-                    data-background="{{asset('assets/default/img/auth/BGhome.png')}}">
+                    data-background="{{asset('assets/default/img/auth/BG.png')}}">
 
                 </div>
 

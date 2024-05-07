@@ -343,7 +343,7 @@ class PaymentController extends Controller
                         $userData = $request->cookie('user_data');
                         if ($userData) {
                             $userData = json_decode($userData, true);
-                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms'])->toArray();
+                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms','certificate'])->toArray();
                         }
                         $student = Student::where('user_id', auth()->user()->id)->first();
                         if (!$student) {
@@ -358,7 +358,7 @@ class PaymentController extends Controller
 
                         // Check if the student already has the bundle ID attached
                         if (!$student->bundles->contains($bundleId)) {
-                            $student->bundles()->attach($bundleId);
+                            $student->bundles()->attach($bundleId,  ['certificate' =>(!empty($userData['certificate'])) ? $userData['certificate']:null ]);
                             $pivotId = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
                                 ->where('bundle_id', $bundleId)

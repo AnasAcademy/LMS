@@ -126,7 +126,8 @@
                                                                 // dd($bundleWebinar->webinar->assignments);
                                                             @endphp
                                                             @if(!empty($bundleWebinar->webinar->assignments[0]))
-                                                                <button type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;" disabled> يوجد مهام </button>
+                                                                <button type="button"style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
+                                                                disabled> يوجد مهام </button>
                                                             @else
                                                             <button type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;" disabled>لا يوجد مهام بعد</button>
                                                             @endif
