@@ -216,8 +216,13 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
+                @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                    <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
+                        class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+                @else
                 <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+                @endif
             @endcan
             <div class="h-10"></div>
         </div>
@@ -462,7 +467,6 @@
                 }
             }
         }
-
     </script>
 
 
@@ -500,4 +504,3 @@
         }
     </script>
 @endpush
-

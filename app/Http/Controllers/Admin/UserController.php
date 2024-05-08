@@ -1393,11 +1393,31 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = $this->students($request, true);
+        $users = User::where(['role_name'=> Role::$registered_user])->whereHas('student')->orderBy('created_at', 'desc')->get();
 
         $usersExport = new StudentsExport($users);
 
-        return Excel::download($usersExport, 'students.xlsx');
+        return Excel::download($usersExport, 'نموذج حجز مقعد.xlsx');
+    }
+    public function exportExcelUsers(Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+
+        $users = User::where(['role_name'=> Role::$registered_user])->whereDoesntHave('student')->orderBy('created_at', 'desc')->get();
+
+        $usersExport = new StudentsExport($users);
+
+        return Excel::download($usersExport, 'نموذج انشاء حساب.xlsx');
+    }
+    public function exportExcelAll(Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+
+        $users = User::whereIn('role_name', [Role::$registered_user,Role::$user])->orderBy('created_at', 'desc')->get();
+
+        $usersExport = new StudentsExport($users);
+
+        return Excel::download($usersExport, 'الطلاب.xlsx');
     }
 
     public function userRegistrationPackage(Request $request, $id)
