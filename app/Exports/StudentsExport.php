@@ -32,17 +32,15 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'ID',
+
             'Name',
+            'diploma',
+            'created at',
+            'Status',
             'Mobile',
             'Email',
             'Student code',
-            'Classes',
-            'Appointments',
-            'Wallet Charge',
-            'User Group',
-            'Register Date',
-            'Status',
+
         ];
     }
 
@@ -51,18 +49,37 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function map($user): array
     {
-        return [
-            $user->id,
-            $user->full_name,
-            $user->mobile,
-            $user->email,
-            $user->user_code,
-            $user->classesPurchasedsCount . '(' . $this->currency . $user->classesPurchasedsSum . ')',
-            $user->meetingsPurchasedsCount . '(' . $this->currency . $user->meetingsPurchasedsSum . ')',
-            $this->currency . $user->getAccountingBalance(),
-            !empty($user->userGroup) ? $user->userGroup->group->name : '',
-            dateTimeFormat($user->created_at, 'j M Y - H:i'),
-            $user->status,
-        ];
+        if ($user->student) {
+            $diploma = '';
+            $purchasedBundles = $user->purchasedFormBundle();
+
+            if ($purchasedBundles) {
+                foreach ($purchasedBundles as $purchasedBundle) {
+                    $diploma .= ($purchasedBundle->bundle->title.' , ') ;
+                }
+            }
+
+
+            return [
+                $user->student->ar_name,
+                $diploma,
+                dateTimeFormat($user->created_at, 'j M Y - H:i'),
+                $user->status,
+                $user->mobile,
+                $user->email,
+                $user->user_code,
+            ];
+        } else {
+            return [
+                ($user->student ? $user->student->ar_name : $user->full_name),
+                'غير مسجل بعد',
+                dateTimeFormat($user->created_at, 'j M Y - H:i'),
+                $user->status,
+                $user->mobile,
+                $user->email,
+                $user->user_code,
+            ];
+        }
+
     }
 }

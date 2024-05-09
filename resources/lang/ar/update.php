@@ -77,7 +77,7 @@ return [
     'available_for_group_meeting' => 'متاح لاجتماعات المجموعة',
     'hourly_amount' => 'السعر بالساعة',
     'amount_after_n_days' => ':amount  :days  :percent',
-    'amount_upfront' => ':amount القسط الأول',
+    'amount_upfront' => ':amount القسط الأول للتسجيل',
     'upfront'=>'القسط الأول',
     'installments'=>'أقساط',
     'online_group_meeting_options' => 'خيارات اجتماع المجموعة عبر الإنترنت',

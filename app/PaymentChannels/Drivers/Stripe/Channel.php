@@ -54,10 +54,10 @@ class Channel extends BasePaymentChannel implements IChannel
             'success_url' => $this->makeCallbackUrl('success'),
             'cancel_url' => $this->makeCallbackUrl('cancel'),
         ]);
-// dd($checkout);
-        /*$order->update([
-            'reference_id' => $checkout->id,
-        ]);*/
+        // dd($checkout);
+                /*$order->update([
+                    'reference_id' => $checkout->id,
+                ]);*/
 
         session()->put($this->order_session_key, $order->id);
 
@@ -86,12 +86,12 @@ class Channel extends BasePaymentChannel implements IChannel
         $order = Order::where('id', $order_id)
             ->where('user_id', $user->id)
             ->first();
-
+         // dd($request->session_id);
         if ($status == 'success' and !empty($request->session_id) and !empty($order)) {
             Stripe::setApiKey($this->api_secret);
 
             $session = Session::retrieve($request->session_id);
-
+            // dd($session);
             if (!empty($session) and $session->payment_status == 'paid') {
                 $order->update([
                     'status' => Order::$paying
