@@ -260,6 +260,7 @@
             <div class="table-responsive text-center">
                 <table class="table table-striped font-14">
                     <tr>
+                        <th>{{ '#' }}</th>
                         @if (request()->is(getAdminPanelUrl('/students/users', false)))
                             <th>كود الطالب</th>
                         @endif
@@ -281,8 +282,9 @@
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
-                    @foreach ($users as $user)
+                    @foreach ($users as $index =>$user)
                         <tr>
+                            <td>{{ ++$index }}</td>
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
                                 <td>{{ $user->user_code }}</td>
                             @endif

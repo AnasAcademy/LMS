@@ -42,7 +42,7 @@
                             <div class="table-responsive">
                                 <table class="table table-striped font-14 ">
                                     <tr>
-                                        <th>{{ 'Index' }}</th>
+                                        <th>{{ '#' }}</th>
                                         <th class="text-left">{{ 'كود الطالب' }}</th>
                                         <th class="text-left">{{ 'اسم الطالب' }}</th>
                                         <th>{{ 'البرنامج المسجل اليه' }}</th>
