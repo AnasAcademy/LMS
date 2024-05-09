@@ -31,7 +31,13 @@
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="card">
-
+                        <div class="card-header">
+                            @can('admin_requirements_export_excel')
+                                <a href="{{ getAdminPanelUrl() }}/requirements/excel?{{ http_build_query(request()->all()) }}"
+                                    class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+                            @endcan
+                            <div class="h-10"></div>
+                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped font-14 ">
@@ -46,29 +52,35 @@
                                         <th>{{ 'حالة الطلب' }}</th>
                                         <th>{{ 'الأدمن' }}</th>
                                         <th>{{ 'تاريخ ارسال الطلب' }}</th>
-
                                         <th width="120">{{ 'الأجراءات' }}</th>
                                     </tr>
                                     @foreach ($requirements as $index => $requirement)
                                         <tr class="text-center">
                                             <td>{{ ++$index }}</td>
-                                            <td class="text-left">{{ $requirement->bundleStudent->student->registeredUser->user_code }}
+                                            <td class="text-left">
+                                                {{ $requirement->bundleStudent->student->registeredUser->user_code }}
                                             </td>
                                             <td class="text-left">
                                                 <div class="d-flex align-items-center">
                                                     <figure class="avatar mr-2">
-                                                        <img src="{{ $requirement->bundleStudent->student->registeredUser->getAvatar() }}" alt="{{ $requirement->bundleStudent->student->registeredUser->full_name }}">
+                                                        <img src="{{ $requirement->bundleStudent->student->registeredUser->getAvatar() }}"
+                                                            alt="{{ $requirement->bundleStudent->student->registeredUser->full_name }}">
                                                     </figure>
                                                     <div class="media-body ml-1">
-                                                        <div class="mt-0 mb-1 font-weight-bold">{{ $requirement->bundleStudent->student ? $requirement->bundleStudent->student->ar_name : $requirement->bundleStudent->student->registeredUser->full_name }}
+                                                        <div class="mt-0 mb-1 font-weight-bold">
+                                                            {{ $requirement->bundleStudent->student ? $requirement->bundleStudent->student->ar_name : $requirement->bundleStudent->student->registeredUser->full_name }}
                                                         </div>
 
                                                         @if ($requirement->bundleStudent->student->registeredUser->mobile)
-                                                            <div class="text-primary text-small font-600-bold">{{ $requirement->bundleStudent->student->registeredUser->mobile }}</div>
+                                                            <div class="text-primary text-small font-600-bold">
+                                                                {{ $requirement->bundleStudent->student->registeredUser->mobile }}
+                                                            </div>
                                                         @endif
 
                                                         @if ($requirement->bundleStudent->student->registeredUser->email)
-                                                            <div class="text-primary text-small font-600-bold">{{ $requirement->bundleStudent->student->registeredUser->email }}</div>
+                                                            <div class="text-primary text-small font-600-bold">
+                                                                {{ $requirement->bundleStudent->student->registeredUser->email }}
+                                                            </div>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -87,37 +99,36 @@
                                                             alt="identity_attachment" width="100px">
                                                     @else
                                                         pdf ملف <i class="fas fa-file font-20"></i>
-
                                                     @endif
                                                 </a>
                                             </td>
 
                                             <td>
-                                                <a href="/store/{{ $requirement->admission_attachment }}" target="_blank" class="text-black">
+                                                <a href="/store/{{ $requirement->admission_attachment }}" target="_blank"
+                                                    class="text-black">
                                                     pdf ملف <i class="fas fa-file font-20"></i>
                                                 </a>
                                             </td>
 
                                             <td>
-                                                @if ($requirement->status=="pending")
-                                                <span class="text-success"> معلق</span>
-                                                @elseif($requirement->status=="approved")
-                                                <span class="text-primary"> تم الموافقة عليه</span>
-                                                @elseif($requirement->status=="rejected")
-                                                <div class="text-danger">
-                                                    <span class=""> تم رفضه</span>
-                                                    @include('admin.includes.message_button', [
+                                                @if ($requirement->status == 'pending')
+                                                    <span class="text-success"> معلق</span>
+                                                @elseif($requirement->status == 'approved')
+                                                    <span class="text-primary"> تم الموافقة عليه</span>
+                                                @elseif($requirement->status == 'rejected')
+                                                    <div class="text-danger">
+                                                        <span class=""> تم رفضه</span>
+                                                        @include('admin.includes.message_button', [
                                                             'url' => '#',
-                                                            'btnClass' =>
-                                                                'd-flex align-items-center mt-1',
-                                                            'btnText' =>'<span class="ml-2">' .
-                                                                ' سبب الرفض</span>',
+                                                            'btnClass' => 'd-flex align-items-center mt-1',
+                                                            'btnText' =>
+                                                                '<span class="ml-2">' . ' سبب الرفض</span>',
                                                             'hideDefaultClass' => true,
-                                                            'deleteConfirmMsg'=> 'هذا سبب الرفض',
+                                                            'deleteConfirmMsg' => 'هذا سبب الرفض',
                                                             'message' => $requirement->message,
                                                             'id' => $requirement->id,
                                                         ])
-                                                </div>
+                                                    </div>
                                                 @endif
                                             </td>
 
@@ -125,8 +136,8 @@
                                             </td>
 
                                             <td class="font-12">
-                                                {{ (Carbon\Carbon::parse($requirement->created_at))
-                                                    ->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}</td>
+                                                {{ Carbon\Carbon::parse($requirement->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                            </td>
 
                                             {{-- actions --}}
                                             <td width="200" class="">
@@ -165,7 +176,7 @@
                                                                 trans('admin/main.reject') .
                                                                 '</span>',
                                                             'hideDefaultClass' => true,
-                                                            'id' => $requirement->id
+                                                            'id' => $requirement->id,
                                                         ])
                                                     @endcan
                                                 </div>

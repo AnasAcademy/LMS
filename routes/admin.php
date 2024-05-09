@@ -319,6 +319,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/new', 'RequirementController@create')->middleware('can:admin_requirements_new');
             Route::get('/{id}/approve', 'RequirementController@approve')->middleware('can:admin_requirements_approve');
             Route::get('/{id}/reject', 'RequirementController@reject')->middleware('can:admin_requirements_reject');
+            Route::get('/excel', 'RequirementController@exportExcelRequirements');
         });
 
 

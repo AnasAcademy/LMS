@@ -162,7 +162,7 @@ class UserController extends Controller
         $query = $this->filters($query, $request);
 
         $users = $query->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(20);
 
         $data = [
             'pageTitle' => trans('admin/main.staff_list_title'),
@@ -198,7 +198,7 @@ class UserController extends Controller
             $users = $query->orderBy('created_at', 'desc')->get();
         } else {
             $users = $query->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         }
 
         $users = $this->addUsersExtraInfo($users);
@@ -253,7 +253,7 @@ class UserController extends Controller
             $users = $query->orderBy('created_at', 'desc')->get();
         } else {
             $users = $query->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         }
 
         $users = $this->addUsersExtraInfo($users);
@@ -316,7 +316,7 @@ class UserController extends Controller
             $users = $query->orderBy('created_at', 'desc')->get();
         } else {
             $users = $query->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         }
 
         $users = $this->addUsersExtraInfo($users);
@@ -398,6 +398,9 @@ class UserController extends Controller
         $to = $request->input('to');
         $full_name = $request->get('full_name');
         $user_code = $request->get('user_code');
+        $ar_name = $request->get('ar_name');
+        $email = $request->get('email');
+        $mobile = $request->get('mobile');
         $sort = $request->get('sort');
         $group_id = $request->get('group_id');
         $status = $request->get('status');
@@ -411,6 +414,18 @@ class UserController extends Controller
         }
         if (! empty($user_code)) {
             $query->where('user_code', 'like', "%$user_code%");
+        }
+        if (! empty($ar_name)) {
+            $query->whereHas('student', function ($q) use ($ar_name) {
+                $q->where('ar_name', 'like', "%$ar_name%");
+                $q->orWhere('en_name', 'like', "%$ar_name%");
+            });
+        }
+        if (! empty($email)) {
+            $query->where('email', 'like', "%$email%");
+        }
+        if (! empty($mobile)) {
+            $query->where('mobile', 'like', "%$mobile%");
         }
 
         if (! empty($sort)) {
@@ -1597,7 +1612,7 @@ class UserController extends Controller
             $users = $query->orderBy('created_at', 'desc')->get();
         } else {
             $users = $query->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         }
 
         $users = $this->addUsersExtraInfo($users);
@@ -1660,7 +1675,7 @@ class UserController extends Controller
             $users = $query->orderBy('created_at', 'desc')->get();
         } else {
             $users = $query->orderBy('created_at', 'desc')
-                ->paginate(10);
+                ->paginate(20);
         }
 
         $users = $this->addUsersExtraInfo($users);

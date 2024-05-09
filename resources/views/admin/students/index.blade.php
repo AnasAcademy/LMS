@@ -83,15 +83,44 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
+                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="input-label">كود الطالب</label>
+                                    <input name="user_code" type="text" class="form-control"
+                                        value="{{ request()->get('user_code') }}">
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.search') }}</label>
-                                <input name="user_code" type="text" class="form-control"
-                                    value="{{ request()->get('user_code') }}">
+                                <label class="input-label">بريد الطالب</label>
+                                <input name="email" type="text" class="form-control"
+                                    value="{{ request()->get('email') }}">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">اسم الطالب</label>
+                                <input
+                                    name={{ request()->is(getAdminPanelUrl('/students/users', false)) ? 'ar_name' : 'full_name' }}
+                                    type="text" class="form-control"
+                                    value="{{ request()->get('ar_name') }}{{ request()->get('full_name') }}">
                             </div>
                         </div>
 
                         <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">هاتف الطالب</label>
+                                <input name="mobile" type="text" class="form-control"
+                                    value="{{ request()->get('mobile') }}">
+                            </div>
+                        </div>
+
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.start_date') }}</label>
                                 <div class="input-group">
@@ -150,7 +179,7 @@
                                         {{ trans('admin/main.register_date_descending') }}</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
 
                         {{-- <div class="col-md-3">
@@ -220,8 +249,8 @@
                     <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
                 @else
-                <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
-                    class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+                    <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
+                        class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
                 @endif
             @endcan
             <div class="h-10"></div>
@@ -231,7 +260,10 @@
             <div class="table-responsive text-center">
                 <table class="table table-striped font-14">
                     <tr>
-                        <th>ID</th>
+                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                            <th>كود الطالب</th>
+                        @endif
+
                         <th>{{ trans('admin/main.name') }}</th>
                         {{-- <th>{{ trans('admin/main.classes') }}</th>
                         <th>{{ trans('admin/main.appointments') }}</th>
@@ -251,7 +283,10 @@
 
                     @foreach ($users as $user)
                         <tr>
-                            <td>{{ $user->id }}</td>
+                            @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                                <td>{{ $user->user_code }}</td>
+                            @endif
+
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
@@ -263,7 +298,7 @@
                                             {{ $user->student ? $user->student->ar_name : $user->full_name }}</div>
 
                                         @if ($user->mobile)
-                                            <div class="text-primary text-small font-600-bold">{{ $user->mobile }}</div>
+                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">{{ $user->mobile }}</div>
                                         @endif
 
                                         @if ($user->email)
