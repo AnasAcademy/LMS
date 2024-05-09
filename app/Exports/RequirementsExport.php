@@ -43,6 +43,7 @@ class RequirementsExport implements FromCollection, WithHeadings, WithMapping
             'مرفق الهوية',
             'مرفق متطلبات القبول',
             'حاله الطالب',
+            'سبب الرفض',
             'الأدمن',
             'تاريخ ارسال الطلب'
 
@@ -64,6 +65,7 @@ class RequirementsExport implements FromCollection, WithHeadings, WithMapping
             "https://lms.anasacademy.uk/store/". $requirement->identity_attachment,
             "https://lms.anasacademy.uk/store/".$requirement->admission_attachment,
             $requirement->status,
+            $requirement->status == 'rejected' ? $requirement->message : '',
             $requirement->admin ? $requirement->admin->full_name : '',
             Carbon::parse($requirement->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i'))
         ];
