@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\RequirementsExport;
 use App\Http\Controllers\Controller;
 use App\Student;
 use App\User;
@@ -14,17 +15,27 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Validator;
-
+use Maatwebsite\Excel\Facades\Excel;
 class RequirementController extends Controller
 {
     public function index()
     {
 
-        $requirements = StudentRequirement::orderByDesc('created_at')->paginate(7);
+        $requirements = StudentRequirement::orderByDesc('created_at')->paginate(20);
 
         return view('admin.requirements.index', ['requirements' => $requirements]);
     }
 
+    public function exportExcelRequirements(Request $request)
+    {
+        $this->authorize('admin_requirements_export_excel');
+
+        $requirements = StudentRequirement::orderByDesc('created_at')->get();
+
+        $requirementsExport = new RequirementsExport($requirements);
+
+        return Excel::download($requirementsExport, 'نموذج المتطلبات.xlsx');
+    }
     public function students()
     {
 

@@ -55,12 +55,12 @@
                         <div class="card-body">
 
                             <form method="post"
-                                action="{{ getAdminPanelUrl() }}/services{{ !empty($service) ? "/".$service->id  :  ''}}"
+                                action="{{ getAdminPanelUrl() }}/services{{ !empty($service) ? '/' . $service->id : '' }}"
                                 id="serviceForm" class="service-form">
-                               @csrf()
-                               @if (!empty($service))
-                                @method('PUT')
-                               @endif
+                                @csrf()
+                                @if (!empty($service))
+                                    @method('PUT')
+                                @endif
                                 <section>
                                     <h2 class="section-title after-line">{{ trans('public.basic_information') }}</h2>
 
@@ -105,11 +105,8 @@
                                             <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('public.description') }}</label>
 
-                                                <textarea
-                                                rows="5"
-                                                name="description"
-                                                class="form-control @error('description')  is-invalid @enderror"
-                                                placeholder="ادخل وصف للخدمة وماذا هي تقدم">{{ !empty($service) ? $service->description : old('description') }}</textarea>
+                                                <textarea rows="5" name="description" class="form-control @error('description')  is-invalid @enderror"
+                                                    placeholder="ادخل وصف للخدمة وماذا هي تقدم">{{ !empty($service) ? $service->description : old('description') }}</textarea>
                                                 @error('description')
                                                     <div class="invalid-feedback">
                                                         {{ $message }}
@@ -172,43 +169,47 @@
                                             {{-- status --}}
                                             <div class="form-group  mt-15">
                                                 <label>{{ trans('/admin/main.status') }}</label>
-                                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
-                                                    <option disabled selected>{{ trans('admin/main.select_status') }}</option>
+                                                <select class="form-control @error('status') is-invalid @enderror"
+                                                    id="status" name="status">
+                                                    <option disabled selected>{{ trans('admin/main.select_status') }}
+                                                    </option>
                                                     @foreach (\App\User::$statuses as $status)
-                                                    @if ($status!='pending')
-                                                    <option
-                                                        value="{{ $status }}" {{ old('status', (!empty($service)?$service->status:'')) === $status ? 'selected' :''}}>{{  $status }}</option>
-
-                                                    @endif
+                                                        @if ($status != 'pending')
+                                                            <option value="{{ $status }}"
+                                                                {{ old('status', !empty($service) ? $service->status : '') === $status ? 'selected' : '' }}>
+                                                                {{ $status }}</option>
+                                                        @endif
                                                     @endforeach
                                                 </select>
                                                 @error('status')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
                                                 @enderror
                                             </div>
 
                                         </div>
                                     </div>
 
-                                <div class="row">
-                                    <div class="col-12">
-                                        <button
-                                            class="btn btn-success">{{ !empty($service) ? trans('admin/main.save_and_publish') : trans('admin/main.save_and_continue') }}</button>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button
+                                                class="btn btn-success">{{ !empty($service) ? trans('admin/main.save_and_publish') : trans('admin/main.save_and_continue') }}</button>
 
-                                        @if (!empty($service))
-
-                                            @include('admin.includes.delete_button', [
-                                                'url' =>
-                                                    getAdminPanelUrl() . '/services/' . $service->id . '/delete',
-                                                'btnText' => trans('public.delete'),
-                                                'hideDefaultClass' => true,
-                                                'btnClass' => 'btn btn-danger',
-                                            ])
-                                        @endif
+                                            @if (!empty($service))
+                                                @include('admin.includes.delete_button', [
+                                                    'url' =>
+                                                        getAdminPanelUrl() .
+                                                        '/services/' .
+                                                        $service->id .
+                                                        '/delete',
+                                                    'btnText' => trans('public.delete'),
+                                                    'hideDefaultClass' => true,
+                                                    'btnClass' => 'btn btn-danger',
+                                                ])
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
                             </form>
 
                         </div>
