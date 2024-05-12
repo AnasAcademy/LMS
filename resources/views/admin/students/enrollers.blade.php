@@ -225,8 +225,8 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                    <a href="{{ getAdminPanelUrl() }}/students/excelEnroller?{{ http_build_query(request()->all()) }}"
-                        class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+                <a href="{{ getAdminPanelUrl() }}/students/excelEnroller?{{ http_build_query(request()->all()) }}"
+                    class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
             <div class="h-10"></div>
         </div>
@@ -236,7 +236,7 @@
                 <table class="table table-striped font-14">
                     <tr>
                         <th>{{ '#' }}</th>
-                            <th>كود الطالب</th>
+                        <th>كود الطالب</th>
 
                         <th>{{ trans('admin/main.name') }}</th>
                         {{-- <th>{{ trans('admin/main.classes') }}</th>
@@ -244,7 +244,7 @@
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
                         <th>{{ trans('admin/main.income') }}</th>
                         <th>{{ trans('admin/main.user_group') }}</th> --}}
-                            <th> الدبلومات المسجلة</th>
+                        <th> الدبلومات المسجلة</th>
                         {{-- <th>حاله الدفع</th> --}}
                         {{-- <th>كود الطالب</th> --}}
                         <th>{{ trans('admin/main.register_date') }}</th>
@@ -252,10 +252,10 @@
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
-                    @foreach ($users as $index =>$user)
+                    @foreach ($users as $index => $user)
                         <tr>
                             <td>{{ ++$index }}</td>
-                                <td>{{ $user->user_code }}</td>
+                            <td>{{ $user->user_code }}</td>
 
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
@@ -268,7 +268,8 @@
                                             {{ $user->student ? $user->student->ar_name : null }}</div>
 
                                         @if ($user->mobile)
-                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">{{ $user->mobile }}</div>
+                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">
+                                                {{ $user->mobile }}</div>
                                         @endif
 
                                         @if ($user->email)
@@ -303,15 +304,15 @@
                             <td>
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td> --}}
-                                <td>
+                            <td>
 
-                                    @foreach ($user->purchasedBundles() as $purchasedBundle)
-                                        {{ $purchasedBundle->bundle->title }}
-                                        @if (!$loop->last)
-                                            &nbsp;و&nbsp;
-                                        @endif
-                                    @endforeach
-                                </td>
+                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                    {{ $purchasedBundle->bundle->title }}
+                                    @if (!$loop->last)
+                                        &nbsp;و&nbsp;
+                                    @endif
+                                @endforeach
+                            </td>
 
                             {{-- <td>
                                 {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
@@ -320,7 +321,14 @@
                                 {{ $user->user_code }}
                             </td> --}}
 
-                            <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
+                            <td>
+                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                    {{ dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') }}
+                                    @if (!$loop->last)
+                                        &nbsp;و&nbsp;
+                                    @endif
+                                @endforeach
+                            </td>
 
                             <td>
                                 @if ($user->ban and !empty($user->ban_end_at) and $user->ban_end_at > time())
@@ -336,7 +344,7 @@
                             </td>
 
                             <td class="text-center mb-2" width="120">
-                                <!-- @can('admin_users_transform')
+                                {{-- @can('admin_users_transform')
                                     @if (!empty($user->student))
                                         @include('admin.includes.confirm_transform_button', [
                                             'url' => getAdminPanelUrl() . '/users/' . $user->id . '/transform',
@@ -346,7 +354,7 @@
                                             'id' => $user->id,
                                         ])
                                     @endif
-                                @endcan -->
+                                @endcan --}}
 
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/impersonate" target="_blank"
