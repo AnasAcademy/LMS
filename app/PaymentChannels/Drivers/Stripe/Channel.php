@@ -51,15 +51,15 @@ class Channel extends BasePaymentChannel implements IChannel
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => $this->makeCallbackUrl('success'),
-            'cancel_url' => $this->makeCallbackUrl('cancel'),
+            'success_url' => $this->makeCallbackUrl('success',$order->id),
+            'cancel_url' => $this->makeCallbackUrl('cancel',$order->id),
         ]);
         // dd($checkout);
                 /*$order->update([
                     'reference_id' => $checkout->id,
                 ]);*/
 
-        session()->put($this->order_session_key, $order->id);
+        // session()->put($this->order_session_key, $order->id);
 
         $Html = '<script src="https://js.stripe.com/v3/"></script>';
         $Html .= '<script type="text/javascript">let stripe = Stripe("' . $this->api_key . '");';
@@ -68,29 +68,30 @@ class Channel extends BasePaymentChannel implements IChannel
         echo $Html;
     }
 
-    private function makeCallbackUrl($status)
+    private function makeCallbackUrl($status,$order_id)
     {
-        return url("/payments/verify/Stripe?status=$status&session_id={CHECKOUT_SESSION_ID}");
+        return url("/payments/verify/Stripe?status=$status&order_id=$order_id&session_id={CHECKOUT_SESSION_ID}");
     }
 
     public function verify(Request $request)
     {
         $data = $request->all();
         $status = $data['status'];
+        $order_id = $data['order_id'] ?? null;
 
-        $order_id = session()->get($this->order_session_key, null);
-        session()->forget($this->order_session_key);
+        // session()->forget($this->order_session_key);
 
         $user = auth()->user();
 
         $order = Order::where('id', $order_id)
             ->where('user_id', $user->id)
             ->first();
-         // dd($request->session_id);
+        // dd($request->session_id);
         if ($status == 'success' and !empty($request->session_id) and !empty($order)) {
             Stripe::setApiKey($this->api_secret);
 
             $session = Session::retrieve($request->session_id);
+            // dd($session);
             // dd($session);
             if (!empty($session) and $session->payment_status == 'paid') {
                 $order->update([
