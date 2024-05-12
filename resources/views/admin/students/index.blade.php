@@ -16,7 +16,7 @@
 
     <div class="section-body">
         <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="col-12">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-primary">
                         <i class="fas fa-users"></i>
@@ -31,7 +31,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-success">
                         <i class="fas fa-briefcase"></i>
@@ -45,8 +45,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            </div> --}}
+            {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-warning">
                         <i class="fas fa-info-circle"></i>
@@ -60,8 +60,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            </div> --}}
+            {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-danger">
                         <i class="fas fa-ban"></i>
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
         <section class="card">
@@ -260,6 +260,7 @@
             <div class="table-responsive text-center">
                 <table class="table table-striped font-14">
                     <tr>
+                        <th>{{ '#' }}</th>
                         @if (request()->is(getAdminPanelUrl('/students/users', false)))
                             <th>كود الطالب</th>
                         @endif
@@ -281,8 +282,9 @@
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
-                    @foreach ($users as $user)
+                    @foreach ($users as $index =>$user)
                         <tr>
+                            <td>{{ ++$index }}</td>
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
                                 <td>{{ $user->user_code }}</td>
                             @endif

@@ -18,12 +18,46 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 class RequirementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-
-        $requirements = StudentRequirement::orderByDesc('created_at')->paginate(20);
+        $query=StudentRequirement::orderByDesc('created_at');
+        $query = $this->filters($query, $request);
+        $requirements = $query->paginate(20);
+        // $requirements = StudentRequirement::orderByDesc('created_at')->paginate(20);
 
         return view('admin.requirements.index', ['requirements' => $requirements]);
+    }
+    private function filters($query, $request)
+    {
+
+        $user_code = $request->get('user_code');
+        $ar_name = $request->get('ar_name');
+        $email = $request->get('email');
+        $mobile = $request->get('mobile');
+
+        if (!empty($ar_name)) {
+            $query->whereHas('bundleStudent.student', function ($q) use ($ar_name) {
+                $q->where('ar_name', 'like', "%$ar_name%");
+                $q->orWhere('en_name', 'like', "%$ar_name%");
+            });
+        }
+        if (!empty($user_code)) {
+            $query->whereHas('bundleStudent.student.registeredUser', function ($q) use ($user_code) {
+                $q->where('user_code', 'like', "%$user_code%");
+            });
+        }
+
+        if (!empty($email)) {
+            $query->whereHas('bundleStudent.student.registeredUser', function ($q) use ($email) {
+                $q->where('email', 'like', "%$email%");
+            });
+        }
+        if (!empty($mobile)) {
+            $query->whereHas('bundleStudent.student.registeredUser', function ($q) use ($mobile) {
+                $q->where('mobile', 'like', "%$mobile%");
+            });
+        }
+        return $query;
     }
 
     public function exportExcelRequirements(Request $request)

@@ -212,9 +212,9 @@
                                         <th width="120">{{ trans('admin/main.actions') }}</th>
                                     </tr>
 
-                                    @foreach($sales as $sale)
+                                    @foreach($sales as $index => $sale)
                                         <tr>
-                                            <td>{{ $sale->id }}</td>
+                                            <td>{{ ++$index }}</td>
 
                                             <td class="text-left">
                                                 {{ !empty($sale->buyer) ? $sale->buyer->full_name : '' }}
@@ -265,7 +265,7 @@
                                                     @elseif($sale->type == 'form_fee')
                                                         رسوم نموذج القبول
                                                     @elseif($sale->type == 'certificate')
-                                                        شراء شهادة  
+                                                        شراء شهادة
                                                     @else
                                                         {{ $sale->type }}
                                                     @endif

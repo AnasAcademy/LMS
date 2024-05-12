@@ -226,7 +226,7 @@
             <div class="table-responsive text-center">
                 <table class="table table-striped font-14">
                     <tr>
-                        <th>ID</th>
+                        <th>#</th>
                         <th>{{ trans('admin/main.name') }}</th>
                         <th>{{ trans('admin/main.classes') }}</th>
                         <th>{{ trans('admin/main.appointments') }}</th>
@@ -240,9 +240,9 @@
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
-                    @foreach ($users as $user)
+                    @foreach ($users as $index => $user)
                         <tr>
-                            <td>{{ $user->id }}</td>
+                            <td>{{ ++$index }}</td>
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
