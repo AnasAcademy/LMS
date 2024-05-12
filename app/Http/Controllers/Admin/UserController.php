@@ -45,14 +45,14 @@ class UserController extends Controller
     {
         $student = Student::where('user_id', $user_id)->first();
         $toDiploma = Bundle::where('id', $request->toDiploma ?? null)->first();
-        $fromDiploma =Bundle::where('id', $request->fromDiploma ?? null)->first();
+        $fromDiploma = Bundle::where('id', $request->fromDiploma ?? null)->first();
         try {
             $validatedData = $request->validate([
                 'category_id' => 'required',
                 'fromDiploma' => [
                     'required',
                     function ($attribute, $value, $fail) use ($student) {
-                        if (! $student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                        if (!$student && $student->bundles()->where('bundles.id', $value)->exists()) {
                             $fail('لم يسجل الطالب في هذه الدبلومة.');
                         }
                     },
@@ -92,7 +92,7 @@ class UserController extends Controller
             }
             $certificate = !empty($validatedData['certificate']) ? $validatedData['certificate'] : null;
             $student->bundles()->detach($validatedData['fromDiploma']);
-            $student->bundles()->attach($validatedData['toDiploma'],  ['certificate' =>(!empty($validatedData['certificate'])) ? $validatedData['certificate']:null ]);
+            $student->bundles()->attach($validatedData['toDiploma'], ['certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
 
 
 
@@ -108,7 +108,7 @@ class UserController extends Controller
             $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'تحويل الدبلومة';
-            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي تحويل الدبلومه المسجلة '.$fromDiploma->title.'  الي '.$toDiploma->title.'  يرجي الذهاب للموقع الخاص بنا للمتابعه باقي الخطوات';
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي تحويل الدبلومه المسجلة ' . $fromDiploma->title . '  الي ' . $toDiploma->title . '  يرجي الذهاب للموقع الخاص بنا للمتابعه باقي الخطوات';
 
             $this->sendNotification($data);
 
@@ -143,7 +143,7 @@ class UserController extends Controller
         if (!empty($data['user_id']) and env('APP_ENV') == 'production') {
             $user = User::where('id', $data['user_id'])->first();
             if (!empty($user) and !empty($user->email)) {
-                Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'],'name' => $data['name']]));
+                Mail::to($user->email)->send(new SendNotifications(['title' => $data['subject'], 'message' => $data['body'], 'name' => $data['name']]));
             }
         }
 
@@ -409,26 +409,26 @@ class UserController extends Controller
 
         $query = fromAndToDateFilter($from, $to, $query, 'created_at');
 
-        if (! empty($full_name)) {
+        if (!empty($full_name)) {
             $query->where('full_name', 'like', "%$full_name%");
         }
-        if (! empty($user_code)) {
+        if (!empty($user_code)) {
             $query->where('user_code', 'like', "%$user_code%");
         }
-        if (! empty($ar_name)) {
+        if (!empty($ar_name)) {
             $query->whereHas('student', function ($q) use ($ar_name) {
                 $q->where('ar_name', 'like', "%$ar_name%");
                 $q->orWhere('en_name', 'like', "%$ar_name%");
             });
         }
-        if (! empty($email)) {
+        if (!empty($email)) {
             $query->where('email', 'like', "%$email%");
         }
-        if (! empty($mobile)) {
+        if (!empty($mobile)) {
             $query->where('mobile', 'like', "%$mobile%");
         }
 
-        if (! empty($sort)) {
+        if (!empty($sort)) {
             switch ($sort) {
                 case 'sales_classes_asc':
                     $query->join('sales', 'users.id', '=', 'sales.seller_id')
@@ -532,13 +532,13 @@ class UserController extends Controller
             }
         }
 
-        if (! empty($group_id)) {
+        if (!empty($group_id)) {
             $userIds = GroupUser::where('group_id', $group_id)->pluck('user_id')->toArray();
 
             $query->whereIn('id', $userIds);
         }
 
-        if (! empty($status)) {
+        if (!empty($status)) {
             switch ($status) {
                 case 'active_verified':
                     $query->where('status', 'active')
@@ -559,11 +559,11 @@ class UserController extends Controller
             }
         }
 
-        if (! empty($role_id)) {
+        if (!empty($role_id)) {
             $query->where('role_id', $role_id);
         }
 
-        if (! empty($organization_id)) {
+        if (!empty($organization_id)) {
             $query->where('organ_id', $organization_id);
         }
 
@@ -617,21 +617,21 @@ class UserController extends Controller
             'status' => 'required',
         ]);
 
-        if (! empty($data['role_id'])) {
+        if (!empty($data['role_id'])) {
             $role = Role::find($data['role_id']);
 
-            if (! empty($role)) {
+            if (!empty($role)) {
                 $referralSettings = getReferralSettings();
-                $usersAffiliateStatus = (! empty($referralSettings) and ! empty($referralSettings['users_affiliate_status']));
+                $usersAffiliateStatus = (!empty($referralSettings) and !empty($referralSettings['users_affiliate_status']));
                 $lastCode = Code::latest()->first();
-                if ($role->name == 'user' && ! empty($lastCode)) {
+                if ($role->name == 'user' && !empty($lastCode)) {
                     if (empty($lastCode->lst_sd_code)) {
                         $lastCode->lst_sd_code = $lastCode->student_code;
                     }
                     $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
                     do {
                         $nextCodeAsInt = $lastCodeAsInt + 1;
-                        $nextCode = 'SD'.str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+                        $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
 
                         $codeExists = User::where('user_code', $nextCode)->exists();
 
@@ -654,14 +654,14 @@ class UserController extends Controller
                         'created_at' => time(),
                     ]);
                     $lastCode->update(['lst_sd_code' => $nextCode]);
-                } elseif ($role->name == 'teacher' && ! empty($lastCode)) {
+                } elseif ($role->name == 'teacher' && !empty($lastCode)) {
                     if (empty($lastCode->lst_tr_code)) {
                         $lastCode->lst_tr_code = $lastCode->instructor_code;
                     }
                     $lastCodeAsInt = intval(substr($lastCode->lst_tr_code, 2));
                     do {
                         $nextCodeAsInt = $lastCodeAsInt + 1;
-                        $nextCode = 'TR'.str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+                        $nextCode = 'TR' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
 
                         $codeExists = User::where('user_code', $nextCode)->exists();
 
@@ -699,10 +699,10 @@ class UserController extends Controller
                     ]);
                 }
 
-                if (! empty($data['group_id'])) {
+                if (!empty($data['group_id'])) {
                     $group = Group::find($data['group_id']);
 
-                    if (! empty($group)) {
+                    if (!empty($group)) {
                         GroupUser::create([
                             'group_id' => $group->id,
                             'user_id' => $user->id,
@@ -716,7 +716,7 @@ class UserController extends Controller
                     }
                 }
 
-                return redirect(getAdminPanelUrl().'/users/'.$user->id.'/edit');
+                return redirect(getAdminPanelUrl() . '/users/' . $user->id . '/edit');
             }
         }
 
@@ -762,7 +762,7 @@ class UserController extends Controller
             abort(404);
         }
 
-        if (! empty($user->location)) {
+        if (!empty($user->location)) {
             $user->location = \Geo::getST_AsTextFromBinary($user->location);
 
             $user->location = \Geo::get_geo_array($user->location);
@@ -770,14 +770,14 @@ class UserController extends Controller
 
         $userMetas = $user->userMetas;
 
-        if (! empty($userMetas)) {
+        if (!empty($userMetas)) {
             foreach ($userMetas as $meta) {
                 $user->{$meta->name} = $meta->value;
             }
         }
 
         $becomeInstructor = null;
-        if (! empty($request->get('type')) and $request->get('type') == 'check_instructor_request') {
+        if (!empty($request->get('type')) and $request->get('type') == 'check_instructor_request') {
             $becomeInstructor = BecomeInstructor::where('user_id', $user->id)
                 ->first();
         }
@@ -794,7 +794,7 @@ class UserController extends Controller
         $badges = Badge::all();
 
         $userLanguages = getGeneralSettings('user_languages');
-        if (! empty($userLanguages) and is_array($userLanguages)) {
+        if (!empty($userLanguages) and is_array($userLanguages)) {
             $userLanguages = getLanguages($userLanguages);
         } else {
             $userLanguages = [];
@@ -808,21 +808,21 @@ class UserController extends Controller
             ->where('type', Region::$country)
             ->get();
 
-        if (! empty($user->country_id)) {
+        if (!empty($user->country_id)) {
             $provinces = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
                 ->where('type', Region::$province)
                 ->where('country_id', $user->country_id)
                 ->get();
         }
 
-        if (! empty($user->province_id)) {
+        if (!empty($user->province_id)) {
             $cities = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
                 ->where('type', Region::$city)
                 ->where('province_id', $user->province_id)
                 ->get();
         }
 
-        if (! empty($user->city_id)) {
+        if (!empty($user->city_id)) {
             $districts = Region::select(DB::raw('*, ST_AsText(geo_center) as geo_center'))
                 ->where('type', Region::$district)
                 ->where('city_id', $user->city_id)
@@ -1032,13 +1032,13 @@ class UserController extends Controller
         $this->validate($request, [
             'full_name' => 'required|min:3|max:128',
             'role_id' => 'required|exists:roles,id',
-            'email' => (! empty($user->email)) ? 'required|email|unique:users,email,'.$user->id.',id,deleted_at,NULL' : 'nullable|email|unique:users',
-            'mobile' => (! empty($user->mobile)) ? 'required|numeric|unique:users,mobile,'.$user->id.',id,deleted_at,NULL' : 'nullable|numeric|unique:users',
+            'email' => (!empty($user->email)) ? 'required|email|unique:users,email,' . $user->id . ',id,deleted_at,NULL' : 'nullable|email|unique:users',
+            'mobile' => (!empty($user->mobile)) ? 'required|numeric|unique:users,mobile,' . $user->id . ',id,deleted_at,NULL' : 'nullable|numeric|unique:users',
             'password' => 'nullable|string',
             'bio' => 'nullable|string|min:3|max:48',
             'about' => 'nullable|string|min:3',
             'certificate_additional' => 'nullable|string|max:255',
-            'status' => 'required|'.Rule::in(User::$statuses),
+            'status' => 'required|' . Rule::in(User::$statuses),
             'ban_start_at' => 'required_if:ban,on',
             'ban_end_at' => 'required_if:ban,on',
         ]);
@@ -1063,7 +1063,7 @@ class UserController extends Controller
                 ->where('status', 'pending')
                 ->first();
 
-            if (! empty($becomeInstructor)) {
+            if (!empty($becomeInstructor)) {
                 $becomeInstructor->update([
                     'status' => 'accept',
                 ]);
@@ -1073,24 +1073,24 @@ class UserController extends Controller
             }
         }
 
-        $user->full_name = ! empty($data['full_name']) ? $data['full_name'] : null;
+        $user->full_name = !empty($data['full_name']) ? $data['full_name'] : null;
         $user->role_name = $role->name;
         $user->role_id = $role->id;
         $user->timezone = $data['timezone'] ?? null;
         $user->currency = $data['currency'] ?? null;
-        $user->organ_id = ! empty($data['organ_id']) ? $data['organ_id'] : null;
-        $user->email = ! empty($data['email']) ? $data['email'] : null;
-        $user->mobile = ! empty($data['mobile']) ? $data['mobile'] : null;
-        $user->bio = ! empty($data['bio']) ? $data['bio'] : null;
-        $user->about = ! empty($data['about']) ? $data['about'] : null;
-        $user->status = ! empty($data['status']) ? $data['status'] : null;
-        $user->language = ! empty($data['language']) ? $data['language'] : null;
+        $user->organ_id = !empty($data['organ_id']) ? $data['organ_id'] : null;
+        $user->email = !empty($data['email']) ? $data['email'] : null;
+        $user->mobile = !empty($data['mobile']) ? $data['mobile'] : null;
+        $user->bio = !empty($data['bio']) ? $data['bio'] : null;
+        $user->about = !empty($data['about']) ? $data['about'] : null;
+        $user->status = !empty($data['status']) ? $data['status'] : null;
+        $user->language = !empty($data['language']) ? $data['language'] : null;
 
-        if (! empty($data['password'])) {
+        if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
         }
 
-        if (! empty($data['ban']) and $data['ban'] == '1') {
+        if (!empty($data['ban']) and $data['ban'] == '1') {
             $ban_start_at = strtotime($data['ban_start_at']);
             $ban_end_at = strtotime($data['ban_end_at']);
 
@@ -1103,13 +1103,13 @@ class UserController extends Controller
             $user->ban_end_at = null;
         }
 
-        $user->verified = (! empty($data['verified']) and $data['verified'] == '1');
+        $user->verified = (!empty($data['verified']) and $data['verified'] == '1');
 
-        $user->affiliate = (! empty($data['affiliate']) and $data['affiliate'] == '1');
+        $user->affiliate = (!empty($data['affiliate']) and $data['affiliate'] == '1');
 
-        $user->can_create_store = (! empty($data['can_create_store']) and $data['can_create_store'] == '1');
+        $user->can_create_store = (!empty($data['can_create_store']) and $data['can_create_store'] == '1');
 
-        $user->access_content = (! empty($data['access_content']) and $data['access_content'] == '1');
+        $user->access_content = (!empty($data['access_content']) and $data['access_content'] == '1');
 
         $user->save();
 
@@ -1135,7 +1135,7 @@ class UserController extends Controller
                 ->where('name', $name)
                 ->first();
 
-            if (! empty($checkMeta)) {
+            if (!empty($checkMeta)) {
                 $checkMeta->delete();
             }
         } else {
@@ -1156,7 +1156,7 @@ class UserController extends Controller
 
         $user->avatar = $request->get('avatar', null);
 
-        if (! empty($request->get('cover_img', null))) {
+        if (!empty($request->get('cover_img', null))) {
             $user->cover_img = $request->get('cover_img', null);
         }
 
@@ -1177,15 +1177,15 @@ class UserController extends Controller
             'identity_scan' => $data['identity_scan'],
             'address' => $data['address'],
             'commission' => $data['commission'] ?? null,
-            'financial_approval' => (! empty($data['financial_approval']) and $data['financial_approval'] == 'on'),
-            'installment_approval' => (! empty($data['installment_approval']) and $data['installment_approval'] == 'on'),
-            'enable_installments' => (! empty($data['enable_installments']) and $data['enable_installments'] == 'on'),
-            'disable_cashback' => (! empty($data['disable_cashback']) and $data['disable_cashback'] == 'on'),
-            'enable_registration_bonus' => (! empty($data['enable_registration_bonus']) and $data['enable_registration_bonus'] == 'on'),
-            'registration_bonus_amount' => ! empty($data['registration_bonus_amount']) ? $data['registration_bonus_amount'] : null,
+            'financial_approval' => (!empty($data['financial_approval']) and $data['financial_approval'] == 'on'),
+            'installment_approval' => (!empty($data['installment_approval']) and $data['installment_approval'] == 'on'),
+            'enable_installments' => (!empty($data['enable_installments']) and $data['enable_installments'] == 'on'),
+            'disable_cashback' => (!empty($data['disable_cashback']) and $data['disable_cashback'] == 'on'),
+            'enable_registration_bonus' => (!empty($data['enable_registration_bonus']) and $data['enable_registration_bonus'] == 'on'),
+            'registration_bonus_amount' => !empty($data['registration_bonus_amount']) ? $data['registration_bonus_amount'] : null,
         ]);
 
-        if (! empty($data['bank_id'])) {
+        if (!empty($data['bank_id'])) {
             UserSelectedBank::query()->where('user_id', $user->id)->delete();
 
             $userSelectedBank = UserSelectedBank::query()->create([
@@ -1193,11 +1193,11 @@ class UserController extends Controller
                 'user_bank_id' => $data['bank_id'],
             ]);
 
-            if (! empty($data['bank_specifications'])) {
+            if (!empty($data['bank_specifications'])) {
                 $specificationInsert = [];
 
                 foreach ($data['bank_specifications'] as $specificationId => $specificationValue) {
-                    if (! empty($specificationValue)) {
+                    if (!empty($specificationValue)) {
                         $specificationInsert[] = [
                             'user_selected_bank_id' => $userSelectedBank->id,
                             'user_bank_specification_id' => $specificationId,
@@ -1222,7 +1222,7 @@ class UserController extends Controller
         $data = $request->all();
 
         UserOccupation::where('user_id', $user->id)->delete();
-        if (! empty($data['occupations'])) {
+        if (!empty($data['occupations'])) {
 
             foreach ($data['occupations'] as $category_id) {
                 UserOccupation::create([
@@ -1268,7 +1268,7 @@ class UserController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-        if (! empty($badge)) {
+        if (!empty($badge)) {
             $badge->delete();
         }
 
@@ -1296,10 +1296,10 @@ class UserController extends Controller
 
         $becomeInstructors = BecomeInstructor::where('user_id', $user->id)->first();
 
-        if (! empty($becomeInstructors)) {
+        if (!empty($becomeInstructors)) {
             $role = Role::where('name', $becomeInstructors->role)->first();
 
-            if (! empty($role)) {
+            if (!empty($role)) {
                 $user->update([
                     'role_id' => $role->id,
                     'role_name' => $role->name,
@@ -1313,7 +1313,7 @@ class UserController extends Controller
                 $becomeInstructors->sendNotificationToUser('accept');
             }
 
-            return redirect(getAdminPanelUrl().'/users/'.$user->id.'/edit')->with(['msg' => trans('admin/pages/users.user_role_updated')]);
+            return redirect(getAdminPanelUrl() . '/users/' . $user->id . '/edit')->with(['msg' => trans('admin/pages/users.user_role_updated')]);
         }
 
         abort(404);
@@ -1327,7 +1327,7 @@ class UserController extends Controller
         $users = User::select('id', 'full_name as name')
             //->where('role_name', Role::$user)
             ->where(function ($query) use ($term) {
-                $query->where('full_name', 'like', '%'.$term.'%');
+                $query->where('full_name', 'like', '%' . $term . '%');
             });
 
         if ($option === 'for_user_group') {
@@ -1371,11 +1371,11 @@ class UserController extends Controller
         $user = User::findOrFail($user_id);
 
         if ($user->isAdmin()) {
-            return redirect(getAdminPanelUrl().'');
+            return redirect(getAdminPanelUrl() . '');
         }
 
         session()->put(['impersonated' => $user->id]);
-        if (! $user->isUser()) {
+        if (!$user->isUser()) {
             return redirect('/');
         }
 
@@ -1408,7 +1408,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::where(['role_name'=> Role::$registered_user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+        $users = User::where(['role_name' => Role::$registered_user])->whereHas('student')->orderBy('created_at', 'desc')->get();
 
         $usersExport = new StudentsExport($users);
 
@@ -1418,7 +1418,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::where(['role_name'=> Role::$registered_user])->whereDoesntHave('student')->orderBy('created_at', 'desc')->get();
+        $users = User::where(['role_name' => Role::$registered_user])->whereDoesntHave('student')->orderBy('created_at', 'desc')->get();
 
         $usersExport = new StudentsExport($users);
 
@@ -1428,7 +1428,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::whereIn('role_name', [Role::$registered_user,Role::$user])->orderBy('created_at', 'desc')->get();
+        $users = User::whereIn('role_name', [Role::$registered_user, Role::$user])->orderBy('created_at', 'desc')->get();
 
         $usersExport = new StudentsExport($users);
 
@@ -1480,14 +1480,14 @@ class UserController extends Controller
             $data = $request->all();
 
             $user->update([
-                'level_of_training' => ! empty($data['level_of_training']) ? (new UserLevelOfTraining())->getValue($data['level_of_training']) : null,
+                'level_of_training' => !empty($data['level_of_training']) ? (new UserLevelOfTraining())->getValue($data['level_of_training']) : null,
                 'meeting_type' => $data['meeting_type'] ?? null,
-                'group_meeting' => (! empty($data['group_meeting']) and $data['group_meeting'] == 'on'),
+                'group_meeting' => (!empty($data['group_meeting']) and $data['group_meeting'] == 'on'),
                 'country_id' => $data['country_id'] ?? null,
                 'province_id' => $data['province_id'] ?? null,
                 'city_id' => $data['city_id'] ?? null,
                 'district_id' => $data['district_id'] ?? null,
-                'location' => (! empty($data['latitude']) and ! empty($data['longitude'])) ? DB::raw('POINT('.$data['latitude'].','.$data['longitude'].')') : null,
+                'location' => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw('POINT(' . $data['latitude'] . ',' . $data['longitude'] . ')') : null,
             ]);
 
             $updateUserMeta = [
@@ -1501,15 +1501,15 @@ class UserController extends Controller
                     ->where('name', $name)
                     ->first();
 
-                if (! empty($checkMeta)) {
-                    if (! empty($value)) {
+                if (!empty($checkMeta)) {
+                    if (!empty($value)) {
                         $checkMeta->update([
                             'value' => $value,
                         ]);
                     } else {
                         $checkMeta->delete();
                     }
-                } elseif (! empty($value)) {
+                } elseif (!empty($value)) {
                     UserMeta::create([
                         'user_id' => $user->id,
                         'name' => $name,
@@ -1531,7 +1531,7 @@ class UserController extends Controller
         $user = User::query()->findOrFail($id);
 
         $user->update([
-            'disable_cashback' => ! $user->disable_cashback,
+            'disable_cashback' => !$user->disable_cashback,
         ]);
 
         $toastData = [
@@ -1581,10 +1581,11 @@ class UserController extends Controller
         return back()->with(['toast' => $toastData]);
     }
 
-    public function RegisteredUsers(Request $request, $is_export_excel=false) {
+    public function RegisteredUsers(Request $request, $is_export_excel = false)
+    {
         $this->authorize('admin_users_list');
 
-       $query= User::where(['role_name'=> Role::$registered_user])->whereDoesntHave('student');
+        $query = User::where(['role_name' => Role::$registered_user])->whereDoesntHave('student');
 
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -1642,13 +1643,14 @@ class UserController extends Controller
 
         return view('admin.students.index', $data);
     }
-    public function Users(Request $request, $is_export_excel=false) {
+    public function Users(Request $request, $is_export_excel = false)
+    {
         $this->authorize('admin_users_list');
 
-    //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
-    //         $item->where('form_fee', true);
-    //     });
-        $query= User::where(['role_name'=> Role::$registered_user])->whereHas('student');
+        //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
+        //         $item->where('form_fee', true);
+        //     });
+        $query = User::where(['role_name' => Role::$registered_user])->whereHas('student');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
