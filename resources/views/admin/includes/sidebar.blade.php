@@ -105,6 +105,12 @@
                         <a class="nav-link @if (!empty($sidebarBeeps['users']) and $sidebarBeeps['users']) beep beep-sidebar @endif"
                             href="{{ getAdminPanelUrl() }}/students/users">{{ 'نموذج حجز مقعد' }}</a>
                     </li>
+
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/students/enrollers', false)) ? 'active' : '' }}">
+                        <a class="nav-link @if (!empty($sidebarBeeps['enrollers']) and $sidebarBeeps['enrollers']) beep beep-sidebar @endif"
+                            href="{{ getAdminPanelUrl() }}/students/enrollers">{{ ' تسجيل الدبلومات' }}</a>
+                    </li>
                 </ul>
             </li>
             @endcan

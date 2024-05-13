@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Bitwise\UserLevelOfTraining;
+use App\Exports\EnrollersExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
 use App\Http\Controllers\Controller;
@@ -1414,6 +1415,17 @@ class UserController extends Controller
 
         return Excel::download($usersExport, 'نموذج حجز مقعد.xlsx');
     }
+
+    public function exportExcelEnrollers(Request $request){
+        $this->authorize('admin_users_export_excel');
+
+        $users = User::where(['role_name' => Role::$user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+
+        $usersExport = new EnrollersExport($users);
+
+        return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
+
+    }
     public function exportExcelUsers(Request $request)
     {
         $this->authorize('admin_users_export_excel');
@@ -1708,4 +1720,71 @@ class UserController extends Controller
 
         return view('admin.students.index', $data);
     }
+    public function Enrollers(Request $request, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+
+        //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
+        //         $item->where('form_fee', true);
+        //     });
+        $query = User::where(['role_name' => Role::$user]);
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+            ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+            ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+                ->paginate(20);
+        }
+
+        $users = $this->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        // $purchasedFormBundle=null;
+        // $purchasedUserFormBundle=Sale::where('type', 'form_fee')
+        //         ->where('buyer_id', $user->id)
+        //         ->first();
+
+        $category = Category::where('parent_id', '!=', null)->get();
+        // $requirement=$users[3]->student;
+        // dd($requirement);
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+        ];
+
+        return view('admin.students.enrollers', $data);
+    }
+
+
 }

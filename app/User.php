@@ -47,11 +47,17 @@ class User extends Authenticatable
      */
     protected $guarded = ['id'];
     protected $hidden = [
-        'password', 'remember_token', 'google_id', 'facebook_id', 'role_id'
+        'password',
+        'remember_token',
+        'google_id',
+        'facebook_id',
+        'role_id'
     ];
 
     static $statuses = [
-        'active', 'pending', 'inactive'
+        'active',
+        'pending',
+        'inactive'
     ];
     /**
      * The attributes that should be cast to native types.
@@ -104,7 +110,7 @@ class User extends Authenticatable
 
     public function hasPermission($section_name)
     {
-        if (self::isAdmin()||self::isUser()) {
+        if (self::isAdmin() || self::isUser()) {
             if (!isset($this->permissions)) {
                 $sections_id = Permission::where('role_id', '=', $this->role_id)->where('allow', true)->pluck('section_id')->toArray();
                 $this->permissions = Section::whereIn('id', $sections_id)->pluck('name')->toArray();
@@ -165,7 +171,7 @@ class User extends Authenticatable
 
         if (!empty($bit) and is_string($bit)) { // in host with mariaDB
             try {
-                $tmp = (int)bin2hex($bit);
+                $tmp = (int) bin2hex($bit);
 
                 if (is_numeric($tmp) and $tmp > 0 and $tmp <= 7) {
                     $bit = $tmp;
@@ -427,7 +433,7 @@ class User extends Authenticatable
         $financialSettings = getFinancialSettings();
 
         if (!empty($financialSettings) and !empty($financialSettings['commission'])) {
-            $commission = (int)$financialSettings['commission'];
+            $commission = (int) $financialSettings['commission'];
         }
 
         $getUserGroup = $this->getUserGroup();
@@ -527,11 +533,25 @@ class User extends Authenticatable
 
         return Sale::whereIn('webinar_id', $webinarIds)->sum('amount');
     }
-    public function purchasedFormBundle(){
+    public function purchasedFormBundle()
+    {
         return Sale::where('type', 'form_fee')
-                ->where('buyer_id', $this->id)
-                ->get();
+            ->where('buyer_id', $this->id)
+            // ->orderBy('created_at', 'desc')
+            ->get();
     }
+    public function purchasedBundles()
+    {
+        return Sale::where(function ($query) {
+            $query->where('type', 'bundle')
+                ->orWhere('type', 'installment_payment');
+        })
+        ->where('buyer_id', $this->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    }
+
 
     public function salesCount()
     {
@@ -738,7 +758,7 @@ class User extends Authenticatable
                         ->first();
 
                     if (!empty($subscribeSale)) {
-                        $usedDays = (int)diffTimestampDay(time(), $subscribeSale->created_at);
+                        $usedDays = (int) diffTimestampDay(time(), $subscribeSale->created_at);
 
                         if ($usedDays <= $subscribe->days) {
                             if (!empty($sale->webinar_id)) {
@@ -946,16 +966,19 @@ class User extends Authenticatable
         return $this->hasMany(StudentRequirement::class, "approved_by");
     }
 
-    Public function OrderItems(){
+    public function OrderItems()
+    {
         return $this->hasMany(OrderItem::class, "user_id");
     }
 
 
-    public function services(){
+    public function services()
+    {
         return $this->hasMany(Service::class);
     }
 
-    public function createdService(){
-        return $this->hasMany(Service::class,"created_by");
+    public function createdService()
+    {
+        return $this->hasMany(Service::class, "created_by");
     }
 }
