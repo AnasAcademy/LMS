@@ -350,6 +350,7 @@ class PaymentController extends Controller
                             $student = Student::create($studentData);
                             $user = User::where('id', $user->id)->update([
                                 'user_code' => $nextCode,
+                                'access_content'=>1
                             ]);
                             $lastCode->update(['lst_sd_code' => $nextCode]);
                         }
