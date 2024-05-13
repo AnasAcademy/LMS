@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Bitwise\UserLevelOfTraining;
+use App\Exports\EnrollersExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
 use App\Http\Controllers\Controller;
@@ -1413,6 +1414,17 @@ class UserController extends Controller
         $usersExport = new StudentsExport($users);
 
         return Excel::download($usersExport, 'نموذج حجز مقعد.xlsx');
+    }
+
+    public function exportExcelEnrollers(Request $request){
+        $this->authorize('admin_users_export_excel');
+
+        $users = User::where(['role_name' => Role::$user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+
+        $usersExport = new EnrollersExport($users);
+
+        return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
+
     }
     public function exportExcelUsers(Request $request)
     {

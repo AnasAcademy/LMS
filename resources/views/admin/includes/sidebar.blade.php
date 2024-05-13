@@ -109,7 +109,7 @@
                     <li
                         class="{{ request()->is(getAdminPanelUrl('/students/enrollers', false)) ? 'active' : '' }}">
                         <a class="nav-link @if (!empty($sidebarBeeps['enrollers']) and $sidebarBeeps['enrollers']) beep beep-sidebar @endif"
-                            href="{{ getAdminPanelUrl() }}/students/enrollers">{{ 'نموذج تسجيل الدبلومات' }}</a>
+                            href="{{ getAdminPanelUrl() }}/students/enrollers">{{ ' تسجيل الدبلومات' }}</a>
                     </li>
                 </ul>
             </li>

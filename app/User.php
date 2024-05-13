@@ -537,6 +537,7 @@ class User extends Authenticatable
     {
         return Sale::where('type', 'form_fee')
             ->where('buyer_id', $this->id)
+            // ->orderBy('created_at', 'desc')
             ->get();
     }
     public function purchasedBundles()
@@ -545,8 +546,10 @@ class User extends Authenticatable
             $query->where('type', 'bundle')
                 ->orWhere('type', 'installment_payment');
         })
-            ->where('buyer_id', $this->id)
-            ->get();
+        ->where('buyer_id', $this->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
     }
 
 

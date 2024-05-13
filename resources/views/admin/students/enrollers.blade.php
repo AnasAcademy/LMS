@@ -83,7 +83,6 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
-                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="input-label">كود الطالب</label>
@@ -91,7 +90,6 @@
                                         value="{{ request()->get('user_code') }}">
                                 </div>
                             </div>
-                        @endif
 
                         <div class="col-md-3">
                             <div class="form-group">
