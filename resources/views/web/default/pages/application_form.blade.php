@@ -127,8 +127,18 @@
     </style>
 @endpush
 
-@section('content')
+@php
+    $siteGeneralSettings = getGeneralSettings();
+@endphp
+@php
+    $registerMethod = getGeneralSettings('register_method') ?? 'mobile';
+    $showOtherRegisterMethod = getFeaturesSettings('show_other_register_method') ?? false;
+    $showCertificateAdditionalInRegister = getFeaturesSettings('show_certificate_additional_in_register') ?? false;
+    $selectRolesDuringRegistration = getFeaturesSettings('select_the_role_during_registration') ?? null;
+@endphp
 
+
+@section('content')
     {{-- hero section --}}
     @include('web.default.includes.hero_section', [
         'inner' => "<h1 class='form-title font-36'>نموذج قبول طلب جديد وحجز مقعد دراسي</h1>",
@@ -149,13 +159,14 @@
                         </p>
                         <form action="/apply" method="POST" id="myForm">
                             @csrf
-                            <input type="hidden" name="user_id" value="{{ $user->id }}">
+                            <input type="hidden" name="user_id" value="{{ $user->id ?? '' }}">
 
                             {{-- diploma --}}
                             <div class="form-group col-12 col-sm-6">
                                 <label for="application"
                                     class="form-label">{{ trans('application_form.application') }}*</label>
-                                <select id="mySelect1" name="category_id" required class="form-control @error('category_id') is-invalid @enderror"
+                                <select id="mySelect1" name="category_id" required
+                                    class="form-control @error('category_id') is-invalid @enderror"
                                     onchange="toggleHiddenInput()">
                                     <option disabled selected hidden value="">اختر الدرجة العلمية التي تريد دراستها في
                                         اكاديمية انس للفنون </option>
@@ -203,7 +214,8 @@
                                     <div class="col-sm-4 col">
                                         <label for="want_certificate">
                                             <input type="radio" id="want_certificate" name="certificate" value="1"
-                                                onchange="showCertificateMessage()"   class=" @error('certificate') is-invalid @enderror"
+                                                onchange="showCertificateMessage()"
+                                                class=" @error('certificate') is-invalid @enderror"
                                                 {{ old('certificate', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
                                             نعم
                                         </label>
@@ -213,15 +225,96 @@
                                     <div class="col">
                                         <label for="doesn't_want_certificate">
                                             <input type="radio" id="doesn't_want_certificate" name="certificate"
-                                                onchange="showCertificateMessage()" value="0"  class="@error('certificate') is-invalid @enderror"
+                                                onchange="showCertificateMessage()" value="0"
+                                                class="@error('certificate') is-invalid @enderror"
                                                 {{ old('certificate', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
                                             لا
                                         </label>
                                     </div>
                                 </div>
                             </div>
-
+                          
                             <h1 class=" mt-50 mb-25">بيانات المتدرب الأساسية</h1>
+
+                            {{-- registration details --}}
+                            <section>
+                                <h2 class="form-main-title">معلومات إنشاء حساب</h2>
+                                <section
+                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
+
+                                    {{-- email --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="email">{{ trans('application_form.email') }}*</label>
+                                        <input type="email" id="email" name="email"
+                                            value="{{ old('email', $student ? $student->email : '') }}"
+                                            placeholder="تسجيل البريد الإلكتروني" required
+                                            class="form-control  @error('email') is-invalid @enderror">
+
+                                        @error('email')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- timezone --}}
+                                    @if (getFeaturesSettings('timezone_in_register'))
+                                        @php
+                                            $selectedTimezone = getGeneralSettings('default_time_zone');
+                                        @endphp
+
+                                        <div class="form-group col-6">
+                                            <label class="input-label">{{ trans('update.timezone') }}</label>
+                                            <select name="timezone" class="form-control select2" data-allow-clear="false">
+                                                <option value="" {{ empty($user->timezone) ? 'selected' : '' }}
+                                                    disabled>
+                                                    {{ trans('public.select') }}</option>
+
+                                                @foreach (getListOfTimezones() as $timezone)
+                                                    <option value="{{ $timezone }}"
+                                                        @if ($selectedTimezone == $timezone) selected @endif>
+                                                        {{ $timezone }}</option>
+                                                @endforeach
+                                            </select>
+
+                                            @error('timezone')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    @endif
+
+                                    {{-- password --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label class="input-label" for="password">{{ trans('auth.password') }}:</label>
+                                        <input name="password" type="password"
+                                            class="form-control @error('password') is-invalid @enderror" id="password"
+                                            aria-describedby="passwordHelp">
+                                        @error('password')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- confirm password --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label class="input-label"
+                                            for="confirm_password">{{ trans('auth.retype_password') }}:</label>
+                                        <input name="password_confirmation" type="password"
+                                            class="form-control @error('password_confirmation') is-invalid @enderror"
+                                            id="confirm_password" aria-describedby="confirmPasswordHelp">
+                                        @error('password_confirmation')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                </section>
+
+                            </section>
 
 
                             {{-- personal details --}}
@@ -234,7 +327,8 @@
                                         <label for="name">{{ trans('application_form.name') }}*</label>
                                         <input type="text" id="name" name="ar_name" {{-- value="{{ $student ? $student->ar_name : '' }}" --}}
                                             value="{{ old('ar_name', $student ? $student->ar_name : '') }}"
-                                            placeholder="ادخل الإسم باللغه العربية فقط" required class="form-control @error('ar_name') is-invalid @enderror">
+                                            placeholder="ادخل الإسم باللغه العربية فقط" required
+                                            class="form-control @error('ar_name') is-invalid @enderror">
 
                                         @error('ar_name')
                                             <div class="invalid-feedback d-block">
@@ -248,7 +342,8 @@
                                         <label for="name_en">{{ trans('application_form.name_en') }}*</label>
                                         <input type="text" id="name_en" name="en_name" {{-- value="{{ $student ? $student->en_name : '' }}" --}}
                                             value="{{ old('en_name', $student ? $student->en_name : '') }}"
-                                            placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required class="form-control @error('en_name') is-invalid @enderror">
+                                            placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required
+                                            class="form-control @error('en_name') is-invalid @enderror">
 
                                         @error('en_name')
                                             <div class="invalid-feedback d-block">
@@ -287,6 +382,34 @@
 
                                     </div>
 
+                                    {{-- phone number --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="phone">{{ trans('application_form.phone') }}*</label>
+                                        <input type="tel" id="phone" name="phone"
+                                            value="{{ old('phone', $student ? $student->phone : '') }}"
+                                            class="form-control @error('phone') is-invalid @enderror">
+
+                                        @error('phone')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- mobile number --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="mobile">{{ 'رقم الهاتف' }}</label>
+                                        <input type="tel" id="mobile" name="mobile"
+                                            value="{{ old('mobile', $student ? $student->mobile : '') }}"
+                                            class="form-control  @error('mobile') is-invalid @enderror">
+
+                                        @error('mobile')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
                                     {{-- nationality --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="nationality">{{ trans('application_form.nationality') }}*</label>
@@ -314,7 +437,8 @@
                                                 'قطري/ة',
                                             ];
                                         @endphp
-                                        <select id="nationality" name="nationality" required class="form-control  @error('nationality') is-invalid @enderror"
+                                        <select id="nationality" name="nationality" required
+                                            class="form-control  @error('nationality') is-invalid @enderror"
                                             onchange="toggleNationality()">
                                             <option value="" class="placeholder" disabled=""
                                                 selected="selected">
@@ -347,8 +471,8 @@
                                             {{-- female --}}
                                             <div class="col-sm-4 col">
                                                 <label for="female">
-                                                    <input type="radio" id="female" name="gender" value="female" class=" @error('gender') is-invalid @enderror"
-                                                        required
+                                                    <input type="radio" id="female" name="gender" value="female"
+                                                        class=" @error('gender') is-invalid @enderror" required
                                                         {{ old('gender', $student->gender ?? null) == 'female' ? 'checked' : '' }}>
                                                     انثي
                                                 </label>
@@ -357,8 +481,8 @@
                                             {{-- male --}}
                                             <div class="col">
                                                 <label for="male">
-                                                    <input type="radio" id="male" name="gender" value="male" class=" @error('gender') is-invalid @enderror"
-                                                        required
+                                                    <input type="radio" id="male" name="gender" value="male"
+                                                        class=" @error('gender') is-invalid @enderror" required
                                                         {{ old('gender', $student->gender ?? null) == 'male' ? 'checked' : '' }}>
                                                     ذكر
                                                 </label>
@@ -370,10 +494,12 @@
                                     <div class="form-group col-12 col-sm-6" id="other_nationality_section"
                                         style="display: none">
                                         <label for="nationality">ادخل الجنسية *</label>
-                                        <input type="text" class="form-control @error('other_nationality') is-invalid @enderror" id="other_nationality"
-                                            name="other_nationality" placeholder="اكتب الجنسية" {{-- value="{{ $student ? $student->other_nationality : '' }}" --}}
+                                        <input type="text"
+                                            class="form-control @error('other_nationality') is-invalid @enderror"
+                                            id="other_nationality" name="other_nationality" placeholder="اكتب الجنسية"
+                                            {{-- value="{{ $student ? $student->other_nationality : '' }}" --}}
                                             value="{{ old('other_nationality', $student ? $student->other_nationality : '') }}"
-                                            onkeyup="setNationality()" >
+                                            onkeyup="setNationality()">
 
                                         @error('other_nationality')
                                             <div class="invalid-feedback d-block">
@@ -410,7 +536,8 @@
                                                 'موريتانيا',
                                             ];
                                         @endphp
-                                        <select id="mySelect" name="country" required class="form-control @error('country') is-invalid @enderror"
+                                        <select id="mySelect" name="country" required
+                                            class="form-control @error('country') is-invalid @enderror"
                                             onchange="toggleHiddenInputs()">
                                             <option value="" class="placeholder" disabled="">اختر دولتك</option>
                                             @foreach ($countries as $country)
@@ -433,7 +560,8 @@
                                     <div class="form-group col-12 col-sm-6" id="anotherCountrySection"
                                         style="display: none">
                                         <label for="city" class="form-label">ادخل البلد*</label>
-                                        <input type="text" id="city" name="city" class="form-control  @error('city') is-invalid @enderror"
+                                        <input type="text" id="city" name="city"
+                                            class="form-control  @error('city') is-invalid @enderror"
                                             placeholder="ادخل دولتك"
                                             value="{{ old('city', $student ? $student->city : '') }}"
                                             onkeyup="setCountry()">
@@ -448,7 +576,8 @@
                                     {{-- region --}}
                                     <div class="form-group col-12 col-sm-6" id="region" style="display: none">
                                         <label for="area" class="form-label">المنطقة*</label>
-                                        <input type="text" id="area" name="area" class="form-control  @error('area') is-invalid @enderror"
+                                        <input type="text" id="area" name="area"
+                                            class="form-control  @error('area') is-invalid @enderror"
                                             placeholder="اكتب المنطقة"
                                             value="{{ old('area', $student ? $student->area : '') }}">
 
@@ -479,55 +608,6 @@
                                 </section>
                             </section>
 
-                            {{-- contact details --}}
-                            <section>
-                                <h2 class="form-main-title">معلومات التواصل</h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-                                    {{-- phone number --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="phone">{{ trans('application_form.phone') }}*</label>
-                                        <input type="tel" id="phone" name="phone"
-                                            value="{{ old('phone', $student ? $student->phone : $user->mobile) }}"
-                                            class="form-control @error('phone') is-invalid @enderror">
-
-                                        @error('phone')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- email --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="email">{{ trans('application_form.email') }}*</label>
-                                        <input type="email" id="email" name="email"
-                                            value="{{ old('email', $student ? $student->email : $user->email) }}"
-                                            placeholder="تسجيل البريد الإلكتروني" required class="form-control  @error('email') is-invalid @enderror">
-
-                                        @error('email')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- mobile number --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="mobile">{{ 'رقم الهاتف' }}</label>
-                                        <input type="tel" id="mobile" name="mobile"
-                                            value="{{ old('mobile', $student ? $student->mobile : $user->mobile) }}"
-                                            class="form-control  @error('mobile') is-invalid @enderror">
-
-                                        @error('mobile')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </section>
-
-                            </section>
 
 
                             {{--  education --}}
@@ -542,7 +622,8 @@
                                             البكالوريوس*</label>
 
                                         <select id="educational_qualification_country"
-                                            name="educational_qualification_country" required class="form-control @error('educational_qualification_country') is-invalid @enderror"
+                                            name="educational_qualification_country" required
+                                            class="form-control @error('educational_qualification_country') is-invalid @enderror"
                                             onchange="educationCountryToggle()">
                                             <option value="" class="placeholder" disabled="">اختر دولتك</option>
                                             @foreach ($countries as $country)
@@ -570,7 +651,8 @@
                                         <label for="university" class="form-label">
                                             ادخل مصدر شهادة البكالوريوس*
                                         </label>
-                                        <input type="text" id="anotherEducationCountry" class="form-control @error('anotherEducationCountry') is-invalid @enderror"
+                                        <input type="text" id="anotherEducationCountry"
+                                            class="form-control @error('anotherEducationCountry') is-invalid @enderror"
                                             name="anotherEducationCountry" placeholder="ادخل مصدر شهادة البكالوريوس"
                                             value="{{ old('anotherEducationCountry', $student && !in_array($student->educational_qualification_country, $countries) ? $student->educational_qualification_country : '') }}"
                                             onkeyup="setEducationCountry()">
@@ -588,7 +670,8 @@
                                         <label for="secondary_school_gpa" class="form-label">
                                             معدل المرحلة الثانوية*
                                         </label>
-                                        <input type="text" id="secondary_school_gpa" class="form-control @error('secondary_school_gpa') is-invalid @enderror"
+                                        <input type="text" id="secondary_school_gpa"
+                                            class="form-control @error('secondary_school_gpa') is-invalid @enderror"
                                             name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية"
                                             value="{{ old('secondary_school_gpa', $student ? $student->secondary_school_gpa : '') }}">
 
@@ -604,7 +687,8 @@
                                         <label for="educational_area" class="form-label">
                                             المنطقة التعليمية*
                                         </label>
-                                        <input type="text" id="educational_area" class="form-control @error('educational_area') is-invalid @enderror"
+                                        <input type="text" id="educational_area"
+                                            class="form-control @error('educational_area') is-invalid @enderror"
                                             name="educational_area" placeholder="أدخل المنطقة التعليمية"
                                             value="{{ old('educational_area', $student ? $student->educational_area : '') }}">
 
@@ -620,7 +704,8 @@
                                         <label for="secondary_graduation_year" class="form-label">
                                             سنة الحصول على الشهادة الثانوية*
                                         </label>
-                                        <input type="text" id="secondary_graduation_year" class="form-control @error('secondary_graduation_year') is-invalid @enderror"
+                                        <input type="text" id="secondary_graduation_year"
+                                            class="form-control @error('secondary_graduation_year') is-invalid @enderror"
                                             name="secondary_graduation_year"
                                             placeholder="أدخل سنة الحصول على الشهادة الثانوية"
                                             value="{{ old('secondary_graduation_year', $student ? $student->secondary_graduation_year : '') }}">
@@ -637,7 +722,8 @@
                                         <label for="school" class="form-label">
                                             المدرسة*
                                         </label>
-                                        <input type="text" id="school" class="form-control @error('school') is-invalid @enderror" name="school"
+                                        <input type="text" id="school"
+                                            class="form-control @error('school') is-invalid @enderror" name="school"
                                             placeholder="أدخل المدرسة"
                                             value="{{ old('school', $student ? $student->school : '') }}">
 
@@ -654,8 +740,9 @@
                                         <label for="university" class="form-label">
                                             الجامعة*
                                         </label>
-                                        <input type="text" id="university" class="form-control @error('university') is-invalid @enderror" name="university"
-                                            placeholder="أدخل الجامعة"
+                                        <input type="text" id="university"
+                                            class="form-control @error('university') is-invalid @enderror"
+                                            name="university" placeholder="أدخل الجامعة"
                                             value="{{ old('university', $student ? $student->university : '') }}">
 
                                         @error('university')
@@ -670,7 +757,8 @@
                                         <label for="faculty" class="form-label">
                                             الكلية*
                                         </label>
-                                        <input type="text" id="faculty" class="form-control @error('faculty') is-invalid @enderror" name="faculty"
+                                        <input type="text" id="faculty"
+                                            class="form-control @error('faculty') is-invalid @enderror" name="faculty"
                                             placeholder="أدخل الكلية"
                                             value="{{ old('faculty', $student ? $student->faculty : '') }}">
 
@@ -686,7 +774,8 @@
                                         <label for="education_specialization" class="form-label">
                                             التخصص*
                                         </label>
-                                        <input type="text" id="education_specialization" class="form-control @error('education_specialization') is-invalid @enderror"
+                                        <input type="text" id="education_specialization"
+                                            class="form-control @error('education_specialization') is-invalid @enderror"
                                             name="education_specialization" placeholder="أدخل التخصص"
                                             value="{{ old('education_specialization', $student ? $student->education_specialization : '') }}">
 
@@ -702,7 +791,8 @@
                                         <label for="graduation_year" class="form-label">
                                             سنة التخرج*
                                         </label>
-                                        <input type="text" id="graduation_year" class="form-control @error('graduation_year') is-invalid @enderror"
+                                        <input type="text" id="graduation_year"
+                                            class="form-control @error('graduation_year') is-invalid @enderror"
                                             name="graduation_year" placeholder="أدخل سنة التخرج"
                                             value="{{ old('graduation_year', $student ? $student->graduation_year : '') }}">
 
@@ -719,7 +809,8 @@
                                         <label for="gpa" class="form-label">
                                             المعدل*
                                         </label>
-                                        <input type="text" id="gpa" class="form-control @error('gpa') is-invalid @enderror" name="gpa"
+                                        <input type="text" id="gpa"
+                                            class="form-control @error('gpa') is-invalid @enderror" name="gpa"
                                             placeholder="أدخل المعدل "
                                             value="{{ old('gpa', $student ? $student->gpa : '') }}">
 
@@ -751,8 +842,9 @@
                                             {{-- working status --}}
                                             <div class="col-sm-4 col">
                                                 <label for="working">
-                                                    <input type="radio" id="working" name="workStatus" class="@error('workStatus') is-invalid @enderror"
-                                                        value="1" required
+                                                    <input type="radio" id="working" name="workStatus"
+                                                        class="@error('workStatus') is-invalid @enderror" value="1"
+                                                        required
                                                         {{ old('workStatus', $student->job ?? null) != null ? 'checked' : '' }}>
                                                     {{ trans('application_form.working') }}
                                                 </label>
@@ -761,8 +853,8 @@
                                             {{-- not working Status --}}
                                             <div class="col">
                                                 <label for="not_working">
-                                                    <input type="radio" id="not_working" name="workStatus" required class="@error('workStatus') is-invalid @enderror"
-                                                        value="0"
+                                                    <input type="radio" id="not_working" name="workStatus" required
+                                                        class="@error('workStatus') is-invalid @enderror" value="0"
                                                         {{ old('workStatus', $student->job ?? null) == null ? 'checked' : '' }}>
                                                     {{ trans('application_form.not_working') }}
                                                 </label>
@@ -775,7 +867,8 @@
                                         <div class="row">
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="job_title">الوظيفة*</label>
-                                                <input type="text" id="job_title" name="job" class="form-control @error('job') is-invalid @enderror"
+                                                <input type="text" id="job_title" name="job"
+                                                    class="form-control @error('job') is-invalid @enderror"
                                                     placeholder="أدخل الوظيفة"
                                                     value="{{ old('job', $student ? $student->job : '') }}">
 
@@ -789,7 +882,8 @@
 
                                             <div class="form-group col-12 col-sm-6">
                                                 <label for="employment_type">جهة العمل*</label>
-                                                <select id="employment_type" name="job_type" class="form-control @error('job_type') is-invalid @enderror">
+                                                <select id="employment_type" name="job_type"
+                                                    class="form-control @error('job_type') is-invalid @enderror">
                                                     <option value="" selected disabled>اختر جهة العمل</option>
                                                     <option value="governmental"
                                                         {{ old('job_type', $student->job_type ?? null) == 'governmental' ? 'selected' : '' }}>
@@ -832,8 +926,9 @@
                                                 {{-- deaf --}}
                                                 <div class="col-sm-4 col">
                                                     <label for="deaf">
-                                                        <input type="radio" id="deaf" name="deaf" class="@error('deaf') is-invalid @enderror"
-                                                            value="1" required
+                                                        <input type="radio" id="deaf" name="deaf"
+                                                            class="@error('deaf') is-invalid @enderror" value="1"
+                                                            required
                                                             {{ old('deaf', $student->deaf ?? null) == 1 ? 'checked' : '' }}>
                                                         نعم
                                                     </label>
@@ -842,8 +937,9 @@
                                                 {{-- not deaf --}}
                                                 <div class="col">
                                                     <label for="not_deaf">
-                                                        <input type="radio" id="not_deaf" name="deaf" class="@error('deaf') is-invalid @enderror"
-                                                            value="0" required
+                                                        <input type="radio" id="not_deaf" name="deaf"
+                                                            class="@error('deaf') is-invalid @enderror" value="0"
+                                                            required
                                                             {{ old('deaf', $student->deaf ?? null) == 0 ? 'checked' : '' }}>
                                                         لا
                                                     </label>
@@ -869,7 +965,8 @@
                                                 {{-- disabled --}}
                                                 <div class="col-sm-4 col">
                                                     <label for="disabled">
-                                                        <input type="radio" id="disabled" name="disabled" class="@error('disabled') is-invalid @enderror"
+                                                        <input type="radio" id="disabled" name="disabled"
+                                                            class="@error('disabled') is-invalid @enderror"
                                                             value="1" required
                                                             {{ old('disabled', $student->disabled_type ?? null) != null ? 'checked' : '' }}>
                                                         نعم
@@ -879,7 +976,8 @@
                                                 {{-- not disabled --}}
                                                 <div class="col">
                                                     <label for="not_disabled">
-                                                        <input type="radio" id="not_disabled" name="disabled" class="@error('disabled') is-invalid @enderror"
+                                                        <input type="radio" id="not_disabled" name="disabled"
+                                                            class="@error('disabled') is-invalid @enderror"
                                                             value="0" required
                                                             {{ old('disabled', $student->disabled_type ?? null) == null ? 'checked' : '' }}>
                                                         لا
@@ -893,7 +991,8 @@
                                         <div class="form-group col-12 col-sm-6" id="disabled_type_section"
                                             style="display: none">
                                             <label for="disabled_type">{{ 'حدد نوع الإعاقة*' }}</label>
-                                            <select id="disabled_type" name="disabled_type" class="form-control @error('disabled_type') is-invalid @enderror">
+                                            <select id="disabled_type" name="disabled_type"
+                                                class="form-control @error('disabled_type') is-invalid @enderror">
                                                 <option value="" class="placeholder" disabled="" selected>أختر
                                                     نوع
                                                     الإعاقة
@@ -933,7 +1032,8 @@
                                                 {{-- healthy --}}
                                                 <div class="col-sm-4 col">
                                                     <label for="healthy">
-                                                        <input type="radio" id="healthy" name="healthy" class=" @error('healthy') is-invalid @enderror"
+                                                        <input type="radio" id="healthy" name="healthy"
+                                                            class=" @error('healthy') is-invalid @enderror"
                                                             value="1" required
                                                             {{ old('healthy', $student->healthy_problem ?? null) != null ? 'checked' : '' }}>
                                                         نعم
@@ -943,7 +1043,8 @@
                                                 {{-- not healthy --}}
                                                 <div class="col">
                                                     <label for="not_healthy">
-                                                        <input type="radio" id="not_healthy" name="healthy" class=" @error('healthy') is-invalid @enderror"
+                                                        <input type="radio" id="not_healthy" name="healthy"
+                                                            class=" @error('healthy') is-invalid @enderror"
                                                             value="0" required
                                                             {{ old('healthy', $student->healthy_problem ?? null) == null ? 'checked' : '' }}>
                                                         لا
@@ -957,7 +1058,8 @@
                                         <div class="form-group col-12 col-sm-6" id="healthy_problem_section"
                                             style="display: none">
                                             <label for="healthy_problem">ادخل المشكلة الصحية*</label>
-                                            <input type="text" id="healthy_problem" class="form-control @error('healthy_problem') is-invalid @enderror"
+                                            <input type="text" id="healthy_problem"
+                                                class="form-control @error('healthy_problem') is-invalid @enderror"
                                                 name="healthy_problem" placeholder="ادخل المشكلة الصحية"
                                                 value="{{ old('healthy_problem', $student ? $student->healthy_problem : '') }}">
 
@@ -983,7 +1085,8 @@
                                             for="referral_person">{{ trans('application_form.referral_name') }}*</label>
                                         <input type="text" id="referral_person" name="referral_person"
                                             value="{{ old('referral_person', $student ? $student->referral_person : '') }}"
-                                            placeholder="أدخل الأسم الثنائي" required class="form-control  @error('referral_person') is-invalid @enderror">
+                                            placeholder="أدخل الأسم الثنائي" required
+                                            class="form-control  @error('referral_person') is-invalid @enderror">
 
                                         @error('referral_person')
                                             <div class="invalid-feedback d-block">
@@ -997,7 +1100,8 @@
                                         <label for="relation">{{ trans('application_form.referral_state') }}*</label>
                                         <input type="text" id="relation" name="relation"
                                             value="{{ old('relation', $student ? $student->relation : '') }}"
-                                            placeholder="أدخل صلة القرابة" required class="form-control  @error('relation') is-invalid @enderror">
+                                            placeholder="أدخل صلة القرابة" required
+                                            class="form-control  @error('relation') is-invalid @enderror">
 
                                         @error('relation')
                                             <div class="invalid-feedback d-block">
@@ -1010,7 +1114,8 @@
                                         <label for="referral_email">{{ trans('application_form.email') }}*</label>
                                         <input type="email" id="referral_email" name="referral_email"
                                             value="{{ old('referral_email', $student ? $student->referral_email : '') }}"
-                                            placeholder="أدخل بريد الكتروني" required class="form-control  @error('referral_email') is-invalid @enderror">
+                                            placeholder="أدخل بريد الكتروني" required
+                                            class="form-control  @error('referral_email') is-invalid @enderror">
 
 
                                         @error('referral_email')
@@ -1051,42 +1156,50 @@
                                 <br>
 
                                 <label for="snapchat">
-                                    <input type="radio" id="snapchat" name="about_us" value="snapchat" class=" @error('about_us') is-invalid @enderror"
+                                    <input type="radio" id="snapchat" name="about_us" value="snapchat"
+                                        class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'snapchat' ? 'checked' : '' }}>
                                     {{ trans('application_form.snapchat') }}
                                 </label><br>
                                 <label for="twitter">
-                                    <input type="radio" id="twitter" name="about_us" value="twitter" class=" @error('about_us') is-invalid @enderror"
+                                    <input type="radio" id="twitter" name="about_us" value="twitter"
+                                        class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'twitter' ? 'checked' : '' }}>
                                     {{ trans('application_form.twitter') }}
                                 </label><br>
                                 <label for="friend">
-                                    <input type="radio" id="friend" name="about_us" value="friend" class=" @error('about_us') is-invalid @enderror"
+                                    <input type="radio" id="friend" name="about_us" value="friend"
+                                        class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'friend' ? 'checked' : '' }}>
                                     {{ trans('application_form.friend') }}
                                 </label><br>
                                 <label for="instagram">
-                                    <input type="radio" id="instagram" name="about_us" value="instagram" class=" @error('about_us') is-invalid @enderror"
+                                    <input type="radio" id="instagram" name="about_us" value="instagram"
+                                        class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'instagram' ? 'checked' : '' }}>
                                     {{ trans('application_form.instagram') }}
                                 </label><br>
                                 <label for="facebook">
-                                    <input type="radio" id="facebook" name="about_us" value="facebook" class=" @error('about_us') is-invalid @enderror"
+                                    <input type="radio" id="facebook" name="about_us" value="facebook"
+                                        class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'facebook' ? 'checked' : '' }}>
                                     {{ trans('application_form.facebook') }}
                                 </label><br>
                                 <label for="other">
-                                    <input type="radio" id="other" name="about_us" value="other" class=" @error('about_us') is-invalid @enderror"
+                                    <input type="radio" id="other" name="about_us" value="other"
+                                        class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'other' ? 'checked' : '' }}>
                                     {{ trans('application_form.other') }}
                                 </label><br>
                                 <label id="otherLabel"style="display:none">أدخل المصدر</label>
                                 <input type="text" id="otherInput" placeholder="" name="other_about_us"
-                                    class="form-control @error('about_us') is-invalid @enderror" style="display:none"><br>
+                                    class="form-control @error('about_us') is-invalid @enderror"
+                                    style="display:none"><br>
 
 
                                 <label>
-                                    <input type="checkbox" id="terms" name="terms" required class="@error('terms') is-invalid @enderror">
+                                    <input type="checkbox" id="terms" name="terms" required
+                                        class="@error('terms') is-invalid @enderror">
 
                                     اقر أنا المسجل بياناتي اعلاه بموافقتي على لائحة الحقوق والوجبات واحكام وشروط
                                     القبول
@@ -1095,7 +1208,7 @@
                                     ، مما يترتب عليه كامل الأحقية للاكاديمية في مسائلتي عن تلك المخالفات والتصرفات
                                     المخالفة
                                     للوائح المشار إليها في عقد اتفاقية التحاق متدربـ/ـة <a target="_blank"
-                                        href="https://anasacademy.uk/wp-content/uploads/2024/04/contract.pdf">انقر
+                                        href="https://anasacademy.uk/wp-content/uploads/2024/05/contract.pdf">انقر
                                         هنا
                                         لمشاهدة</a>
 
@@ -1250,7 +1363,7 @@
             }
         }
 
-        
+
         toggleHiddenInput();
     </script>
 
