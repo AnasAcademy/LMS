@@ -74,8 +74,14 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         return view("errors.404", ['pageTitle' => trans('public.error_404_page_title')]);
     });
 
-    Route::get('/register', 'ApplyController@index');
-    Route::get('/apply', 'ApplyController@index');
+    // Route::get('/register', 'ApplyController@index');
+    Route::get('/apply', function(){
+        if (auth()->check() && auth()->user()->student) {
+            return redirect('/panel/requirements');
+        } else {
+            return app()->call('App\Http\Controllers\Web\ApplyController@index');
+        }
+    });
     Route::post('/apply', 'ApplyController@checkout')->name('payFee');
 
     // set Locale
@@ -93,9 +99,9 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
                 return redirect('/admin');
             }
             else if (auth()->check() && auth()->user()->student) {
-                return app()->call('App\Http\Controllers\Panel\UserController@requirementIndex');
+                return redirect('/panel/requirements');
             } else {
-                return app()->call('App\Http\Controllers\Web\ApplyController@index');
+                return redirect('/apply');
             }
         });
 

@@ -126,7 +126,7 @@
         <div class="mt-20 text-center registertext">
             <span>ليس لديك حساب ؟</span>
             <br>
-            <a href="/register" class="text-secondary font-weight-bold">{{ trans('auth.signup') }}</a>
+            <a href="/apply" class="text-secondary font-weight-bold">{{ trans('auth.signup') }}</a>
         </div>
     </div>
 @endsection

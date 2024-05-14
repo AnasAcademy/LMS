@@ -1,8 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Web;
+
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Controller;
 use App\Models\Bundle;
+use App\Models\Reward;
+use App\Models\RewardAccounting;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Order;
@@ -25,13 +30,13 @@ class ApplyController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if($user){
+        if ($user) {
             $student = Student::where('user_id', $user->id)->first() ?? null;
-        }else{
+        } else {
             $student = null;
         }
-        $category=Category::where('parent_id','!=', null)->get();
-        return view(getTemplate() . '.pages.application_form',compact('user','category','student'));
+        $category = Category::where('parent_id', '!=', null)->get();
+        return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student'));
     }
 
     /**
@@ -43,8 +48,8 @@ class ApplyController extends Controller
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        $category=Category::where('parent_id','!=', null)->get();
-        return view(getTemplate() . '.panel.newEnrollment.index',compact('user','category','student'));
+        $category = Category::where('parent_id', '!=', null)->get();
+        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student'));
     }
 
     /**
@@ -57,6 +62,41 @@ class ApplyController extends Controller
     {
         // dd($request->all());
         app()->setLocale('ar');
+        if (!auth()->check()) {
+            $rules = [
+                'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+                'email' => 'required|email|max:255|unique:users|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                'password' => 'required|string|min:6|confirmed',
+                'password_confirmation' => 'required|same:password',
+                'referral_code' => 'nullable|exists:affiliates_codes,code'
+            ];
+            if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
+                $rules['captcha'] = 'required|captcha';
+            }
+            $request->validate($rules);
+            $data = [
+                'full_name' => $request->ar_name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'referral_code' => $request->referral_code ?? null
+            ];
+
+            $user = (new RegisterController())->create($data);
+            $user->update(['status' => User::$active]);
+            event(new Registered($user));
+
+            $notifyOptions = [
+                '[u.name]' => $user->full_name,
+                '[u.role]' => trans("update.role_{$user->role_name}"),
+                '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
+            ];
+
+            sendNotification("new_registration", $notifyOptions, 1);
+            \Auth::login($user);
+            $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
+            RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
+        }
+
 
         $category = Category::where('id', $request->category_id)->first();
         $bundle = Bundle::where('id', $request->bundle_id)->first();
@@ -65,9 +105,9 @@ class ApplyController extends Controller
 
         if ($student) {
             $validatedData = $request->validate([
-                'user_id'=>'required',
+                'user_id' => 'required',
                 'category_id' => 'required',
-                'bundle_id' =>  [
+                'bundle_id' => [
                     'required',
                     function ($attribute, $value, $fail) {
                         $user = auth()->user();
@@ -81,11 +121,10 @@ class ApplyController extends Controller
                 'terms' => 'accepted',
                 'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
             ]);
-        }else{
+        } else {
             $validatedData = $request->validate([
-                'user_id'=>'required',
                 'category_id' => 'required',
-                'bundle_id' =>  [
+                'bundle_id' => [
                     'required',
                     function ($attribute, $value, $fail) {
                         $user = auth()->user();
@@ -98,7 +137,7 @@ class ApplyController extends Controller
                 ],
                 'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
                 'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
-                'identifier_num'=>'required|numeric|regex:/^\d{6,10}$/',
+                'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
                 'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
                 'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
                 'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
@@ -107,23 +146,23 @@ class ApplyController extends Controller
                 'birthdate' => 'required|date',
                 'phone' => 'required|min:5|max:20',
                 'mobile' => 'required|min:5|max:20',
-                'educational_qualification_country'=>$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'secondary_school_gpa'=>!$category->education ? 'required|string|max:255|min:1':'',
-                'educational_area'=>'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'secondary_graduation_year'=>!$category->education  ? 'required|numeric|regex:/^\d{3,10}$/':'',
-                'school'=>!$category->education  ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'university'=>$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'faculty'=>$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'education_specialization'=>$category->education  ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u':'',
-                'graduation_year'=>$category->education ? 'required|numeric|regex:/^\d{3,10}$/':'',
-                'gpa'=>$category->education ? 'required|string|max:255|min:1':'',
+                'educational_qualification_country' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                'secondary_school_gpa' => !$category->education ? 'required|string|max:255|min:1' : '',
+                'educational_area' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                'secondary_graduation_year' => !$category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
+                'school' => !$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                'university' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                'faculty' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                'education_specialization' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                'graduation_year' => $category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
+                'gpa' => $category->education ? 'required|string|max:255|min:1' : '',
                 'deaf' => 'required|in:0,1',
-                'disabled_type'=>$request->disabled == 1 ?'required|string|max:255|min:3':'nullable',
+                'disabled_type' => $request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable',
                 'gender' => 'required|in:male,female',
-                'healthy_problem' => $request->healthy == 1 ?'required|string|max:255|min:3':'nullable',
+                'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
                 'nationality' => 'required|string|min:3|max:25',
-                'job' => $request->workStatus == 1? 'required': 'nullable',
-                'job_type' => $request->workStatus == 1? 'required': 'nullable',
+                'job' => $request->workStatus == 1 ? 'required' : 'nullable',
+                'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
                 'referral_person' => 'required|string|min:3|max:255',
                 'relation' => 'required|string|min:3|max:255',
                 'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
@@ -134,12 +173,12 @@ class ApplyController extends Controller
             ]);
         }
 
-
+        $validatedData['user_id'] = auth()->user()->id;
         Cookie::queue('user_data', json_encode($validatedData));
         $user = auth()->user();
 
-            $paymentChannels = PaymentChannel::where('status', 'active')->get();
-            $order = Order::create([
+        $paymentChannels = PaymentChannel::where('status', 'active')->get();
+        $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
             'amount' => 230,
@@ -148,71 +187,71 @@ class ApplyController extends Controller
             'total_amount' => 230,
             'product_delivery_fee' => null,
             'created_at' => time(),
-            ]);
-             OrderItem::create([
-                    'user_id' => $user->id,
-                    'order_id' => $order->id,
-                    'webinar_id' => null,
-                    'bundle_id' => $request->bundle_id ?? null,
-                    'certificate_template_id' =>  null,
-                    'certificate_bundle_id' => null,
-                    'form_fee' => 1,
-                    'product_id' =>  null,
-                    'product_order_id' => null,
-                    'reserve_meeting_id' => null,
-                    'subscribe_id' => null,
-                    'promotion_id' => null,
-                    'gift_id' => null,
-                    'installment_payment_id' => null,
-                    'ticket_id' => null,
-                    'discount_id' => null,
-                    'amount' => 230,
-                    'total_amount' => 230,
-                    'tax' => null,
-                    'tax_price' => 0,
-                    'commission' => 0,
-                    'commission_price' => 0,
-                    'product_delivery_fee' => 0,
-                    'discount' => 0,
-                    'created_at' => time(),
-                ]);
+        ]);
+        OrderItem::create([
+            'user_id' => $user->id,
+            'order_id' => $order->id,
+            'webinar_id' => null,
+            'bundle_id' => $request->bundle_id ?? null,
+            'certificate_template_id' => null,
+            'certificate_bundle_id' => null,
+            'form_fee' => 1,
+            'product_id' => null,
+            'product_order_id' => null,
+            'reserve_meeting_id' => null,
+            'subscribe_id' => null,
+            'promotion_id' => null,
+            'gift_id' => null,
+            'installment_payment_id' => null,
+            'ticket_id' => null,
+            'discount_id' => null,
+            'amount' => 230,
+            'total_amount' => 230,
+            'tax' => null,
+            'tax_price' => 0,
+            'commission' => 0,
+            'commission_price' => 0,
+            'product_delivery_fee' => 0,
+            'discount' => 0,
+            'created_at' => time(),
+        ]);
 
 
-            if (!empty($order) and $order->total_amount > 0) {
-                $razorpay = false;
-                $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
+        if (!empty($order) and $order->total_amount > 0) {
+            $razorpay = false;
+            $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
 
-                foreach ($paymentChannels as $paymentChannel) {
-                    if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
-                        $razorpay = true;
-                    }
+            foreach ($paymentChannels as $paymentChannel) {
+                if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                    $razorpay = true;
                 }
-
-
-                $data = [
-                    'pageTitle' => trans('public.checkout_page_title'),
-                    'paymentChannels' => $paymentChannels,
-                    'carts' => $carts,
-                    'subTotal' => null,
-                    'totalDiscount' => null,
-                    'tax' => null,
-                    'taxPrice' => null,
-                    'total' => 230,
-                    'userGroup' => $user->userGroup ? $user->userGroup->group : null,
-                    'order' => $order,
-                    'type'=>$order->orderItems[0]->form_fee,
-                    'count' => 0,
-                    'userCharge' => $user->getAccountingCharge(),
-                    'razorpay' => $razorpay,
-                    'totalCashbackAmount' => null,
-                    'previousUrl' => url()->previous(),
-                ];
-
-                return view(getTemplate() . '.cart.payment', $data);
-            } else {
-
-                return $this->handlePaymentOrderWithZeroTotalAmount($order);
             }
+
+
+            $data = [
+                'pageTitle' => trans('public.checkout_page_title'),
+                'paymentChannels' => $paymentChannels,
+                'carts' => $carts,
+                'subTotal' => null,
+                'totalDiscount' => null,
+                'tax' => null,
+                'taxPrice' => null,
+                'total' => 230,
+                'userGroup' => $user->userGroup ? $user->userGroup->group : null,
+                'order' => $order,
+                'type' => $order->orderItems[0]->form_fee,
+                'count' => 0,
+                'userCharge' => $user->getAccountingCharge(),
+                'razorpay' => $razorpay,
+                'totalCashbackAmount' => null,
+                'previousUrl' => url()->previous(),
+            ];
+
+            return view(getTemplate() . '.cart.payment', $data);
+        } else {
+
+            return $this->handlePaymentOrderWithZeroTotalAmount($order);
+        }
 
         return redirect('/panel');
     }

@@ -114,7 +114,7 @@ class RegisterController extends Controller
      * @param array $data
      * @return
      */
-    protected function create(array $data)
+    public function create(array $data)
     {
         if (!empty($data['mobile']) and !empty($data['country_code'])) {
             $data['mobile'] = ltrim($data['country_code'], '+') . ltrim($data['mobile'], '0');
@@ -142,43 +142,6 @@ class RegisterController extends Controller
                 $roleId = Role::getOrganizationRoleId();
             }
         }
-        //transfer the code creation after apply not here !!
-                // $lastCode = Code::latest()->first();
-                // if($data['account_type']=='user' && !empty( $lastCode)){
-                //     if(empty($lastCode->lst_sd_code)){
-                //         $lastCode->lst_sd_code=$lastCode->student_code;
-                //     }
-                //     $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-                //     do {
-                //         $nextCodeAsInt = $lastCodeAsInt + 1;
-                //         $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-
-                //         $codeExists = User::where('user_code', $nextCode)->exists();
-
-                //         if ($codeExists) {
-                //             $lastCodeAsInt = $nextCodeAsInt;
-                //         } else {
-                //             break;
-                //         }
-                //     } while (true);
-
-                //      $user = User::create([
-                //                     'role_name' => $roleName,
-                //                     'role_id' => $roleId,
-                //                     'user_code'=>$nextCode,
-                //                     'mobile' => $data['mobile'] ?? null,
-                //                     'email' => $data['email'] ?? null,
-                //                     'full_name' => $data['full_name'],
-                //                     'status' => User::$pending,
-                //                     'access_content' => $accessContent,
-                //                     'password' => Hash::make($data['password']),
-                //                     'affiliate' => $usersAffiliateStatus,
-                //                     'timezone' => $data['timezone'] ?? null,
-                //                     'created_at' => time()
-                //                 ]);
-                //                 $lastCode->update(['lst_sd_code' => $nextCode]);
-                // }else{
-
                     $user = User::create([
                         'role_name' => 'registered_user',
                         'role_id' => 13,
