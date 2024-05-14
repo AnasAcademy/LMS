@@ -48,7 +48,7 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app', 'share
     Route::get('/login', 'LoginController@showLoginForm');
     Route::post('/login', 'LoginController@login');
     Route::get('/logout', 'LoginController@logout');
-    Route::get('/register', 'RegisterController@showRegistrationForm');
+
     Route::post('/register', 'RegisterController@register');
     Route::get('/verification', 'VerificationController@index');
     Route::post('/verification', 'VerificationController@confirmCode');
@@ -74,6 +74,10 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         return view("errors.404", ['pageTitle' => trans('public.error_404_page_title')]);
     });
 
+    Route::get('/register', 'ApplyController@index');
+    Route::get('/apply', 'ApplyController@index');
+    Route::post('/apply', 'ApplyController@checkout')->name('payFee');
+
     // set Locale
     Route::post('/locale', 'LocaleController@setLocale')->name('appLocaleRoute');
 
@@ -97,9 +101,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 
 
 
-        Route::get('/apply', 'ApplyController@index');
-        Route::post('/apply', 'ApplyController@checkout')->name('payFee');
     });
+
 
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
 

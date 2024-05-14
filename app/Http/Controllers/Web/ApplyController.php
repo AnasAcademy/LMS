@@ -25,7 +25,11 @@ class ApplyController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $student = Student::where('user_id', $user->id)->first();
+        if($user){
+            $student = Student::where('user_id', $user->id)->first() ?? null;
+        }else{
+            $student = null;
+        }
         $category=Category::where('parent_id','!=', null)->get();
         return view(getTemplate() . '.pages.application_form',compact('user','category','student'));
     }
