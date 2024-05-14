@@ -491,7 +491,6 @@ class UserController extends Controller
                         ->groupBy('sales.seller_id')
                         ->orderBy('sales_count', 'desc');
                     break;
-                    break;
                 case 'purchased_appointments_asc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
                         ->select('users.*', 'sales.buyer_id', 'sales.meeting_id', 'sales.refund_at', DB::raw('count(sales.buyer_id) as purchased_count'))
