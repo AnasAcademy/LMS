@@ -56,7 +56,6 @@ class ApplyController extends Controller
 
         $category = Category::where('id', $request->category_id)->first();
         $bundle = Bundle::where('id', $request->bundle_id)->first();
-        $categoryTitle=$category->title;
         $student = Student::where('user_id', auth()->user()->id)->first();
 
 
