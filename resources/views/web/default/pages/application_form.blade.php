@@ -261,6 +261,24 @@
                                         @enderror
                                     </div>
 
+                                    {{-- confirm email --}}
+                                    @if (!$user)
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label for="email">اعد كتابة البريد الإلكتروني<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="email" id="email" name="email_confirmation"
+                                                value="{{ old('email_confirmation', $student ? $student->email : $user->email ?? '') }}"
+                                                placeholder="تسجيل البريد الإلكتروني" required
+                                                class="form-control  @error('email_confirmation') is-invalid @enderror">
+
+                                            @error('email_confirmation')
+                                                <div class="invalid-feedback d-block">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    @endif
+
                                     {{-- timezone --}}
                                     @if (getFeaturesSettings('timezone_in_register'))
                                         @php
