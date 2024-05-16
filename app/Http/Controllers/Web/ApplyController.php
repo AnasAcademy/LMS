@@ -19,6 +19,8 @@ use App\User;
 use App\Student;
 use App\Models\Category;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class ApplyController extends Controller
 {
@@ -62,22 +64,71 @@ class ApplyController extends Controller
     {
         // dd($request->all());
         app()->setLocale('ar');
+        $category = Category::where('id', $request->category_id)->first();
+        $bundle = Bundle::where('id', $request->bundle_id)->first();
+
+        $rules = [
+            'category_id' => 'required',
+            'bundle_id' => 'required|exists:bundles,id',
+            'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+            'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
+            'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
+            'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'email' => 'required|email|max:255|unique:users|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+            'birthdate' => 'required|date',
+            'phone' => 'required|min:5|max:20',
+            'mobile' => 'required|min:5|max:20',
+            'educational_qualification_country' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+            'secondary_school_gpa' => !$category->education ? 'required|string|max:255|min:1' : '',
+            'educational_area' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+            'secondary_graduation_year' => !$category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
+            'school' => !$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+            'university' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+            'faculty' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+            'education_specialization' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+            'graduation_year' => $category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
+            'gpa' => $category->education ? 'required|string|max:255|min:1' : '',
+            'deaf' => 'required|in:0,1',
+            'disabled_type' => $request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable',
+            'gender' => 'required|in:male,female',
+            'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
+            'nationality' => 'required|string|min:3|max:25',
+            'job' => $request->workStatus == 1 ? 'required' : 'nullable',
+            'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
+            'referral_person' => 'required|string|min:3|max:255',
+            'relation' => 'required|string|min:3|max:255',
+            'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+            'referral_phone' => 'required|min:3|max:20',
+            'about_us' => 'required|string|min:3|max:255',
+            'terms' => 'accepted',
+            'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
+        ];
+
         if (!auth()->check()) {
-            $rules = [
-                'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
-                'email' => 'required|email|max:255|unique:users|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                'password' => 'required|string|min:6|confirmed',
-                'password_confirmation' => 'required|same:password',
-                'referral_code' => 'nullable|exists:affiliates_codes,code'
-            ];
+
+            $rules['password'] = 'required|string|min:6|confirmed';
+            $rules['password_confirmation'] = 'required|same:password';
+            $rules['referral_code'] = 'nullable|exists:affiliates_codes,code';
+            $rules['phone'] = 'required|min:5|max:20|unique:users,mobile';
+
             if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
                 $rules['captcha'] = 'required|captcha';
             }
-            $request->validate($rules);
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
             $data = [
                 'full_name' => $request->ar_name,
                 'email' => $request->email,
                 'password' => $request->password,
+                'mobile' => $request->phone,
                 'referral_code' => $request->referral_code ?? null
             ];
 
@@ -95,35 +146,35 @@ class ApplyController extends Controller
             \Auth::login($user);
             $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
             RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
-        }
-
-
-        $category = Category::where('id', $request->category_id)->first();
-        $bundle = Bundle::where('id', $request->bundle_id)->first();
-        $student = Student::where('user_id', auth()->user()->id)->first();
-
-
-        if ($student) {
-            $validatedData = $request->validate([
-                'category_id' => 'required',
-                'bundle_id' => [
-                    'required',
-                    function ($attribute, $value, $fail) {
-                        $user = auth()->user();
-                        $student = Student::where('user_id', $user->id)->first();
-
-                        if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
-                            $fail('User has already applied for this bundle.');
-                        }
-                    },
-                ],
-                'terms' => 'accepted',
-                'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
-            ]);
         } else {
-            $validatedData = $request->validate([
-                'category_id' => 'required',
-                'bundle_id' => [
+            $student = Student::where('user_id', auth()->user()->id)->first();
+
+            if ($student) {
+
+                $validator = Validator::make($request->all(), [
+                    'category_id' => 'required',
+                    'bundle_id' => [
+                        'required',
+                        function ($attribute, $value, $fail) {
+                            $user = auth()->user();
+                            $student = Student::where('user_id', $user->id)->first();
+
+                            if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                                $fail('User has already applied for this bundle.');
+                            }
+                        },
+                    ],
+                    'terms' => 'accepted',
+                    'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
+                ]);
+
+                if ($validator->fails()) {
+                    return redirect()->back()
+                        ->withErrors($validator)
+                        ->withInput();
+                }
+            } else {
+                $rules['bundle_id'] = [
                     'required',
                     function ($attribute, $value, $fail) {
                         $user = auth()->user();
@@ -133,44 +184,34 @@ class ApplyController extends Controller
                             $fail('User has already applied for this bundle.');
                         }
                     },
-                ],
-                'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
-                'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
-                'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
-                'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                'birthdate' => 'required|date',
-                'phone' => 'required|min:5|max:20',
-                'mobile' => 'required|min:5|max:20',
-                'educational_qualification_country' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'secondary_school_gpa' => !$category->education ? 'required|string|max:255|min:1' : '',
-                'educational_area' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'secondary_graduation_year' => !$category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
-                'school' => !$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'university' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'faculty' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'education_specialization' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'graduation_year' => $category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
-                'gpa' => $category->education ? 'required|string|max:255|min:1' : '',
-                'deaf' => 'required|in:0,1',
-                'disabled_type' => $request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable',
-                'gender' => 'required|in:male,female',
-                'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
-                'nationality' => 'required|string|min:3|max:25',
-                'job' => $request->workStatus == 1 ? 'required' : 'nullable',
-                'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
-                'referral_person' => 'required|string|min:3|max:255',
-                'relation' => 'required|string|min:3|max:255',
-                'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                'referral_phone' => 'required|min:3|max:20',
-                'about_us' => 'required|string|min:3|max:255',
-                'terms' => 'accepted',
-                'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
-            ]);
+                ];
+
+                $rules['email'] = [
+                    'required',
+                    'email',
+                    'max:255',
+                    Rule::unique('users')->ignore(auth()->user()->id),
+                    'regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/'
+                ];
+
+                $rules['password'] = 'nullable|string|min:6|confirmed';
+                $rules['password_confirmation'] = 'required_with:password|same:password';
+                $validator = Validator::make($request->all(), $rules);
+                if ($validator->fails()) {
+                    return redirect()->back()
+                        ->withErrors($validator)
+                        ->withInput();
+                }
+
+
+                if ($request['password']) {
+                    auth()->user()->password = Hash::make($request['password']);
+                    auth()->user()->save();
+                }
+            }
         }
+
+        $validatedData = $validator->validated();
 
         $validatedData['user_id'] = auth()->user()->id;
         Cookie::queue('user_data', json_encode($validatedData));

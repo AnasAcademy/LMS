@@ -163,8 +163,8 @@
 
                             {{-- diploma --}}
                             <div class="form-group col-12 col-sm-6">
-                                <label for="application"
-                                    class="form-label">{{ trans('application_form.application') }}*</label>
+                                <label for="application" class="form-label">{{ trans('application_form.application') }}<span
+                                        class="text-danger">*</span></label>
                                 <select id="mySelect1" name="category_id" required
                                     class="form-control @error('category_id') is-invalid @enderror"
                                     onchange="toggleHiddenInput()">
@@ -187,7 +187,7 @@
                             {{-- specialization --}}
                             <div class="form-group col-12 col-sm-6">
                                 <label class="hidden-element" id="hiddenLabel1" for="bundle_id">
-                                    {{ trans('application_form.specialization') }}*
+                                    {{ trans('application_form.specialization') }}<span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="bundle_id" name="bundle_id" required
                                     class="hidden-element form-control @error('bundle_id') is-invalid @enderror"
@@ -202,7 +202,8 @@
 
                             {{-- certificate --}}
                             <div class="form-group col-12  d-none" id="certificate_section">
-                                <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
+                                <label>{{ trans('application_form.want_certificate') }} ؟ <span
+                                        class="text-danger">*</span></label>
                                 <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
                                 @error('certificate')
                                     <div class="invalid-feedback d-block">
@@ -233,20 +234,23 @@
                                     </div>
                                 </div>
                             </div>
-                          
+
                             <h1 class=" mt-50 mb-25">بيانات المتدرب الأساسية</h1>
 
                             {{-- registration details --}}
                             <section>
-                                <h2 class="form-main-title">معلومات إنشاء حساب</h2>
+                                <h2 class="form-main-title">معلومات @if (!$user)
+                                        إنشاء
+                                    @endif الحساب</h2>
                                 <section
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
 
                                     {{-- email --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="email">{{ trans('application_form.email') }}*</label>
+                                        <label for="email">{{ trans('application_form.email') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="email" id="email" name="email"
-                                            value="{{ old('email', $student ? $student->email : '') }}"
+                                            value="{{ old('email', $student ? $student->email : $user->email ?? '') }}"
                                             placeholder="تسجيل البريد الإلكتروني" required
                                             class="form-control  @error('email') is-invalid @enderror">
 
@@ -264,16 +268,20 @@
                                         @endphp
 
                                         <div class="form-group col-6">
-                                            <label class="input-label">{{ trans('update.timezone') }}</label>
-                                            <select name="timezone" class="form-control select2" data-allow-clear="false">
+                                            <label class="input-label">{{ trans('update.timezone') }}</label><span
+                                                class="text-danger">*</span>
+                                            <select name="timezone" class="form-control select2" data-allow-clear="false"
+                                                required>
                                                 <option value="" {{ empty($user->timezone) ? 'selected' : '' }}
                                                     disabled>
                                                     {{ trans('public.select') }}</option>
 
                                                 @foreach (getListOfTimezones() as $timezone)
                                                     <option value="{{ $timezone }}"
-                                                        @if ($selectedTimezone == $timezone) selected @endif>
-                                                        {{ $timezone }}</option>
+                                                        @if ($user && $user->timezone && $user->timezone == $timezone) selected
+                                                        @elseif (!$user && $selectedTimezone == $timezone) selected @endif>
+                                                        {{ $timezone }}
+                                                    </option>
                                                 @endforeach
                                             </select>
 
@@ -285,32 +293,45 @@
                                         </div>
                                     @endif
 
-                                    {{-- password --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label class="input-label" for="password">{{ trans('auth.password') }}:</label>
-                                        <input name="password" type="password"
-                                            class="form-control @error('password') is-invalid @enderror" id="password"
-                                            aria-describedby="passwordHelp">
-                                        @error('password')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
+                                    {{-- password section --}}
+                                    @if (!$user)
+                                        {{-- password --}}
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label class="input-label" for="password">{{ trans('auth.password') }}</label>
+                                            @if (!$user)
+                                                <span class="text-danger">*</span>
+                                            @endif
+                                            <input name="password" type="password" value="{{ old('password') }}"
+                                                class="form-control @error('password') is-invalid @enderror" id="password"
+                                                @if (!$user) required @endif
+                                                aria-describedby="passwordHelp">
+                                            @error('password')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
 
-                                    {{-- confirm password --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label class="input-label"
-                                            for="confirm_password">{{ trans('auth.retype_password') }}:</label>
-                                        <input name="password_confirmation" type="password"
-                                            class="form-control @error('password_confirmation') is-invalid @enderror"
-                                            id="confirm_password" aria-describedby="confirmPasswordHelp">
-                                        @error('password_confirmation')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
+                                        {{-- confirm password --}}
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label class="input-label"
+                                                for="confirm_password">{{ trans('auth.retype_password') }}</label>
+                                            @if (!$user)
+                                                <span class="text-danger">*</span>
+                                            @endif
+
+                                            <input name="password_confirmation" type="password"
+                                                value="{{ old('password_confirmation') }}"
+                                                class="form-control @error('password_confirmation') is-invalid @enderror"
+                                                @if (!$user) required @endif id="confirm_password"
+                                                aria-describedby="confirmPasswordHelp">
+                                            @error('password_confirmation')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    @endif
 
                                 </section>
 
@@ -324,9 +345,10 @@
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
                                     {{-- arabic name --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="name">{{ trans('application_form.name') }}*</label>
+                                        <label for="name">{{ trans('application_form.name') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="name" name="ar_name" {{-- value="{{ $student ? $student->ar_name : '' }}" --}}
-                                            value="{{ old('ar_name', $student ? $student->ar_name : '') }}"
+                                            value="{{ old('ar_name', $student ? $student->ar_name : $user->full_name ?? '') }}"
                                             placeholder="ادخل الإسم باللغه العربية فقط" required
                                             class="form-control @error('ar_name') is-invalid @enderror">
 
@@ -339,7 +361,8 @@
 
                                     {{-- english name --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="name_en">{{ trans('application_form.name_en') }}*</label>
+                                        <label for="name_en">{{ trans('application_form.name_en') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="name_en" name="en_name" {{-- value="{{ $student ? $student->en_name : '' }}" --}}
                                             value="{{ old('en_name', $student ? $student->en_name : '') }}"
                                             placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required
@@ -354,7 +377,8 @@
 
                                     {{-- identifier number --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="identifier_num">رقم الهوية الوطنية أو جواز السفر*</label>
+                                        <label for="identifier_num">رقم الهوية الوطنية أو جواز السفر <span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="identifier_num" name="identifier_num"
                                             {{-- value="{{ $student ? $student->identifier_num : '' }}" --}}
                                             value="{{ old('identifier_num', $student ? $student->identifier_num : '') }}"
@@ -370,7 +394,8 @@
 
                                     {{-- birthday --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="birthday">{{ trans('application_form.birthday') }}*</label>
+                                        <label for="birthday">{{ trans('application_form.birthday') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="date" id="birthday" name="birthdate" {{-- value="{{ $student ? $student->birthdate : '' }}" --}}
                                             value="{{ old('birthdate', $student ? $student->birthdate : '') }}" required
                                             class="form-control @error('birthdate') is-invalid @enderror">
@@ -384,9 +409,10 @@
 
                                     {{-- phone number --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="phone">{{ trans('application_form.phone') }}*</label>
-                                        <input type="tel" id="phone" name="phone"
-                                            value="{{ old('phone', $student ? $student->phone : '') }}"
+                                        <label for="phone">{{ trans('application_form.phone') }}<span
+                                                class="text-danger">*</span></label>
+                                        <input type="tel" id="phone" name="phone" required
+                                            value="{{ old('phone', $student ? $student->phone : $user->mobile ?? '') }}"
                                             class="form-control @error('phone') is-invalid @enderror">
 
                                         @error('phone')
@@ -398,9 +424,10 @@
 
                                     {{-- mobile number --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="mobile">{{ 'رقم الهاتف' }}</label>
-                                        <input type="tel" id="mobile" name="mobile"
-                                            value="{{ old('mobile', $student ? $student->mobile : '') }}"
+                                        <label for="mobile">{{ 'رقم الهاتف' }}</label> <span
+                                            class="text-danger">*</span>
+                                        <input type="tel" id="mobile" name="mobile" required
+                                            value="{{ old('mobile', $student ? $student->mobile : $user->mobile ?? '') }}"
                                             class="form-control  @error('mobile') is-invalid @enderror">
 
                                         @error('mobile')
@@ -412,7 +439,8 @@
 
                                     {{-- nationality --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="nationality">{{ trans('application_form.nationality') }}*</label>
+                                        <label for="nationality">{{ trans('application_form.nationality') }}<span
+                                                class="text-danger">*</span></label>
                                         @php
                                             $nationalities = [
                                                 ' سعودي/ة',
@@ -440,15 +468,14 @@
                                         <select id="nationality" name="nationality" required
                                             class="form-control  @error('nationality') is-invalid @enderror"
                                             onchange="toggleNationality()">
-                                            <option value="" class="placeholder" disabled=""
-                                                selected="selected">
+                                            <option value="" class="placeholder" disabled>
                                                 اختر جنسيتك</option>
                                             @foreach ($nationalities as $nationality)
                                                 <option value="{{ $nationality }}"
                                                     {{ old('nationality', $student->nationality ?? null) == $nationality ? 'selected' : '' }}>
                                                     {{ $nationality }}</option>
                                             @endforeach
-                                            <option value="اخرى" id="anotherNationality">اخرى</option>
+                                            <option value="اخرى" id="anotherNationality"  {{ old('nationality')!='' && !in_array( old('nationality'), $nationalities) ? 'selected' : '' }}>اخرى</option>
                                         </select>
                                         @error('nationality')
                                             <div class="invalid-feedback d-block">
@@ -459,7 +486,8 @@
 
                                     {{-- gender --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="gender">{{ trans('application_form.gender') }}*</label>
+                                        <label for="gender">{{ trans('application_form.gender') }}<span
+                                                class="text-danger">*</span></label>
 
                                         @error('gender')
                                             <div class="invalid-feedback d-inline">
@@ -493,7 +521,7 @@
                                     {{-- other nationality --}}
                                     <div class="form-group col-12 col-sm-6" id="other_nationality_section"
                                         style="display: none">
-                                        <label for="nationality">ادخل الجنسية *</label>
+                                        <label for="nationality">ادخل الجنسية <span class="text-danger">*</span></label>
                                         <input type="text"
                                             class="form-control @error('other_nationality') is-invalid @enderror"
                                             id="other_nationality" name="other_nationality" placeholder="اكتب الجنسية"
@@ -510,7 +538,8 @@
 
                                     {{-- country --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="country">{{ trans('application_form.country') }}*</label>
+                                        <label for="country">{{ trans('application_form.country') }}<span
+                                                class="text-danger">*</span></label>
                                         @php
                                             $countries = [
                                                 'السعودية',
@@ -545,7 +574,7 @@
                                                     {{ old('country', $student->country ?? null) == $country ? 'selected' : '' }}>
                                                     {{ $country }}</option>
                                             @endforeach
-                                            <option value="اخرى" id="anotherCountry">اخرى</option>
+                                            <option value="اخرى" id="anotherCountry" {{  old('country')!='' && !in_array( old('country'), $countries) ? 'selected' : '' }}>اخرى</option>
 
                                         </select>
 
@@ -559,7 +588,8 @@
                                     {{-- other country --}}
                                     <div class="form-group col-12 col-sm-6" id="anotherCountrySection"
                                         style="display: none">
-                                        <label for="city" class="form-label">ادخل البلد*</label>
+                                        <label for="city" class="form-label">ادخل البلد<span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="city" name="city"
                                             class="form-control  @error('city') is-invalid @enderror"
                                             placeholder="ادخل دولتك"
@@ -575,7 +605,8 @@
 
                                     {{-- region --}}
                                     <div class="form-group col-12 col-sm-6" id="region" style="display: none">
-                                        <label for="area" class="form-label">المنطقة*</label>
+                                        <label for="area" class="form-label">المنطقة<span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="area" name="area"
                                             class="form-control  @error('area') is-invalid @enderror"
                                             placeholder="اكتب المنطقة"
@@ -592,7 +623,8 @@
                                     <div class="form-group col-12 col-sm-6">
                                         <div id="cityContainer">
                                             <label for="town"
-                                                id="cityLabel">{{ trans('application_form.city') }}*</label>
+                                                id="cityLabel">{{ trans('application_form.city') }}<span
+                                                    class="text-danger">*</span></label>
                                             <input type="text" id="town" name="town"
                                                 placeholder="اكتب مدينه السكن الحاليه"
                                                 value="{{ old('town', $student ? $student->town : '') }}" required
@@ -618,8 +650,14 @@
 
                                     {{-- المؤهل التعليمي --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="educational_qualification_country" class="form-label">بلد مصدر شهادة
-                                            البكالوريوس*</label>
+
+                                        <label for="educational_qualification_country"
+                                            class="form-label high_education">بلد مصدر شهادة
+                                            البكالوريوس<span class="text-danger">*</span></label>
+
+                                        <label for="educational_qualification_country"
+                                            class="form-label secondary_education">بلد مصدر شهادة
+                                            الثانوية<span class="text-danger">*</span></label>
 
                                         <select id="educational_qualification_country"
                                             name="educational_qualification_country" required
@@ -648,12 +686,15 @@
                                     <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection"
                                         style="display: none">
 
-                                        <label for="university" class="form-label">
-                                            ادخل مصدر شهادة البكالوريوس*
+                                        <label for="university" class="form-label high_education">
+                                            ادخل مصدر شهادة البكالوريوس<span class="text-danger">*</span>
+                                        </label>
+                                        <label for="university" class="form-label secondary_education">
+                                            ادخل مصدر شهادة الثانوية<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="anotherEducationCountry"
                                             class="form-control @error('anotherEducationCountry') is-invalid @enderror"
-                                            name="anotherEducationCountry" placeholder="ادخل مصدر شهادة البكالوريوس"
+                                            name="anotherEducationCountry" placeholder="ادخل مصدر الشهادة"
                                             value="{{ old('anotherEducationCountry', $student && !in_array($student->educational_qualification_country, $countries) ? $student->educational_qualification_country : '') }}"
                                             onkeyup="setEducationCountry()">
 
@@ -668,7 +709,7 @@
                                     {{-- معدل المرحلة الثانوية --}}
                                     <div class="form-group col-12 col-sm-6 secondary_education">
                                         <label for="secondary_school_gpa" class="form-label">
-                                            معدل المرحلة الثانوية*
+                                            معدل المرحلة الثانوية<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="secondary_school_gpa"
                                             class="form-control @error('secondary_school_gpa') is-invalid @enderror"
@@ -685,7 +726,7 @@
                                     {{-- المنطقة التعليمية --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="educational_area" class="form-label">
-                                            المنطقة التعليمية*
+                                            المنطقة التعليمية<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="educational_area"
                                             class="form-control @error('educational_area') is-invalid @enderror"
@@ -702,7 +743,7 @@
                                     {{--  سنة الحصول على الشهادة الثانوية --}}
                                     <div class="form-group col-12 col-sm-6 secondary_education">
                                         <label for="secondary_graduation_year" class="form-label">
-                                            سنة الحصول على الشهادة الثانوية*
+                                            سنة الحصول على الشهادة الثانوية<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="secondary_graduation_year"
                                             class="form-control @error('secondary_graduation_year') is-invalid @enderror"
@@ -720,7 +761,7 @@
                                     {{-- المدرسة --}}
                                     <div class="form-group col-12 col-sm-6 secondary_education">
                                         <label for="school" class="form-label">
-                                            المدرسة*
+                                            المدرسة<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="school"
                                             class="form-control @error('school') is-invalid @enderror" name="school"
@@ -738,7 +779,7 @@
                                     {{-- الجامعه --}}
                                     <div class="form-group col-12 col-sm-6 high_education">
                                         <label for="university" class="form-label">
-                                            الجامعة*
+                                            الجامعة<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="university"
                                             class="form-control @error('university') is-invalid @enderror"
@@ -755,7 +796,7 @@
                                     {{-- الكليه --}}
                                     <div class="form-group col-12 col-sm-6 high_education">
                                         <label for="faculty" class="form-label">
-                                            الكلية*
+                                            الكلية<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="faculty"
                                             class="form-control @error('faculty') is-invalid @enderror" name="faculty"
@@ -772,7 +813,7 @@
                                     {{-- التخصص  --}}
                                     <div class="form-group col-12 col-sm-6 high_education">
                                         <label for="education_specialization" class="form-label">
-                                            التخصص*
+                                            التخصص<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="education_specialization"
                                             class="form-control @error('education_specialization') is-invalid @enderror"
@@ -789,7 +830,7 @@
                                     {{-- سنة التخرج --}}
                                     <div class="form-group col-12 col-sm-6 high_education">
                                         <label for="graduation_year" class="form-label">
-                                            سنة التخرج*
+                                            سنة التخرج<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="graduation_year"
                                             class="form-control @error('graduation_year') is-invalid @enderror"
@@ -807,7 +848,7 @@
                                     {{-- المعدل --}}
                                     <div class="form-group col-12 col-sm-6 high_education">
                                         <label for="gpa" class="form-label">
-                                            المعدل*
+                                            المعدل<span class="text-danger">*</span>
                                         </label>
                                         <input type="text" id="gpa"
                                             class="form-control @error('gpa') is-invalid @enderror" name="gpa"
@@ -827,10 +868,11 @@
                             <section>
                                 <h2 class="form-main-title">بيانات المهنة </h2>
                                 <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
+                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0 workingSection">
                                     {{-- work status --}}
                                     <div class="form-group col-12 col-sm-6">
-                                        <label>{{ trans('application_form.status') }}*</label>
+                                        <label>{{ trans('application_form.status') }}<span
+                                                class="text-danger">*</span></label>
 
                                         @error('workStatus')
                                             <div class="invalid-feedback d-inline">
@@ -845,7 +887,7 @@
                                                     <input type="radio" id="working" name="workStatus"
                                                         class="@error('workStatus') is-invalid @enderror" value="1"
                                                         required
-                                                        {{ old('workStatus', $student->job ?? null) != null ? 'checked' : '' }}>
+                                                        {{ old('workStatus', $student->job ?? null) != false ? 'checked' : '' }}>
                                                     {{ trans('application_form.working') }}
                                                 </label>
                                             </div>
@@ -855,7 +897,7 @@
                                                 <label for="not_working">
                                                     <input type="radio" id="not_working" name="workStatus" required
                                                         class="@error('workStatus') is-invalid @enderror" value="0"
-                                                        {{ old('workStatus', $student->job ?? null) == null ? 'checked' : '' }}>
+                                                        {{ old('workStatus', $student->job ?? null) == false ? 'checked' : '' }}>
                                                     {{ trans('application_form.not_working') }}
                                                 </label>
                                             </div>
@@ -866,7 +908,7 @@
                                     <div class="col-12" id="job" style="display: none">
                                         <div class="row">
                                             <div class="form-group col-12 col-sm-6">
-                                                <label for="job_title">الوظيفة*</label>
+                                                <label for="job_title">الوظيفة<span class="text-danger">*</span></label>
                                                 <input type="text" id="job_title" name="job"
                                                     class="form-control @error('job') is-invalid @enderror"
                                                     placeholder="أدخل الوظيفة"
@@ -881,7 +923,8 @@
                                             </div>
 
                                             <div class="form-group col-12 col-sm-6">
-                                                <label for="employment_type">جهة العمل*</label>
+                                                <label for="employment_type">جهة العمل<span
+                                                        class="text-danger">*</span></label>
                                                 <select id="employment_type" name="job_type"
                                                     class="form-control @error('job_type') is-invalid @enderror">
                                                     <option value="" selected disabled>اختر جهة العمل</option>
@@ -914,7 +957,8 @@
                                     <div class="col-12 row">
                                         {{-- deaf --}}
                                         <div class="form-group col-12 col-sm-6">
-                                            <label for="deaf">{{ trans('application_form.deaf_patient') }}؟ *</label>
+                                            <label for="deaf">{{ trans('application_form.deaf_patient') }}؟ <span
+                                                    class="text-danger">*</span></label>
 
                                             @error('deaf')
                                                 <div class="invalid-feedback d-inline">
@@ -953,7 +997,7 @@
 
                                         {{-- disabled --}}
                                         <div class="form-group col-12 col-sm-6">
-                                            <label>هل أنت من ذوي الإعاقة؟*</label>
+                                            <label>هل أنت من ذوي الإعاقة؟<span class="text-danger">*</span></label>
 
                                             @error('disabled')
                                                 <div class="invalid-feedback d-inline">
@@ -968,7 +1012,7 @@
                                                         <input type="radio" id="disabled" name="disabled"
                                                             class="@error('disabled') is-invalid @enderror"
                                                             value="1" required
-                                                            {{ old('disabled', $student->disabled_type ?? null) != null ? 'checked' : '' }}>
+                                                            {{ old('disabled', $student->disabled_type ?? null) != false ? 'checked' : '' }}>
                                                         نعم
                                                     </label>
                                                 </div>
@@ -979,7 +1023,7 @@
                                                         <input type="radio" id="not_disabled" name="disabled"
                                                             class="@error('disabled') is-invalid @enderror"
                                                             value="0" required
-                                                            {{ old('disabled', $student->disabled_type ?? null) == null ? 'checked' : '' }}>
+                                                            {{ old('disabled', $student->disabled_type ?? null) == false ? 'checked' : '' }}>
                                                         لا
                                                     </label>
                                                 </div>
@@ -990,7 +1034,8 @@
                                         {{-- disabled type --}}
                                         <div class="form-group col-12 col-sm-6" id="disabled_type_section"
                                             style="display: none">
-                                            <label for="disabled_type">{{ 'حدد نوع الإعاقة*' }}</label>
+                                            <label for="disabled_type">{{ 'حدد نوع الإعاقة' }} <span
+                                                    class="text-danger">*</span></label>
                                             <select id="disabled_type" name="disabled_type"
                                                 class="form-control @error('disabled_type') is-invalid @enderror">
                                                 <option value="" class="placeholder" disabled="" selected>أختر
@@ -999,10 +1044,10 @@
                                                 </option>
                                                 <option value="option1"
                                                     {{ old('disabled_type', $student->disabled_type ?? null) == 'option1' ? 'selected' : '' }}>
-                                                    اوبشن 1 </option>
+                                                    اعاقة ذهنية</option>
                                                 <option value="option2"
                                                     {{ old('disabled_type', $student->disabled_type ?? null) == 'option2' ? 'selected' : '' }}>
-                                                    اوبشن 2</option>
+                                                  اعاقة بدنية</option>
                                             </select>
 
                                             @error('disabled_type')
@@ -1018,8 +1063,8 @@
                                     <div class="col-12 row">
                                         {{-- healthy status --}}
                                         <div class="form-group col-12 col-sm-6">
-                                            <label
-                                                for="healthy">{{ trans('application_form.health_proplem') }}؟*</label>
+                                            <label for="healthy">{{ trans('application_form.health_proplem') }}؟<span
+                                                    class="text-danger">*</span></label>
 
 
                                             @error('healthy')
@@ -1035,7 +1080,7 @@
                                                         <input type="radio" id="healthy" name="healthy"
                                                             class=" @error('healthy') is-invalid @enderror"
                                                             value="1" required
-                                                            {{ old('healthy', $student->healthy_problem ?? null) != null ? 'checked' : '' }}>
+                                                            {{ old('healthy', $student->healthy_problem ?? null) != false ? 'checked' : '' }}>
                                                         نعم
                                                     </label>
                                                 </div>
@@ -1046,7 +1091,7 @@
                                                         <input type="radio" id="not_healthy" name="healthy"
                                                             class=" @error('healthy') is-invalid @enderror"
                                                             value="0" required
-                                                            {{ old('healthy', $student->healthy_problem ?? null) == null ? 'checked' : '' }}>
+                                                            {{ old('healthy', $student->healthy_problem ?? null) == false ? 'checked' : '' }}>
                                                         لا
                                                     </label>
                                                 </div>
@@ -1057,7 +1102,8 @@
                                         {{-- healthy problem --}}
                                         <div class="form-group col-12 col-sm-6" id="healthy_problem_section"
                                             style="display: none">
-                                            <label for="healthy_problem">ادخل المشكلة الصحية*</label>
+                                            <label for="healthy_problem">ادخل المشكلة الصحية<span
+                                                    class="text-danger">*</span></label>
                                             <input type="text" id="healthy_problem"
                                                 class="form-control @error('healthy_problem') is-invalid @enderror"
                                                 name="healthy_problem" placeholder="ادخل المشكلة الصحية"
@@ -1081,8 +1127,8 @@
                                 <section
                                     class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
                                     <div class="form-group col-12 col-sm-6">
-                                        <label
-                                            for="referral_person">{{ trans('application_form.referral_name') }}*</label>
+                                        <label for="referral_person">{{ trans('application_form.referral_name') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="referral_person" name="referral_person"
                                             value="{{ old('referral_person', $student ? $student->referral_person : '') }}"
                                             placeholder="أدخل الأسم الثنائي" required
@@ -1097,7 +1143,8 @@
                                     </div>
 
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="relation">{{ trans('application_form.referral_state') }}*</label>
+                                        <label for="relation">{{ trans('application_form.referral_state') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="relation" name="relation"
                                             value="{{ old('relation', $student ? $student->relation : '') }}"
                                             placeholder="أدخل صلة القرابة" required
@@ -1111,7 +1158,8 @@
                                     </div>
 
                                     <div class="form-group col-12 col-sm-6">
-                                        <label for="referral_email">{{ trans('application_form.email') }}*</label>
+                                        <label for="referral_email">{{ trans('application_form.email') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="email" id="referral_email" name="referral_email"
                                             value="{{ old('referral_email', $student ? $student->referral_email : '') }}"
                                             placeholder="أدخل بريد الكتروني" required
@@ -1127,7 +1175,8 @@
                                     </div>
 
                                     <div class="form-group col-12 col-sm-6">
-                                        <label>{{ trans('application_form.phone') }}*</label>
+                                        <label>{{ trans('application_form.phone') }}<span
+                                                class="text-danger">*</span></label>
                                         <input type="tel" id="referral_phone" placeholder="أدخل جوال"
                                             name="referral_phone"
                                             value="{{ old('referral_phone', $student ? $student->referral_phone : '') }}"
@@ -1144,7 +1193,8 @@
 
                             {{-- about us --}}
                             <div class="form-group col-12">
-                                <label>{{ trans('application_form.heard_about_us') }}*</label>
+                                <label>{{ trans('application_form.heard_about_us') }}<span
+                                        class="text-danger">*</span></label>
 
                                 @error('about_us')
                                     <div class="invalid-feedback d-inline">
@@ -1156,42 +1206,43 @@
                                 <br>
 
                                 <label for="snapchat">
-                                    <input type="radio" id="snapchat" name="about_us" value="snapchat"
+                                    <input type="radio" id="snapchat" name="about_us" required value="snapchat"
                                         class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'snapchat' ? 'checked' : '' }}>
                                     {{ trans('application_form.snapchat') }}
                                 </label><br>
                                 <label for="twitter">
-                                    <input type="radio" id="twitter" name="about_us" value="twitter"
+                                    <input type="radio" id="twitter" name="about_us" required value="twitter"
                                         class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'twitter' ? 'checked' : '' }}>
                                     {{ trans('application_form.twitter') }}
                                 </label><br>
                                 <label for="friend">
-                                    <input type="radio" id="friend" name="about_us" value="friend"
+                                    <input type="radio" id="friend" name="about_us" required value="friend"
                                         class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'friend' ? 'checked' : '' }}>
                                     {{ trans('application_form.friend') }}
                                 </label><br>
                                 <label for="instagram">
-                                    <input type="radio" id="instagram" name="about_us" value="instagram"
+                                    <input type="radio" id="instagram" name="about_us" required value="instagram"
                                         class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'instagram' ? 'checked' : '' }}>
                                     {{ trans('application_form.instagram') }}
                                 </label><br>
                                 <label for="facebook">
-                                    <input type="radio" id="facebook" name="about_us" value="facebook"
+                                    <input type="radio" id="facebook" name="about_us" required value="facebook"
                                         class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'facebook' ? 'checked' : '' }}>
                                     {{ trans('application_form.facebook') }}
                                 </label><br>
                                 <label for="other">
-                                    <input type="radio" id="other" name="about_us" value="other"
+                                    <input type="radio" id="other" name="about_us" required value="other"
                                         class=" @error('about_us') is-invalid @enderror"
                                         {{ old('about_us', $student->about_us ?? null) == 'other' ? 'checked' : '' }}>
                                     {{ trans('application_form.other') }}
                                 </label><br>
-                                <label id="otherLabel"style="display:none">أدخل المصدر</label>
+                                <label id="otherLabel"style="display:none">أدخل المصدر <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" id="otherInput" placeholder="" name="other_about_us"
                                     class="form-control @error('about_us') is-invalid @enderror"
                                     style="display:none"><br>
@@ -1263,8 +1314,17 @@
         function toggleJobFields() {
             if (working.checked) {
                 job.style.display = "block";
+                var inputs = document.querySelectorAll('#job input');
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
+
             } else {
                 job.style.display = "none";
+                var inputs = document.querySelectorAll('#job input');
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
             }
         }
 
@@ -1278,7 +1338,7 @@
         var otherLabel = document.getElementById("otherLabel");
         var otherInput = document.getElementById("otherInput");
 
-        var radioButtons = document.querySelectorAll('input[name="about_us"]');
+        var radioButtons = document.querySelectorAll('input[name="about_us" required]');
 
         radioButtons.forEach(function(radioButton) {
             radioButton.addEventListener("change", function() {
@@ -1336,8 +1396,8 @@
                 var selectedOption = select.options[select.selectedIndex];
                 var selectedText = selectedOption.textContent;
                 education.style.display = "block";
+                document.getElementById('educational_area').setAttribute('required', 'required');
 
-                console.log(selectedOption.getAttribute('education'));
 
                 if (selectedOption.getAttribute('education') == "0") {
 
@@ -1345,8 +1405,20 @@
                         element.style.display = "block";
                     });
 
+                    // Select all inputs within elements having the class 'secondary_education'
+                    var inputs = document.querySelectorAll('.secondary_education input');
+                    inputs.forEach(function(input) {
+                        input.setAttribute('required', 'required');
+                    });
+
+                    // hidding high education field
                     high_education.forEach(function(element) {
                         element.style.display = "none";
+                    });
+
+                    var inputs = document.querySelectorAll('.high_education input');
+                    inputs.forEach(function(input) {
+                        input.removeAttribute('required');
                     });
 
                 } else {
@@ -1354,9 +1426,21 @@
                         element.style.display = "none";
                     });
 
+                    var inputs = document.querySelectorAll('.secondary_education input');
+                    inputs.forEach(function(input) {
+                        input.removeAttribute('required');
+                    });
+
                     high_education.forEach(function(element) {
                         element.style.display = "block";
                     });
+
+                    var inputs = document.querySelectorAll('.high_education input');
+                    inputs.forEach(function(input) {
+                        input.setAttribute('required', 'required');
+                    });
+
+
 
                 }
 
@@ -1373,12 +1457,22 @@
         function CertificateSectionToggle() {
             let certificateSection = document.getElementById("certificate_section");
             let bundleSelect = document.getElementById("bundle_id");
+            let certificateInputs = document.querySelectorAll("input[name='certificate']");
+
             // Get the selected option
             var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
             if (selectedOption.getAttribute('has_certificate') == 1) {
                 certificateSection.classList.remove("d-none");
+
+                certificateInputs.forEach(function(element) {
+                    element.setAttribute("required", "required");
+                });
             } else {
                 certificateSection.classList.add("d-none");
+
+                certificateInputs.forEach(function(element) {
+                    element.removeAttribute("required", "required");
+                });
 
             }
         }
@@ -1388,11 +1482,12 @@
 
     {{-- certificate message  --}}
     <script>
-        function showCertificateMessage() {
+        function showCertificateMessage(event) {
 
             let messageSection = document.getElementById("certificate_message");
             let certificateOption = document.querySelector("input[name='certificate']:checked");
             if (certificateOption.value === "1") {
+
                 messageSection.innerHTML = "سوف تحصل على خصم 23%"
             } else if (certificateOption.value === "0") {
                 messageSection.innerHTML = "بيفوتك الحصول على خصم 23%"
@@ -1436,9 +1531,9 @@
             }
             if (select && cityLabel && town) {
                 if (select.value === "السعودية") {
-                    town.outerHTML = '<select id="town" name="town"  class="form-control">' +
+                    town.outerHTML = '<select id="town" name="town"  class="form-control" required>' +
                         '<option value="الرياض" selected="selected">الرياض</option>' +
-                        '<option value="جدة>"جدة</option>' +
+                        '<option value="جده">جده </option>' +
                         '<option value="مكة المكرمة">مكة المكرمة</option>' +
                         '<option value="المدينة المنورة">المدينة المنورة</option>' +
                         '<option value="الدمام">الدمام</option>' +
@@ -1495,8 +1590,16 @@
             let healthyStatus = document.getElementById("healthy");
             if (healthyStatus.checked) {
                 healthyProblemSection.style.display = "block";
+                var inputs = document.querySelectorAll('#healthy_problem_section input');
+                    inputs.forEach(function(input) {
+                        input.setAttribute('required', 'required');
+                    });
             } else {
                 healthyProblemSection.style.display = "none";
+                var inputs = document.querySelectorAll('#healthy_problem_section input');
+                    inputs.forEach(function(input) {
+                        input.removeAttribute('required');
+                    });
             }
 
         }
@@ -1517,8 +1620,16 @@
             let disabledStatus = document.getElementById("disabled");
             if (disabledStatus.checked) {
                 disabledTypeSection.style.display = "block";
+                var inputs = document.querySelectorAll('#disabled_type_section select');
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
             } else {
                 disabledTypeSection.style.display = "none";
+                var inputs = document.querySelectorAll('#disabled_type_section select');
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
             }
 
         }
@@ -1570,11 +1681,19 @@
 
             if (educationalQualificationCountry && educationalQualificationCountry.value == "اخرى") {
                 anotherEducationCountrySection.style.display = "block";
+                var inputs = document.querySelectorAll('#anotherEducationCountrySection input');
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
                 anotherEducationCountryOption.value = anotherEducationCountry.value;
 
             } else {
                 anotherEducationCountrySection.style.display = "none";
                 anotherEducationCountryOption.value = "اخرى";
+                var inputs = document.querySelectorAll('#anotherEducationCountrySection input');
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
             }
 
         }
