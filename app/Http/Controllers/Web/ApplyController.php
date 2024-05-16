@@ -21,6 +21,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class ApplyController extends Controller
 {
@@ -60,6 +61,43 @@ class ApplyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function user_payment($details)
+    {
+        if (!empty($details) and $details > 0) {
+            $razorpay = false;
+            $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
+            $paymentChannels = PaymentChannel::where('status', 'active')->get();
+            foreach ($paymentChannels as $paymentChannel) {
+                if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                    $razorpay = true;
+                }
+            }
+
+
+            $data = [
+                'pageTitle' => trans('public.checkout_page_title'),
+                'paymentChannels' => $paymentChannels,
+                'carts' => null,
+                'subTotal' => null,
+                'totalDiscount' => null,
+                'tax' => null,
+                'taxPrice' => null,
+                'total' => 230,
+                'userGroup' => null,
+                'order' => null,
+                'type' => 1,
+                'count' => 0,
+                'userCharge' => null,
+                'razorpay' => $razorpay,
+                'totalCashbackAmount' => null,
+                'previousUrl' => url()->previous(),
+            ];
+
+            return view(getTemplate() . '.cart.payment', $data);
+        }
+        return redirect('/apply');
+    }
     public function checkout(Request $request, $carts = null)
     {
         // dd($request->all());
@@ -124,28 +162,36 @@ class ApplyController extends Controller
                     ->withErrors($validator)
                     ->withInput();
             }
+
+            $validatedData = $validator->validated();
+
+            // $validatedData['user_id'] = auth()->user()->id;
+            $validatedData['password'] = Crypt::encryptString($validatedData['password']);
+            $validatedData = collect($validatedData)->except(['password_confirmation']);
+            Cookie::queue('user_data', json_encode($validatedData));
             $data = [
                 'full_name' => $request->ar_name,
                 'email' => $request->email,
-                'password' => $request->password,
-                'mobile' => $request->phone,
-                'referral_code' => $request->referral_code ?? null
+                'bundle'=>$bundle->title,
             ];
+            return $this->user_payment($data);
 
-            $user = (new RegisterController())->create($data);
-            $user->update(['status' => User::$active]);
-            event(new Registered($user));
 
-            $notifyOptions = [
-                '[u.name]' => $user->full_name,
-                '[u.role]' => trans("update.role_{$user->role_name}"),
-                '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
-            ];
 
-            sendNotification("new_registration", $notifyOptions, 1);
-            \Auth::login($user);
-            $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
-            RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
+            // $user = (new RegisterController())->create($data);
+            // $user->update(['status' => User::$active]);
+            // event(new Registered($user));
+
+            // $notifyOptions = [
+            //     '[u.name]' => $user->full_name,
+            //     '[u.role]' => trans("update.role_{$user->role_name}"),
+            //     '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
+            // ];
+
+            // sendNotification("new_registration", $notifyOptions, 1);
+            // \Auth::login($user);
+            // $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
+            // RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
         } else {
             $student = Student::where('user_id', auth()->user()->id)->first();
 
@@ -174,18 +220,6 @@ class ApplyController extends Controller
                         ->withInput();
                 }
             } else {
-                $rules['bundle_id'] = [
-                    'required',
-                    function ($attribute, $value, $fail) {
-                        $user = auth()->user();
-                        $student = Student::where('user_id', $user->id)->first();
-
-                        if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
-                            $fail('User has already applied for this bundle.');
-                        }
-                    },
-                ];
-
                 $rules['email'] = [
                     'required',
                     'email',
@@ -214,7 +248,9 @@ class ApplyController extends Controller
         $validatedData = $validator->validated();
 
         $validatedData['user_id'] = auth()->user()->id;
+        $validatedData['password'] = Crypt::encryptString($validatedData['password']);
         Cookie::queue('user_data', json_encode($validatedData));
+
         $user = auth()->user();
 
         $paymentChannels = PaymentChannel::where('status', 'active')->get();

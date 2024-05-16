@@ -34,6 +34,49 @@ class PaymentController extends Controller
         ]);
 
         $user = auth()->user();
+        if(empty($user)){
+            $gateway = $request->input('gateway');
+
+            $paymentChannel = PaymentChannel::where('id', $gateway)
+                ->where('status', 'active')
+                ->first();
+
+            if (!$paymentChannel) {
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => trans('public.channel_payment_disabled'),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            try {
+                $channelManager = ChannelManager::makeChannel($paymentChannel);
+
+                $redirect_url = $channelManager->paymentUserRequest();
+
+                if ($paymentChannel->class_name == 'Mada') {
+                    return $redirect_url;
+                }
+
+                if (in_array($paymentChannel->class_name, PaymentChannel::$gatewayIgnoreRedirect)) {
+
+                    return $redirect_url;
+                }
+
+                return Redirect::away($redirect_url);
+
+            } catch (\Exception $exception) {
+                dd($exception);
+                $toastData = [
+                    'title' => trans('cart.fail_purchase'),
+                    'msg' => trans('cart.gateway_error'),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+            return redirect('/apply');
+        }
         $gateway = $request->input('gateway');
         $orderId = $request->input('order_id');
 

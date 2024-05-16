@@ -61,7 +61,7 @@
 
         <form action="/payments/payment-request" method="post" class=" mt-25">
             {{ csrf_field() }}
-            <input type="hidden" name="order_id" value="{{ $order->id }}">
+            <input type="hidden" name="order_id" value="{{ $order ? $order->id : null }}">
 
             <div class="row">
                 @if (!empty($paymentChannels))
@@ -137,7 +137,7 @@
             <div class="d-flex align-items-center justify-content-between mt-45">
                 <span class="font-16 font-weight-500 text-gray">{{ trans('financial.total_amount') }}
                     {{ handlePrice($total) }}</span>
-                <button type="button" id="paymentSubmit" 
+                <button type="button" id="paymentSubmit"
                     class="btn btn-sm btn-primary">{{ trans('public.start_payment') }}</button>
             </div>
         </form>
