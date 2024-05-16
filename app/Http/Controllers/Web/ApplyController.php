@@ -105,7 +105,6 @@ class ApplyController extends Controller
 
         if ($student) {
             $validatedData = $request->validate([
-                'user_id' => 'required',
                 'category_id' => 'required',
                 'bundle_id' => [
                     'required',
