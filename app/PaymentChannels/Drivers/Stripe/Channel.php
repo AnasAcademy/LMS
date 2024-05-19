@@ -4,14 +4,17 @@ namespace App\PaymentChannels\Drivers\Stripe;
 
 use App\Http\Controllers\Auth\RegisterController;
 use App\Models\Order;
+use App\User;
 use App\Models\OrderItem;
 use App\Models\PaymentChannel;
 use App\PaymentChannels\BasePaymentChannel;
 use App\PaymentChannels\IChannel;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
+use Illuminate\Support\Facades\Crypt;
 
 class Channel extends BasePaymentChannel implements IChannel
 {
@@ -123,11 +126,48 @@ class Channel extends BasePaymentChannel implements IChannel
 
     public function verify(Request $request)
     {
+
         $data = $request->all();
         $status = $data['status'];
         $order_id = $data['order_id'] ?? null;
 
         $user = auth()->user();
+        if (empty($user)) {
+
+            if ($status == 'success' and !empty($request->session_id)) {
+                Stripe::setApiKey($this->api_secret);
+                $session = Session::retrieve($request->session_id);
+
+                if (!empty($session) and $session->payment_status == 'paid') {
+
+
+
+                    $data=$this->user_data($request->cookie('user_data'));
+
+                    $user_data=collect($data)->except(['bundle_id'])->toArray();
+                    $user = (new RegisterController())->create($user_data);
+                    $user->update(['status' => User::$active]);
+                    event(new Registered($user));
+
+                    $notifyOptions = [
+                        '[u.name]' => $user->full_name,
+                        '[u.role]' => trans("update.role_{$user->role_name}"),
+                        '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
+                    ];
+
+                    sendNotification("new_registration", $notifyOptions, 1);
+                    \Auth::login($user);
+
+                    $bundle_id=$data['bundle_id'];
+                    $order=$this->makeUserOrder($user,$bundle_id);
+                    $order->update([
+                        'status' => Order::$paying
+                    ]);
+                    return $order;
+                }
+            }
+        }
+
 
         $order = Order::where('id', $order_id)
             ->where('user_id', $user->id)
@@ -150,53 +190,48 @@ class Channel extends BasePaymentChannel implements IChannel
             $order->update(['status' => Order::$fail]);
         }
 
-        if (empty($user)) {
-            if ($status == 'success' and !empty($request->session_id)) {
-                Stripe::setApiKey($this->api_secret);
-                $session = Session::retrieve($request->session_id);
-                if (!empty($session) and $session->payment_status == 'paid') {
 
-                    $data=$this->user_data($request->cookie('user_data'));
-                    $user_data=collect($data)->except(['bundle_id'])->toArray();
-                    $user = (new RegisterController())->create($user_data);
-                    $user->update(['status' => User::$active]);
-                    event(new Registered($user));
-
-                    $notifyOptions = [
-                        '[u.name]' => $user->full_name,
-                        '[u.role]' => trans("update.role_{$user->role_name}"),
-                        '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
-                    ];
-
-                    sendNotification("new_registration", $notifyOptions, 1);
-                    \Auth::login($user);
-                    
-                    $bundle_id=$data['bundle_id'];
-                    $order=$this->makeUserOrder($user,$bundle_id);
-                    $order->update([
-                        'status' => Order::$paying
-                    ]);
-                    return $order;
-                }
-            }
-        }
         return $order;
     }
 
     public function user_data($cookie)
-    {
-        $collectedData = [];
-        if ($cookie) {
-            $userData = json_decode($cookie, true);
-            $desiredKeys = ['ar_name', 'password', 'email','timezone','bundle_id']; // List of keys you want to collect
-            foreach ($desiredKeys as $key) {
-                $collectedData[$key] = $userData[$key];
-            }
-            // $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation'])->toArray();
-        }
-        return  $collectedData;
+{
+    $collectedData = [];
 
+    if ($cookie) {
+        $userData = json_decode($cookie, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Failed to decode JSON: ' . json_last_error_msg());
+        }
+
+        if (!is_array($userData)) {
+            throw new Exception('Decoded data is not an array.');
+        }
+        try {
+            if (isset($userData['password'])) {
+                $userData['password'] = Crypt::decryptString($userData['password']);
+            } else {
+                throw new Exception('Password key not found in user data.');
+            }
+        } catch (Exception $e) {
+            throw new Exception('Failed to decrypt password: ' . $e->getMessage());
+        }
+
+        $desiredKeys = ['ar_name', 'password', 'email', 'timezone', 'bundle_id'];
+
+        foreach ($desiredKeys as $key) {
+            if (isset($userData[$key])) {
+                $collectedData[$key] = $userData[$key];
+            } else {
+                $collectedData[$key] = null;
+            }
+        }
     }
+
+    return $collectedData;
+}
+
     public function makeUserOrder($user,$bundle_id){
         $order = Order::create([
             'user_id' => $user->id,

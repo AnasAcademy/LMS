@@ -248,7 +248,10 @@ class ApplyController extends Controller
         $validatedData = $validator->validated();
 
         $validatedData['user_id'] = auth()->user()->id;
-        $validatedData['password'] = Crypt::encryptString($validatedData['password']);
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = Crypt::encryptString($validatedData['password']);
+        }
+       
         Cookie::queue('user_data', json_encode($validatedData));
 
         $user = auth()->user();

@@ -386,6 +386,7 @@ class PaymentController extends Controller
                         if ($userData) {
                             $userData = json_decode($userData, true);
                             $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms','certificate','timezone','password', 'password_confirmation'])->toArray();
+                            $studentData['user_id'] = $user->id;
                         }
                         $student = Student::where('user_id', auth()->user()->id)->first();
                         if (!$student) {
