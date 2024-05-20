@@ -107,12 +107,17 @@ return [
     'uploaded' => 'فشل تحميل :attribute.',
     'url' => 'صيغة الرابط :attribute غير صحيحة.',
     'uuid' => 'يجب أن يكون :attribute UUID صالحًا.',
+    'password_or_username' => 'البريد الالكتروني او كلمة المرور خاطئة',
 
     'captcha' => 'الكود غير صحيح...',
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'full_name' => [
+            'regex' => ' :attribute يجب ان يكون باللغة العربية',
+            ],
+
     ],
     'attributes' => [
         'user_id' => 'اسم المستخدم',
@@ -159,6 +164,10 @@ return [
         'apply_link' => 'رابط التقديم',
         'review_link' => 'رابط المراجعه',
         'status' => 'الحالة',
+        'password' => 'كلمة المرور',
+        'password_confirmation' => 'تأكيد كلمة المرور',
+        'full_name'=>'الاسم الثلاثي',
+        'username'=> 'المستخدم'
     ],
 
 ];
