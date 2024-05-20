@@ -1276,12 +1276,15 @@
         radioButtons.forEach(function(radioButton) {
             radioButton.addEventListener("change", function() {
                 if (radioButton.id === "other" && radioButton.checked) {
+
                     otherLabel.style.display = "block";
                     otherInput.style.display = "block";
+                    otherInput.setAttribute('required','required');
                     radioButton.value = otherInput.value;
                 } else {
                     otherLabel.style.display = "none";
                     otherInput.style.display = "none";
+                    otherInput.removeAttribute('required');
                 }
             });
         });
