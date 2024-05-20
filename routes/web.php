@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 'signed', 'as' => 'my_api.web.'], function () {
     Route::get('checkout/{user}', 'CartController@webCheckoutRender')->name('checkout');
     Route::get('/charge/{user}', 'PaymentsController@webChargeRender')->name('charge');
@@ -22,7 +23,6 @@ Route::group(['prefix' => 'my_api', 'namespace' => 'Api\Panel', 'middleware' => 
 Route::group(['prefix' => 'api_sessions'], function () {
     Route::get('/big_blue_button', ['uses' => 'Api\Panel\SessionsController@BigBlueButton'])->name('big_blue_button');
     Route::get('/agora', ['uses' => 'Api\Panel\SessionsController@agora'])->name('agora');
-
 });
 
 Route::get('/mobile-app', 'Web\MobileAppController@index')->middleware(['share'])->name('mobileAppRoute');
@@ -48,7 +48,7 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app', 'share
     Route::get('/login', 'LoginController@showLoginForm');
     Route::post('/login', 'LoginController@login');
     Route::get('/logout', 'LoginController@logout');
-
+    Route::get('/register', 'RegisterController@showRegistrationForm');
     Route::post('/register', 'RegisterController@register');
     Route::get('/verification', 'VerificationController@index');
     Route::post('/verification', 'VerificationController@confirmCode');
@@ -62,7 +62,6 @@ Route::group(['namespace' => 'Auth', 'middleware' => ['check_mobile_app', 'share
     Route::get('/facebook/redirect', 'SocialiteController@redirectToFacebook');
     Route::get('/facebook/callback', 'SocialiteController@handleFacebookCallback');
     Route::get('/reff/{code}', 'ReferralController@referral');
-
 });
 
 Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impersonate', 'share', 'check_maintenance']], function () {
@@ -74,16 +73,6 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         return view("errors.404", ['pageTitle' => trans('public.error_404_page_title')]);
     });
 
-    // Route::get('/register', 'ApplyController@index');
-    Route::get('/apply', function(){
-        if (auth()->check() && auth()->user()->student) {
-            return redirect('/panel/requirements');
-        } else {
-            return app()->call('App\Http\Controllers\Web\ApplyController@index');
-        }
-    });
-    Route::post('/apply', 'ApplyController@checkout')->name('payFee');
-
     // set Locale
     Route::post('/locale', 'LocaleController@setLocale')->name('appLocaleRoute');
 
@@ -94,11 +83,10 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     Route::group(['middleware' => 'web.auth'], function () {
         // Route::get('/', 'ApplyController@index');
 
-        Route::get('/', function(){
+        Route::get('/', function () {
             if (auth()->check() && auth()->user()->role_name == 'admin') {
                 return redirect('/admin');
-            }
-            else if (auth()->check() && auth()->user()->student) {
+            } else if (auth()->check() && auth()->user()->student) {
                 return redirect('/panel/requirements');
             } else {
                 return redirect('/apply');
@@ -106,9 +94,15 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         });
 
 
-
+        Route::get('/apply', function () {
+            if (auth()->check() && auth()->user()->student) {
+                return redirect('/panel/requirements');
+            } else {
+                return app()->call('App\Http\Controllers\Web\ApplyController@index');
+            }
+        });
+        Route::post('/apply', 'ApplyController@checkout')->name('payFee');
     });
-
 
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
 
@@ -125,7 +119,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::post('/{id}/learningStatus', 'WebinarController@learningStatus');
 
         Route::group(['middleware' => 'web.auth'], function () {
-    //         Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
+            //         Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
 
             Route::post('/learning/itemInfo', 'LearningPageController@getItemInfo');
             Route::get('/learning/{slug}', 'LearningPageController@index');
@@ -152,7 +146,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
                 });
             });
 
-    //         Route::post('/direct-payment', 'WebinarController@directPayment');
+            //         Route::post('/direct-payment', 'WebinarController@directPayment');
         });
     });
 
@@ -212,7 +206,6 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
             Route::get('/packages/{id}/installments', 'BecomeInstructorController@getInstallmentsByRegistrationPackage');
             Route::post('/', 'BecomeInstructorController@store');
         });
-
     });
 
     Route::group(['prefix' => 'meetings'], function () {
@@ -405,7 +398,4 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
             Route::post('/{item_type}/{item_slug}', 'GiftController@store');
         });
     });
-
-
 });
-
