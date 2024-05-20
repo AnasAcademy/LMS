@@ -1692,7 +1692,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                 'created_at' => time()
             ]);
 
-            if (env('APP_ENV') == 'production') {
+            // if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
                 if (!empty($user) and !empty($user->email)) {
                     $name = $user->student ? $user->student->ar_name : $user->fullname;
@@ -1704,7 +1704,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                         // dd($exception)
                     }
                 }
-            }
+            // }
         }
 
         return true;
