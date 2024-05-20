@@ -94,8 +94,7 @@ class RegisterController extends Controller
             'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
             'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users',
             'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users',
-            'term' => 'required',
-            'full_name' => 'required|string|min:3',
+            'full_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
             'referral_code' => 'nullable|exists:affiliates_codes,code'
@@ -105,7 +104,12 @@ class RegisterController extends Controller
             $rules['captcha'] = 'required|captcha';
         }
 
-        return Validator::make($data, $rules);
+         $validator= Validator::make($data, $rules);
+        $validator->setAttributeNames([
+            'full_name' => __('validation.attributes.full_name'),
+            // Add other attribute names for other fields
+        ]);
+        return  $validator;
     }
 
     /**
@@ -142,20 +146,20 @@ class RegisterController extends Controller
                 $roleId = Role::getOrganizationRoleId();
             }
         }
-                    $user = User::create([
-                        'role_name' => 'registered_user',
-                        'role_id' => 13,
-                        'mobile' => $data['mobile'] ?? null,
-                        'email' => $data['email'] ?? null,
-                        'full_name' => $data['full_name'],
-                        'status' => User::$pending,
-                        'access_content' => $accessContent,
-                        'password' => Hash::make($data['password']),
-                        'affiliate' => $usersAffiliateStatus,
-                        'timezone' => $data['timezone'] ?? null,
-                        'created_at' => time()
-                    ]);
-                // }
+        $user = User::create([
+            'role_name' => 'registered_user',
+            'role_id' => 13,
+            'mobile' => $data['mobile'] ?? null,
+            'email' => $data['email'] ?? null,
+            'full_name' => $data['full_name'],
+            'status' => User::$active,
+            'access_content' => $accessContent,
+            'password' => Hash::make($data['password']),
+            'affiliate' => $usersAffiliateStatus,
+            'timezone' => $data['timezone'] ?? null,
+            'created_at' => time()
+        ]);
+        // }
 
         if (!empty($data['certificate_additional'])) {
             UserMeta::updateOrCreate([
@@ -203,14 +207,14 @@ class RegisterController extends Controller
 
         $referralCode = $request->get('referral_code', null);
 
-        if ($checkConfirmed['status'] == 'send') {
+        // if ($checkConfirmed['status'] == 'send') {
 
-            if (!empty($referralCode)) {
-                session()->put('referralCode', $referralCode);
-            }
+        //     if (!empty($referralCode)) {
+        //         session()->put('referralCode', $referralCode);
+        //     }
 
-            return redirect('/verification');
-        } elseif ($checkConfirmed['status'] == 'verified') {
+        //     return redirect('/verification');
+        // } elseif ($checkConfirmed['status'] == 'verified') {
             $this->guard()->login($user);
 
             $enableRegistrationBonus = false;
@@ -223,7 +227,6 @@ class RegisterController extends Controller
 
 
             $user->update([
-                'status' => User::$active,
                 'enable_registration_bonus' => $enableRegistrationBonus,
                 'registration_bonus_amount' => $registrationBonusAmount,
             ]);
@@ -245,6 +248,6 @@ class RegisterController extends Controller
             return $request->wantsJson()
                 ? new JsonResponse([], 201)
                 : redirect($this->redirectPath());
-        }
+        // }
     }
 }
