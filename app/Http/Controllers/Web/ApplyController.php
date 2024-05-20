@@ -168,7 +168,7 @@ class ApplyController extends Controller
 
             // $validatedData['user_id'] = auth()->user()->id;
             $validatedData['password'] = Crypt::encryptString($validatedData['password']);
-            $validatedData = collect($validatedData)->except(['password_confirmation']);
+            $validatedData = collect($validatedData)->except(['password_confirmation','email_confirmation']);
             Cookie::queue('user_data', json_encode($validatedData));
             $data = [
                 'full_name' => $request->ar_name,
@@ -177,22 +177,6 @@ class ApplyController extends Controller
             ];
             return $this->user_payment($data);
 
-
-
-            // $user = (new RegisterController())->create($data);
-            // $user->update(['status' => User::$active]);
-            // event(new Registered($user));
-
-            // $notifyOptions = [
-            //     '[u.name]' => $user->full_name,
-            //     '[u.role]' => trans("update.role_{$user->role_name}"),
-            //     '[time.date]' => dateTimeFormat($user->created_at, 'j M Y H:i'),
-            // ];
-
-            // sendNotification("new_registration", $notifyOptions, 1);
-            // \Auth::login($user);
-            // $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
-            // RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
         } else {
             $student = Student::where('user_id', auth()->user()->id)->first();
 
@@ -252,7 +236,7 @@ class ApplyController extends Controller
         if (isset($validatedData['password'])) {
             $validatedData['password'] = Crypt::encryptString($validatedData['password']);
         }
-       
+
         Cookie::queue('user_data', json_encode($validatedData));
 
         $user = auth()->user();
