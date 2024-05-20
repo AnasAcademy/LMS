@@ -200,6 +200,10 @@
                                 @enderror
                             </div>
 
+                            <div class="d-none font-14 font-weight-bold px-3 col-12" id="early_enroll" style="color: #5F2B80;">
+                                يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
+                            </div>
+
                             {{-- certificate --}}
                             <div class="form-group col-12  d-none" id="certificate_section">
                                 <label>{{ trans('application_form.want_certificate') }} ؟ <span
@@ -1279,7 +1283,7 @@
 
                     otherLabel.style.display = "block";
                     otherInput.style.display = "block";
-                    otherInput.setAttribute('required','required');
+                    otherInput.setAttribute('required', 'required');
                     radioButton.value = otherInput.value;
                 } else {
                     otherLabel.style.display = "none";
@@ -1315,7 +1319,7 @@
                     var options = categoryBundles.map(function(bundle) {
                         var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
                             'selected' : '';
-                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
+                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}" early_enroll="${bundle.early_enroll}">${bundle.title}</option>`;
                     }).join('');
 
                     hiddenInput.outerHTML =
@@ -1392,6 +1396,7 @@
     <script>
         function CertificateSectionToggle() {
             let certificateSection = document.getElementById("certificate_section");
+            let earlyEnroll = document.getElementById("early_enroll");
             let bundleSelect = document.getElementById("bundle_id");
             let certificateInputs = document.querySelectorAll("input[name='certificate']");
 
@@ -1410,6 +1415,14 @@
                     element.removeAttribute("required", "required");
                 });
 
+            }
+
+            if (selectedOption.getAttribute('early_enroll') == 1) {
+
+                earlyEnroll.classList.remove("d-none");
+
+            } else {
+                earlyEnroll.classList.add("d-none");
             }
         }
 
