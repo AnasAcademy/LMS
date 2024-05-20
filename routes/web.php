@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 // use App\Http\Controllers\Web\ApplyController;
 /*
 |--------------------------------------------------------------------------
@@ -74,8 +75,11 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         return view("errors.404", ['pageTitle' => trans('public.error_404_page_title')]);
     });
 
-    // Route::get('/register', 'ApplyController@index');
-    Route::get('/apply', function(){
+    Route::get('/register', function () {
+        return redirect('/apply');
+    });
+    
+    Route::get('/apply', function () {
         if (auth()->check() && auth()->user()->student) {
             return redirect('/panel/requirements');
         } else {
@@ -94,11 +98,10 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
     Route::group(['middleware' => 'web.auth'], function () {
         // Route::get('/', 'ApplyController@index');
 
-        Route::get('/', function(){
+        Route::get('/', function () {
             if (auth()->check() && auth()->user()->role_name == 'admin') {
                 return redirect('/admin');
-            }
-            else if (auth()->check() && auth()->user()->student) {
+            } else if (auth()->check() && auth()->user()->student) {
                 return redirect('/panel/requirements');
             } else {
                 return redirect('/apply');
@@ -125,7 +128,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::post('/{id}/learningStatus', 'WebinarController@learningStatus');
 
         Route::group(['middleware' => 'web.auth'], function () {
-    //         Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
+            //         Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
 
             Route::post('/learning/itemInfo', 'LearningPageController@getItemInfo');
             Route::get('/learning/{slug}', 'LearningPageController@index');
@@ -152,7 +155,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
                 });
             });
 
-    //         Route::post('/direct-payment', 'WebinarController@directPayment');
+            //         Route::post('/direct-payment', 'WebinarController@directPayment');
         });
     });
 

@@ -261,37 +261,25 @@
                                         @enderror
                                     </div>
 
-                                    {{-- timezone --}}
-                                    @if (getFeaturesSettings('timezone_in_register'))
-                                        @php
-                                            $selectedTimezone = getGeneralSettings('default_time_zone');
-                                        @endphp
+                                    {{-- confirm email --}}
+                                    @if (!$user)
+                                        <div class="form-group col-12 col-sm-6">
+                                            <label for="email">اعد كتابة البريد الإلكتروني<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="email" id="email" name="email_confirmation"
+                                                value="{{ old('email_confirmation', $student ? $student->email : $user->email ?? '') }}"
+                                                placeholder="تسجيل البريد الإلكتروني" required
+                                                class="form-control  @error('email_confirmation') is-invalid @enderror">
 
-                                        <div class="form-group col-6">
-                                            <label class="input-label">{{ trans('update.timezone') }}</label><span
-                                                class="text-danger">*</span>
-                                            <select name="timezone" class="form-control select2" data-allow-clear="false"
-                                                required>
-                                                <option value="" {{ empty($user->timezone) ? 'selected' : '' }}
-                                                    disabled>
-                                                    {{ trans('public.select') }}</option>
-
-                                                @foreach (getListOfTimezones() as $timezone)
-                                                    <option value="{{ $timezone }}"
-                                                        @if ($user && $user->timezone && $user->timezone == $timezone) selected
-                                                        @elseif (!$user && $selectedTimezone == $timezone) selected @endif>
-                                                        {{ $timezone }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-
-                                            @error('timezone')
-                                                <div class="invalid-feedback">
+                                            @error('email_confirmation')
+                                                <div class="invalid-feedback d-block">
                                                     {{ $message }}
                                                 </div>
                                             @enderror
                                         </div>
                                     @endif
+
+
 
                                     {{-- password section --}}
                                     @if (!$user)
@@ -332,7 +320,38 @@
                                             @enderror
                                         </div>
                                     @endif
+                                    
+                                    {{-- timezone --}}
+                                    @if (getFeaturesSettings('timezone_in_register'))
+                                        @php
+                                            $selectedTimezone = getGeneralSettings('default_time_zone');
+                                        @endphp
 
+                                        <div class="form-group col-6">
+                                            <label class="input-label">{{ trans('update.timezone') }}</label><span
+                                                class="text-danger">*</span>
+                                            <select name="timezone" class="form-control select2" data-allow-clear="false"
+                                                required>
+                                                <option value="" {{ empty($user->timezone) ? 'selected' : '' }}
+                                                    disabled>
+                                                    {{ trans('public.select') }}</option>
+
+                                                @foreach (getListOfTimezones() as $timezone)
+                                                    <option value="{{ $timezone }}"
+                                                        @if ($user && $user->timezone && $user->timezone == $timezone) selected
+                                                        @elseif (!$user && $selectedTimezone == $timezone) selected @endif>
+                                                        {{ $timezone }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
+                                            @error('timezone')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    @endif
                                 </section>
 
                             </section>
@@ -475,7 +494,9 @@
                                                     {{ old('nationality', $student->nationality ?? null) == $nationality ? 'selected' : '' }}>
                                                     {{ $nationality }}</option>
                                             @endforeach
-                                            <option value="اخرى" id="anotherNationality"  {{ old('nationality')!='' && !in_array( old('nationality'), $nationalities) ? 'selected' : '' }}>اخرى</option>
+                                            <option value="اخرى" id="anotherNationality"
+                                                {{ old('nationality') != '' && !in_array(old('nationality'), $nationalities) ? 'selected' : '' }}>
+                                                اخرى</option>
                                         </select>
                                         @error('nationality')
                                             <div class="invalid-feedback d-block">
@@ -574,7 +595,9 @@
                                                     {{ old('country', $student->country ?? null) == $country ? 'selected' : '' }}>
                                                     {{ $country }}</option>
                                             @endforeach
-                                            <option value="اخرى" id="anotherCountry" {{  old('country')!='' && !in_array( old('country'), $countries) ? 'selected' : '' }}>اخرى</option>
+                                            <option value="اخرى" id="anotherCountry"
+                                                {{ old('country') != '' && !in_array(old('country'), $countries) ? 'selected' : '' }}>
+                                                اخرى</option>
 
                                         </select>
 
@@ -1047,7 +1070,7 @@
                                                     اعاقة ذهنية</option>
                                                 <option value="option2"
                                                     {{ old('disabled_type', $student->disabled_type ?? null) == 'option2' ? 'selected' : '' }}>
-                                                  اعاقة بدنية</option>
+                                                    اعاقة بدنية</option>
                                             </select>
 
                                             @error('disabled_type')
@@ -1591,15 +1614,15 @@
             if (healthyStatus.checked) {
                 healthyProblemSection.style.display = "block";
                 var inputs = document.querySelectorAll('#healthy_problem_section input');
-                    inputs.forEach(function(input) {
-                        input.setAttribute('required', 'required');
-                    });
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
             } else {
                 healthyProblemSection.style.display = "none";
                 var inputs = document.querySelectorAll('#healthy_problem_section input');
-                    inputs.forEach(function(input) {
-                        input.removeAttribute('required');
-                    });
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
             }
 
         }

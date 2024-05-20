@@ -149,6 +149,7 @@ class ApplyController extends Controller
 
             $rules['password'] = 'required|string|min:6|confirmed';
             $rules['password_confirmation'] = 'required|same:password';
+            $rules['email_confirmation'] = 'required|same:email';
             $rules['referral_code'] = 'nullable|exists:affiliates_codes,code';
             $rules['phone'] = 'required|min:5|max:20|unique:users,mobile';
 
