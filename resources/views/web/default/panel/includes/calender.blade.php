@@ -1,6 +1,6 @@
 <style>
     .container_cal {
-        max-width: 800px;
+        max-width: 100% !important;
         margin: 0 auto;
         padding: 20px;
         font-family: Arial, sans-serif;
