@@ -128,7 +128,7 @@
             </div>
 
 
-            @if (getFeaturesSettings('timezone_in_register'))
+            {{-- @if (getFeaturesSettings('timezone_in_register'))
                 @php
                     $selectedTimezone = getGeneralSettings('default_time_zone');
                 @endphp
@@ -149,7 +149,7 @@
                         </div>
                     @enderror
                 </div>
-            @endif
+            @endif --}}
 
             @if (!empty($referralSettings) and $referralSettings['status'])
                 <div class="form-group ">
@@ -170,7 +170,8 @@
                 @include('web.default.includes.captcha_input')
             @endif
             <!--start-->
-            <div class="custom-control custom-checkbox">
+
+            {{-- <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="term" value="1"
                     {{ (!empty(old('term')) and old('term') == '1') ? 'checked' : '' }}
                     class="custom-control-input @error('term') is-invalid @enderror" id="term">
@@ -194,10 +195,10 @@
                 <div class="invalid-feedback">
                     {{ $message }}
                 </div>
-            @enderror
+            @enderror --}}
             <!--end-->
 
-            <button type="submit" class="btn btn-primary btn-block mt-20 cs-btn">{{ trans('auth.signup') }}</button>
+            <button type="submit" class="btn btn-primary btn-block mt-20 cs-btn">الخطوة التالية</button>
         </form>
 
         <div class="ft-text text-center mt-20 mb-35">
