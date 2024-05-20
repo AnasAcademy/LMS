@@ -166,6 +166,7 @@ return [
         'status' => 'الحالة',
         'password' => 'كلمة المرور',
         'password_confirmation' => 'تأكيد كلمة المرور',
+        'email_confirmation' => 'تأكيد البريد الإلكتروني',
         'full_name'=>'الاسم الثلاثي',
         'username'=> 'المستخدم'
     ],
