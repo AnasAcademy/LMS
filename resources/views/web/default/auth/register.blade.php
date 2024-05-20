@@ -219,7 +219,7 @@
             <!--end-->
 
             <button type="submit" class="btn btn-primary btn-block font-16 mt-20 py-10 cs-btn">
-                التالي <i class="fas fa-arrow-left"></i>
+                الخطوة التالية <i class="fas fa-arrow-left"></i>
             </button>
         </form>
 
