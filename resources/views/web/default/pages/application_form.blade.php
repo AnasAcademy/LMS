@@ -237,125 +237,6 @@
 
                             <h1 class=" mt-50 mb-25">بيانات المتدرب الأساسية</h1>
 
-                            {{-- registration details --}}
-                            <section>
-                                <h2 class="form-main-title">معلومات @if (!$user)
-                                        إنشاء
-                                    @endif الحساب</h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-
-                                    {{-- email --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="email">{{ trans('application_form.email') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="email" id="email" name="email"
-                                            value="{{ old('email', $student ? $student->email : $user->email ?? '') }}"
-                                            placeholder="تسجيل البريد الإلكتروني" required
-                                            class="form-control  @error('email') is-invalid @enderror">
-
-                                        @error('email')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- confirm email --}}
-                                    @if (!$user)
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label for="email">اعد كتابة البريد الإلكتروني<span
-                                                    class="text-danger">*</span></label>
-                                            <input type="email" id="email" name="email_confirmation"
-                                                value="{{ old('email_confirmation', $student ? $student->email : $user->email ?? '') }}"
-                                                placeholder="تسجيل البريد الإلكتروني" required
-                                                class="form-control  @error('email_confirmation') is-invalid @enderror">
-
-                                            @error('email_confirmation')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    @endif
-
-
-
-                                    {{-- password section --}}
-                                    @if (!$user)
-                                        {{-- password --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label class="input-label" for="password">{{ trans('auth.password') }}</label>
-                                            @if (!$user)
-                                                <span class="text-danger">*</span>
-                                            @endif
-                                            <input name="password" type="password" value="{{ old('password') }}"
-                                                class="form-control @error('password') is-invalid @enderror" id="password"
-                                                @if (!$user) required @endif
-                                                aria-describedby="passwordHelp">
-                                            @error('password')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- confirm password --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label class="input-label"
-                                                for="confirm_password">{{ trans('auth.retype_password') }}</label>
-                                            @if (!$user)
-                                                <span class="text-danger">*</span>
-                                            @endif
-
-                                            <input name="password_confirmation" type="password"
-                                                value="{{ old('password_confirmation') }}"
-                                                class="form-control @error('password_confirmation') is-invalid @enderror"
-                                                @if (!$user) required @endif id="confirm_password"
-                                                aria-describedby="confirmPasswordHelp">
-                                            @error('password_confirmation')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    @endif
-                                    
-                                    {{-- timezone --}}
-                                    @if (getFeaturesSettings('timezone_in_register'))
-                                        @php
-                                            $selectedTimezone = getGeneralSettings('default_time_zone');
-                                        @endphp
-
-                                        <div class="form-group col-6">
-                                            <label class="input-label">{{ trans('update.timezone') }}</label><span
-                                                class="text-danger">*</span>
-                                            <select name="timezone" class="form-control select2" data-allow-clear="false"
-                                                required>
-                                                <option value="" {{ empty($user->timezone) ? 'selected' : '' }}
-                                                    disabled>
-                                                    {{ trans('public.select') }}</option>
-
-                                                @foreach (getListOfTimezones() as $timezone)
-                                                    <option value="{{ $timezone }}"
-                                                        @if ($user && $user->timezone && $user->timezone == $timezone) selected
-                                                        @elseif (!$user && $selectedTimezone == $timezone) selected @endif>
-                                                        {{ $timezone }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-
-                                            @error('timezone')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    @endif
-                                </section>
-
-                            </section>
-
 
                             {{-- personal details --}}
                             <section>
@@ -426,35 +307,6 @@
 
                                     </div>
 
-                                    {{-- phone number --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="phone">{{ trans('application_form.phone') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="tel" id="phone" name="phone" required
-                                            value="{{ old('phone', $student ? $student->phone : $user->mobile ?? '') }}"
-                                            class="form-control @error('phone') is-invalid @enderror">
-
-                                        @error('phone')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- mobile number --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="mobile">{{ 'رقم الهاتف' }}</label> <span
-                                            class="text-danger">*</span>
-                                        <input type="tel" id="mobile" name="mobile" required
-                                            value="{{ old('mobile', $student ? $student->mobile : $user->mobile ?? '') }}"
-                                            class="form-control  @error('mobile') is-invalid @enderror">
-
-                                        @error('mobile')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
 
                                     {{-- nationality --}}
                                     <div class="form-group col-12 col-sm-6">
@@ -664,6 +516,62 @@
                             </section>
 
 
+                            {{-- contact details --}}
+                            <section>
+                                <h2 class="form-main-title">معلومات التواصل</h2>
+                                <section
+                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
+
+                                    {{-- email --}}
+                                    <div class="form-group col-12">
+                                        <label for="email">{{ trans('application_form.email') }}<span
+                                                class="text-danger">*</span></label>
+                                        <input type="email" id="email" name="email"
+                                            value="{{ old('email', $student ? $student->email : $user->email ?? '') }}"
+                                            placeholder="تسجيل البريد الإلكتروني" required
+                                            class="form-control  @error('email') is-invalid @enderror">
+
+                                        @error('email')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- phone number --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="phone">{{ trans('application_form.phone') }}<span
+                                                class="text-danger">*</span></label>
+                                        <input type="tel" id="phone" name="phone" required
+                                            value="{{ old('phone', $student ? $student->phone : $user->mobile ?? '') }}"
+                                            class="form-control @error('phone') is-invalid @enderror">
+
+                                        @error('phone')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- mobile number --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="mobile">{{ 'رقم جوال اخر' }}</label> <span
+                                            class="text-danger">*</span>
+                                        <input type="tel" id="mobile" name="mobile" required
+                                            value="{{ old('mobile', $student ? $student->mobile : $user->mobile ?? '') }}"
+                                            class="form-control  @error('mobile') is-invalid @enderror">
+
+                                        @error('mobile')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+
+                                </section>
+
+                            </section>
 
                             {{--  education --}}
                             <section id="education">
@@ -675,11 +583,13 @@
                                     <div class="form-group col-12 col-sm-6">
 
                                         <label for="educational_qualification_country"
-                                            class="form-label high_education">بلد مصدر شهادة
+                                            class="form-label high_education">بلد مصدر
+                                            شهادة
                                             البكالوريوس<span class="text-danger">*</span></label>
 
                                         <label for="educational_qualification_country"
-                                            class="form-label secondary_education">بلد مصدر شهادة
+                                            class="form-label secondary_education">بلد مصدر
+                                            شهادة
                                             الثانوية<span class="text-danger">*</span></label>
 
                                         <select id="educational_qualification_country"
@@ -1361,11 +1271,11 @@
         var otherLabel = document.getElementById("otherLabel");
         var otherInput = document.getElementById("otherInput");
 
-        var radioButtons = document.querySelectorAll('input[name="about_us" required]');
+        var radioButtons = document.querySelectorAll('input[name="about_us"]');
 
         radioButtons.forEach(function(radioButton) {
             radioButton.addEventListener("change", function() {
-                if (radioButton.value === "other" && radioButton.checked) {
+                if (radioButton.id === "other" && radioButton.checked) {
                     otherLabel.style.display = "block";
                     otherInput.style.display = "block";
                     radioButton.value = otherInput.value;
