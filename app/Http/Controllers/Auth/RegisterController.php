@@ -97,9 +97,10 @@ class RegisterController extends Controller
             'full_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
+            'email_confirmation' => 'required|same:email',
             'referral_code' => 'nullable|exists:affiliates_codes,code'
         ];
-        
+
 
         if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
             $rules['captcha'] = 'required|captcha';

@@ -4,35 +4,39 @@
 @endpush
 
 @section('content')
-<style>
-      .cs-btn{
-        background-color:#ED1088 !important;
-    }
-    .cs-btn:hover{
-        background-color:#5F2B80 !important;
-    }
-    .custom-control-label::after, .custom-control-label::before {
-        left: initial !important;
-        right: -1.5rem !important;
-     }
-    .iti__country-list {
-        position: absolute;
-        z-index: 2;
-        list-style: none;
-        text-align: left;
-        padding: 0;
-        margin: 0 0 0 -1px;
-        box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
-        background-color: #fff;
-        border: 1px solid #ccc;
-        white-space: nowrap;
-        max-height: 200px;
-        overflow-y: scroll;
-        -webkit-overflow-scrolling: touch;
-        left: 0 !important;
-        direction: ltr !important;
-    }
-</style>
+    <style>
+        .cs-btn {
+            background-color: #ED1088 !important;
+        }
+
+        .cs-btn:hover {
+            background-color: #5F2B80 !important;
+        }
+
+        .custom-control-label::after,
+        .custom-control-label::before {
+            left: initial !important;
+            right: -1.5rem !important;
+        }
+
+        .iti__country-list {
+            position: absolute;
+            z-index: 2;
+            list-style: none;
+            text-align: left;
+            padding: 0;
+            margin: 0 0 0 -1px;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            white-space: nowrap;
+            max-height: 200px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            left: 0 !important;
+            direction: ltr !important;
+        }
+    </style>
     @php
         $siteGeneralSettings = getGeneralSettings();
     @endphp
@@ -48,8 +52,7 @@
         </div>
 
         <h1 class="font-20 font-weight-bold mb-3">
-            <svg width="34" height="29" viewBox="0 0 34 29"   fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+            <svg width="34" height="29" viewBox="0 0 34 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M22 27C22 23.3181 17.5228 20.3333 12 20.3333C6.47715 20.3333 2 23.3181 2 27M32 12L25.3333 18.6667L22 15.3333M12 15.3333C8.3181 15.3333 5.33333 12.3486 5.33333 8.66667C5.33333 4.98477 8.3181 2 12 2C15.6819 2 18.6667 4.98477 18.6667 8.66667C18.6667 12.3486 15.6819 15.3333 12 15.3333Z"
                     stroke="#5E0A83" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
@@ -92,13 +95,30 @@
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.email_field', ['optional' => false])
                 @endif
+
             @else
                 @include('web.default.auth.register_includes.email_field')
+
+                <div class="form-group">
+                <label class="input-label" for="email">اعد كتابة الإيميل
+                    {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
+                <input name="email_confirmation" type="text" class="form-control @error('email_confirmation') is-invalid @enderror"
+                    value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
+
+                @error('email_confirmation')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
 
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.mobile_field', ['optional' => false])
                 @endif
             @endif
+
+
+
 
             <div class="password-section">
 
