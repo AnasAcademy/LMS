@@ -159,7 +159,8 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
             'affiliate' => $usersAffiliateStatus,
             'timezone' => $data['timezone'] ?? null,
-            'created_at' => time()
+            'created_at' => time(),
+            'verified' => 1
         ]);
         // }
 
