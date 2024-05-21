@@ -1418,18 +1418,27 @@ class UserController extends Controller
     }
     public function importExcelStudents(Request $request)
     {
-
+        try{
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls',
+            'file' => 'required|mimes:xlsx,xls',
         ]);
         $file = $request->file('file');
         Excel::import(new studentImport, $file);
         $toastData = [
-                'title' => trans('cart.fail_purchase'),
-                'msg' => 'Students imported successfully.',
+                'title' => 'استرداد طلبة',
+                'msg' => 'تم اضافه الطلبة بنجاح.',
                 'status' => 'success'
             ];
         return back()->with(['toast' => $toastData]);
+        }
+        catch(\Exception $e){
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            return back()->with(['toast' => $toastData]);
+        }
 
     }
 

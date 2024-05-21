@@ -24,7 +24,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm">
+            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm" enctype="multipart/form-data">
 
                 @csrf
                 <div class="">
