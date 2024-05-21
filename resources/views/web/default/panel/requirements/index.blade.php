@@ -32,13 +32,23 @@
                     <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}</h2>
                     @if (empty($bundleData['bundle']->studentRequirement))
-                        <div class="w-100 text-center">
-                            <p class="alert alert-info text-center mx-30">
-                                لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
-                            </p>
-                            <a href="/panel/bundles/{{ $bundleData['bundle']->id }}/requirements"
-                                class="btn btn-success p-5 mt-20 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
-                        </div>
+                    @if ($bundleData['bundle']->bundle->early_enroll)
+                    <div class="w-100 text-center">
+                        <p class="alert alert-info text-center mx-30">
+                            يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل.
+                            <br> بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
+                        </p>
+                    </div>
+                    @else
+                    <div class="w-100 text-center">
+                        <p class="alert alert-info text-center mx-30">
+                            لم يتم رفع متطلبات القبول بعد ، يرجي الضعط علي الزر للذهاب لصفحة متطلبات القبول
+                        </p>
+                        <a href="/panel/bundles/{{ $bundleData['bundle']->id }}/requirements"
+                            class="btn btn-success p-5 mt-20 bg-secondary">للذهاب لرفع ملفات متطلبات القبول اضغط هنا</a>
+                    </div>
+                    @endif
+
                     @else
                         @if ($bundleData['bundle']->studentRequirement->status == 'pending')
                             <div class="w-100 text-center">
