@@ -469,7 +469,7 @@ class InstallmentsController extends Controller
             }
         }
 
-        if (! empty($bundle)) {
+        if (! empty($bundle) && empty($installment_payment_id)) {
             // $item = !empty($cart->webinar_id) ? $cart->webinar : $cart->bundle;
             $item = $bundle;
 
@@ -487,7 +487,7 @@ class InstallmentsController extends Controller
 
             $totalDiscount += $discount;
             $subTotal += $price;
-        } elseif (! empty($installment_payment_id)) {
+        } elseif (!empty($installment_payment_id)) {
             $installmentOrderPayment = InstallmentOrderPayment::findOrFail($installment_payment_id);
             $price = $installmentOrderPayment->amount;
             // $cart->installmentPayment->amount;

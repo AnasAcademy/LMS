@@ -1666,11 +1666,21 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
         if (!empty($options['[c.title]'])) {
-            ($options['[c.title]'] == "سند سداد") ? $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]" : 1;
+            if($options['[c.title]'] == "سند سداد") {
+                $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]";
+            }
+            if ($options['[c.title]'] == "رسوم حجز مقعد دراسي" && !empty($options['[c.early]'])) {
+
+                ($options['[c.early]'] == 1) ? $notificationTemplate->template = "تم تأكيد حجز مقعدك في برنامجنا بقيمة [amount] بنجاح!
+                يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل. نرحب بك في برنامجنا ونتطلع معًا إلى فترة دراسية ناجحة معنا" : 1;
+            }
 
         }
+
+
+
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
-        //dd($notificationTemplate->template);
+        // dd($message);
         $check = \App\Models\Notification::where('user_id', $user_id)
             ->where('group_id', $group_id)
             ->where('title', $title)

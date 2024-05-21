@@ -149,7 +149,7 @@ try{
             'gift_id' => $orderItem->gift_id ?? null,
             'type' => $orderType,
             'payment_method' => $payment_method,
-            'amount' => $orderItem->amount,
+            'amount' => (!empty($orderItem->installment_payment_id)) ? $orderItem->installmentPayment->amount : $orderItem->amount,
             'tax' => $orderItem->tax_price,
             'commission' => $orderItem->commission_price,
             'discount' => $orderItem->discount,
@@ -184,12 +184,12 @@ try{
         $title = '';
         if (!empty($orderItem->webinar_id)) {
             $title = $orderItem->webinar->title;
-        } elseif (!empty($orderItem->bundle_id)) {
+        }elseif (!empty($orderItem->form_fee)) {
+            $title = "رسوم حجز مقعد";
+        }elseif (!empty($orderItem->bundle_id)) {
             $title = $orderItem->bundle->title;
         } elseif (!empty($orderItem->certificate_template_id)) {
             $title = "certificate";
-        }elseif (!empty($orderItem->form_fee)) {
-            $title = " رسوم حجز مقعد ";
         }else if (!empty($orderItem->meeting_id)) {
             $title = trans('meeting.reservation_appointment');
         } else if (!empty($orderItem->subscribe_id)) {
@@ -231,6 +231,7 @@ try{
         } elseif (!empty($orderItem->installment_payment_id)) {
             // TODO:: installment notification
         } else {
+            // dd($orderItem->bundle->early_enroll);
             $notifyOptions = [
                 '[c.title]' => $title,
             ];
