@@ -16,13 +16,14 @@ class NotificationsController extends Controller
         $notifications = Notification::where(function ($query) use ($user) {
             $query->where('notifications.user_id', $user->id)
                 ->where('notifications.type', 'single');
-        })->orWhere(function ($query) use ($user) {
-            if (!$user->isAdmin()) {
-                $query->whereNull('notifications.user_id')
-                    ->whereNull('notifications.group_id')
-                    ->where('notifications.type', 'all_users');
-            }
         });
+        //->orWhere(function ($query) use ($user) {
+        //     if (!$user->isAdmin()) {
+        //         $query->whereNull('notifications.user_id')
+        //             ->whereNull('notifications.group_id')
+        //             ->where('notifications.type', 'all_users');
+        //     }
+        // })
 
         $userGroup = $user->userGroup()->first();
         if (!empty($userGroup)) {
@@ -32,19 +33,19 @@ class NotificationsController extends Controller
             });
         }
 
-        $notifications->orWhere(function ($query) use ($user) {
-            $query->whereNull('notifications.user_id')
-                ->whereNull('notifications.group_id')
-                ->where(function ($query) use ($user) {
-                    if ($user->isUser()) {
-                        $query->where('notifications.type', 'students');
-                    } elseif ($user->isTeacher()) {
-                        $query->where('notifications.type', 'instructors');
-                    } elseif ($user->isOrganization()) {
-                        $query->where('notifications.type', 'organizations');
-                    }
-                });
-        });
+        // $notifications->orWhere(function ($query) use ($user) {
+        //     $query->whereNull('notifications.user_id')
+        //         ->whereNull('notifications.group_id')
+        //         ->where(function ($query) use ($user) {
+        //             if ($user->isUser()) {
+        //                 $query->where('notifications.type', 'students');
+        //             } elseif ($user->isTeacher()) {
+        //                 $query->where('notifications.type', 'instructors');
+        //             } elseif ($user->isOrganization()) {
+        //                 $query->where('notifications.type', 'organizations');
+        //             }
+        //         });
+        // });
 
         /* Get Course Students Notifications */
         $userBoughtWebinarsIds = $user->getAllPurchasedWebinarsIds();

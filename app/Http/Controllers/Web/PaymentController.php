@@ -387,7 +387,7 @@ class PaymentController extends Controller
                 if (empty($sale)) {
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
-                if (!empty($sale) && isset($pivotId)) {
+                if (!empty($sale) && isset($pivotId) && ($sale->bundle->early_enroll==0)) {
                     return redirect('/panel/bundles/' . $pivotId . '/requirements')->with(['toast' => $toastData]);
                 }
                 return redirect('/')->with(['toast' => $toastData]);
