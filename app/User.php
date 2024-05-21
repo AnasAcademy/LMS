@@ -547,8 +547,10 @@ class User extends Authenticatable
                 ->orWhere('type', 'installment_payment');
         })
         ->where('buyer_id', $this->id)
+        ->whereNotNull('bundle_id')
         ->orderBy('created_at', 'desc')
-        ->get();
+        ->get()
+        ->unique('bundle_id');
 
     }
 
