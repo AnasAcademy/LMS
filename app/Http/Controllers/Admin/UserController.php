@@ -40,6 +40,8 @@ use App\Models\OrderItem;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
 
+use App\Imports\StudentImport;
+
 class UserController extends Controller
 {
     public function transform(Request $request, $user_id)
@@ -1413,6 +1415,22 @@ class UserController extends Controller
         $usersExport = new StudentsExport($users);
 
         return Excel::download($usersExport, 'نموذج حجز مقعد.xlsx');
+    }
+    public function importExcelStudents(Request $request)
+    {
+
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+        $file = $request->file('file');
+        Excel::import(new studentImport, $file);
+        $toastData = [
+                'title' => trans('cart.fail_purchase'),
+                'msg' => 'Students imported successfully.',
+                'status' => 'success'
+            ];
+        return back()->with(['toast' => $toastData]);
+
     }
 
     public function exportExcelEnrollers(Request $request){

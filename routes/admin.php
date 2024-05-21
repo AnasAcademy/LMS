@@ -57,8 +57,6 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@staffs');
         });
 
-
-
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
@@ -66,6 +64,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelUsers');
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
+            Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 

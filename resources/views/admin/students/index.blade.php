@@ -248,6 +248,15 @@
                 @if (request()->is(getAdminPanelUrl('/students/users', false)))
                     <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+
+                    @include('admin.students.includes.importStudents', [
+                        'url' => getAdminPanelUrl()."/students/importStudent",
+                        'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
+                        'btnText' =>
+                        '<span class="ml-2">استخراج من الاكسيل</span>',
+                        'hideDefaultClass' => true,
+
+                    ])
                 @else
                     <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
@@ -282,7 +291,7 @@
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
-                    @foreach ($users as $index =>$user)
+                    @foreach ($users as $index => $user)
                         <tr>
                             <td>{{ ++$index }}</td>
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
@@ -300,7 +309,8 @@
                                             {{ $user->student ? $user->student->ar_name : $user->full_name }}</div>
 
                                         @if ($user->mobile)
-                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">{{ $user->mobile }}</div>
+                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">
+                                                {{ $user->mobile }}</div>
                                         @endif
 
                                         @if ($user->email)
