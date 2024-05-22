@@ -21,6 +21,7 @@ use App\Models\Sale;
 use App\Models\Code;
 
 
+
 class StudentImport implements ToModel
 {
     private $skipFirstRow = true;
@@ -79,7 +80,7 @@ class StudentImport implements ToModel
                     'status' => User::$active,
                     'verified' => 1,
                     'access_content' => 1,
-                    'password' => Hash::make('anasAcademy@123'),
+                    'password' => Hash::make('anasAcademy123'),
                     'affiliate' => 0,
                     'timezone' => getGeneralSettings('default_time_zone') ?? null,
                     'created_at' => time()
@@ -97,7 +98,7 @@ class StudentImport implements ToModel
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy@123
+                             <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy123
                             <br>
                 ";
                 $this->sendEmail($user, $data);
@@ -113,24 +114,24 @@ class StudentImport implements ToModel
             if ($user->student) {
                 $student = $user->student;
             } else {
+
+
                 // create student
                 $student = Student::create([
                     'user_id' => $user->id,
                     'ar_name' => $row[0],
                     'en_name' => $row[1],
                     'email' => $row[2],
-                    'phone' => $row[3],
-                    'mobile' => $row[4],
-                    'birthdate' => $row[5],
+                    'phone' => $row[3] ?? '000000',
+                    'mobile' => $row[4] ?? $row[3] ?? '0000',
+                    'birthdate' => $row[5] ?? '1999-01-01',
                     'gender' => $row[6],
-                    'identifier_num' => $row[7],
-                    'nationality' => $row[9],
-                    'country' => $row[10],
-                    // 'area' => $row['area'],
-                    // 'city' => $row['city'],
-                    'town' => $row[11],
+                    'identifier_num' => $row[7] ?? '000000',
+                    'nationality' => $row[9] ?? 'سعودي/ة',
+                    'country' => $row[10] ?? 'السعودية',
+                    'town' => $row[11] ?? 'الرياض',
                     'educational_qualification_country' => $row[12],
-                    'educational_area' => $row[13],
+                    'educational_area' => $row[13] ?? 'الرياض',
                     'university' => $row[14],
                     'faculty' => $row[15],
                     'education_specialization' => $row[16],
@@ -144,11 +145,11 @@ class StudentImport implements ToModel
                     'healthy_problem' => $row[24],
                     'job' => $row[25] ?? null,
                     'job_type' => $row[26] ?? null,
-                    'referral_person' => $row[27],
-                    'relation' => $row[28],
-                    'referral_email' => $row[29],
-                    'referral_phone' => $row[30],
-                    'about_us' => $row[31],
+                    'referral_person' => $row[27] ?? 'صديق',
+                    'relation' => $row[28] ?? 'صديق',
+                    'referral_email' => $row[29] ?? 'email@example.com',
+                    'referral_phone' => $row[30] ?? '0000000',
+                    'about_us' => $row[31] ?? 'facebook',
                     'created_at' => date('Y-m-d H:i:s')
 
 
@@ -248,7 +249,8 @@ class StudentImport implements ToModel
         }
     }
 
-    public function sendNotification($user, $data){
+    public function sendNotification($user, $data)
+    {
         Notification::create([
             'user_id' => $user->id ?? 0,
             'sender_id' => auth()->id(),
@@ -258,6 +260,5 @@ class StudentImport implements ToModel
             'type' => "single",
             'created_at' => time()
         ]);
-
     }
 }
