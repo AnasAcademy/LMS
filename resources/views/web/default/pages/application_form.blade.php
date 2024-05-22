@@ -200,7 +200,7 @@
                                 @enderror
                             </div>
 
-                            <div class="d-none font-14 font-weight-bold px-3 col-12" id="early_enroll" style="color: #5F2B80;">
+                            <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll" style="color: #5F2B80;">
                                 يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
                             </div>
 
