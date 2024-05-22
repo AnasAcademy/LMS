@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use App\Mail\SendNotifications;
 use App\Models\Notification;
 use App\User;
@@ -19,12 +20,15 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\Code;
+use Illuminate\Validation\ValidationException;
+
 
 
 
 class StudentImport implements ToModel
 {
     private $skipFirstRow = true;
+    private $currentRow = 1; // Initialize row counter
     /**
      * @param array $row
      *
@@ -36,6 +40,9 @@ class StudentImport implements ToModel
             $this->skipFirstRow = false;
             return null;
         }
+        // Increment row counter
+        $this->currentRow++;
+
 
         $diplomaCode = $row[8];
 
@@ -44,7 +51,33 @@ class StudentImport implements ToModel
         if ($bundle) {
             $existUser = User::where('email', $row['2'])->first();
 
+            $rules = [
+                'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+                'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
+                'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                'deaf' => 'required|in:نعم,لا',
+                'gender' => 'required|in:male,female'
+            ];
 
+            $fileData = [
+                'ar_name' => $row[0],
+                'en_name' => $row[1],
+                'email' => $row[2],
+                'deaf' => $row[22],
+                'gender' => $row[6],
+            ];
+
+            $validator = Validator::make($fileData, $rules);
+            if($validator->fails()){
+                $errors = $validator->errors()->all();
+
+                // Construct error message with row number
+                $errorMessage = "في الصف رقم {$this->currentRow}: " . implode(', ', $errors);
+
+                // Throw ValidationException with the error message
+                throw new ValidationException($validator, $errorMessage);
+
+            }
             // USER CODE
             $lastCode = Code::latest()->first();
             if (!empty($lastCode)) {
@@ -74,7 +107,6 @@ class StudentImport implements ToModel
                 $user = User::create([
                     'role_name' => 'registered_user',
                     'role_id' => 13,
-                    'mobile' => $row[3] ?? null,
                     'email' => $row[2] ?? null,
                     'full_name' => $row[0],
                     'status' => User::$active,

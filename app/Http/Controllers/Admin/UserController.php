@@ -1434,10 +1434,10 @@ class UserController extends Controller
         catch(\Exception $e){
             $toastData = [
                 'title' => 'استرداد طلبة',
-                'msg' => $e->getMessage(),
+                'msg' => $e->getResponse(),
                 'status' => 'error'
             ];
-            dd($e);
+
             return back()->with(['toast' => $toastData]);
         }
 
