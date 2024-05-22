@@ -205,8 +205,8 @@ class RegisterController extends Controller
             session()->put('referralCode', $referralCode);
         }
 
-        $verificationController = new VerificationController();
-        $checkConfirmed = $verificationController->checkConfirmed($user, $registerMethod, $value);
+        // $verificationController = new VerificationController();
+        // $checkConfirmed = $verificationController->checkConfirmed($user, $registerMethod, $value);
 
         $referralCode = $request->get('referral_code', null);
 
