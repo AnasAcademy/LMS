@@ -8,7 +8,9 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
+use App\Models\Notification;
 use App\User;
 use App\Student;
 use App\BundleStudent;
@@ -17,6 +19,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\Code;
+
 
 class StudentImport implements ToModel
 {
@@ -81,6 +84,23 @@ class StudentImport implements ToModel
                     'timezone' => getGeneralSettings('default_time_zone') ?? null,
                     'created_at' => time()
                 ]);
+
+
+                $data['title'] = "انشاء حساب جديد";
+                $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
+                            <br>
+                            <br>
+                            يمكن تسجيل الدخول من خلال هذا الرابط
+                            <a href='https://lms.anasacademy.uk/login' class='btn btn-danger'>اضغط هنا للدخول</a>
+                            <br>
+                            بإستخدام هذا البريد الإلكتروني وكلمة المرور
+                            <br>
+                            <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
+                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy@123
+                            <br>
+                ";
+                $this->sendEmail($user, $data);
             }
 
             if (empty($user->user_code)) {
@@ -119,7 +139,7 @@ class StudentImport implements ToModel
                     'school' => $row[19],
                     'secondary_school_gpa' => $row[20],
                     'secondary_graduation_year' => $row[21],
-                    'deaf' => ($row[22]=='نعم') ? 1: 0 ,
+                    'deaf' => ($row[22] == 'نعم') ? 1 : 0,
                     'disabled_type' => $row[23] ?? null,
                     'healthy_problem' => $row[24],
                     'job' => $row[25] ?? null,
@@ -203,12 +223,41 @@ class StudentImport implements ToModel
             ]);
 
 
+            $data['title'] = 'رسوم حجز مقعد دراسي';
+            $data['body'] = " تهانينا تم سدادكم رسوم حجز مقعد دراسي بالأكاديمية بقيمة 230 ر.س";
+
+
+            $this->sendEmail($user, $data);
+
+            $this->sendNotification($user, $data);
+
+
             Session::flash('success', 'تم اضافه الطلبة بنجاح.');
         } else {
-            throw new Exception( 'يوجد مشكلة في كود الدبلومة');
+            return null;
         }
 
 
         return null;
+    }
+
+    public function sendEmail($user, $data)
+    {
+        if (!empty($user) and !empty($user->email)) {
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
+        }
+    }
+
+    public function sendNotification($user, $data){
+        Notification::create([
+            'user_id' => $user->id ?? 0,
+            'sender_id' => auth()->id(),
+            'title' => $data['title'] ?? '',
+            'message' => $data['body'] ?? '',
+            'sender' => Notification::$AdminSender,
+            'type' => "single",
+            'created_at' => time()
+        ]);
+
     }
 }

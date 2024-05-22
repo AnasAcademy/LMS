@@ -21,6 +21,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
 
 class RegisterController extends Controller
 {
@@ -247,7 +249,23 @@ class RegisterController extends Controller
             if ($response = $this->registered($request, $user)) {
                 return $response;
             }
-
+        $data['title'] = "انشاء حساب جديد";
+        $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
+                            <br>
+                            <br>
+                            يمكن تسجيل الدخول من خلال هذا الرابط
+                            <a href='https://lms.anasacademy.uk/login' class='btn btn-danger'>اضغط هنا للدخول</a>
+                            <br>
+                            بإستخدام هذا البريد الإلكتروني وكلمة المرور
+                            <br>
+                            <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
+                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy@123
+                            <br>
+                ";
+        if (!empty($user) and !empty($user->email)) {
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
+        }
             return $request->wantsJson()
                 ? new JsonResponse([], 201)
                 : redirect($this->redirectPath());

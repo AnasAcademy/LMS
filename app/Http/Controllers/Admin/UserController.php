@@ -1437,6 +1437,7 @@ class UserController extends Controller
                 'msg' => $e->getMessage(),
                 'status' => 'error'
             ];
+            dd($e);
             return back()->with(['toast' => $toastData]);
         }
 
