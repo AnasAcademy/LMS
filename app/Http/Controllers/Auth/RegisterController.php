@@ -260,8 +260,8 @@ class RegisterController extends Controller
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy@123
-                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>". $data['password'].
+                            "<br>
                 ";
         if (!empty($user) and !empty($user->email)) {
             Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
