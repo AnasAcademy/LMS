@@ -464,6 +464,19 @@
                         <div class="text-small font-600-bold">{{ trans('admin/main.students_hint_description_3') }}</div>
                     </div>
                 </div>
+                @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                    <div class="col-md-4">
+                        <div class="media-body">
+                            <div class="text-primary mt-0 mb-1 font-weight-bold">
+                                رفع الطلاب من اكسيل
+                            </div>
+                            <div class="text-small font-600-bold">
+                             لإضافة طلاب من خلال ملف اكسيل
+                        قم بتحميل قالب النموذج ثم قم بإدخال بيانات الطلاب كامله بيه ثم قم بالضغط علي زر رفع الطلاب من اكسيل ثم قم بتحديد ملف الإكسيل الذي قمت بتحميله بعد اضافه بيانات الطلاب كاملة ثم اضغط ارسال
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
 
             </div>
