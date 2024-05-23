@@ -144,7 +144,7 @@ return [
         'education_specialization' => 'تخصص التعليم',
         'graduation_year' => 'سنة التخرج',
         'gpa' => 'المعدل التراكمي',
-        'deaf' => 'صم',
+        'deaf' => 'هل أنت من الصم وضعاف السمع',
         'disabled_type' => 'نوع الإعاقة',
         'gender' => 'الجنس',
         'healthy_problem' => 'مشكلة صحية',
