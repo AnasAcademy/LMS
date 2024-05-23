@@ -259,6 +259,7 @@
                     ])
 
                     <a href="{{asset('files/import_student_template.xlsx')}}" class="btn btn-success" download>تحميل قالب النموذج</a>
+                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات </a>
 
                 @else
                     <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
@@ -465,7 +466,7 @@
                     </div>
                 </div>
                 @if (request()->is(getAdminPanelUrl('/students/users', false)))
-                    <div class="col-md-4">
+                    <div class="col-6">
                         <div class="media-body">
                             <div class="text-primary mt-0 mb-1 font-weight-bold">
                                 رفع الطلاب من اكسيل
@@ -477,7 +478,7 @@
                         </div>
                     </div>
                 @endif
-                
+
 
 
             </div>

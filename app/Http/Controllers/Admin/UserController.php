@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
 
 use App\Imports\StudentImport;
+use App\Exports\BundleCodeExport;
+
 
 class UserController extends Controller
 {
@@ -1455,6 +1457,14 @@ class UserController extends Controller
         }
     }
 
+
+    public function exportBundles(){
+        $bundles =Bundle::get();
+        $bundlesExport = new BundleCodeExport($bundles);
+
+        return Excel::download($bundlesExport, ' اكواد الدبلومات.xlsx');
+
+    }
     public function exportExcelEnrollers(Request $request)
     {
         $this->authorize('admin_users_export_excel');
