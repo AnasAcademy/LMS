@@ -924,7 +924,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/delete', 'BundleController@destroy');
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
-            Route::get('/bundleCodeExcel', 'userController@exportBundles');
+            Route::get('/bundleCodeExcel', 'UserController@exportBundles');
 
             Route::get('/{id}/students', 'BundleController@studentsLists');
             Route::get('/{id}/sendNotification', 'BundleController@notificationToStudents');
