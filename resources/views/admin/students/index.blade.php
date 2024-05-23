@@ -468,7 +468,7 @@
                 @if (request()->is(getAdminPanelUrl('/students/users', false)))
                     <div class="col-6">
                         <div class="media-body">
-                            <div class="text-primary mt-0 mb-1 font-weight-bold">
+                            <div class="text-primary mt-25 mb-1 font-weight-bold">
                                 رفع الطلاب من اكسيل
                             </div>
                             <div class="text-small font-600-bold">
