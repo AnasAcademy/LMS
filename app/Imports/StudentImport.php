@@ -29,6 +29,7 @@ class StudentImport implements ToModel
 {
     private $skipFirstRow = true;
     private $currentRow = 1; // Initialize row counter
+    private $errors = [];
     /**
      * @param array $row
      *
@@ -36,21 +37,23 @@ class StudentImport implements ToModel
      */
     public function model(array $row)
     {
-        if ($this->skipFirstRow) {
-            $this->skipFirstRow = false;
-            return null;
-        }
-        // Increment row counter
-        $this->currentRow++;
+        try {
+            if ($this->skipFirstRow) {
+                $this->skipFirstRow = false;
+                return null;
+            }
+            // Increment row counter
+            $this->currentRow++;
 
 
-        $diplomaCode = $row[8];
+            $diplomaCode = $row[8];
 
-        $bundle = bundle::where('id', $diplomaCode)->first();
+            $bundle = bundle::find($diplomaCode);
 
-        if ($bundle) {
-            $existUser = User::where('email', $row['2'])->first();
-
+            if (!$bundle) {
+                $this->errors[] = "في الصف رقم {$this->currentRow}: كود الدبلومة غير صحيح";
+                return null;
+            }
             $rules = [
                 'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
                 'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
@@ -66,59 +69,30 @@ class StudentImport implements ToModel
                 'deaf' => $row[22],
                 'gender' => $row[6],
             ];
-
+            // validate imported data
             $validator = Validator::make($fileData, $rules);
-            if($validator->fails()){
-                $errors = $validator->errors()->all();
 
-                // Construct error message with row number
-                $errorMessage = "في الصف رقم {$this->currentRow}: " . implode(', ', $errors);
-
-                // Throw ValidationException with the error message
-                throw new ValidationException($validator, $errorMessage);
-
-            }
-            // USER CODE
-            $lastCode = Code::latest()->first();
-            if (!empty($lastCode)) {
-                if (empty($lastCode->lst_sd_code)) {
-                    $lastCode->lst_sd_code = $lastCode->student_code;
-                }
-                $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-                do {
-                    $nextCodeAsInt = $lastCodeAsInt + 1;
-                    $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-
-                    $codeExists = User::where('user_code', $nextCode)->exists();
-
-                    if ($codeExists) {
-                        $lastCodeAsInt = $nextCodeAsInt;
-                    } else {
-                        break;
-                    }
-                } while (true);
+            if ($validator->fails()) {
+                $this->errors[] = "في الصف رقم {$this->currentRow}: "  . implode(', ', $validator->errors()->all());
+                return null;
             }
 
+            // find or create user if doesn't exist
+            $user = User::firstOrCreate(['email' => $row[2]], [
+                'role_name' => 'registered_user',
+                'role_id' => 13,
+                'full_name' => $row[0],
+                'status' => User::$active,
+                'verified' => 1,
+                'access_content' => 1,
+                'password' => Hash::make('anasAcademy123'),
+                'affiliate' => 0,
+                'timezone' => getGeneralSettings('default_time_zone'),
+                'created_at'=>time()
+            ]);
 
-            if ($existUser) {
-                $user = $existUser;
-            } else {
-                // create user
-                $user = User::create([
-                    'role_name' => 'registered_user',
-                    'role_id' => 13,
-                    'email' => $row[2] ?? null,
-                    'full_name' => $row[0],
-                    'status' => User::$active,
-                    'verified' => 1,
-                    'access_content' => 1,
-                    'password' => Hash::make('anasAcademy123'),
-                    'affiliate' => 0,
-                    'timezone' => getGeneralSettings('default_time_zone') ?? null,
-                    'created_at' => time()
-                ]);
-
-
+            // if the user was created newly send an email to him with email and password
+            if ($user->wasRecentlyCreated) {
                 $data['title'] = "انشاء حساب جديد";
                 $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
                             <br>
@@ -136,63 +110,61 @@ class StudentImport implements ToModel
                 $this->sendEmail($user, $data);
             }
 
+            // update user code
             if (empty($user->user_code)) {
-                // update user code
-                $user->update(['user_code' => $nextCode]);
+                $code = $this->generateStudentCode();
+                $user->update(['user_code' => $code]);
+
                 // update code
-                $lastCode->update(['lst_sd_code' => $nextCode]);
+                Code::latest()->first()->update(['lst_sd_code' => $code]);
             }
 
-            if ($user->student) {
-                $student = $user->student;
-            } else {
+            // create student if doesn't exist
+            $student = $user->student ?? Student::create([
+                'user_id' => $user->id,
+                'ar_name' => $row[0],
+                'en_name' => $row[1],
+                'email' => $row[2],
+                'phone' => $row[3] ?? '000000',
+                'mobile' => $row[4] ?? $row[3] ?? '0000',
+                'birthdate' => $row[5] ?? '1999-01-01',
+                'gender' => $row[6],
+                'identifier_num' => $row[7] ?? '000000',
+                'nationality' => $row[9] ?? 'سعودي/ة',
+                'country' => $row[10] ?? 'السعودية',
+                'town' => $row[11] ?? 'الرياض',
+                'educational_qualification_country' => $row[12],
+                'educational_area' => $row[13] ?? 'الرياض',
+                'university' => $row[14],
+                'faculty' => $row[15],
+                'education_specialization' => $row[16],
+                'graduation_year' => $row[17],
+                'gpa' => $row[18],
+                'school' => $row[19],
+                'secondary_school_gpa' => $row[20],
+                'secondary_graduation_year' => $row[21],
+                'deaf' => ($row[22] == 'نعم') ? 1 : 0,
+                'disabled_type' => $row[23] ?? null,
+                'healthy_problem' => $row[24],
+                'job' => $row[25] ?? null,
+                'job_type' => $row[26] ?? null,
+                'referral_person' => $row[27] ?? 'صديق',
+                'relation' => $row[28] ?? 'صديق',
+                'referral_email' => $row[29] ?? 'email@example.com',
+                'referral_phone' => $row[30] ?? '0000000',
+                'about_us' => $row[31] ?? 'facebook',
+                'created_at' => date('Y-m-d H:i:s')
 
 
-                // create student
-                $student = Student::create([
-                    'user_id' => $user->id,
-                    'ar_name' => $row[0],
-                    'en_name' => $row[1],
-                    'email' => $row[2],
-                    'phone' => $row[3] ?? '000000',
-                    'mobile' => $row[4] ?? $row[3] ?? '0000',
-                    'birthdate' => $row[5] ?? '1999-01-01',
-                    'gender' => $row[6],
-                    'identifier_num' => $row[7] ?? '000000',
-                    'nationality' => $row[9] ?? 'سعودي/ة',
-                    'country' => $row[10] ?? 'السعودية',
-                    'town' => $row[11] ?? 'الرياض',
-                    'educational_qualification_country' => $row[12],
-                    'educational_area' => $row[13] ?? 'الرياض',
-                    'university' => $row[14],
-                    'faculty' => $row[15],
-                    'education_specialization' => $row[16],
-                    'graduation_year' => $row[17],
-                    'gpa' => $row[18],
-                    'school' => $row[19],
-                    'secondary_school_gpa' => $row[20],
-                    'secondary_graduation_year' => $row[21],
-                    'deaf' => ($row[22] == 'نعم') ? 1 : 0,
-                    'disabled_type' => $row[23] ?? null,
-                    'healthy_problem' => $row[24],
-                    'job' => $row[25] ?? null,
-                    'job_type' => $row[26] ?? null,
-                    'referral_person' => $row[27] ?? 'صديق',
-                    'relation' => $row[28] ?? 'صديق',
-                    'referral_email' => $row[29] ?? 'email@example.com',
-                    'referral_phone' => $row[30] ?? '0000000',
-                    'about_us' => $row[31] ?? 'facebook',
-                    'created_at' => date('Y-m-d H:i:s')
+            ]);
 
-
-                ]);
-            }
-
+            // check the user apply to this bundle before or not
             $bundleStudent = BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundle->id])->first();
             if ($bundleStudent) {
                 return null;
             }
-            // apply bundle
+
+            // apply bundle for student
             $bundleStudent = BundleStudent::create([
                 'student_id' => $student->id,
                 'bundle_id' => $bundle->id,
@@ -264,14 +236,12 @@ class StudentImport implements ToModel
 
             $this->sendNotification($user, $data);
 
-
-            Session::flash('success', 'تم اضافه الطلبة بنجاح.');
-        } else {
             return null;
+
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            return null; // Skip invalid row
         }
-
-
-        return null;
     }
 
     public function sendEmail($user, $data)
@@ -292,5 +262,37 @@ class StudentImport implements ToModel
             'type' => "single",
             'created_at' => time()
         ]);
+    }
+
+    public function generateStudentCode()
+    {
+        // USER CODE
+        $lastCode = Code::latest()->first();
+        if (!empty($lastCode)) {
+            if (empty($lastCode->lst_sd_code)) {
+                $lastCode->lst_sd_code = $lastCode->student_code;
+            }
+            $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
+            do {
+                $nextCodeAsInt = $lastCodeAsInt + 1;
+                $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+
+                $codeExists = User::where('user_code', $nextCode)->exists();
+
+                if ($codeExists) {
+                    $lastCodeAsInt = $nextCodeAsInt;
+                } else {
+                    break;
+                }
+            } while (true);
+
+            return $nextCode;
+        }
+        return 'SD00001';
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }

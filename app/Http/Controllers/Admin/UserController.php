@@ -86,7 +86,6 @@ class UserController extends Controller
                 $orderItem->update([
                     'bundle_id' => $validatedData['toDiploma'],
                 ]);
-
             }
             if (!empty($accounting)) {
                 $accounting->update([
@@ -126,7 +125,6 @@ class UserController extends Controller
 
             return redirect()->back()->with(['toast' => $toastData]);
         }
-
     }
 
     protected function sendNotification($data)
@@ -738,7 +736,6 @@ class UserController extends Controller
         Excel::import(new ExcelImport, $file);
 
         return redirect()->back()->with('success', 'Data imported successfully.');
-
     }
 
     public function edit(Request $request, $id)
@@ -1165,7 +1162,6 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->back()->with('msg', 'تم تعديل الصورة بنجاح');
-
     }
 
     public function financialUpdate(Request $request, $id)
@@ -1213,7 +1209,6 @@ class UserController extends Controller
         }
 
         return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
-
     }
 
     public function occupationsUpdate(Request $request, $id)
@@ -1418,32 +1413,50 @@ class UserController extends Controller
     }
     public function importExcelStudents(Request $request)
     {
-        try{
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
-        ]);
-        $file = $request->file('file');
-        Excel::import(new studentImport, $file);
-        $toastData = [
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $import = new StudentImport();
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
                 'title' => 'استرداد طلبة',
                 'msg' => 'تم اضافه الطلبة بنجاح.',
                 'status' => 'success'
             ];
-        return back()->with(['toast' => $toastData]);
-        }
-        catch(\Exception $e){
-            $toastData = [
-                'title' => 'استرداد طلبة',
-                'msg' => $e->getResponse(),
-                'status' => 'error'
-            ];
 
             return back()->with(['toast' => $toastData]);
-        }
 
+
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            dd($toastData);
+            return back()->with(['toast' => $toastData]);
+        }
     }
 
-    public function exportExcelEnrollers(Request $request){
+    public function exportExcelEnrollers(Request $request)
+    {
         $this->authorize('admin_users_export_excel');
 
         $users = User::where(['role_name' => Role::$user])->whereHas('student')->orderBy('created_at', 'desc')->get();
@@ -1451,7 +1464,6 @@ class UserController extends Controller
         $usersExport = new EnrollersExport($users);
 
         return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
-
     }
     public function exportExcelUsers(Request $request)
     {
@@ -1812,6 +1824,4 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
-
-
 }
