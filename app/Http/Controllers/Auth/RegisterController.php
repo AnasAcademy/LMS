@@ -260,7 +260,7 @@ class RegisterController extends Controller
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span>". $data['password'].
+                             <span style='font-weight:bold;'>كلمة المرور: </span>". $request['password'].
                             "<br>
                 ";
         if (!empty($user) and !empty($user->email)) {
