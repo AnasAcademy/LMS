@@ -146,6 +146,10 @@
                                     value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
                             </div>
 
+                            <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll" style="color: #5F2B80;">
+                                يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
+                            </div>
+                            
                             {{-- certificate --}}
                             <div class="form-group col-12  d-none" id="certificate_section">
                                 <label>{{ trans('application_form.want_certificate') }} ؟ *</label>
@@ -253,9 +257,9 @@
 
                 if (categoryBundles) {
                     var options = categoryBundles.map(function(bundle) {
-                        var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
+                       var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
                             'selected' : '';
-                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
+                        return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}" early_enroll="${bundle.early_enroll}">${bundle.title}</option>`;
                     }).join('');
 
                     hiddenInput.outerHTML =
@@ -285,14 +289,23 @@
         function CertificateSectionToggle() {
             let certificateSection = document.getElementById("certificate_section");
             let bundleSelect = document.getElementById("bundle_id");
+            let earlyEnroll = document.getElementById("early_enroll");
             // Get the selected option
             var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
             if (selectedOption.getAttribute('has_certificate') == 1) {
                 certificateSection.classList.remove("d-none");
             } else {
                 certificateSection.classList.add("d-none");
-
             }
+
+             if (selectedOption.getAttribute('early_enroll') == 1) {
+
+                earlyEnroll.classList.remove("d-none");
+
+            } else {
+                earlyEnroll.classList.add("d-none");
+            }
+
         }
 
         function showCertificateMessage() {
