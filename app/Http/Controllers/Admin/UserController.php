@@ -1108,7 +1108,7 @@ class UserController extends Controller
                 ";
 
             $this->sendEmail($user, $data);
-
+            $data['body'] = "نود اعلامك انه تم تغيير كلمة المرور الخاصة بك";
             $this->sendNotificationToUser($user, $data);
         }
 
