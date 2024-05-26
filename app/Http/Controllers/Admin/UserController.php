@@ -1089,6 +1089,27 @@ class UserController extends Controller
 
         if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
+            $data['title'] = 'تغيير كلمة المرور';
+            $data['body'] = "حياك الله
+                            <br>
+                            نود اخبارك انه تم تغيير كلمة المرور الخاصة بك في منصه القبول والتسجيل
+                            <br>
+                            ويمكنكم الدخول إلى منصة القبول والتسجيل عن طريق الرابط التالي
+                            <a href='https://lms.anasacademy.uk/login' class='btn btn-danger'>اضغط هنا للدخول</a>
+                            <br>
+                            ويمكنك استخدام البيانات الآتيه لتسجيل الدخول
+                            <br>
+                            <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
+                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>". $data['password']."
+                             <br>
+                             <br>
+                            واذا واجهتكم مشكلة في تسجيل الدخول يمكنكم التواصل معنا
+                ";
+
+            $this->sendEmail($user, $data);
+
+            $this->sendNotificationToUser($user, $data);
         }
 
         if (!empty($data['ban']) and $data['ban'] == '1') {
@@ -1444,8 +1465,6 @@ class UserController extends Controller
             ];
 
             return back()->with(['toast' => $toastData]);
-
-
         } catch (\Exception $e) {
             $toastData = [
                 'title' => 'استرداد طلبة',
@@ -1458,12 +1477,12 @@ class UserController extends Controller
     }
 
 
-    public function exportBundles(){
-        $bundles =Bundle::get();
+    public function exportBundles()
+    {
+        $bundles = Bundle::get();
         $bundlesExport = new BundleCodeExport($bundles);
 
         return Excel::download($bundlesExport, ' اكواد الدبلومات.xlsx');
-
     }
     public function exportExcelEnrollers(Request $request)
     {
@@ -1833,5 +1852,26 @@ class UserController extends Controller
         ];
 
         return view('admin.students.enrollers', $data);
+    }
+
+
+    public function sendEmail($user, $data)
+    {
+        if (!empty($user) and !empty($user->email)) {
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
+        }
+    }
+
+    public function sendNotificationToUser($user, $data)
+    {
+        Notification::create([
+            'user_id' => $user->id ?? 0,
+            'sender_id' => auth()->id(),
+            'title' => $data['title'] ?? '',
+            'message' => $data['body'] ?? '',
+            'sender' => Notification::$AdminSender,
+            'type' => "single",
+            'created_at' => time()
+        ]);
     }
 }
