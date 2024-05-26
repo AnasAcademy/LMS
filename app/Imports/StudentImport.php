@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use App\Mail\SendNotifications;
 use App\Models\Notification;
 use App\User;
@@ -20,7 +21,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\Code;
-use Illuminate\Validation\ValidationException;
+use App\Models\Accounting;
+use App\Models\TicketUser;
 
 
 
@@ -213,28 +215,33 @@ class StudentImport implements ToModel
             ]);
 
             // create sale
-            $sale = Sale::create([
-                'buyer_id' => $user->id,
-                'seller_id' => $bundle->creator_id,
-                'order_id' => $order->id,
-                'bundle_id' => $bundle->id,
-                'type' => 'form_fee',
-                'form_fee' => 1,
-                'manual_added' => true,
-                'payment_method' => Sale::$credit,
-                'amount' => 230,
-                'total_amount' => 0,
-                'created_at' => time(),
-            ]);
+            $sale = Sale::createSales($orderItem, $order->payment_method);
+            Accounting::createAccounting($orderItem);
+            TicketUser::useTicket($orderItem);
+
+            // create sale
+            // $sale = Sale::create([
+            //     'buyer_id' => $user->id,
+            //     'seller_id' => $bundle->creator_id,
+            //     'order_id' => $order->id,
+            //     'bundle_id' => $bundle->id,
+            //     'type' => 'form_fee',
+            //     'form_fee' => 1,
+            //     'manual_added' => true,
+            //     'payment_method' => Sale::$credit,
+            //     'amount' => 230,
+            //     'total_amount' => 230,
+            //     'created_at' => time(),
+            // ]);
 
 
-            $data['title'] = 'رسوم حجز مقعد دراسي';
-            $data['body'] = " تهانينا تم سدادكم رسوم حجز مقعد دراسي بالأكاديمية بقيمة 230 ر.س";
+            // $data['title'] = 'رسوم حجز مقعد دراسي';
+            // $data['body'] = " تهانينا تم سدادكم رسوم حجز مقعد دراسي بالأكاديمية بقيمة 230 ر.س";
 
 
-            $this->sendEmail($user, $data);
+            // $this->sendEmail($user, $data);
 
-            $this->sendNotification($user, $data);
+            // $this->sendNotification($user, $data);
 
             return null;
 
