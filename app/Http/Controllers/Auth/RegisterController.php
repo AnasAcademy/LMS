@@ -21,6 +21,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
 
 class RegisterController extends Controller
 {
@@ -97,9 +99,10 @@ class RegisterController extends Controller
             'full_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
+            'email_confirmation' => 'required|same:email',
             'referral_code' => 'nullable|exists:affiliates_codes,code'
         ];
-        
+
 
         if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
             $rules['captcha'] = 'required|captcha';
@@ -158,7 +161,8 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
             'affiliate' => $usersAffiliateStatus,
             'timezone' => $data['timezone'] ?? null,
-            'created_at' => time()
+            'created_at' => time(),
+            'verified' => 1
         ]);
         // }
 
@@ -203,8 +207,8 @@ class RegisterController extends Controller
             session()->put('referralCode', $referralCode);
         }
 
-        $verificationController = new VerificationController();
-        $checkConfirmed = $verificationController->checkConfirmed($user, $registerMethod, $value);
+        // $verificationController = new VerificationController();
+        // $checkConfirmed = $verificationController->checkConfirmed($user, $registerMethod, $value);
 
         $referralCode = $request->get('referral_code', null);
 
@@ -245,7 +249,23 @@ class RegisterController extends Controller
             if ($response = $this->registered($request, $user)) {
                 return $response;
             }
-
+        $data['title'] = "انشاء حساب جديد";
+        $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
+                            <br>
+                            <br>
+                            يمكن تسجيل الدخول من خلال هذا الرابط
+                            <a href='https://lms.anasacademy.uk/login' class='btn btn-danger'>اضغط هنا للدخول</a>
+                            <br>
+                            بإستخدام هذا البريد الإلكتروني وكلمة المرور
+                            <br>
+                            <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
+                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>". $request['password'].
+                            "<br>
+                ";
+        if (!empty($user) and !empty($user->email)) {
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
+        }
             return $request->wantsJson()
                 ? new JsonResponse([], 201)
                 : redirect($this->redirectPath());

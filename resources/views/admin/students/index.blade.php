@@ -248,6 +248,19 @@
                 @if (request()->is(getAdminPanelUrl('/students/users', false)))
                     <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+
+                    @include('admin.students.includes.importStudents', [
+                        'url' => getAdminPanelUrl()."/students/importStudent",
+                        'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
+                        'btnText' =>
+                        '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
+                        'hideDefaultClass' => true,
+
+                    ])
+
+                    <a href="{{asset('files/import_student_template.xlsx')}}" class="btn btn-success" download>تحميل قالب النموذج</a>
+                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات </a>
+
                 @else
                     <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
@@ -282,7 +295,7 @@
                         <th width="120">{{ trans('admin/main.actions') }}</th>
                     </tr>
 
-                    @foreach ($users as $index =>$user)
+                    @foreach ($users as $index => $user)
                         <tr>
                             <td>{{ ++$index }}</td>
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
@@ -300,7 +313,8 @@
                                             {{ $user->student ? $user->student->ar_name : $user->full_name }}</div>
 
                                         @if ($user->mobile)
-                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">{{ $user->mobile }}</div>
+                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">
+                                                {{ $user->mobile }}</div>
                                         @endif
 
                                         @if ($user->email)
@@ -451,6 +465,20 @@
                         <div class="text-small font-600-bold">{{ trans('admin/main.students_hint_description_3') }}</div>
                     </div>
                 </div>
+                @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                    <div class="col-6">
+                        <div class="media-body">
+                            <div class="text-primary mt-25 mb-1 font-weight-bold">
+                                رفع الطلاب من اكسيل
+                            </div>
+                            <div class="text-small font-600-bold">
+                             لإضافة طلاب من خلال ملف اكسيل
+                        قم بتحميل قالب النموذج ثم قم بإدخال بيانات الطلاب كامله بيه ثم قم بالضغط علي زر رفع الطلاب من اكسيل ثم قم بتحديد ملف الإكسيل الذي قمت بتحميله بعد اضافه بيانات الطلاب كاملة ثم اضغط ارسال
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
 
 
             </div>

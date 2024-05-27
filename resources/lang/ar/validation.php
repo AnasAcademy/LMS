@@ -144,7 +144,7 @@ return [
         'education_specialization' => 'تخصص التعليم',
         'graduation_year' => 'سنة التخرج',
         'gpa' => 'المعدل التراكمي',
-        'deaf' => 'صم',
+        'deaf' => 'هل أنت من الصم وضعاف السمع',
         'disabled_type' => 'نوع الإعاقة',
         'gender' => 'الجنس',
         'healthy_problem' => 'مشكلة صحية',
@@ -166,8 +166,11 @@ return [
         'status' => 'الحالة',
         'password' => 'كلمة المرور',
         'password_confirmation' => 'تأكيد كلمة المرور',
+        'email_confirmation' => 'تأكيد البريد الإلكتروني',
         'full_name'=>'الاسم الثلاثي',
-        'username'=> 'المستخدم'
+        'username'=> 'المستخدم',
+        'identity_attachment'=> 'الهوية الوطنية/جواز السفر',
+        'admission attachment'=> 'متطلبات القبول',
     ],
 
 ];

@@ -57,8 +57,6 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@staffs');
         });
 
-
-
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
@@ -66,6 +64,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelUsers');
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
+            Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
@@ -925,6 +924,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/delete', 'BundleController@destroy');
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
+            Route::get('/bundleCodeExcel', 'UserController@exportBundles');
 
             Route::get('/{id}/students', 'BundleController@studentsLists');
             Route::get('/{id}/sendNotification', 'BundleController@notificationToStudents');

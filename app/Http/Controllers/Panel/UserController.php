@@ -972,6 +972,9 @@ class UserController extends Controller
 
 
         $identity_attachment = $request->file('identity_attachment');
+        if( !in_array(strtolower($identity_attachment->getClientOriginalExtension()),['jpg','jpeg','png','pdf'])){
+            return back()->withInput($request->all())->withErrors(['identity_attachment'=> "يجب أن يكون الهوية الوطنية/جواز السفر ملف من النوع: jpeg, jpg, png, pdf والملف المرفع بامتداد ".$identity_attachment->getClientOriginalExtension()]);
+        }
         $identity_attachmentName =  $user->user_code . '_' . $request['identity_type'] . '.' . $identity_attachment->getClientOriginalExtension();
         $identity_attachmentPath = $identity_attachment->storeAs('studentRequirements', $identity_attachmentName);
 
