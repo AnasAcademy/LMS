@@ -167,6 +167,7 @@
 
                                                         <div class="mt-20 d-flex flex-column">
                                                             @if ($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder()))
+                                                            
                                                                 <button type="button" class="btn btn-primary"
                                                                     disabled>{{ trans('panel.purchased') }}</button>
                                                             @elseif($bundleData['bundle']->bundle->price > 0)
