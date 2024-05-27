@@ -168,7 +168,9 @@ return [
         'password_confirmation' => 'تأكيد كلمة المرور',
         'email_confirmation' => 'تأكيد البريد الإلكتروني',
         'full_name'=>'الاسم الثلاثي',
-        'username'=> 'المستخدم'
+        'username'=> 'المستخدم',
+        'identity_attachment'=> 'الهوية الوطنية/جواز السفر',
+        'admission attachment'=> 'متطلبات القبول',
     ],
 
 ];
