@@ -1,6 +1,8 @@
 <?php
 
 use App\Mixins\Financial\MultiCurrency;
+use App\Models\Code;
+use App\User;
 use Illuminate\Support\Facades\Cookie;
 
 function getTemplate()
@@ -2295,3 +2297,30 @@ function convertToMB($size, $unit = 'B')
 
     return round($mb_size, 2);
 }
+
+function generateStudentCode()
+    {
+        // USER CODE
+        $lastCode = Code::latest()->first();
+        if (!empty($lastCode)) {
+            if (empty($lastCode->lst_sd_code)) {
+                $lastCode->lst_sd_code = $lastCode->student_code;
+            }
+            $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
+            do {
+                $nextCodeAsInt = $lastCodeAsInt + 1;
+                $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+
+                $codeExists = User::where('user_code', $nextCode)->exists();
+
+                if ($codeExists) {
+                    $lastCodeAsInt = $nextCodeAsInt;
+                } else {
+                    break;
+                }
+            } while (true);
+
+            return $nextCode;
+        }
+        return 'SD00001';
+    }

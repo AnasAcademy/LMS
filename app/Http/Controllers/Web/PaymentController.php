@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\Code;
 use App\User;
 use App\Student;
+
 class PaymentController extends Controller
 {
     protected $order_session_key = 'payment.order_id';
@@ -258,8 +259,8 @@ class PaymentController extends Controller
                         if (!empty($orderItem->become_instructor_id)) {
                             BecomeInstructor::where('id', $orderItem->become_instructor_id)
                                 ->update([
-                                        'package_id' => $orderItem->registration_package_id
-                                    ]);
+                                    'package_id' => $orderItem->registration_package_id
+                                ]);
                         }
                     } elseif (!empty($orderItem->installment_payment_id)) {
                         Accounting::createAccountingForInstallmentPayment($orderItem, $type);
@@ -316,56 +317,52 @@ class PaymentController extends Controller
                 ->orWhere('type', 'installment_payment')
                 ->where('buyer_id', $user->id)
                 ->first();
+
+            $webinar_sale = Sale::where('order_id', $order->id)
+                ->where('type', 'webinar')
+                ->where('buyer_id', $user->id)
+                ->first();
+
             $pivotId = null;
-            if ($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') {
+            if (($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') || ($webinar_sale && $webinar_sale->order->user_id == $user->id && $webinar_sale->order->status == 'paid')) {
                 //add as student
                 try {
-                    $lastCode = Code::latest()->first();
-                    if (!empty($lastCode)) {
-                        if (empty($lastCode->lst_sd_code)) {
-                            $lastCode->lst_sd_code = $lastCode->student_code;
-                        }
-                        $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-                        do {
-                            $nextCodeAsInt = $lastCodeAsInt + 1;
-                            $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-
-                            $codeExists = User::where('user_code', $nextCode)->exists();
-
-                            if ($codeExists) {
-                                $lastCodeAsInt = $nextCodeAsInt;
-                            } else {
-                                break;
-                            }
-                        } while (true);
-
-                        $userData = $request->cookie('user_data');
-                        if ($userData) {
-                            $userData = json_decode($userData, true);
-                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms','certificate','timezone','password', 'password_confirmation', 'email_confirmation'])->toArray();
-                        }
-                        $student = Student::where('user_id', auth()->user()->id)->first();
-                        if (!$student) {
-                            $student = Student::create($studentData);
-                            $user = User::where('id', $user->id)->update([
-                                'user_code' => $nextCode,
-                                'access_content'=>1
-                            ]);
-                            $lastCode->update(['lst_sd_code' => $nextCode]);
-                        }
-
-                        $bundleId = $userData['bundle_id'];
-
-                        // Check if the student already has the bundle ID attached
-                        if (!$student->bundles->contains($bundleId)) {
-                            $student->bundles()->attach($bundleId,  ['certificate' =>(!empty($userData['certificate'])) ? $userData['certificate']:null ]);
-                            $pivotId = \DB::table('bundle_student')
-                                ->where('student_id', $student->id)
-                                ->where('bundle_id', $bundleId)
-                                ->value('id');
-                        }
-
+                    $userData = $request->cookie('user_data');
+                    if ($userData) {
+                        $userData = json_decode($userData, true);
+                        $studentData = collect($userData)->except(['category_id', 'bundle_id','webinar_id','type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
                     }
+                    $student = Student::where('user_id', auth()->user()->id)->first();
+                    if (!$student) {
+                        $student = Student::create($studentData);
+                        $code = generateStudentCode();
+                        $user = User::where('id', $user->id)->update([
+                            'user_code' => $code,
+                            'access_content' => 1
+                        ]);
+                        if ($userData['type'] == 'courses') {
+                            $user = User::where('id', auth()->user()->id)->first();
+                            $user->update([
+                                'role_id' => 1,
+                                'role_name' => 'user',
+                            ]);
+                        }
+                        // update code
+                        Code::latest()->first()->update(['lst_sd_code' => $code]);
+                    }
+
+                    $bundleId = $userData['bundle_id'];
+
+                    // Check if the student already has the bundle ID attached
+                    if ($userData['type'] == 'diplomas' && !$student->bundles->contains($bundleId)) {
+                        $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
+                        $pivotId = \DB::table('bundle_student')
+                            ->where('student_id', $student->id)
+                            ->where('bundle_id', $bundleId)
+                            ->value('id');
+                    }
+
+
 
                 } catch (\Exception $exception) {
                     dd($exception);
@@ -387,7 +384,7 @@ class PaymentController extends Controller
                 if (empty($sale)) {
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
-                if (!empty($sale) && isset($pivotId) && ($sale->bundle->early_enroll==0)) {
+                if (!empty($sale) && isset($pivotId) && ($sale->bundle->early_enroll == 0)) {
                     return redirect('/panel/bundles/' . $pivotId . '/requirements')->with(['toast' => $toastData]);
                 }
                 return redirect('/')->with(['toast' => $toastData]);

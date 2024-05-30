@@ -25,8 +25,11 @@
             $subTitle .= 'رسوم حجز مقعد : '.($total).' ريال سعودي';
             // $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
         }
-        else{
+        else if(!empty($order->orderItems[0]->bundle)){
              $subTitle .= 'الرسوم الدراسية للبرنامج '.($order->orderItems[0]->bundle->title).': '.($total).' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->webinar)){
+            $subTitle .= 'الرسوم الدراسية للدورة '.($order->orderItems[0]->webinar->title).': '.($total).' ريال سعودي';
         }
         // close subtitle
         $subTitle .= '</span>';
@@ -137,7 +140,7 @@
             <div class="d-flex align-items-center justify-content-between mt-45">
                 <span class="font-16 font-weight-500 text-gray">{{ trans('financial.total_amount') }}
                     {{ handlePrice($total) }}</span>
-                <button type="button" id="paymentSubmit" 
+                <button type="button" id="paymentSubmit"
                     class="btn btn-sm btn-primary">{{ trans('public.start_payment') }}</button>
             </div>
         </form>
