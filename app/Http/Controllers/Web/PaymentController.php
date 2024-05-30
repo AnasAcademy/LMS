@@ -23,14 +23,90 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\Code;
 use App\User;
 use App\Student;
+use Illuminate\Support\Facades\Validator;
+use App\Models\OfflineBank;
+use App\Models\OfflinePayment;
+use App\BundleStudent;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+
 class PaymentController extends Controller
 {
     protected $order_session_key = 'payment.order_id';
 
+
+    public function index(Request $request, Order $order)
+    {
+        if ($order->user_id != auth()->user()->id) {
+            abort(403);
+        }
+        $paymentChannels = PaymentChannel::where('status', 'active')->get();
+        $razorpay = false;
+        $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
+
+        foreach ($paymentChannels as $paymentChannel) {
+            if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
+                $razorpay = true;
+            }
+        }
+
+        $userAuth = auth()->user();
+
+        $offlinePayments = OfflinePayment::where('user_id', $userAuth->id)->orderBy('created_at', 'desc')->get();
+
+        $offlineBanks = OfflineBank::query()
+            ->orderBy('created_at', 'desc')
+            ->with([
+                'specifications'
+            ])
+            ->get();
+
+
+        $registrationBonusAmount = null;
+
+        if ($userAuth->enable_registration_bonus) {
+            $registrationBonusSettings = getRegistrationBonusSettings();
+
+            $registrationBonusAccounting = Accounting::query()
+                ->where('user_id', $userAuth->id)
+                ->where('is_registration_bonus', true)
+                ->where('system', false)
+                ->first();
+
+            $registrationBonusAmount = (empty($registrationBonusAccounting) and !empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) ? $registrationBonusSettings['registration_bonus_amount'] : null;
+        }
+        $data = [
+            'pageTitle' => trans('public.checkout_page_title'),
+            'paymentChannels' => $paymentChannels,
+            'carts' => null,
+            'subTotal' => null,
+            'totalDiscount' => null,
+            'tax' => null,
+            'taxPrice' => null,
+            'total' => $order->total_amount,
+            'userGroup' => $userAuth->userGroup ? $userAuth->userGroup->group : null,
+            'order' => $order,
+            'type' => $order->orderItems[0]->form_fee,
+            'count' => 0,
+            'userCharge' => $userAuth->getAccountingCharge(),
+            'razorpay' => $razorpay,
+            'totalCashbackAmount' => null,
+            'previousUrl' => url()->previous(),
+            'offlinePayments' => $offlinePayments,
+            'offlineBanks' => $offlineBanks,
+            'accountCharge' => $userAuth->getAccountingCharge(),
+            'readyPayout' => $userAuth->getPayout(),
+            'totalIncome' => $userAuth->getIncome(),
+            'registrationBonusAmount' => $registrationBonusAmount,
+        ];
+
+        return view(getTemplate() . '.cart.payment', $data);
+    }
+
     public function paymentRequest(Request $request)
     {
-        $this->validate($request, [
-            'gateway' => 'required'
+        $request->validate([
+            'gateway' => 'required',
         ]);
 
         $user = auth()->user();
@@ -45,6 +121,10 @@ class PaymentController extends Controller
             $orderItem = OrderItem::where('order_id', $order->id)->first();
             $reserveMeeting = ReserveMeeting::where('id', $orderItem->reserve_meeting_id)->first();
             $reserveMeeting->update(['locked_at' => time()]);
+        }
+
+        if ($gateway == 'offline') {
+            return $this->payOffline($request, $order);
         }
 
         // if ($gateway === 'credit') {
@@ -73,7 +153,6 @@ class PaymentController extends Controller
 
         //     return redirect('/payments/status');
         // }
-
 
         $paymentChannel = PaymentChannel::where('id', $gateway)
             ->where('status', 'active')
@@ -107,7 +186,6 @@ class PaymentController extends Controller
             }
 
             return Redirect::away($redirect_url);
-
         } catch (\Exception $exception) {
             dd($exception);
             $toastData = [
@@ -131,7 +209,6 @@ class PaymentController extends Controller
             $order = $channelManager->verify($request);
 
             return $this->paymentOrderAfterVerify($order);
-
         } catch (\Exception $exception) {
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
@@ -159,7 +236,6 @@ class PaymentController extends Controller
             $order = $channelManager->verify($request);
 
             return $this->paymentOrderAfterVerify($order);
-
         } catch (\Exception $exception) {
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
@@ -170,7 +246,7 @@ class PaymentController extends Controller
         }
     }
 
-    private function paymentOrderAfterVerify($order)
+    public function paymentOrderAfterVerify($order)
     {
         if (!empty($order)) {
 
@@ -205,7 +281,6 @@ class PaymentController extends Controller
 
             return redirect('cart')->with($toastData);
         }
-
     }
 
     public function setPaymentAccounting($order, $type = null)
@@ -258,8 +333,8 @@ class PaymentController extends Controller
                         if (!empty($orderItem->become_instructor_id)) {
                             BecomeInstructor::where('id', $orderItem->become_instructor_id)
                                 ->update([
-                                        'package_id' => $orderItem->registration_package_id
-                                    ]);
+                                    'package_id' => $orderItem->registration_package_id
+                                ]);
                         }
                     } elseif (!empty($orderItem->installment_payment_id)) {
                         Accounting::createAccountingForInstallmentPayment($orderItem, $type);
@@ -295,9 +370,19 @@ class PaymentController extends Controller
             session()->forget($this->order_session_key);
         }
 
-        $order = Order::where('id', $orderId)
+
+        $authUser = auth()->user();
+        if ($authUser->role_name == 'admin' || $authUser->role_name == 'Financial Management User') {
+            $order = Order::find($orderId);
+            $user = $order->user;
+        } else {
+            $user = $authUser;
+            $order = Order::where('id', $orderId)
             ->where('user_id', auth()->id())
             ->first();
+        }
+
+
 
         if (!empty($order)) {
             $data = [
@@ -305,7 +390,6 @@ class PaymentController extends Controller
                 'order' => $order,
             ];
 
-            $user = auth()->user();
             $sale = Sale::where('order_id', $order->id)
                 ->where('type', 'form_fee')
                 ->where('buyer_id', $user->id)
@@ -342,31 +426,37 @@ class PaymentController extends Controller
                         $userData = $request->cookie('user_data');
                         if ($userData) {
                             $userData = json_decode($userData, true);
-                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms','certificate','timezone','password', 'password_confirmation', 'email_confirmation'])->toArray();
+                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
                         }
-                        $student = Student::where('user_id', auth()->user()->id)->first();
+                        $student = $user->student;
                         if (!$student) {
                             $student = Student::create($studentData);
+                        }
+                        if (!$user->user_code) {
                             $user = User::where('id', $user->id)->update([
                                 'user_code' => $nextCode,
-                                'access_content'=>1
+                                'access_content' => 1
                             ]);
                             $lastCode->update(['lst_sd_code' => $nextCode]);
                         }
 
-                        $bundleId = $userData['bundle_id'];
+                        $bundleId = $order->orderItems->first()->bundle_id;
 
                         // Check if the student already has the bundle ID attached
                         if (!$student->bundles->contains($bundleId)) {
-                            $student->bundles()->attach($bundleId,  ['certificate' =>(!empty($userData['certificate'])) ? $userData['certificate']:null ]);
+                            $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
                             $pivotId = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
                                 ->where('bundle_id', $bundleId)
                                 ->value('id');
                         }
 
-                    }
+                        else{
+                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
+                        }
 
+
+                    }
                 } catch (\Exception $exception) {
                     dd($exception);
                 }
@@ -376,6 +466,10 @@ class PaymentController extends Controller
                     'role_id' => 1,
                     'role_name' => 'user',
                 ]);
+
+                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved']);
+
+
             }
 
             if (!empty($data['order']) && $data['order']->status === Order::$paid) {
@@ -387,7 +481,7 @@ class PaymentController extends Controller
                 if (empty($sale)) {
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
-                if (!empty($sale) && isset($pivotId) && ($sale->bundle->early_enroll==0)) {
+                if (!empty($sale) && isset($pivotId) && ($sale->bundle->early_enroll == 0)) {
                     return redirect('/panel/bundles/' . $pivotId . '/requirements')->with(['toast' => $toastData]);
                 }
                 return redirect('/')->with(['toast' => $toastData]);
@@ -520,8 +614,118 @@ class PaymentController extends Controller
                 sendNotification("paid_installment_step", $notifyOptions, $installmentOrder->user_id);
                 sendNotification("paid_installment_step_for_admin", $notifyOptions, 1); // For Admin
             }
-
         }
     }
 
+
+    private function handleUploadAttachment($user, $file)
+    {
+        $storage = Storage::disk('public');
+
+        $path = '/' . $user->id . '/offlinePayments';
+
+        if (!$storage->exists($path)) {
+            $storage->makeDirectory($path);
+        }
+
+        $img = Image::make($file);
+        $name = time() . '.' . $file->getClientOriginalExtension();
+
+        $path = $path . '/' . $name;
+
+        $storage->put($path, (string)$img->encode());
+
+        return $name;
+    }
+
+    public function payOffline(Request $request, Order $order)
+    {
+
+        $user = auth()->user();
+        $request->validate([
+            'account' => 'required|exists:offline_banks,id',
+            'user_bank' => 'required|string',
+            'user_account_number' => 'required|numeric',
+            'IBAN' => 'nullable|string',
+            'reference_number' => 'required|string',
+            'date' => 'required',
+            'attachment' => 'required|file|mimes:jpeg,jpg,png'
+        ]);
+
+        $account = $request->input('account');
+        $date = $request->input('date');
+
+        $attachment = $this->handleUploadAttachment($user, $request->file('attachment'));
+
+        $date = convertTimeToUTCzone($date, getTimezone());
+        $item = $order->orderItems->first();
+        $bundleId = $order->orderItems->first()->bundle_id;
+
+        if ($item->form_fee) {
+            $orderType = 'form_fee';
+
+            $student = Student::where('user_id', auth()->user()->id)->first();
+            if (!$student) {
+                $userData = $request->cookie('user_data');
+                if ($userData) {
+                    $userData = json_decode($userData, true);
+                    $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
+                    $student = Student::create($studentData);
+
+                } else {
+                    return redirect('/apply');
+                }
+            }
+
+            // Check if the student already has the bundle ID attached
+            if (!$student->bundles->contains($bundleId)) {
+                $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending']);
+                $pivotId = \DB::table('bundle_student')
+                ->where('student_id', $student->id)
+                    ->where('bundle_id', $bundleId)
+                    ->value('id');
+            }
+        } else {
+            $orderType = $item->installment_payment_id ? 'installment' : 'bundle';
+            $student = Student::where('user_id', auth()->user()->id)->first();
+            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundleId])->update(['status' => 'paying']);
+        }
+
+
+        OfflinePayment::create([
+            'user_id' => $user->id,
+            'amount' => $order->total_amount,
+            'offline_bank_id' => $account,
+            'user_bank' => $request->input('user_bank'),
+            'user_account_number' =>  $request->input('user_account_number'),
+            'iban' =>  $request->input('IBAN'),
+            'reference_number' =>  $request->input('reference_number'),
+            'order_id' => $order->id,
+            'pay_for' => $orderType,
+            'status' => OfflinePayment::$waiting,
+            'pay_date' => $date->getTimestamp(),
+            'attachment' => $attachment,
+            'created_at' => time(),
+        ]);
+
+        $notifyOptions = [
+            '[amount]' => handlePrice($order->total_amount),
+            '[u.name]' => $user->full_name
+        ];
+
+
+
+        $order->update(['payment_method' => 'offline_payment']);
+
+
+        sendNotification('offline_payment_request', $notifyOptions, $user->id);
+        sendNotification('new_offline_payment_request', $notifyOptions, 1);
+
+
+        $sweetAlertData = [
+            'msg' => trans('financial.offline_payment_request_success_store'),
+            'status' => 'success'
+        ];
+        return redirect('/panel/financial/offline-payments')->with(['sweetalert' => $sweetAlertData]);
+    }
 }

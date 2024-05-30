@@ -299,7 +299,7 @@
                         <tr>
                             <td>{{ ++$index }}</td>
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
-                                <td>{{ $user->user_code }}</td>
+                                <td>{{ $user->user_code?? '---' }}</td>
                             @endif
 
                             <td class="text-left">
@@ -352,8 +352,11 @@
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
                                 <td>
 
+                                    @if (($user->purchasedFormBundle()->count()<=0))
+                                    يتم مراجعه طلبه من قبل الإدارة المالية
+                                    @endif
                                     @foreach ($user->purchasedFormBundle() as $purchasedFormBundle)
-                                        {{ $purchasedFormBundle->bundle->title }}
+                                        {{ $purchasedFormBundle->bundle->title  }}
                                         @if (!$loop->last)
                                             &nbsp;و&nbsp;
                                         @endif

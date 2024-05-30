@@ -12,7 +12,9 @@ use App\Models\OrderItem;
 use App\Models\PaymentChannel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
+use App\BundleStudent;
 
 class AccountingController extends Controller
 {
@@ -289,21 +291,23 @@ class AccountingController extends Controller
             ->first();
 
         if (!empty($offline)) {
-            $data = $request->all();
+            $validator =  Validator::make($request->all(), [
+                'account' => 'required|exists:offline_banks,id',
+                'user_bank' => 'required|string',
+                'user_account_number' => 'required|numeric',
+                'IBAN' => 'nullable|string',
+                'reference_number' => 'required|string',
+                'date' => 'required',
+                'attachment' => 'required|file|mimes:jpeg,jpg,png|max:10240'
+            ]);
 
-            $rules = [
-                'amount' => 'required|numeric',
-                'gateway' => 'required',
-                'account' => 'required_if:gateway,offline',
-                'referral_code' => 'required_if:gateway,offline',
-                'date' => 'required_if:gateway,offline',
-            ];
-
-            if (!empty($request->file('attachment'))) {
-                $rules['attachment'] = 'image|mimes:jpeg,png,jpg|max:10240';
+            if ($validator->fails()) {
+                $sweetAlertData = [
+                    'msg' => implode(', ', $validator->errors()->all()),
+                    'status' => 'error'
+                ];
+                return back()->with(['sweetalert' => $sweetAlertData]);
             }
-
-            $this->validate($request, $rules);
 
             $attachment = $offline->attachment;
 
@@ -311,18 +315,34 @@ class AccountingController extends Controller
                 $attachment = $this->handleUploadAttachment($user, $request->file('attachment'));
             }
 
-            $date = convertTimeToUTCzone($data['date'], getTimezone());
+            $date = convertTimeToUTCzone($request['date'], getTimezone());
 
             $offline->update([
-                'amount' => $data['amount'],
-                'bank' => $data['account'],
-                'reference_number' => $data['referral_code'],
                 'status' => OfflinePayment::$waiting,
                 'attachment' => $attachment,
                 'pay_date' => $date->getTimestamp(),
+                'offline_bank_id' => $request->input('account'),
+                'user_bank' => $request->input('user_bank'),
+                'user_account_number' =>  $request->input('user_account_number'),
+                'iban' =>  $request->input('IBAN'),
+                'reference_number' =>  $request->input('reference_number'),
+
             ]);
 
-            return redirect('/panel/financial/account');
+            $sweetAlertData = [
+                'msg' => 'تم اعادة ارسال طلبك بنجاح',
+                'status' => 'success'
+            ];
+
+            $notifyOptions = [
+                '[amount]' => handlePrice($offline->amount),
+                '[u.name]' => $user->full_name,
+                '[p.body]' => 'تم اعادة ارسال طلبك بنجاح '
+            ];
+
+            sendNotification('offline_payment_request', $notifyOptions, $user->id);
+            sendNotification('new_offline_payment_request', collect($notifyOptions)->except(['[p.body]'])->toArray(), 1);
+            return back()->with(['sweetalert' => $sweetAlertData]);
         }
 
         abort(404);
@@ -334,7 +354,7 @@ class AccountingController extends Controller
         $offline = OfflinePayment::where('id', $id)
             ->where('user_id', $user->id)
             ->first();
-
+        dd($offline);
         if (!empty($offline)) {
             $offline->delete();
 
@@ -344,5 +364,45 @@ class AccountingController extends Controller
         }
 
         return response()->json([], 422);
+    }
+    public function cancelOfflinePayment($id)
+    {
+
+
+        $user = auth()->user();
+        $offline = OfflinePayment::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!empty($offline)) {
+            $offline->update(['status' => 'canceled']);
+
+            $BundlStudent = BundleStudent::where(['student_id' => $offline->user->student->id, 'bundle_id' => $offline->order->orderItems->first()->bundle_id])->first();
+
+            if ($offline->pay_for == 'form_fee') {
+                $BundlStudent->delete();
+            } else {
+                $BundlStudent->update(['status' => 'approved']);
+            }
+
+            return response()->json([
+                'code' => 200
+            ], 200);
+        }
+
+        return response()->json([], 422);
+    }
+
+    public function getOfflinePayment()
+    {
+        $user = auth()->user();
+        $offlinePayments = OfflinePayment::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $offlineBanks = OfflineBank::query()
+            ->orderBy('created_at', 'desc')
+            ->with([
+                'specifications'
+            ])
+            ->get();
+        return view('web.default.panel.financial.offline_payments.index', compact('offlinePayments', 'offlineBanks'));
     }
 }

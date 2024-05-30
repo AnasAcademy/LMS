@@ -1677,6 +1677,11 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
         }
 
+        if (!empty($options['[p.body]'])) {
+            $notificationTemplate->template = "[p.body] بقيمه [amount]";
+
+        }
+
 
 
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
@@ -1702,7 +1707,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                 'created_at' => time()
             ]);
 
-            if (env('APP_ENV') == 'production') {
+            if (env('APP_ENV') == 'development') {
                 $user = \App\User::where('id', $user_id)->first();
                 if (!empty($user) and !empty($user->email)) {
                     $name = $user->student ? $user->student->ar_name : $user->fullname;
@@ -1733,7 +1738,7 @@ function sendNotificationToEmail($template, $options, $data)
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
 
 
-        if (env('APP_ENV') == 'production') {
+        if (env('APP_ENV') == 'development') {
             try {
                 \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $data['name']]));
             } catch (Exception $exception) {

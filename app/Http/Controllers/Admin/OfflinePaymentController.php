@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\OfflinePaymentsExport;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\PaymentController;
 use App\Models\Accounting;
 use App\Models\OfflineBank;
 use App\Models\OfflinePayment;
@@ -11,7 +12,10 @@ use App\Models\Reward;
 use App\Models\RewardAccounting;
 use App\Models\Role;
 use App\User;
+use App\BundleStudent;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OfflinePaymentController extends Controller
@@ -23,15 +27,15 @@ class OfflinePaymentController extends Controller
         $pageType = $request->get('page_type', 'requests'); //requests or history
 
         $query = OfflinePayment::query();
-        if ($pageType == 'requests') {
-            $query->where('status', OfflinePayment::$waiting);
-        } else {
-            $query->where('status', '!=', OfflinePayment::$waiting);
-        }
+        // if ($pageType == 'requests') {
+        //     $query->where('status', OfflinePayment::$waiting);
+        // } else {
+        //     $query->where('status', '!=', OfflinePayment::$waiting);
+        // }
 
         $query = $this->filters($query, $request);
 
-        $offlinePayments = $query->paginate(10);
+        $offlinePayments = $query->paginate(5);
 
         $offlinePayments->appends([
             'page_type' => $pageType
@@ -125,49 +129,94 @@ class OfflinePaymentController extends Controller
         return $query;
     }
 
-    public function reject($id)
+    public function reject(Request $request, OfflinePayment $offlinePayment)
     {
+        $validator = Validator::make($request->all(), [
+            'reason' => 'required'
+        ]);
+
         $this->authorize('admin_offline_payments_reject');
 
-        $offlinePayment = OfflinePayment::findOrFail($id);
-        $offlinePayment->update(['status' => OfflinePayment::$reject]);
+        if ($offlinePayment->pay_for == 'form_fee') {
+            $purpuse = 'لحجز مقعد دراسي ';
+        } elseif ($offlinePayment->pay_for == 'bundle') {
+            $purpuse = 'للدفع الكامل ';
+        } elseif($offlinePayment->pay_for =='installment') {
+            $purpuse = $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول' ;
+        }else{
+            $purpuse='';
+        }
+
+        $data['body'] = "لقد تم رفض طلبك  " .$purpuse.'بسبب '. $request['reason'];
+
+        $message =  $request['reason'] . "<br>";
+        if (isset($request['message'])) {
+            $data['body'] =  $data['body'] . "\n" . $request['message'];
+            $message .= $request['message'];
+        }
+        $offlinePayment->update(['status' => OfflinePayment::$reject, 'message' => $message]);
+        BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'rejected']);
 
         $notifyOptions = [
             '[amount]' => handlePrice($offlinePayment->amount),
+            '[p.body]' =>  $data['body']
         ];
+
+
         sendNotification('offline_payment_rejected', $notifyOptions, $offlinePayment->user_id);
 
         return back();
     }
 
-    public function approved($id)
+    public function approved(Request $request, $id)
     {
         $this->authorize('admin_offline_payments_approved');
 
         $offlinePayment = OfflinePayment::findOrFail($id);
 
-        Accounting::create([
-            'creator_id' => auth()->user()->id,
-            'user_id' => $offlinePayment->user_id,
-            'amount' => $offlinePayment->amount,
-            'type' => Accounting::$addiction,
-            'type_account' => Accounting::$asset,
-            'description' => trans('admin/pages/setting.notification_offline_payment_approved'),
-            'created_at' => time(),
-        ]);
+        if ($offlinePayment->order_id) {
+
+            $offlinePayment->order->update(['status' => Order::$paying]);
+            $PaymentController = new PaymentController();
+            $PaymentController->paymentOrderAfterVerify($offlinePayment->order);
+            $request->merge(['order_id' => $offlinePayment->order_id]);
+            $res = $PaymentController->payStatus($request);
+        } else {
+            Accounting::create([
+                'creator_id' => auth()->user()->id,
+                'user_id' => $offlinePayment->user_id,
+                'amount' => $offlinePayment->amount,
+                'type' => Accounting::$addiction,
+                'type_account' => Accounting::$asset,
+                'description' => trans('admin/pages/setting.notification_offline_payment_approved'),
+                'created_at' => time(),
+            ]);
+
+            $accountChargeReward = RewardAccounting::calculateScore(Reward::ACCOUNT_CHARGE, $offlinePayment->amount);
+            RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $accountChargeReward, Reward::ACCOUNT_CHARGE);
+
+            $chargeWalletReward = RewardAccounting::calculateScore(Reward::CHARGE_WALLET, $offlinePayment->amount);
+            RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $chargeWalletReward, Reward::CHARGE_WALLET);
+        }
+
 
         $offlinePayment->update(['status' => OfflinePayment::$approved]);
 
+        if ($offlinePayment->pay_for == 'form_fee') {
+            $purpuse = 'لحجز مقعد دراسي ';
+        } elseif ($offlinePayment->pay_for == 'bundle') {
+            $purpuse = 'للدفع الكامل ';
+        } elseif ($offlinePayment->pay_for == 'installment') {
+            $purpuse = $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول';
+        } else {
+            $purpuse = '';
+        }
+
         $notifyOptions = [
             '[amount]' => handlePrice($offlinePayment->amount),
+            '[p.body]'=> "لقد تم قبول طلبك  " .$purpuse
         ];
         sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
-
-        $accountChargeReward = RewardAccounting::calculateScore(Reward::ACCOUNT_CHARGE, $offlinePayment->amount);
-        RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $accountChargeReward, Reward::ACCOUNT_CHARGE);
-
-        $chargeWalletReward = RewardAccounting::calculateScore(Reward::CHARGE_WALLET, $offlinePayment->amount);
-        RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $chargeWalletReward, Reward::CHARGE_WALLET);
 
         return back();
     }
