@@ -28,4 +28,9 @@ class OfflinePayment extends Model
     {
         return '/store/' . $this->user_id . '/offlinePayments/' . $this->attachment;
     }
+
+    public function order()
+    {
+        return $this->belongsTo('App\Models\Order', 'order_id', 'id');
+    }
 }

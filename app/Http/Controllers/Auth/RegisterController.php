@@ -21,6 +21,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
 
 class RegisterController extends Controller
 {
@@ -94,18 +96,24 @@ class RegisterController extends Controller
             'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
             'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users',
             'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users',
-            'term' => 'required',
-            'full_name' => 'required|string|min:3',
+            'full_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
+            'email_confirmation' => 'required|same:email',
             'referral_code' => 'nullable|exists:affiliates_codes,code'
         ];
+
 
         if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
             $rules['captcha'] = 'required|captcha';
         }
 
-        return Validator::make($data, $rules);
+         $validator= Validator::make($data, $rules);
+        $validator->setAttributeNames([
+            'full_name' => __('validation.attributes.full_name'),
+            // Add other attribute names for other fields
+        ]);
+        return  $validator;
     }
 
     /**
@@ -114,7 +122,7 @@ class RegisterController extends Controller
      * @param array $data
      * @return
      */
-    protected function create(array $data)
+    public function create(array $data)
     {
         if (!empty($data['mobile']) and !empty($data['country_code'])) {
             $data['mobile'] = ltrim($data['country_code'], '+') . ltrim($data['mobile'], '0');
@@ -142,57 +150,21 @@ class RegisterController extends Controller
                 $roleId = Role::getOrganizationRoleId();
             }
         }
-        //transfer the code creation after apply not here !!
-                // $lastCode = Code::latest()->first();
-                // if($data['account_type']=='user' && !empty( $lastCode)){
-                //     if(empty($lastCode->lst_sd_code)){
-                //         $lastCode->lst_sd_code=$lastCode->student_code;
-                //     }
-                //     $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-                //     do {
-                //         $nextCodeAsInt = $lastCodeAsInt + 1;
-                //         $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-
-                //         $codeExists = User::where('user_code', $nextCode)->exists();
-
-                //         if ($codeExists) {
-                //             $lastCodeAsInt = $nextCodeAsInt;
-                //         } else {
-                //             break;
-                //         }
-                //     } while (true);
-
-                //      $user = User::create([
-                //                     'role_name' => $roleName,
-                //                     'role_id' => $roleId,
-                //                     'user_code'=>$nextCode,
-                //                     'mobile' => $data['mobile'] ?? null,
-                //                     'email' => $data['email'] ?? null,
-                //                     'full_name' => $data['full_name'],
-                //                     'status' => User::$pending,
-                //                     'access_content' => $accessContent,
-                //                     'password' => Hash::make($data['password']),
-                //                     'affiliate' => $usersAffiliateStatus,
-                //                     'timezone' => $data['timezone'] ?? null,
-                //                     'created_at' => time()
-                //                 ]);
-                //                 $lastCode->update(['lst_sd_code' => $nextCode]);
-                // }else{
-
-                    $user = User::create([
-                        'role_name' => 'registered_user',
-                        'role_id' => 13,
-                        'mobile' => $data['mobile'] ?? null,
-                        'email' => $data['email'] ?? null,
-                        'full_name' => $data['full_name'],
-                        'status' => User::$pending,
-                        'access_content' => $accessContent,
-                        'password' => Hash::make($data['password']),
-                        'affiliate' => $usersAffiliateStatus,
-                        'timezone' => $data['timezone'] ?? null,
-                        'created_at' => time()
-                    ]);
-                // }
+        $user = User::create([
+            'role_name' => 'registered_user',
+            'role_id' => 13,
+            'mobile' => $data['mobile'] ?? null,
+            'email' => $data['email'] ?? null,
+            'full_name' => $data['full_name'],
+            'status' => User::$active,
+            'access_content' => $accessContent,
+            'password' => Hash::make($data['password']),
+            'affiliate' => $usersAffiliateStatus,
+            'timezone' => $data['timezone'] ?? null,
+            'created_at' => time(),
+            'verified' => 1
+        ]);
+        // }
 
         if (!empty($data['certificate_additional'])) {
             UserMeta::updateOrCreate([
@@ -235,19 +207,19 @@ class RegisterController extends Controller
             session()->put('referralCode', $referralCode);
         }
 
-        $verificationController = new VerificationController();
-        $checkConfirmed = $verificationController->checkConfirmed($user, $registerMethod, $value);
+        // $verificationController = new VerificationController();
+        // $checkConfirmed = $verificationController->checkConfirmed($user, $registerMethod, $value);
 
         $referralCode = $request->get('referral_code', null);
 
-        if ($checkConfirmed['status'] == 'send') {
+        // if ($checkConfirmed['status'] == 'send') {
 
-            if (!empty($referralCode)) {
-                session()->put('referralCode', $referralCode);
-            }
+        //     if (!empty($referralCode)) {
+        //         session()->put('referralCode', $referralCode);
+        //     }
 
-            return redirect('/verification');
-        } elseif ($checkConfirmed['status'] == 'verified') {
+        //     return redirect('/verification');
+        // } elseif ($checkConfirmed['status'] == 'verified') {
             $this->guard()->login($user);
 
             $enableRegistrationBonus = false;
@@ -260,7 +232,6 @@ class RegisterController extends Controller
 
 
             $user->update([
-                'status' => User::$active,
                 'enable_registration_bonus' => $enableRegistrationBonus,
                 'registration_bonus_amount' => $registrationBonusAmount,
             ]);
@@ -278,10 +249,26 @@ class RegisterController extends Controller
             if ($response = $this->registered($request, $user)) {
                 return $response;
             }
-
+        $data['title'] = "انشاء حساب جديد";
+        $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
+                            <br>
+                            <br>
+                            يمكن تسجيل الدخول من خلال هذا الرابط
+                            <a href='https://lms.anasacademy.uk/login' class='btn btn-danger'>اضغط هنا للدخول</a>
+                            <br>
+                            بإستخدام هذا البريد الإلكتروني وكلمة المرور
+                            <br>
+                            <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
+                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>". $request['password'].
+                            "<br>
+                ";
+        if (!empty($user) and !empty($user->email)) {
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
+        }
             return $request->wantsJson()
                 ? new JsonResponse([], 201)
                 : redirect($this->redirectPath());
-        }
+        // }
     }
 }

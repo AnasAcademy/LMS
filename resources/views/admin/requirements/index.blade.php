@@ -146,7 +146,7 @@
                                                 <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">
                                                     @if (pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
                                                         <img src="/store/{{ $requirement->identity_attachment }}"
-                                                            alt="identity_attachment" width="100px">
+                                                            alt="identity_attachment" width="100px" style="max-height:100px">
                                                     @else
                                                         pdf ملف <i class="fas fa-file font-20"></i>
                                                     @endif

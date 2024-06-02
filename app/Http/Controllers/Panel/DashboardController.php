@@ -81,7 +81,12 @@ class DashboardController extends Controller
                 ->get();
 
 
-            $bundleSales = Sale::where('buyer_id',$user->id)->whereIn('type', ['bundle', 'installment_payment'])->whereNotNull(["bundle_id", "order_id"])->get();
+                $bundleSales = Sale::where('buyer_id', $user->id)
+                ->whereIn('type', ['bundle', 'installment_payment'])
+                ->whereNotNull(['bundle_id', 'order_id'])
+                ->get()
+                ->unique('bundle_id');
+
             $data['webinarsCount'] = count($webinars);
             $data['supportsCount'] = count($supports);
             $data['commentsCount'] = count($comments);

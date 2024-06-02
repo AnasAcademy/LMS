@@ -235,7 +235,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::post('/{id}/add-session', 'ReserveMeetingController@addLiveSession');
     });
 
-    Route::group(['prefix' => 'financial','middleware'=>'can:student_showFinance'], function () {
+    Route::group(['prefix' => 'financial'], function () {
         Route::get('/sales', 'SaleController@index');
         // Route::get('/summary', 'AccountingController@index');
         Route::get('/payout', 'PayoutController@index');
@@ -244,9 +244,11 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::post('/charge', 'AccountingController@charge');
 
         Route::group(['prefix' => 'offline-payments'], function () {
+            Route::get('/', 'AccountingController@getOfflinePayment');
             Route::get('/{id}/edit', 'AccountingController@account');
             Route::post('/{id}/update', 'AccountingController@updateOfflinePayment');
             Route::get('/{id}/delete', 'AccountingController@deleteOfflinePayment');
+            Route::get('/{id}/cancel', 'AccountingController@cancelOfflinePayment');
         });
 
         Route::group(['prefix' => 'subscribes'], function () {
@@ -300,7 +302,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     // services Routes
     Route::group(['prefix' => 'services'], function () {
         Route::get('/', 'ServiceController@index');
-       
+
     });
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {

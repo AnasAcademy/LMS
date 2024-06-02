@@ -151,7 +151,7 @@
 </defs>
 </svg>
 
-                    <span class="font-16 user-name ml-10 text-dark-blue font-14"> {{ trans('auth.login') }} / إنشاء حساب </span>
+                    <span class="font-16 user-name ml-10 text-dark-blue font-14"> {{ trans('auth.login') }}</span>
                 </div>
              </a>
         </div>

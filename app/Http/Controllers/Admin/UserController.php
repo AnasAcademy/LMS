@@ -40,6 +40,10 @@ use App\Models\OrderItem;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
 
+use App\Imports\StudentImport;
+use App\Exports\BundleCodeExport;
+
+
 class UserController extends Controller
 {
     public function transform(Request $request, $user_id)
@@ -84,7 +88,6 @@ class UserController extends Controller
                 $orderItem->update([
                     'bundle_id' => $validatedData['toDiploma'],
                 ]);
-
             }
             if (!empty($accounting)) {
                 $accounting->update([
@@ -124,7 +127,6 @@ class UserController extends Controller
 
             return redirect()->back()->with(['toast' => $toastData]);
         }
-
     }
 
     protected function sendNotification($data)
@@ -491,7 +493,6 @@ class UserController extends Controller
                         ->groupBy('sales.seller_id')
                         ->orderBy('sales_count', 'desc');
                     break;
-                    break;
                 case 'purchased_appointments_asc':
                     $query->join('sales', 'users.id', '=', 'sales.buyer_id')
                         ->select('users.*', 'sales.buyer_id', 'sales.meeting_id', 'sales.refund_at', DB::raw('count(sales.buyer_id) as purchased_count'))
@@ -737,7 +738,6 @@ class UserController extends Controller
         Excel::import(new ExcelImport, $file);
 
         return redirect()->back()->with('success', 'Data imported successfully.');
-
     }
 
     public function edit(Request $request, $id)
@@ -1089,6 +1089,27 @@ class UserController extends Controller
 
         if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
+            $data['title'] = 'تغيير كلمة المرور';
+            $data['body'] = "حياك الله
+                            <br>
+                            نود اخبارك انه تم تغيير كلمة المرور الخاصة بك في منصه خدمات المتدرب
+                            <br>
+                            ويمكنكم الدخول إلى منصة خدمات المتدرب عن طريق الرابط التالي
+                            <a href='https://lms.anasacademy.uk/login' class='btn btn-danger'>اضغط هنا للدخول</a>
+                            <br>
+                            ويمكنك استخدام البيانات الآتيه لتسجيل الدخول
+                            <br>
+                            <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
+                            <br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>". $data['password']."
+                             <br>
+                             <br>
+                            واذا واجهتكم مشكلة في تسجيل الدخول يمكنكم التواصل معنا
+                ";
+
+            $this->sendEmail($user, $data);
+            $data['body'] = "نود اعلامك انه تم تغيير كلمة المرور الخاصة بك";
+            $this->sendNotificationToUser($user, $data);
         }
 
         if (!empty($data['ban']) and $data['ban'] == '1') {
@@ -1164,7 +1185,6 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->back()->with('msg', 'تم تعديل الصورة بنجاح');
-
     }
 
     public function financialUpdate(Request $request, $id)
@@ -1212,7 +1232,6 @@ class UserController extends Controller
         }
 
         return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
-
     }
 
     public function occupationsUpdate(Request $request, $id)
@@ -1415,8 +1434,58 @@ class UserController extends Controller
 
         return Excel::download($usersExport, 'نموذج حجز مقعد.xlsx');
     }
+    public function importExcelStudents(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
 
-    public function exportExcelEnrollers(Request $request){
+            $file = $request->file('file');
+
+            $import = new StudentImport();
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => 'تم اضافه الطلبة بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            dd($toastData);
+            return back()->with(['toast' => $toastData]);
+        }
+    }
+
+
+    public function exportBundles()
+    {
+        $bundles = Bundle::get();
+        $bundlesExport = new BundleCodeExport($bundles);
+
+        return Excel::download($bundlesExport, ' اكواد الدبلومات.xlsx');
+    }
+    public function exportExcelEnrollers(Request $request)
+    {
         $this->authorize('admin_users_export_excel');
 
         $users = User::where(['role_name' => Role::$user])->whereHas('student')->orderBy('created_at', 'desc')->get();
@@ -1424,7 +1493,6 @@ class UserController extends Controller
         $usersExport = new EnrollersExport($users);
 
         return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
-
     }
     public function exportExcelUsers(Request $request)
     {
@@ -1787,4 +1855,23 @@ class UserController extends Controller
     }
 
 
+    public function sendEmail($user, $data)
+    {
+        if (!empty($user) and !empty($user->email)) {
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
+        }
+    }
+
+    public function sendNotificationToUser($user, $data)
+    {
+        Notification::create([
+            'user_id' => $user->id ?? 0,
+            'sender_id' => auth()->id(),
+            'title' => $data['title'] ?? '',
+            'message' => $data['body'] ?? '',
+            'sender' => Notification::$AdminSender,
+            'type' => "single",
+            'created_at' => time()
+        ]);
+    }
 }

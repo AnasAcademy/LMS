@@ -19,7 +19,7 @@ class CreateOrdersTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->enum('status', ['pending', 'paying', 'paid', 'fail']);
-            $table->enum('payment_method', ['credit', 'payment_channel']);
+            $table->enum('payment_method', ['credit', 'payment_channel', 'offline_payment']);
             $table->integer('amount')->unsigned();
             $table->integer('tax')->unsigned()->nullable();
             $table->integer('total_discount')->unsigned()->nullable();

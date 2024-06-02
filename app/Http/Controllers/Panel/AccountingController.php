@@ -12,7 +12,13 @@ use App\Models\OrderItem;
 use App\Models\PaymentChannel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
+use App\BundleStudent;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendNotifications;
+use App\Models\Notification;
+
 
 class AccountingController extends Controller
 {
@@ -289,40 +295,60 @@ class AccountingController extends Controller
             ->first();
 
         if (!empty($offline)) {
-            $data = $request->all();
+            $validator =  Validator::make($request->all(), [
+                'account' => 'required|exists:offline_banks,id',
+                'IBAN' => 'required|string',
+                'attachment' => 'required|file|mimes:jpeg,jpg,png|max:10240'
+            ]);
 
-            $rules = [
-                'amount' => 'required|numeric',
-                'gateway' => 'required',
-                'account' => 'required_if:gateway,offline',
-                'referral_code' => 'required_if:gateway,offline',
-                'date' => 'required_if:gateway,offline',
-            ];
-
-            if (!empty($request->file('attachment'))) {
-                $rules['attachment'] = 'image|mimes:jpeg,png,jpg|max:10240';
+            if ($validator->fails()) {
+                $sweetAlertData = [
+                    'msg' => implode(', ', $validator->errors()->all()),
+                    'status' => 'error'
+                ];
+                return back()->with(['sweetalert' => $sweetAlertData]);
             }
 
-            $this->validate($request, $rules);
+
 
             $attachment = $offline->attachment;
 
             if (!empty($request->file('attachment'))) {
+
+                $attachment = $request->file('attachment');
+                if (!in_array(strtolower($attachment->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'])) {
+                    $sweetAlertData = [
+                        'msg' => "يجب أن يكون المرفق صورة بإمتداد: jpeg, jpg, png الصورة المرفوعة بامتداد " . $attachment->getClientOriginalExtension(),
+                        'status' => 'error'
+                    ];
+                    return back()->with(['sweetalert' => $sweetAlertData]);
+                }
                 $attachment = $this->handleUploadAttachment($user, $request->file('attachment'));
             }
 
-            $date = convertTimeToUTCzone($data['date'], getTimezone());
+            $date = convertTimeToUTCzone($request['date'], getTimezone());
 
             $offline->update([
-                'amount' => $data['amount'],
-                'bank' => $data['account'],
-                'reference_number' => $data['referral_code'],
                 'status' => OfflinePayment::$waiting,
                 'attachment' => $attachment,
-                'pay_date' => $date->getTimestamp(),
+                'offline_bank_id' => $request->input('account'),
+                'iban' =>  $request->input('IBAN'),
             ]);
 
-            return redirect('/panel/financial/account');
+            $sweetAlertData = [
+                'msg' => 'تم اعادة ارسال طلبك بنجاح',
+                'status' => 'success'
+            ];
+
+            $notifyOptions = [
+                '[amount]' => handlePrice($offline->amount),
+                '[u.name]' => $user->full_name,
+                '[p.body]' => 'تم اعادة ارسال طلبك بنجاح '
+            ];
+
+            sendNotification('offline_payment_request', $notifyOptions, $user->id);
+            sendNotification('new_offline_payment_request', collect($notifyOptions)->except(['[p.body]'])->toArray(), 1);
+            return back()->with(['sweetalert' => $sweetAlertData]);
         }
 
         abort(404);
@@ -334,7 +360,7 @@ class AccountingController extends Controller
         $offline = OfflinePayment::where('id', $id)
             ->where('user_id', $user->id)
             ->first();
-
+        dd($offline);
         if (!empty($offline)) {
             $offline->delete();
 
@@ -344,5 +370,76 @@ class AccountingController extends Controller
         }
 
         return response()->json([], 422);
+    }
+    public function cancelOfflinePayment($id)
+    {
+
+
+        $user = auth()->user();
+        $offline = OfflinePayment::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!empty($offline)) {
+            $offline->update(['status' => 'canceled']);
+
+            $BundlStudent = BundleStudent::where(['student_id' => $offline->user->student->id, 'bundle_id' => $offline->order->orderItems->first()->bundle_id])->first();
+            $bundleTitle = $offline->order->orderItems->first()->bundle->title;
+            // if ($offline->pay_for == 'form_fee') {
+            //     $BundlStudent->delete();
+            // } else {
+            //     $BundlStudent->update(['status' => 'approved']);
+            // }
+
+
+            if ($offline->pay_for == 'form_fee') {
+                $purpuse = 'لحجز مقعد دراسي ';
+                $BundlStudent->delete();
+            } elseif ($offline->pay_for == 'bundle') {
+                $purpuse = 'للدفع الكامل ل '.  $bundleTitle;
+                $BundlStudent->update(['status' => 'approved']);
+            } elseif ($offline->pay_for == 'installment') {
+                $purpuse = 'لدفع ' .($offline->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول').' من ' . $bundleTitle;
+                $BundlStudent->update(['status' => 'approved']);
+
+            } else {
+                $purpuse = '';
+            }
+
+                $data['title'] = "إلغاء طلب دفع من حساب بنكي";
+
+                $data['body'] = "لقد تم إلغاء طلبك  " . $purpuse .' بقيمة '. handlePrice($offline->amount);
+
+            Notification::create([
+                'user_id' => $offline->user_id,
+                'sender_id' => auth()->id(),
+                'title' => $data['title'],
+                'message' => $data['body'],
+                'sender' => Notification::$AdminSender,
+                'type' => "single",
+                'created_at' => time()
+            ]);
+
+            Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'], 'message' => $data['body'], 'name' =>$offline->user->full_name]));
+
+            return response()->json([
+                'code' => 200
+            ], 200);
+        }
+
+        return response()->json([], 422);
+    }
+
+    public function getOfflinePayment()
+    {
+        $user = auth()->user();
+        $offlinePayments = OfflinePayment::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(5);
+        $offlineBanks = OfflineBank::query()
+            ->orderBy('created_at', 'desc')
+            ->with([
+                'specifications'
+            ])
+            ->get();
+        return view('web.default.panel.financial.offline_payments.index', compact('offlinePayments', 'offlineBanks'));
     }
 }

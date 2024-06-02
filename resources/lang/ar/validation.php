@@ -107,12 +107,17 @@ return [
     'uploaded' => 'فشل تحميل :attribute.',
     'url' => 'صيغة الرابط :attribute غير صحيحة.',
     'uuid' => 'يجب أن يكون :attribute UUID صالحًا.',
+    'password_or_username' => 'البريد الالكتروني او كلمة المرور خاطئة',
 
     'captcha' => 'الكود غير صحيح...',
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'full_name' => [
+            'regex' => ' :attribute يجب ان يكون باللغة العربية',
+            ],
+
     ],
     'attributes' => [
         'user_id' => 'اسم المستخدم',
@@ -139,7 +144,7 @@ return [
         'education_specialization' => 'تخصص التعليم',
         'graduation_year' => 'سنة التخرج',
         'gpa' => 'المعدل التراكمي',
-        'deaf' => 'صم',
+        'deaf' => 'هل أنت من الصم وضعاف السمع',
         'disabled_type' => 'نوع الإعاقة',
         'gender' => 'الجنس',
         'healthy_problem' => 'مشكلة صحية',
@@ -159,6 +164,20 @@ return [
         'apply_link' => 'رابط التقديم',
         'review_link' => 'رابط المراجعه',
         'status' => 'الحالة',
+        'password' => 'كلمة المرور',
+        'password_confirmation' => 'تأكيد كلمة المرور',
+        'email_confirmation' => 'تأكيد البريد الإلكتروني',
+        'full_name'=>'الاسم الثلاثي',
+        'username'=> 'المستخدم',
+        'identity_attachment'=> 'الهوية الوطنية/جواز السفر',
+        'admission attachment'=> 'متطلبات القبول',
+        'attachment' => 'المرفق',
+        'account' => 'اسم الحساب',
+        'user_bank' => 'اسم الحساب المحول منه',
+        'user_account_number'=>'رقم الحساب المحول منه',
+        'IBAN'=>'اي بان (IBAN)',
+        'reference_number'=>'سويفت كود (Swift Code)',
+        'date'=>'تاريخ الدفع',
     ],
 
 ];
