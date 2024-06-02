@@ -644,17 +644,17 @@ class PaymentController extends Controller
         $user = auth()->user();
         $request->validate([
             'account' => 'required|exists:offline_banks,id',
-            'user_bank' => 'required|string',
-            'user_account_number' => 'required|numeric',
-            'IBAN' => 'nullable|string',
-            'reference_number' => 'required|string',
-            'date' => 'required',
+            'IBAN' => 'required|string',
             'attachment' => 'required|file|mimes:jpeg,jpg,png'
         ]);
 
         $account = $request->input('account');
         $date = $request->input('date');
 
+        $attachment = $request->file('attachment');
+        if (!in_array(strtolower($attachment->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'])) {
+            return back()->withInput($request->all())->withErrors(['attachment' => "يجب أن يكون المرفق صورة بإمتداد: jpeg, jpg, png الصورة المرفوعة بامتداد " . $attachment->getClientOriginalExtension()]);
+        }
         $attachment = $this->handleUploadAttachment($user, $request->file('attachment'));
 
         $date = convertTimeToUTCzone($date, getTimezone());
@@ -696,16 +696,13 @@ class PaymentController extends Controller
             'user_id' => $user->id,
             'amount' => $order->total_amount,
             'offline_bank_id' => $account,
-            'user_bank' => $request->input('user_bank'),
-            'user_account_number' =>  $request->input('user_account_number'),
             'iban' =>  $request->input('IBAN'),
-            'reference_number' =>  $request->input('reference_number'),
             'order_id' => $order->id,
             'pay_for' => $orderType,
             'status' => OfflinePayment::$waiting,
-            'pay_date' => $date->getTimestamp(),
             'attachment' => $attachment,
             'created_at' => time(),
+
         ]);
 
         $notifyOptions = [

@@ -46,28 +46,6 @@
                     </div>
 
 
-                    <div class="col-12 col-md-6 mb-25 mb-lg-0 js-offline-payment-input ">
-                        <div class="form-group text-left">
-                            <label for="user_bank" class="input-label">اسم البنك المحول منه</label>
-                            <input type="text" name="user_bank" id="user_bank" value="{{ old('user_bank', $payment->user_bank) }}"
-                                class="form-control @error('user_bank') is-invalid @enderror" />
-                            @error('user_bank')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-6 mb-25 mb-lg-0 js-offline-payment-input ">
-                        <div class="form-group text-left">
-                            <label for="user_account_number" class="input-label">رقم الحساب المحول منه </label>
-                            <input type="text" name="user_account_number" id="user_account_number"
-                                value="{{ old('user_account_number', $payment->user_account_number) }}"
-                                class="form-control @error('user_account_number') is-invalid @enderror" />
-                            @error('user_account_number')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
 
                     <div class="col-12 col-md-6 mb-25 mb-lg-0 js-offline-payment-input ">
                         <div class="form-group text-left">
@@ -80,38 +58,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-6 mb-25 mb-lg-0 js-offline-payment-input ">
-                        <div class="form-group text-left">
-                            <label for="reference_number" class="input-label"> سويفت كود (swift code)</label>
-                            <input type="text" name="reference_number" id="reference_number"
-                                value="{{ old('reference_number', $payment->reference_number) }}"
-                                class="form-control @error('reference_number') is-invalid @enderror" />
-                            @error('reference_number')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-
-                    <div class="col-12 col-md-6 mb-25 mb-lg-0 js-offline-payment-input ">
-                        <div class="form-group text-left">
-                            <label class="input-label">{{ trans('public.date_time') }}</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="dateRangeLabel">
-                                        <i data-feather="calendar" width="18" height="18" class="text-white"></i>
-                                    </span>
-                                </div>
-                                <input type="text" name="date"
-                                    value="{{ !empty($payment) ? dateTimeFormat($payment->pay_date, 'Y-m-d H:i', false) : old('date', $payment->pay_date) }}"
-                                    class="form-control datetimepicker @error('date') is-invalid @enderror"
-                                    aria-describedby="dateRangeLabel" />
-                                @error('date')
-                                    <div class="invalid-feedback"> {{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
+                 
 
                     <div class="col-12 mb-25 mb-lg-0 js-offline-payment-input ">
                         <div class="form-group text-left">

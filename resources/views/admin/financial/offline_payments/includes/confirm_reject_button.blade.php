@@ -29,11 +29,7 @@
                     <option value=""  selected disabled>اختر سبب الرفض</option>
                     <option value="يوجد مشكلة في المبلغ">يوجد مشكلة في المبلغ</option>
                     <option value="يوجد مشكلة في مرفق ايصال الدفع">يوجد مشكلة في مرفق ايصال الدفع</option>
-                    <option value="يوجد مشكلة في اسم البنك المحول منه">يوجد مشكلة في اسم البنك المحول منه</option>
-                    <option value="يوجد مشكلة في رقم الحساب المحول منه">يوجد مشكلة في رقم الحساب المحول منه</option>
                     <option value="يوجد مشكلة في رقم ال اي بان (IBAN)">يوجد مشكلة في رقم ال اي بان (IBAN)</option>
-                    <option value="يوجد مشكلة في السويفت كود (Swift Code)">يوجد مشكلة في السويفت كود (Swift Code)</option>
-                    <option value="يوجد مشكلة في تاريخ ووقت الدفع">يوجد مشكلة في تاريخ ووقت الدفع</option>
 
                 </select>
                 <textarea class="form-control" id="message" name="message" placeholder="اكتب بشكل مفصل سبب الرفض"></textarea>

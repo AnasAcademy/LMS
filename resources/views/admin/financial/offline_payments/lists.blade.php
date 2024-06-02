@@ -19,11 +19,27 @@
                         <input type="hidden" name="page_type" value="{{ $pageType }}">
 
                         <div class="row">
-                            <div class="@if ($pageType == 'requests') col-md-3 @else col-md-4 @endif">
+                            {{-- <div class="@if ($pageType == 'requests') col-md-3 @else col-md-4 @endif">
                                 <div class="form-group">
                                     <label class="input-label">{{ trans('admin/main.search') }}</label>
                                     <input type="text" class="form-control text-center" name="search"
                                         value="{{ request()->get('search') }}">
+                                </div>
+                            </div> --}}
+
+                              <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
+                                <div class="form-group">
+                                    <label class="input-label">طالب</label>
+                                    <select name="user_ids[]" multiple="multiple" class="form-control search-user-select2"
+                                        data-placeholder="البحث باسم طالب">
+
+                                        @if (!empty($users) and $users->count() > 0)
+                                            @foreach ($users as $user_filter)
+                                                <option value="{{ $user_filter->id }}" selected>
+                                                    {{ $user_filter->full_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
                                 </div>
                             </div>
 
@@ -47,22 +63,30 @@
                                 </div>
                             </div>
 
-                            @if ($pageType == 'history')
+                            @if ($pageType == 'requests')
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label class="input-label">{{ trans('admin/main.status') }}</label>
                                         <select name="status" data-plugin-selectTwo class="form-control populate">
                                             <option value="">{{ trans('admin/main.all_status') }}</option>
+                                            <option value="waiting" @if (request()->get('status') == 'waiting') selected @endif>
+                                                {{ trans('admin/main.waiting') }}
+                                            </option>
                                             <option value="approved" @if (request()->get('status') == 'approved') selected @endif>
-                                                {{ trans('admin/main.approved') }}</option>
+                                                {{ trans('admin/main.approved') }}
+                                            </option>
                                             <option value="reject" @if (request()->get('status') == 'reject') selected @endif>
-                                                {{ trans('admin/main.rejected') }}</option>
+                                                {{ trans('admin/main.rejected') }}
+                                            </option>
+                                            <option value="canceled" @if (request()->get('status') == 'canceled') selected @endif>
+                                              ملغي
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                             @endif
 
-                            <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
+                            {{-- <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
                                 <div class="form-group">
                                     <label class="input-label">{{ trans('admin/main.role') }}</label>
                                     <select name="role_id" data-plugin-selectTwo class="form-control populate">
@@ -74,24 +98,10 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
+                            </div> --}}
 
 
-                            <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
-                                <div class="form-group">
-                                    <label class="input-label">{{ trans('admin/main.user') }}</label>
-                                    <select name="user_ids[]" multiple="multiple" class="form-control search-user-select2"
-                                        data-placeholder="Search teachers">
 
-                                        @if (!empty($users) and $users->count() > 0)
-                                            @foreach ($users as $user_filter)
-                                                <option value="{{ $user_filter->id }}" selected>
-                                                    {{ $user_filter->full_name }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
-                            </div>
 
 
                             <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
@@ -155,16 +165,12 @@
                             <div class="table-responsive">
                                 <table class="table table-striped font-14">
                                     <thead>
-                                        <th>{{ trans('admin/main.user') }}</th>
+                                        <th>اسم الطالب</th>
                                         <th>{{ trans('admin/main.phone') }}</th>
-                                        <th>{{ trans('admin/main.amount') }}</th>
+                                        <th>{{ trans('panel.amount') }} ({{ $currency }})</th>
                                         <th>{{ 'غرض الدفع' }}</th>
                                         <th>{{ 'اسم البنك' }}</th>
-                                        <th>{{ 'البنك المحول منه' }}</th>
-                                        <th>{{ 'رقم الحساب المحول منه' }}</th>
                                         <th>{{ 'اي بان(IBAN)' }}</th>
-                                        <th>{{ 'سويفت كود (swift code)' }}</th>
-                                        <th width=180px>{{ trans('admin/main.transaction_time') }}</th>
                                         <th>{{ trans('update.attachment') }}</th>
                                         <th>{{ trans('admin/main.status') }}</th>
                                         <th width="150px">{{ trans('admin/main.actions') }}</th>
@@ -184,7 +190,8 @@
 
                                                     {{-- <td class="py-2 text-center">{{ $offlinePayment->user->role->caption }}</td> --}}
 
-                                                    <td class="py-2 text-center">{{ handlePrice($offlinePayment->amount) }}
+                                                    <td class="py-2 text-center">
+                                                        {{ handlePrice($offlinePayment->amount) }}
                                                     </td>
 
 
@@ -213,26 +220,7 @@
                                                     @endif
 
                                                     <td class="py-2 text-center">
-                                                        <span>{{ $offlinePayment->user_bank }}</span>
-                                                    </td>
-
-                                                    <td class="py-2 text-center">
-                                                        <span>{{ $offlinePayment->user_account_number }}</span>
-                                                    </td>
-
-                                                    <td class="py-2 text-center">
                                                         <span>{{ $offlinePayment->iban }}</span>
-                                                    </td>
-
-                                                    <td class="py-2 text-center">
-                                                        <span>{{ $offlinePayment->reference_number }}</span>
-                                                    </td>
-
-
-
-
-                                                    <td class="py-2 text-center">
-                                                        {{ dateTimeFormat($offlinePayment->pay_date, 'j M Y H:i') }}
                                                     </td>
 
                                                     <td class=" py-2 text-center align-middle">
@@ -286,17 +274,21 @@
 
                                                     <td class="py-2 text-center">
                                                         <div class="d-flex">
-                                                            @if($offlinePayment->status != 'canceled')
+                                                            @if ($offlinePayment->status == 'waiting')
                                                                 @can('admin_offline_payments_approved')
-                                                                    @include('admin.includes.delete_button', [
-                                                                        'url' =>
-                                                                            getAdminPanelUrl() .
-                                                                            '/financial/offline_payments/' .
-                                                                            $offlinePayment->id .
-                                                                            '/approved',
-                                                                        'tooltip' => trans('financial.approve'),
-                                                                        'btnIcon' => 'fa-check',
-                                                                    ])
+                                                                    @include(
+                                                                        'admin.includes.delete_button',
+                                                                        [
+                                                                            'url' =>
+                                                                                getAdminPanelUrl() .
+                                                                                '/financial/offline_payments/' .
+                                                                                $offlinePayment->id .
+                                                                                '/approved',
+                                                                            'tooltip' => trans(
+                                                                                'financial.approve'),
+                                                                            'btnIcon' => 'fa-check',
+                                                                        ]
+                                                                    )
                                                                 @endcan
 
                                                                 @can('admin_offline_payments_reject')

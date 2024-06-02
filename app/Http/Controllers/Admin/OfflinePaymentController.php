@@ -137,17 +137,18 @@ class OfflinePaymentController extends Controller
 
         $this->authorize('admin_offline_payments_reject');
 
+        $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title;
         if ($offlinePayment->pay_for == 'form_fee') {
             $purpuse = 'لحجز مقعد دراسي ';
         } elseif ($offlinePayment->pay_for == 'bundle') {
-            $purpuse = 'للدفع الكامل ';
-        } elseif($offlinePayment->pay_for =='installment') {
-            $purpuse = $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول' ;
-        }else{
-            $purpuse='';
+            $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
+        } elseif ($offlinePayment->pay_for == 'installment') {
+            $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
+        } else {
+            $purpuse = '';
         }
 
-        $data['body'] = "لقد تم رفض طلبك  " .$purpuse.'بسبب '. $request['reason'];
+        $data['body'] = "لقد تم رفض طلبك  " .$purpuse.' بسبب '. $request['reason'];
 
         $message =  $request['reason'] . "<br>";
         if (isset($request['message'])) {
@@ -201,13 +202,13 @@ class OfflinePaymentController extends Controller
 
 
         $offlinePayment->update(['status' => OfflinePayment::$approved]);
-
+        $bundleTitle = $offlinePayment->order-> orderItems->first()->bundle->title;
         if ($offlinePayment->pay_for == 'form_fee') {
             $purpuse = 'لحجز مقعد دراسي ';
         } elseif ($offlinePayment->pay_for == 'bundle') {
-            $purpuse = 'للدفع الكامل ';
+            $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
         } elseif ($offlinePayment->pay_for == 'installment') {
-            $purpuse = $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول';
+            $purpuse = 'لدفع '. ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول').' من '. $bundleTitle;
         } else {
             $purpuse = '';
         }

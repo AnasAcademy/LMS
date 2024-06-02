@@ -78,8 +78,8 @@
                                     value="{{ $paymentChannel->id }}">
                                 <label for="{{ $paymentChannel->title }}"
                                     class="rounded-sm p-20 p-lg-45 d-flex flex-column align-items-center justify-content-center">
-                                    <img src="{{ $paymentChannel->image }}" width="120" height="60" alt="">
-
+                                    {{-- <img src="{{ $paymentChannel->image }}" width="120" height="60" alt=""> --}}
+                                    @include("web.default.cart.includes.online_payment_icon")
                                     <p class="mt-30 mt-lg-50 font-weight-500 text-dark-blue">
                                         {{ trans('financial.pay_via') }}
                                         <span class="font-weight-bold font-14">{{ $paymentChannel->title }}</span>
@@ -101,7 +101,8 @@
                             @if (old('gateway') == 'offline' or !empty($editOfflinePayment)) checked @endif>
                         <label for="offline"
                             class="rounded-sm p-20 p-lg-45 d-flex flex-column align-items-center justify-content-center">
-                            <img src="/assets/default/img/activity/pay.svg" width="120" height="60" alt="">
+                            {{-- <img src="/assets/default/img/activity/pay.svg" width="120" height="60" alt=""> --}}
+                            @include("web.default.cart.includes.offline_payment_icon")
                             <p class="mt-30 mt-lg-50 font-weight-500 text-dark-blue">{{ trans('financial.pay_via') }}
                                 <span class="font-weight-bold">{{ trans('financial.offline') }}</span>
                             </p>
@@ -159,6 +160,42 @@
                 </div>
             @endif
 
+             {{-- offline banks --}}
+        @if (!empty(getOfflineBankSettings('offline_banks_status')))
+            <section class="mt-40 js-offline-payment-input mb-3" style="{{ !$showOfflineFields ? 'display:none' : '' }}">
+                <h2 class="section-title">{{ trans('financial.bank_accounts_information') }}</h2>
+
+                <div class="row mt-25">
+                    @foreach ($offlineBanks as $offlineBank)
+                        <div class="col-12 col-lg-4 mb-30 mb-lg-0">
+                            <div
+                                class="py-25 px-20 rounded-sm panel-shadow d-flex flex-column align-items-center justify-content-center">
+                                <img src="{{ $offlineBank->logo }}" width="120" height="60" alt="">
+
+                                <div class="mt-15 mt-30 w-100">
+
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span
+                                            class="font-14 font-weight-500 text-secondary">{{ trans('public.name') }}:</span>
+                                        <span class="font-14 font-weight-500 text-gray">{{ $offlineBank->title }}</span>
+                                    </div>
+
+                                    @foreach ($offlineBank->specifications as $specification)
+                                        <div class="d-flex align-items-center justify-content-between mt-10">
+                                            <span
+                                                class="font-14 font-weight-500 text-secondary">{{ $specification->name }}:</span>
+                                            <span
+                                                class="font-14 font-weight-500 text-gray">{{ $specification->value }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
             {{-- offline inputs --}}
             <div class="">
                 <h3 class="section-title mb-20 js-offline-payment-input"
@@ -191,32 +228,6 @@
                     <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
                         style="{{ !$showOfflineFields ? 'display:none' : '' }}">
                         <div class="form-group">
-                            <label for="user_bank" class="input-label">اسم البنك المحول منه</label>
-                            <input type="text" name="user_bank" id="user_bank"
-                                value="{{ old('user_bank') }}"
-                                class="form-control @error('user_bank') is-invalid @enderror" />
-                            @error('user_bank')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
-                            <label for="user_account_number" class="input-label">رقم الحساب المحول منه </label>
-                            <input type="text" name="user_account_number" id="user_account_number"
-                                value="{{ old('user_account_number') }}"
-                                class="form-control @error('user_account_number') is-invalid @enderror" />
-                            @error('user_account_number')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
                             <label for="IBAN" class="input-label"> اي بان (IBAN)</label>
                             <input type="text" name="IBAN" id="IBAN"
                                 value="{{ old('IBAN') }}"
@@ -224,41 +235,6 @@
                             @error('IBAN')
                                 <div class="invalid-feedback"> {{ $message }}</div>
                             @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
-                            <label for="reference_number" class="input-label"> سويفت كود (swift code)</label>
-                            <input type="text" name="reference_number" id="reference_number"
-                                value="{{ old('reference_number') }}"
-                                class="form-control @error('reference_number') is-invalid @enderror" />
-                            @error('reference_number')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
-                            <label class="input-label">{{ trans('public.date_time') }}</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="dateRangeLabel">
-                                        <i data-feather="calendar" width="18" height="18" class="text-white"></i>
-                                    </span>
-                                </div>
-                                <input type="text" name="date"
-                                    value="{{ !empty($editOfflinePayment) ? dateTimeFormat($editOfflinePayment->pay_date, 'Y-m-d H:i', false) : old('date') }}"
-                                    class="form-control datetimepicker @error('date') is-invalid @enderror"
-                                    aria-describedby="dateRangeLabel" />
-                                @error('date')
-                                    <div class="invalid-feedback"> {{ $message }}</div>
-                                @enderror
-                            </div>
                         </div>
                     </div>
 
@@ -309,41 +285,7 @@
             </form>
         @endif
 
-        {{-- offline banks --}}
-        @if (!empty(getOfflineBankSettings('offline_banks_status')))
-            <section class="mt-40 js-offline-payment-input" style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                <h2 class="section-title">{{ trans('financial.bank_accounts_information') }}</h2>
 
-                <div class="row mt-25">
-                    @foreach ($offlineBanks as $offlineBank)
-                        <div class="col-12 col-lg-4 mb-30 mb-lg-0">
-                            <div
-                                class="py-25 px-20 rounded-sm panel-shadow d-flex flex-column align-items-center justify-content-center">
-                                <img src="{{ $offlineBank->logo }}" width="120" height="60" alt="">
-
-                                <div class="mt-15 mt-30 w-100">
-
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span
-                                            class="font-14 font-weight-500 text-secondary">{{ trans('public.name') }}:</span>
-                                        <span class="font-14 font-weight-500 text-gray">{{ $offlineBank->title }}</span>
-                                    </div>
-
-                                    @foreach ($offlineBank->specifications as $specification)
-                                        <div class="d-flex align-items-center justify-content-between mt-10">
-                                            <span
-                                                class="font-14 font-weight-500 text-secondary">{{ $specification->name }}:</span>
-                                            <span
-                                                class="font-14 font-weight-500 text-gray">{{ $specification->value }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </section>
-        @endif
 
 
 

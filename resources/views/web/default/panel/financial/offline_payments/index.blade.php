@@ -44,10 +44,7 @@
                                 <thead>
                                     <tr>
                                         <th>{{ trans('financial.bank') }}</th>
-                                        <th>{{ 'البنك المحول منه' }}</th>
-                                        <th>{{ 'رقم الحساب المحول منه' }}</th>
                                         <th>{{ 'اي بان (IBAN)' }}</th>
-                                        <th>{{ 'سويفت كود (swift code)' }}</th>
                                         <th class="text-center">{{ trans('panel.amount') }} ({{ $currency }})</th>
                                         <th class="text-center">غرض الدفع</th>
                                         <th class="text-center">{{ trans('update.attachment') }}</th>
@@ -57,7 +54,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($offlinePayments as $offlinePayment)
-                                        <tr>
+                                        <tr @if ($offlinePayment->status == 'canceled') class="bg-light" style="opacity: 0.5" @endif>
                                             <td class="text-left">
                                                 <div class="d-flex flex-column">
 
@@ -67,26 +64,15 @@
                                                     @else
                                                         <span class="font-weight-500 text-dark-blue">-</span>
                                                     @endif
-                                                    <span
-                                                        class="font-12 text-gray">{{ dateTimeFormat($offlinePayment->pay_date, 'j M Y H:i') }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="text-left align-middle">
-                                                <span>{{ $offlinePayment->user_bank }}</span>
-                                            </td>
 
-                                            <td class="text-left align-middle">
-                                                <span>{{ $offlinePayment->user_account_number }}</span>
+                                                </div>
                                             </td>
 
                                             <td class="text-left align-middle">
                                                 <span>{{ $offlinePayment->iban }}</span>
                                             </td>
 
-                                            <td class="text-left align-middle">
-                                                <span>{{ $offlinePayment->reference_number }}</span>
-                                            </td>
-
+                                           
                                             <td class="text-center align-middle">
                                                 <span
                                                     class="font-16 font-weight-bold text-primary">{{ handlePrice($offlinePayment->amount, false) }}</span>
@@ -111,10 +97,11 @@
                                             <td class="text-center align-middle">
                                                 @if (!empty($offlinePayment->attachment))
                                                     <a href="{{ $offlinePayment->getAttachmentPath() }}" target="_blank"
-                                                        class="text-primary">
+                                                        class="">
                                                         @if (pathinfo($offlinePayment->attachment, PATHINFO_EXTENSION) != 'pdf')
                                                             <img src="{{ $offlinePayment->getAttachmentPath() }}"
-                                                                alt="offlinePayment_attachment" width="100px" style="max-height:100px">
+                                                                alt="offlinePayment_attachment" width="100px"
+                                                                style="max-height:100px">
                                                         @else
                                                             pdf ملف <i class="fas fa-file font-20"></i>
                                                         @endif
@@ -131,8 +118,9 @@
                                                     @break
 
                                                     @case(\App\Models\OfflinePayment::$approved)
-                                                        <span class="text-primary">{{ trans('financial.approved') }}</span>
+                                                        <span class="text-secondary">{{ trans('financial.approved') }}</span>
                                                     @break
+
                                                     @case('canceled')
                                                         <span class="text-primary">ملغي</span>
                                                     @break
@@ -167,7 +155,7 @@
                                                                 'btnClass' =>
                                                                     'btn btn-primary d-flex align-items-center btn-sm mt-1 px-0',
                                                                 'btnText' =>
-                                                                   '<span class="ml-2"> اعادة ارسال</span>',
+                                                                    '<span class="ml-2"> اعادة ارسال</span>',
                                                                 'hideDefaultClass' => true,
                                                                 'id' => $offlinePayment->id,
                                                                 'payment' => $offlinePayment,
@@ -178,7 +166,8 @@
 
                                                         <a href="/panel/financial/offline-payments/{{ $offlinePayment->id }}/cancel"
                                                             data-item-id="1" data-confirm="نعم إلغاء الطلب"
-                                                            class="delete-action btn btn-danger d-flex align-items-center btn-sm mt-1 mr-2" style="width:100px">إلغاء الطلب</a>
+                                                            class="delete-action btn btn-danger d-flex align-items-center btn-sm mt-1 mr-2"
+                                                            style="width:100px">إلغاء الطلب</a>
                                                     </div>
                                                 @endif
                                             </td>
@@ -189,9 +178,14 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="d-flex justify-content-center text-center">
+                    {{ $offlinePayments->appends(request()->input())->links() }}
+                </div>
             </div>
 
         </section>
+
     @else
         @include(getTemplate() . '.includes.no-result', [
             'file_name' => 'offline.png',
