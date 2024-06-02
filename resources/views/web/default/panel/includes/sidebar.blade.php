@@ -476,7 +476,7 @@
             @endcan --}}
         @endif
 
-        @if (\App\Models\InstallmentOrder::where('user_id', $authUser->id)->where('status', '!=', 'paying')->exists() || \App\Models\offlinePayment::where('user_id', $authUser->id)->exists())
+        @if (\App\Models\InstallmentOrder::where('user_id', $authUser->id)->where('status', '!=', 'paying')->exists() || \App\Models\OfflinePayment::where('user_id', $authUser->id)->exists())
             <li
                 class="sidenav-item {{ (request()->is('panel/financial') or request()->is('panel/financial/*') or request()->is('panel/rewards')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#financialCollapse" role="button"
@@ -533,7 +533,7 @@
                         @endphp
 
 
-                        @if (\App\Models\offlinePayment::where('user_id', $authUser->id)->exists())
+                        @if (\App\Models\OfflinePayment::where('user_id', $authUser->id)->exists())
                             <li class="mt-5 {{ request()->is('panel/financial/offline-payments') ? 'active' : '' }}">
                                 <a href="/panel/financial/offline-payments">سجل الدفع الاوفلاين</a>
                             </li>

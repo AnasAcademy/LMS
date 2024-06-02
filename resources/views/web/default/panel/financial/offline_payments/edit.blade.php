@@ -58,22 +58,22 @@
                         </div>
                     </div>
 
-                 
+
 
                     <div class="col-12 mb-25 mb-lg-0 js-offline-payment-input ">
                         <div class="form-group text-left">
                             <label class="input-label">{{ trans('update.attach_the_payment_photo') }}</label>
 
-                            <label for="attachmentFile" id="attachmentFileLabel"
+                            {{-- <label for="attachmentFile" id="attachmentFileLabel{{$id}}"
                                 class="custom-upload-input-group flex-row-reverse ">
                                 <span class="custom-upload-icon text-white">
                                     <i data-feather="upload" width="18" height="18" class="text-white"></i>
                                 </span>
                                 <div class="custom-upload-input"></div>
-                            </label>
+                            </label> --}}
 
-                            <input type="file" name="attachment" id="attachmentFile"
-                                class="form-control h-auto invisible-file-input @error('attachment') is-invalid @enderror"
+                            <input type="file" name="attachment" id="attachmentFile{{$id}}"
+                                class="form-control h-auto @error('attachment') is-invalid @enderror"
                                 value="" />
                             @error('attachment')
                                 <div class="invalid-feedback">
