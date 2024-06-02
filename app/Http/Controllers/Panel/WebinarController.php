@@ -1059,7 +1059,7 @@ class WebinarController extends Controller
             ->pluck('id')
             ->toArray();
 
-        $query = Sale::query()
+            $query = Sale::query()
             ->where(function ($query) use ($user, $giftsIds) {
                 $query->where('sales.buyer_id', $user->id);
                 $query->orWhereIn('sales.gift_id', $giftsIds);
@@ -1069,7 +1069,7 @@ class WebinarController extends Controller
             ->where(function ($query) {
                 $query->Where(function ($query) {
                     $query->whereNotNull('sales.bundle_id')
-                        ->where('sales.type', 'bundle')
+                        ->whereIn('sales.type', ['bundle', 'installment_payment'])
                         ->whereHas('bundle', function ($query) {
                             $query->where('status', 'active');
                         });
@@ -1078,8 +1078,8 @@ class WebinarController extends Controller
                     $query->whereNotNull('gift_id');
                     $query->whereHas('gift');
                 });
-            });
-
+            })
+            ->distinct('sales.bundle_id');
 
             $sales = deepClone($query)
             ->with([
