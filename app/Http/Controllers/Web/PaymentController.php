@@ -7,6 +7,8 @@ use App\Mixins\Cashback\CashbackAccounting;
 use App\Models\Accounting;
 use App\Models\BecomeInstructor;
 use App\Models\Cart;
+use App\Models\Enrollment;
+use App\Models\Group;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentChannel;
@@ -330,7 +332,7 @@ class PaymentController extends Controller
                     $userData = $request->cookie('user_data');
                     if ($userData) {
                         $userData = json_decode($userData, true);
-                        $studentData = collect($userData)->except(['category_id', 'bundle_id','webinar_id','type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
+                        $studentData = collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
                     }
                     $student = Student::where('user_id', auth()->user()->id)->first();
                     if (!$student) {
@@ -360,6 +362,23 @@ class PaymentController extends Controller
                             ->where('student_id', $student->id)
                             ->where('bundle_id', $bundleId)
                             ->value('id');
+                    }
+
+                    if ($webinar_sale->webinar->hasGroup) {
+                        $lastGroup = Group::latest()->first();
+                        if (!$lastGroup) {
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1]);
+                        }
+                        if ($lastGroup->enrollments->count() >= 20) {
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1]);
+                        }
+                        $user = auth()->user();
+                        $webinar = $webinar_sale->webinar;
+                        Enrollment::create([
+                            'user_id' => $user->id,
+                            'webinar_id' => $webinar->id,
+                            'group_id' => $lastGroup->id,
+                        ]);
                     }
 
 

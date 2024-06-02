@@ -1068,18 +1068,13 @@ class WebinarController extends Controller
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
                 $query->Where(function ($query) {
-                    $query->whereNotNull('sales.bundle_id')
-                        ->whereIn('sales.type', ['bundle', 'installment_payment'])
-                        ->whereHas('bundle', function ($query) {
+                    $query->whereNotNull('sales.webinar_id')
+                        ->where('sales.type','webinar')
+                        ->whereHas('webinar', function ($query) {
                             $query->where('status', 'active');
                         });
                 });
-                $query->orWhere(function ($query) {
-                    $query->whereNotNull('gift_id');
-                    $query->whereHas('gift');
-                });
-            })
-            ->distinct('sales.bundle_id');
+            })->distinct('sales.webinar_id');
 
 
             $sales = deepClone($query)
@@ -1101,17 +1096,6 @@ class WebinarController extends Controller
                         }
                     ]);
                 },
-                'bundle' => function ($query) {
-                    $query->with([
-                        'reviews' => function ($query) {
-                            $query->where('status', 'active');
-                        },
-                        'category',
-                        'teacher' => function ($query) {
-                            $query->select('id', 'full_name');
-                        },
-                    ]);
-                }
             ])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -1128,11 +1112,7 @@ class WebinarController extends Controller
                 $gift = $sale->gift;
 
                 $sale->webinar_id = $gift->webinar_id;
-                $sale->bundle_id = $gift->bundle_id;
-
                 $sale->webinar = !empty($gift->webinar_id) ? $gift->webinar : null;
-                $sale->bundle = !empty($gift->bundle_id) ? $gift->bundle : null;
-
                 $sale->gift_recipient = !empty($gift->receipt) ? $gift->receipt->full_name : $gift->name;
                 $sale->gift_sender = $sale->buyer->full_name;
                 $sale->gift_date = $gift->date;;
@@ -1146,33 +1126,21 @@ class WebinarController extends Controller
                         $giftUpcoming += 1;
                     }
                 }
-
-                if (!empty($sale->bundle)) {
-                    $bundleWebinars = $sale->bundle->bundleWebinars;
-
-                    foreach ($bundleWebinars as $bundleWebinar) {
-                        $giftDurations += $bundleWebinar->webinar->duration;
-                    }
-                }
             }
         }
 
         $purchasedCount = deepClone($query)
             ->where(function ($query) {
                 $query->whereHas('webinar');
-                $query->orWhereHas('bundle');
             })
             ->count();
 
         $webinarsHours = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
             ->select(DB::raw('sum(webinars.duration) as duration'))
             ->sum('duration');
-        $bundlesHours = deepClone($query)->join('bundle_webinars', 'bundle_webinars.bundle_id', 'sales.bundle_id')
-            ->join('webinars', 'webinars.id', 'bundle_webinars.webinar_id')
-            ->select(DB::raw('sum(webinars.duration) as duration'))
-            ->sum('duration');
 
-        $hours = $webinarsHours + $bundlesHours + $giftDurations;
+
+        $hours = $webinarsHours + $giftDurations;
 
         $upComing = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
             ->where('webinars.start_date', '>', $time)

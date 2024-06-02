@@ -44,7 +44,8 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student'));
+        $courses = Webinar::where('attached', 1)->get();
+        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student', 'courses'));
     }
 
     /**
@@ -179,8 +180,9 @@ class ApplyController extends Controller
                     'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
                 ]);
             }
-        } catch (\Exception $e) {
-            dd($e);
+        }catch (\Exception $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+            // dd($e);
         }
 
 

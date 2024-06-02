@@ -6,6 +6,7 @@ use App\Bitwise\UserLevelOfTraining;
 use App\Models\Accounting;
 use App\Models\Badge;
 use App\Models\BundleWebinar;
+use App\Models\Enrollment;
 use App\Models\ForumTopic;
 use App\Models\ForumTopicLike;
 use App\Models\ForumTopicPost;
@@ -106,6 +107,16 @@ class User extends Authenticatable
     public function isOrganization()
     {
         return $this->role_name === Role::$organization;
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function webinarsEnrollments()
+    {
+        return $this->belongsToMany(Webinar::class, 'enrollments');
     }
 
     public function hasPermission($section_name)
