@@ -72,7 +72,7 @@
                                                 <span>{{ $offlinePayment->iban }}</span>
                                             </td>
 
-                                           
+
                                             <td class="text-center align-middle">
                                                 <span
                                                     class="font-16 font-weight-bold text-primary">{{ handlePrice($offlinePayment->amount, false) }}</span>
@@ -143,25 +143,28 @@
                                             <td class="text-center align-middle">
                                                 @if ($offlinePayment->status != 'approved' && $offlinePayment->status != 'canceled')
                                                     <div class="d-flex justify-content-between">
+                                                        @if ($offlinePayment->status == 'reject')
+                                                            @include(
+                                                                'web.default.panel.financial.offline_payments.edit',
+                                                                [
+                                                                    'url' =>
+                                                                        '/panel/financial/offline-payments/' .
+                                                                        $offlinePayment->id .
+                                                                        '/update',
+                                                                    'btnClass' =>
+                                                                        'btn btn-primary d-flex align-items-center btn-sm mt-1 px-0',
+                                                                    'btnText' =>
+                                                                        '<span class="ml-2"> اعادة ارسال</span>',
+                                                                    'hideDefaultClass' => true,
+                                                                    'id' => $offlinePayment->id,
+                                                                    'payment' => $offlinePayment,
+                                                                    'offlineBanks' => $offlineBanks,
+                                                                ]
+                                                            )
 
-
-                                                        @include(
-                                                            'web.default.panel.financial.offline_payments.edit',
-                                                            [
-                                                                'url' =>
-                                                                    '/panel/financial/offline-payments/' .
-                                                                    $offlinePayment->id .
-                                                                    '/update',
-                                                                'btnClass' =>
-                                                                    'btn btn-primary d-flex align-items-center btn-sm mt-1 px-0',
-                                                                'btnText' =>
-                                                                    '<span class="ml-2"> اعادة ارسال</span>',
-                                                                'hideDefaultClass' => true,
-                                                                'id' => $offlinePayment->id,
-                                                                'payment' => $offlinePayment,
-                                                                'offlineBanks' => $offlineBanks,
-                                                            ]
-                                                        )
+                                                            @else
+                                                            <span></span>
+                                                        @endif
 
 
                                                         <a href="/panel/financial/offline-payments/{{ $offlinePayment->id }}/cancel"
@@ -185,7 +188,6 @@
             </div>
 
         </section>
-
     @else
         @include(getTemplate() . '.includes.no-result', [
             'file_name' => 'offline.png',
