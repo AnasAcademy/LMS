@@ -179,7 +179,7 @@
                                     <tbody>
                                         @if ($offlinePayments->count() > 0)
                                             @foreach ($offlinePayments as $offlinePayment)
-                                                <tr>
+                                                <tr @if ($offlinePayment->status == 'canceled')  style="opacity: 0.5" @endif>
                                                     <td class="text-left">
                                                         {{ $offlinePayment->user->full_name }}
                                                     </td>
