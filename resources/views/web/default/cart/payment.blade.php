@@ -167,7 +167,7 @@
 
                 <div class="row mt-25">
                     @foreach ($offlineBanks as $offlineBank)
-                        <div class="col-12 col-lg-4 mb-30 mb-lg-0">
+                        <div class="col-12 col-lg-7 mb-30 mb-lg-0">
                             <div
                                 class="py-25 px-20 rounded-sm panel-shadow d-flex flex-column align-items-center justify-content-center">
                                 <img src="{{ $offlineBank->logo }}" width="120" height="60" alt="">
