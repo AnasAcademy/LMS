@@ -96,11 +96,14 @@
                     <span class="font-14 text-dark-blue font-weight-500">القبول والتسجيل</span>
                 </a>
 
-                <div class="collapse {{ (request()->is('panel/requirements') or request()->is('panel/newEnrollment')) ? 'show' : '' }}"
+                <div class="collapse {{ (request()->is('panel/requirements') or request()->is('panel/requirements/*') or request()->is('panel/newEnrollment')) ? 'show' : '' }}"
                     id="requirementsCollapse">
                     <ul class="sidenav-item-collapse">
                         <li class="mt-5 {{ request()->is('panel/requirements') ? 'active' : '' }}">
                             <a href="/panel/requirements">{{ trans('panel.requirements') }}</a>
+                        </li>
+                        <li class="mt-5 {{ request()->is('panel/requirements/applied') ? 'active' : '' }}">
+                            <a href="/panel/requirements/applied">دفع رسوم البرنامج</a>
                         </li>
                         <li class="mt-5 {{ request()->is('panel/newEnrollment') ? 'active' : '' }}">
                             <a href="/panel/newEnrollment">طلب تسجيل جديد</a>
