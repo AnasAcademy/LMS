@@ -200,8 +200,10 @@
                                 @enderror
                             </div>
 
-                            <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll" style="color: #5F2B80;">
-                                يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
+                            <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll"
+                                style="color: #5F2B80;">
+                                يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من
+                                استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
                             </div>
 
                             {{-- certificate --}}
@@ -238,6 +240,45 @@
                                     </div>
                                 </div>
                             </div>
+                            {{-- upload requirement --}}
+                            <div class="form-group col-12  d-none" id="requirement_section">
+                                <label>هل ترغب في رفع متطلبات القبول ؟ *</label>
+                                @error('upload_later')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                                <div class="row mr-5 mt-5">
+                                    {{-- want upload requirement --}}
+                                    <div class="col-sm-4 col">
+                                        <label for="want_certificate">
+                                            <input type="radio" id="want_requirement" name="upload_later" value="1"
+                                                onchange="showRequirementEndorsement()"
+                                                class=" @error('upload_later') is-invalid @enderror"
+                                                {{ old('upload_later', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
+                                            نعم
+                                        </label>
+                                    </div>
+
+                                    {{-- does not want upload requirement --}}
+                                    <div class="col">
+                                        <label for="doesn't_want_certificate">
+                                            <input type="radio" id="doesn't_want_requirement" name="upload_later"
+                                                onchange="showRequirementEndorsement()" value="0"
+                                                class="@error('upload_later') is-invalid @enderror"
+                                                {{ old('upload_later', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
+                                            لا
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label class="col-12 d-none">
+                                <input type="checkbox" id="requirement_endorsement" name="" value="1">
+                                أقر بأني اطلعت على متطلبات التسجيل في البرنامج التدريبي الذي اخترته وأتعهد بتقديم كافة
+                                المتطلبات قبل التخرج.
+                            </label>
+
 
                             <h1 class=" mt-50 mb-25">بيانات المتدرب الأساسية</h1>
 
@@ -1399,11 +1440,13 @@
             let earlyEnroll = document.getElementById("early_enroll");
             let bundleSelect = document.getElementById("bundle_id");
             let certificateInputs = document.querySelectorAll("input[name='certificate']");
+            let requirementSection = document.getElementById("requirement_section");
 
             // Get the selected option
             var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
             if (selectedOption.getAttribute('has_certificate') == 1) {
                 certificateSection.classList.remove("d-none");
+
 
                 certificateInputs.forEach(function(element) {
                     element.setAttribute("required", "required");
@@ -1424,6 +1467,8 @@
             } else {
                 earlyEnroll.classList.add("d-none");
             }
+
+            requirementSection.classList.remove("d-none");
         }
 
         CertificateSectionToggle();
@@ -1447,8 +1492,31 @@
             }
         }
 
+
+         function showRequirementEndorsement() {
+            let RequirementEndorsementInput= document.getElementById("requirement_endorsement");
+            let requirementOption = document.querySelector("input[name='upload_later']:checked");
+            var RequirementEndorsementSection = RequirementEndorsementInput.closest("label");
+            console.log(RequirementEndorsementSection);
+            if (requirementOption.value === "1") {
+                RequirementEndorsementSection.classList.remove('d-none');
+                RequirementEndorsementInput.setAttribute("required","required");
+            } else if (requirementOption.value === "0") {
+               RequirementEndorsementSection.classList.add('d-none');
+               RequirementEndorsementInput.removeAttribute("required");
+
+            } else {
+              RequirementEndorsementSection.classList.add('d-none');
+              RequirementEndorsementInput.removeAttribute("required");
+
+            }
+        }
+
+        showRequirementEndorsement();
         showCertificateMessage();
     </script>
+
+
 
     {{-- city and country toggle --}}
     <script>
