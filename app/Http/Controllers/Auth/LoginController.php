@@ -242,11 +242,12 @@ class LoginController extends Controller
         $student = Student::where('user_id',$user->id)->first();
         if ($user->isAdmin()) {
             return redirect(getAdminPanelUrl() . '');
-        } else if($student) {
-            return redirect('/panel/requirements');
         }
+        // else if($student) {
+        //     return redirect('/panel/requirements');
+        // }
         else{
-            return redirect('/apply');
+            return redirect('/');
         }
     }
 
