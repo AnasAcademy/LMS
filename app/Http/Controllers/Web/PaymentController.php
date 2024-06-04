@@ -429,7 +429,7 @@ class PaymentController extends Controller
                         $userData = $request->cookie('user_data');
                         if ($userData) {
                             $userData = json_decode($userData, true);
-                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'upload_later'])->toArray();
+                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
                         }
                         $student = $user->student;
                         if (!$student) {
@@ -447,7 +447,7 @@ class PaymentController extends Controller
 
                         // Check if the student already has the bundle ID attached
                         if (!$student->bundles->contains($bundleId)) {
-                            $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'upload_later' => !empty($userData['upload_later'])?$userData['upload_later']  :0]);
+                            $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
                             // add there the uploading status
                             $pivot = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
@@ -486,12 +486,12 @@ class PaymentController extends Controller
                 if (empty($sale)) {
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
-                if (!empty($sale) && isset($pivot->id) && $pivot->upload_later == 1) {
+                if (!empty($sale) && isset($pivot->id)) {
                     return redirect('/panel/requirements/applied')->with(['toast' => $toastData]);
                 }
-                if (!empty($sale) && isset($pivot->id) && ($sale->bundle->early_enroll == 0)) {
-                    return redirect('/panel/bundles/' . $pivot->id . '/requirements')->with(['toast' => $toastData]);
-                }
+                // if (!empty($sale) && isset($pivot->id) && ($sale->bundle->early_enroll == 0)) {
+                //     return redirect('/panel/bundles/' . $pivot->id . '/requirements')->with(['toast' => $toastData]);
+                // }
                 return redirect('/')->with(['toast' => $toastData]);
             } else if (!empty($data['order']) && $data['order']->status === Order::$fail) {
                 $toastData = [
@@ -678,7 +678,7 @@ class PaymentController extends Controller
             $student = Student::where('user_id', auth()->user()->id)->first();
             if (!$student) {
                 if ($userData) {
-                    $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'upload_later'])->toArray();
+                    $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
                     $student = Student::create($studentData);
 
                 } else {
@@ -688,7 +688,7 @@ class PaymentController extends Controller
 
             // Check if the student already has the bundle ID attached
             if (!$student->bundles->contains($bundleId)) {
-                $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending', 'upload_later' => !empty($userData['upload_later'])? $userData['upload_later'] : 0]);
+                $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending']);
                 $pivot = \DB::table('bundle_student')
                 ->where('student_id', $student->id)
                     ->where('bundle_id', $bundleId)
@@ -697,7 +697,10 @@ class PaymentController extends Controller
         } else {
             $orderType = $item->installment_payment_id ? 'installment' : 'bundle';
             $student = Student::where('user_id', auth()->user()->id)->first();
-            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundleId])->update(['status' => 'paying']);
+
+            if(!$item->installmentPayment->step->installmentStep){
+                BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundleId])->update(['status' => 'paying']);
+            }
         }
 
 
