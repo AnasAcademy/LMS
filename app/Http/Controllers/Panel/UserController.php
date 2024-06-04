@@ -873,43 +873,14 @@ class UserController extends Controller
             return redirect('/apply');
         }
 
-        $studentBundles = BundleStudent::where('student_id', $student->id)->doesntHave('studentRequirement')->where('upload_later', false)->orWhereHas('studentRequirement', function ($query) {
-            $query->where('status', '!=', 'approved');
-        })->get()->reverse();
+        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
 
-        /* Installments */
-        $bundleInstallments = [];
 
-        foreach ($studentBundles as $studentBundle) {
-            $hasBought = $studentBundle->bundle->checkUserHasBought($user);
-            $canSale = ($studentBundle->bundle->canSale() && !$hasBought);
 
-            // Check if the bundle meets the conditions
-            if ($canSale && !empty($studentBundle->bundle->price) && $studentBundle->bundle->price > 0 && getInstallmentsSettings('status') && (empty($user) || $user->enable_installments)) {
-                $installmentPlans = new InstallmentPlans($user);
-                $installments = $installmentPlans->getPlans('bundles', $studentBundle->bundle->id, $studentBundle->bundle->type, $studentBundle->bundle->category_id, $studentBundle->bundle->teacher_id);
-
-                $bundleInstallments[$studentBundle->id] = [
-                    'bundle' => $studentBundle,
-                    'installments' => $installments,
-                ];
-            } else {
-
-                $bundleInstallments[$studentBundle->id] = [
-                    'bundle' => $studentBundle,
-                    'installments' => null,
-                ];
-            }
-        }
-        // dd($bundleInstallments);
-        // if ($canSale and !empty($bundle->price) and $bundle->price > 0 and getInstallmentsSettings('status') and (empty($user) or $user->enable_installments)) {
-        //     $installmentPlans = new InstallmentPlans($user);
-        //     $installments = $installmentPlans->getPlans('bundles', $bundle->id, $bundle->type, $bundle->category_id, $bundle->teacher_id);
-        // }
-        return view(getTemplate() . '.panel.requirements.index2', ['studentBundles' => $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+        return view(getTemplate() . '.panel.requirements.index', ['studentBundles' => $studentBundles]);
     }
 
-    public function requirementIndex2($step=1)
+    public function requirementPaymentStep()
     {
 
         $user = auth()->user();
@@ -920,7 +891,7 @@ class UserController extends Controller
             return redirect('/apply');
         }
 
-        $studentBundles = BundleStudent::where('student_id', $student->id)->whereHas('studentRequirement')->orWhere('upload_later', true)->get()->reverse();
+        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
 
         /* Installments */
         $bundleInstallments = [];
@@ -947,7 +918,7 @@ class UserController extends Controller
             }
         }
 
-        return view(getTemplate() . '.panel.requirements.index',['studentBundles'=> $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+        return view(getTemplate() . '.panel.requirements.payment_step',['studentBundles'=> $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
 
     }
 
