@@ -295,7 +295,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     // requirements Routes
     Route::group(['prefix' => 'requirements'], function () {
         Route::get('/', 'UserController@requirementIndex');
-        Route::get('/applied', 'UserController@requirementIndex2');
+        Route::get('/applied', 'UserController@requirementPaymentStep');
         Route::get('/step/1', 'UserController@requirementIndex');
         Route::get('/step/2', 'UserController@account');
     });
