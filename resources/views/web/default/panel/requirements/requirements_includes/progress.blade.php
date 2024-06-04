@@ -1,7 +1,7 @@
 @php
     $progressSteps = [
         1 => [
-            'lang' => 'متطلبات القبول',
+            'lang' => (request()->is('panel/requirements'))? 'متطلبات القبول' : 'دفع رسوم البرنامج',
             'icon' => 'about'
         ],
     ];
