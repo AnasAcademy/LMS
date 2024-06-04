@@ -73,7 +73,7 @@
                     @foreach ($paymentChannels as $paymentChannel)
                         @if (!$isMultiCurrency or !empty($paymentChannel->currencies) and in_array($userCurrency, $paymentChannel->currencies))
                             <div class="col-6 col-lg-4 mb-40 charge-account-radio ">
-                                <input type="radio" name="gateway" class="online-gateway"
+                                <input type="radio" name="gateway" class="online-gateway" checked
                                     id="{{ $paymentChannel->title }}" data-class="{{ $paymentChannel->class_name }}"
                                     value="{{ $paymentChannel->id }}">
                                 <label for="{{ $paymentChannel->title }}"
@@ -111,7 +111,7 @@
                 @endif
 
                 @error('gateway')
-                    <div class="invalid-feedback"> {{ $message }}</div>
+                    <div class="invalid-feedback d-block"> {{ $message }}</div>
                 @enderror
 
                 {{-- account discharge --}}
