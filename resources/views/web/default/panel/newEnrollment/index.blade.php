@@ -197,45 +197,17 @@
                                 </div>
                             </div>
 
+                            <div class="d-none">
+                                <input type="checkbox" id="requirement_endorsement" name="requirement_endorsement">
+                                أقر بأني اطلعت على  <a href="https://anasacademy.uk/admission/" target="_blank">متطلبات التسجيل</a> في البرنامج التدريبي الذي اخترته وأتعهد بتقديم كافة
+                                المتطلبات قبل التخرج.
 
-                            {{-- upload requirement --}}
-                            <div class="form-group col-12  d-none" id="requirement_section">
-                                <label>هل ترغب في رفع متطلبات القبول ؟ *</label>
-                                @error('upload_later')
+                                @error('requirement_endorsement')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
                                     </div>
                                 @enderror
-                                <div class="row mr-5 mt-5">
-                                    {{-- want upload requirement --}}
-                                    <div class="col-sm-4 col">
-                                        <label for="want_certificate">
-                                            <input type="radio" id="want_requirement" name="upload_later" value="1"
-                                                onchange="showRequirementEndorsement()"
-                                                class=" @error('upload_later') is-invalid @enderror"
-                                                {{ old('upload_later', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
-                                            نعم
-                                        </label>
-                                    </div>
-
-                                    {{-- does not want upload requirement --}}
-                                    <div class="col">
-                                        <label for="doesn't_want_certificate">
-                                            <input type="radio" id="doesn't_want_requirement" name="upload_later"
-                                                onchange="showRequirementEndorsement()" value="0"
-                                                class="@error('upload_later') is-invalid @enderror"
-                                                {{ old('upload_later', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
-                                            لا
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
-
-                            <label class="d-none">
-                                <input type="checkbox" id="requirement_endorsement" name="" value="1">
-                                أقر بأني اطلعت على متطلبات التسجيل في البرنامج التدريبي الذي اخترته وأتعهد بتقديم كافة
-                                المتطلبات قبل التخرج.
-                            </label>
 
                             <label class="mt-30">
                                 <input type="checkbox" id="terms" name="terms" required>
@@ -340,7 +312,6 @@
     <script>
         function CertificateSectionToggle() {
             let certificateSection = document.getElementById("certificate_section");
-            let requirementSection = document.getElementById("requirement_section");
             let bundleSelect = document.getElementById("bundle_id");
             let earlyEnroll = document.getElementById("early_enroll");
             // Get the selected option
@@ -359,7 +330,10 @@
                 earlyEnroll.classList.add("d-none");
             }
 
-            requirementSection.classList.remove("d-none");
+            let RequirementEndorsementInput= document.getElementById("requirement_endorsement");
+            let RequirementEndorsementSection = RequirementEndorsementInput.closest("div");
+            RequirementEndorsementSection.classList.remove("d-none");
+            RequirementEndorsementInput.setAttribute("required", "required");
 
 
         }
@@ -378,27 +352,9 @@
             }
         }
 
-        function showRequirementEndorsement() {
-            let RequirementEndorsementInput= document.getElementById("requirement_endorsement");
-            let requirementOption = document.querySelector("input[name='upload_later']:checked");
-            var RequirementEndorsementSection = RequirementEndorsementInput.closest("label");
-            console.log(RequirementEndorsementSection);
-            if (requirementOption.value === "1") {
-                RequirementEndorsementSection.classList.remove('d-none');
-                RequirementEndorsementInput.setAttribute("required","required");
-            } else if (requirementOption.value === "0") {
-               RequirementEndorsementSection.classList.add('d-none');
-               RequirementEndorsementInput.removeAttribute("required");
 
-            } else {
-              RequirementEndorsementSection.classList.add('d-none');
-              RequirementEndorsementInput.removeAttribute("required");
-
-            }
-        }
 
         CertificateSectionToggle();
-        showRequirementEndorsement();
         showCertificateMessage();
     </script>
 @endpush

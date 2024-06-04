@@ -83,7 +83,7 @@ class ApplyController extends Controller
                 ],
                 'terms' => 'accepted',
                 'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
-                'upload_later'=> 'required|boolean'
+                'requirement_endorsement'=> 'accepted'
             ]);
         } else {
             $validatedData = $request->validate([
@@ -135,7 +135,7 @@ class ApplyController extends Controller
                 'about_us' => 'required|string|min:3|max:255',
                 'terms' => 'accepted',
                 'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
-                'upload_later' => 'required|boolean'
+                'requirement_endorsement' => 'accepted'
             ]);
         }
 
