@@ -146,7 +146,7 @@ class OfflinePaymentController extends Controller
             $status = 'rejected';
         } elseif ($offlinePayment->pay_for == 'installment') {
             $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
-            if ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep) {
+            if (!empty($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep)) {
                 $status = 'approved';
             } else {
                 $status = 'rejected';

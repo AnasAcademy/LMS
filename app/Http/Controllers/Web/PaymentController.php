@@ -698,7 +698,7 @@ class PaymentController extends Controller
             $orderType = $item->installment_payment_id ? 'installment' : 'bundle';
             $student = Student::where('user_id', auth()->user()->id)->first();
 
-            if(!$item->installmentPayment->step->installmentStep){
+            if(empty($item->installmentPayment->step->installmentStep)){
                 BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundleId])->update(['status' => 'paying']);
             }
         }

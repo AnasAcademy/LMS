@@ -331,7 +331,7 @@ class AccountingController extends Controller
             if ($offline->pay_for == 'form_fee') {
                 $status = 'pending';
             } else {
-                if($offline->order->orderItems->first()->installmentPayment->step->installmentStep){
+                if(!empty($offline->order->orderItems->first()->installmentPayment->step->installmentStep)){
                     $status = 'approved';
                 }else{
                     $status = 'paying';
