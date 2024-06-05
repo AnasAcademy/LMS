@@ -109,10 +109,43 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
+                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/courses', false)) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>{{ ' تسجيل الدورات' }}</span>
+                    </a>
 
-                    <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
-                                href="{{ getAdminPanelUrl() }}/students/courses"><i class="fas fa-graduation-cap"></i>{{ ' تسجيل الدورات' }}</a>
+                    @php
+                        $webinars = App\Models\Webinar::where('hasGroup', 1)
+                            ->with(['enrollments'])
+                            ->get();
+                    @endphp
+                    @foreach ($webinars as $webinar)
+                        {{-- ="{{ getAdminPanelUrl() }}/students/courses/" --}}
+                <li class="{{ request()->is(getAdminPanelUrl('/students/courses', false)) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown" href>{{ $webinar->title }}</a>
+
+                    <ul class="dropdown-menu">
+                        @if (!empty($webinar->enrollments))
+                            @foreach ($webinar->enrollments as $enrollment)
+                                <li>
+                                    @if (!empty($enrollment->groups))
+                                        @foreach ($enrollment->groups as $group)
+                                            <strong>Group:</strong> {{ $group->name }}
+                                            <ul>
+
+                                                <li>{{ $enrollment->user->name }} (User ID: {{ $enrollment->user_id }})
+                                                </li>
+
+                                            </ul>
+                                        @endforeach
+                                    @endif
+                                </li>
+                            @endforeach
+                        @endif
+                    </ul>
+                </li>
+                @endforeach
 
                 </li>
 
@@ -513,7 +546,7 @@
                             </li>
                         @endcan()
 
-                       @can('admin_users_list')
+                        @can('admin_users_list')
                             <li class="{{ request()->is(getAdminPanelUrl('/students', false)) ? 'active' : '' }}">
                                 <a class="nav-link"
                                     href="{{ getAdminPanelUrl() }}/students">{{ trans('public.students') }}</a>
