@@ -120,7 +120,7 @@ class PaymentController extends Controller
             ];
             return back()->with(['toast' => $toastData]);
         }
-        
+
     }
 
     public function paymentVerify(Request $request, $gateway)
@@ -364,7 +364,7 @@ class PaymentController extends Controller
                             ->value('id');
                     }
 
-                    if ($webinar_sale->webinar->hasGroup) {
+                    if (!empty($webinar_sale->webinar->hasGroup)) {
                         $lastGroup = Group::latest()->first();
                         if (!$lastGroup) {
                             $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1]);
