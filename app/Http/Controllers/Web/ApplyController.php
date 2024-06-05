@@ -29,7 +29,7 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        $courses = Webinar::where('attached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->get();
 
         return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student', 'courses'));
     }
@@ -44,7 +44,7 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        $courses = Webinar::where('attached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->get();
         return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student', 'courses'));
     }
 
@@ -194,7 +194,7 @@ class ApplyController extends Controller
         $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
-            'amount' => $request->type=='diplomas' ? 230: $webinar->price,
+            'amount' => $request->type=='diplomas' ? 230: $webinar->price??0,
             'tax' => 0,
             'total_discount' => 0,
             'total_amount' => $request->type=='diplomas' ? 230: $webinar->price,
@@ -218,8 +218,8 @@ class ApplyController extends Controller
             'installment_payment_id' => null,
             'ticket_id' => null,
             'discount_id' => null,
-            'amount' => $request->type=='diplomas' ? 230: $webinar->price,
-            'total_amount' => $request->type=='diplomas' ? 230: $webinar->price,
+            'amount' => $request->type=='diplomas' ? 230: $webinar-> price ?? 0,
+            'total_amount' => $request->type=='diplomas' ? 230: $webinar-> price ?? 0,
             'tax' => null,
             'tax_price' => 0,
             'commission' => 0,
