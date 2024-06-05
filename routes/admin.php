@@ -57,11 +57,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@staffs');
         });
 
+
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
             Route::get('/enrollers', 'UserController@Enrollers');
-            Route::get('/courses', 'UserController@Courses');
+
             Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelUsers');
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
@@ -69,6 +70,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
+
+        });
+        Route::group(['prefix' => 'courses'], function () {
+            Route::get('/', 'UserController@Courses');
+            Route::get('/{id}', 'UserController@Courses');
+            Route::get('/groups/{id}/show', 'UserController@groupInfo');
 
         });
 
@@ -286,6 +293,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/add-student-to-course', 'WebinarController@addStudentToCourse');
             Route::post('/order-items', 'WebinarController@orderItems');
             Route::post('/{id}/getContentItemByLocale', 'WebinarController@getContentItemByLocale');
+
 
             Route::get('/{id}/statistics', 'WebinarStatisticController@index');
 

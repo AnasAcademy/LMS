@@ -109,45 +109,56 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/courses', false)) ? 'active' : '' }}">
+
+                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-graduation-cap"></i>
-                        <span>{{ ' تسجيل الدورات' }}</span>
+                        <span>{{ 'تسجيل الدورات' }}</span>
                     </a>
-
-                    @php
-                        $webinars = App\Models\Webinar::where('hasGroup', 1)
-                            ->with(['enrollments'])
-                            ->get();
-                    @endphp
-                    @foreach ($webinars as $webinar)
-                        {{-- ="{{ getAdminPanelUrl() }}/students/courses/" --}}
-                <li class="{{ request()->is(getAdminPanelUrl('/students/courses', false)) ? 'active' : '' }}">
-                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown" href>{{ $webinar->title }}</a>
-
                     <ul class="dropdown-menu">
-                        @if (!empty($webinar->enrollments))
-                            @foreach ($webinar->enrollments as $enrollment)
-                                <li>
-                                    @if (!empty($enrollment->groups))
-                                        @foreach ($enrollment->groups as $group)
-                                            <strong>Group:</strong> {{ $group->name }}
-                                            <ul>
+                        @php
+                            $webinars = App\Models\Webinar::where('hasGroup', 1)
+                                ->get();
+                        @endphp
+                        @foreach ($webinars as $webinar)
+                            <li
+                            class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
+                            <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
+                                href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
+                        </li>
 
-                                                <li>{{ $enrollment->user->name }} (User ID: {{ $enrollment->user_id }})
-                                                </li>
-
-                                            </ul>
-                                        @endforeach
-                                    @endif
-                                </li>
-                            @endforeach
-                        @endif
+                        @endforeach
                     </ul>
                 </li>
-                @endforeach
+                {{--
+                    @php
+                    $webinars = App\Models\Webinar::where('hasGroup', 1)
+                        ->with(['enrollments'])
+                        ->get();
+                @endphp
+                @foreach ($webinars as $webinar)
+                    <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/courses', false)) ? 'active' : '' }}">
+                        <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"
+                            href>{{ $webinar->title }}</a>
 
-                </li>
+                        <ul class="dropdown-menu">
+                            @if (!empty($webinar->groups))
+                                @foreach ($webinar->groups->unique() as $group)
+                                    <li
+                                        class="{{ request()->is(getAdminPanelUrl('/courses/enrollers', false)) ? 'active' : '' }}">
+
+                                        <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
+                                            href="{{ getAdminPanelUrl() }}/courses/"> جروب {{ $group->name }}</a>
+
+                                    </li>
+                                @endforeach
+                            @endif
+                        </ul>
+                    </li>
+                @endforeach
+                --}}
+
+
 
             @endcan
 

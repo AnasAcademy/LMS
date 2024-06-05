@@ -29,7 +29,7 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        $courses = Webinar::where('attached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->get();
 
         return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student', 'courses'));
     }
@@ -44,7 +44,7 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        $courses = Webinar::where('attached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->get();
         return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student', 'courses'));
     }
 
