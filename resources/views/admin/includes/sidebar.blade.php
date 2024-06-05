@@ -109,6 +109,13 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
+
+                    <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
+                                href="{{ getAdminPanelUrl() }}/students/courses"><i class="fas fa-graduation-cap"></i>{{ ' تسجيل الدورات' }}</a>
+
+                </li>
+
             @endcan
 
             {{-- services --}}
