@@ -365,18 +365,18 @@ class PaymentController extends Controller
                     }
 
                     if (!empty($webinar_sale->webinar->hasGroup)) {
-                        $lastGroup = Group::latest()->first();
+                        $webinar = $webinar_sale->webinar;
+                        $lastGroup = Group::where('webinar_id',$webinar->id)->latest()->first();
                         if (!$lastGroup) {
-                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1]);
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1 ,'webinar_id'=>$webinar->id]);
                         }
                         if ($lastGroup->enrollments->count() >= 20) {
-                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1]);
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1,'webinar_id'=>$webinar->id]);
                         }
                         $user = auth()->user();
-                        $webinar = $webinar_sale->webinar;
+
                         Enrollment::create([
                             'user_id' => $user->id,
-                            'webinar_id' => $webinar->id,
                             'group_id' => $lastGroup->id,
                         ]);
                     }
