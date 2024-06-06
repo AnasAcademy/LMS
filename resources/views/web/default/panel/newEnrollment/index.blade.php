@@ -359,6 +359,8 @@
     </script>
 
 
+
+
     {{-- type toggle --}}
     <script>
         function toggleHiddenType() {
@@ -369,7 +371,6 @@
             var hiddenDiplomaLabel1 = document.getElementById("hiddenLabel1");
             let certificateSection = document.getElementById("certificate_section");
             let diplomasSection = document.getElementById("diplomas_section");
-            let RequirementEndorsementInput= document.getElementById("requirement_endorsement");
 
             var hiddenCourseInput = document.getElementById("mySelect2");
             var hiddenCourseLabel = document.getElementById("all_course");
@@ -381,20 +382,15 @@
                     console.log(type);
                     diplomasSection.classList.remove('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    RequirementEndorsementInput.addAttribute("required", "required");
-                     CertificateSectionToggle();
                 } else if (type == 'courses') {
                     hiddenCourseInput.closest('div').classList.remove('d-none');
                     console.log(type);
                     console.log(hiddenDiplomaInput.options);
                     console.log(hiddenDiplomaInput.options[0]);
                     diplomasSection.classList.add('d-none');
-                    RequirementEndorsementInput.removeAttribute("required");
-                    log(RequirementEndorsementInput);
                 } else {
                     diplomasSection.classList.add('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    RequirementEndorsementInput.removeAttribute("required");
                 }
 
                 // if (type == 'diplomas') {
@@ -435,7 +431,7 @@
                 //     hiddenBundleInput.options[0].setAttribute('selected','selected');
                 // }
                 toggleHiddenInput();
-
+                CertificateSectionToggle();
 
             }
         }

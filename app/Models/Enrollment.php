@@ -16,10 +16,6 @@ class Enrollment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function webinar()
-    {
-        return $this->belongsTo(Webinar::class);
-    }
 
     public function group()
     {

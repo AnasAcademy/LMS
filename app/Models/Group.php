@@ -30,4 +30,9 @@ class Group extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function webinar()
+    {
+        return $this->belongsTo(Webinar::class);
+    }
+
 }

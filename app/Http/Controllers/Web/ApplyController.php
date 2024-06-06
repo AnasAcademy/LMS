@@ -242,6 +242,27 @@ class ApplyController extends Controller
             return redirect('/payment/'.$order->id);
 
             // return view(getTemplate() . '.cart.payment', $data);
+
+            // $data = [
+            //     'pageTitle' => trans('public.checkout_page_title'),
+            //     'paymentChannels' => $paymentChannels,
+            //     'carts' => $carts,
+            //     'subTotal' => null,
+            //     'totalDiscount' => null,
+            //     'tax' => null,
+            //     'taxPrice' => null,
+            //     'total' => $request->type=='diplomas' ? 230: $webinar->price,
+            //     'userGroup' => $user->userGroup ? $user->userGroup->group : null,
+            //     'order' => $order,
+            //     'type' => $order->orderItems[0]->form_fee,
+            //     'count' => 0,
+            //     'userCharge' => $user->getAccountingCharge(),
+            //     'razorpay' => $razorpay,
+            //     'totalCashbackAmount' => null,
+            //     'previousUrl' => url()->previous(),
+            // ];
+
+            // return view(getTemplate() . '.cart.payment', $data);
         } else {
 
             return $this->handlePaymentOrderWithZeroTotalAmount($order);
