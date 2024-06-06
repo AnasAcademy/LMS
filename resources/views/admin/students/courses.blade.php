@@ -16,7 +16,7 @@
 
     <div class="section-body">
         <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+            <div class="col-12">
                 <div class="card card-statistic-1">
                     <div class="card-icon bg-primary">
                         <i class="fas fa-users"></i>
@@ -31,51 +31,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-success">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>{{ trans('admin/main.organizations_students') }}</h4>
-                        </div>
-                        <div class="card-body">
-                            {{ $totalOrganizationsStudents }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-warning">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>{{ trans('admin/main.inactive_students') }}</h4>
-                        </div>
-                        <div class="card-body">
-                            {{ $inactiveStudents }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-danger">
-                        <i class="fas fa-ban"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>{{ trans('admin/main.ban_students') }}</h4>
-                        </div>
-                        <div class="card-body">
-                            {{ $banStudents }}
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <section class="card">
@@ -83,119 +38,38 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.search') }}</label>
-                                <input name="user_code" type="text" class="form-control"
-                                    value="{{ request()->get('user_code') }}">
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.start_date') }}</label>
-                                <div class="input-group">
-                                    <input type="date" id="from" class="text-center form-control" name="from"
-                                        value="{{ request()->get('from') }}" placeholder="Start Date">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="input-label">كود الطالب</label>
+                                    <input name="user_code" type="text" class="form-control"
+                                        value="{{ request()->get('user_code') }}">
                                 </div>
                             </div>
-                        </div>
+
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.end_date') }}</label>
-                                <div class="input-group">
-                                    <input type="date" id="to" class="text-center form-control" name="to"
-                                        value="{{ request()->get('to') }}" placeholder="End Date">
-                                </div>
+                                <label class="input-label">بريد الطالب</label>
+                                <input name="email" type="text" class="form-control"
+                                    value="{{ request()->get('email') }}">
                             </div>
                         </div>
 
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.filters') }}</label>
-                                <select name="sort" data-plugin-selectTwo class="form-control populate">
-                                    <option value="">{{ trans('admin/main.filter_type') }}</option>
-                                    <option value="purchased_classes_asc" @if (request()->get('sort') == 'purchased_classes_asc') selected @endif>
-                                        {{ trans('admin/main.purchased_classes_ascending') }}</option>
-                                    <option value="purchased_classes_desc"
-                                        @if (request()->get('sort') == 'purchased_classes_desc') selected @endif>
-                                        {{ trans('admin/main.purchased_classes_descending') }}</option>
-
-                                    <option value="purchased_classes_amount_asc"
-                                        @if (request()->get('sort') == 'purchased_classes_amount_asc') selected @endif>
-                                        {{ trans('admin/main.purchased_classes_amount_ascending') }}</option>
-                                    <option value="purchased_classes_amount_desc"
-                                        @if (request()->get('sort') == 'purchased_classes_amount_desc') selected @endif>
-                                        {{ trans('admin/main.purchased_classes_amount_descending') }}</option>
-
-
-                                    <option value="purchased_appointments_asc"
-                                        @if (request()->get('sort') == 'purchased_appointments_asc') selected @endif>
-                                        {{ trans('admin/main.purchased_appointments_ascending') }}</option>
-                                    <option value="purchased_appointments_desc"
-                                        @if (request()->get('sort') == 'purchased_appointments_desc') selected @endif>
-                                        {{ trans('admin/main.purchased_appointments_descending') }}</option>
-
-                                    <option value="purchased_appointments_amount_asc"
-                                        @if (request()->get('sort') == 'purchased_appointments_amount_asc') selected @endif>
-                                        {{ trans('admin/main.purchased_appointments_amount_ascending') }}</option>
-                                    <option value="purchased_appointments_amount_desc"
-                                        @if (request()->get('sort') == 'purchased_appointments_amount_desc') selected @endif>
-                                        {{ trans('admin/main.purchased_appointments_amount_descending') }}</option>
-
-                                    <option value="register_asc" @if (request()->get('sort') == 'register_asc') selected @endif>
-                                        {{ trans('admin/main.register_date_ascending') }}</option>
-                                    <option value="register_desc" @if (request()->get('sort') == 'register_desc') selected @endif>
-                                        {{ trans('admin/main.register_date_descending') }}</option>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.organization') }}</label>
-                                <select name="organization_id" data-plugin-selectTwo class="form-control populate">
-                                    <option value="">{{ trans('admin/main.select_organization') }}</option>
-                                    @foreach ($organizations as $organization)
-                                        <option value="{{ $organization->id }}"
-                                            @if (request()->get('organization_id') == $organization->id) selected @endif>
-                                            {{ $organization->full_name }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="input-label">اسم الطالب</label>
+                                <input
+                                    name={{ request()->is(getAdminPanelUrl('/students/courses', false)) ? 'full_name':'ar_name'  }}
+                                    type="text" class="form-control"
+                                    value="{{ request()->get('full_name') }}{{ request()->get('ar_name') }}">
                             </div>
                         </div>
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.users_group') }}</label>
-                                <select name="group_id" data-plugin-selectTwo class="form-control populate">
-                                    <option value="">{{ trans('admin/main.select_users_group') }}</option>
-                                    @foreach ($userGroups as $userGroup)
-                                        <option value="{{ $userGroup->id }}"
-                                            @if (request()->get('group_id') == $userGroup->id) selected @endif>{{ $userGroup->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.status') }}</label>
-                                <select name="status" data-plugin-selectTwo class="form-control populate">
-                                    <option value="">{{ trans('admin/main.all_status') }}</option>
-                                    <option value="active_verified" @if (request()->get('status') == 'active_verified') selected @endif>
-                                        {{ trans('admin/main.active_verified') }}</option>
-                                    <option value="active_notVerified" @if (request()->get('status') == 'active_notVerified') selected @endif>
-                                        {{ trans('admin/main.active_not_verified') }}</option>
-                                    <option value="inactive" @if (request()->get('status') == 'inactive') selected @endif>
-                                        {{ trans('admin/main.inactive') }}</option>
-                                    <option value="ban" @if (request()->get('status') == 'ban') selected @endif>
-                                        {{ trans('admin/main.banned') }}</option>
-                                </select>
+                                <label class="input-label">هاتف الطالب</label>
+                                <input name="mobile" type="text" class="form-control"
+                                    value="{{ request()->get('mobile') }}">
                             </div>
                         </div>
 
@@ -216,7 +90,7 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                <a href="{{ getAdminPanelUrl() }}/students/excelAll?{{ http_build_query(request()->all()) }}"
+                <a href="{{ getAdminPanelUrl() }}/students/excelEnroller?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
             <div class="h-10"></div>
@@ -226,15 +100,11 @@
             <div class="table-responsive text-center">
                 <table class="table table-striped font-14">
                     <tr>
-                        <th>#</th>
-                        <th>{{ trans('admin/main.name') }}</th>
-                        <th>{{ trans('admin/main.classes') }}</th>
-                        <th>{{ trans('admin/main.appointments') }}</th>
-                        <th>{{ trans('admin/main.wallet_charge') }}</th>
-                        <th>{{ trans('admin/main.income') }}</th>
-                        <th>{{ trans('admin/main.user_group') }}</th>
-                        <th>حاله الدفع</th>
+                        <th>{{ '#' }}</th>
                         <th>كود الطالب</th>
+
+                        <th>{{ trans('admin/main.name') }}</th>
+                        <th> الدورات المسجلة</th>
                         <th>{{ trans('admin/main.register_date') }}</th>
                         <th>{{ trans('admin/main.status') }}</th>
                         <th width="120">{{ trans('admin/main.actions') }}</th>
@@ -243,16 +113,21 @@
                     @foreach ($users as $index => $user)
                         <tr>
                             <td>{{ ++$index }}</td>
+                            <td>{{ $user->user_code }}</td>
+
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
-                                        <img src="{{ $user->getAvatar() }}" alt="{{ $user->full_name }}">
+                                        <img src="{{ $user->getAvatar() }}"
+                                            alt="{{ $user->student ? $user->student->ar_name : null }}">
                                     </figure>
                                     <div class="media-body ml-1">
-                                        <div class="mt-0 mb-1 font-weight-bold">{{ $user->full_name }}</div>
+                                        <div class="mt-0 mb-1 font-weight-bold">
+                                            {{ $user->student ? $user->student->ar_name : $user->full_name }}</div>
 
                                         @if ($user->mobile)
-                                            <div class="text-primary text-small font-600-bold">{{ $user->mobile }}</div>
+                                            <div class="text-primary text-left font-600-bold" style="font-size:12px;">
+                                                {{ $user->mobile }}</div>
                                         @endif
 
                                         @if ($user->email)
@@ -263,38 +138,31 @@
                             </td>
 
                             <td>
-                                <div class="media-body">
-                                    <div class="text-primary mt-0 mb-1 font-weight-bold">
-                                        {{ $user->classesPurchasedsCount }}</div>
-                                    <div class="text-small font-600-bold">{{ handlePrice($user->classesPurchasedsSum) }}
-                                    </div>
-                                </div>
+
+                                @foreach ($user->webinarsEnrollments as $enrollment)
+
+                                    {{ $enrollment->title }}
+                                    @if (!$loop->last)
+                                        &nbsp;و&nbsp;
+                                    @endif
+                                @endforeach
                             </td>
 
-                            <td>
-                                <div class="media-body">
-                                    <div class="text-primary mt-0 mb-1 font-weight-bold">
-                                        {{ $user->meetingsPurchasedsCount }}</div>
-                                    <div class="text-small font-600-bold">{{ handlePrice($user->meetingsPurchasedsSum) }}
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>{{ handlePrice($user->getAccountingBalance()) }}</td>
-
-                            <td>{{ handlePrice($user->getIncome()) }}</td>
-
-                            <td>
-                                {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
-                            </td>
-                            <td>
-                                {{ !empty($user->student) ? 'تم دفع رسوم التسجيل' : 'لم يتم الدفع' }}
-                            </td>
-                            <td>
+                            {{-- <td>
+                                {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
+                            </td> --}}
+                            {{-- <td>
                                 {{ $user->user_code }}
-                            </td>
+                            </td> --}}
 
-                            <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
+                            <td>
+                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                    {{ dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') }}
+                                    @if (!$loop->last)
+                                        &nbsp;و&nbsp;
+                                    @endif
+                                @endforeach
+                            </td>
 
                             <td>
                                 @if ($user->ban and !empty($user->ban_end_at) and $user->ban_end_at > time())
@@ -310,7 +178,7 @@
                             </td>
 
                             <td class="text-center mb-2" width="120">
-                                @can('admin_users_transform')
+                                {{-- @can('admin_users_transform')
                                     @if (!empty($user->student))
                                         @include('admin.includes.confirm_transform_button', [
                                             'url' => getAdminPanelUrl() . '/users/' . $user->id . '/transform',
@@ -320,7 +188,8 @@
                                             'id' => $user->id,
                                         ])
                                     @endif
-                                @endcan
+                                @endcan --}}
+
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/impersonate" target="_blank"
                                         class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"

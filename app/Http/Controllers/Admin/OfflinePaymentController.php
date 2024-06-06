@@ -213,13 +213,15 @@ class OfflinePaymentController extends Controller
 
         BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'approved']);
 
-        $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title;
+        $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title ?? '';
         if ($offlinePayment->pay_for == 'form_fee') {
             $purpuse = 'لحجز مقعد دراسي ';
         } elseif ($offlinePayment->pay_for == 'bundle') {
             $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
         } elseif ($offlinePayment->pay_for == 'installment') {
             $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
+        } elseif ($offlinePayment->pay_for == 'webinar') {
+            $purpuse = 'لدفع دورة ' . ($offlinePayment->order->orderItems->first()->webinar->title );
         } else {
             $purpuse = '';
         }

@@ -444,6 +444,10 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
     Route::group(['prefix' => 'bundles'], function () {
         Route::post('/purchase/{id?}', 'BundlesController@purchase_bundle')->name('purchase_bundle');
+        Route::group(['prefix' => 'purchases'], function () {
+            Route::get('/', 'BundlesController@purchases');
+            Route::post('/getJoinInfo', 'BundlesController@getJoinInfo');
+        });
         Route::group(['middleware' => 'user.not.access'], function () {
             Route::get('/', 'BundlesController@index');
             Route::get('/new', 'BundlesController@create');

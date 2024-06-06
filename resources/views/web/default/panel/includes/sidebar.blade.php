@@ -172,7 +172,7 @@
                     <span class="font-14 text-dark-blue font-weight-500">المقررات الدراسية</span>
                 </a>
 
-                <div class="collapse {{ (request()->is('panel/webinars') or request()->is('panel/webinars/*')) ? 'show' : '' }}"
+                <div class="collapse {{ (request()->is('panel/bundles/*') or request()->is('panel/webinars/*')) ? 'show' : '' }}"
                     id="webinarCollapse">
                     <ul class="sidenav-item-collapse">
                         @if ($authUser->isOrganization() || $authUser->isTeacher())
@@ -196,8 +196,12 @@
                             </li>
                         @endif
 
+                        <li class="mt-5 {{ request()->is('panel/bundles/purchases') ? 'active' : '' }}">
+                            <a href="/panel/bundles/purchases">جدول الدبلومات الدراسيه</a>
+                        </li>
+
                         <li class="mt-5 {{ request()->is('panel/webinars/purchases') ? 'active' : '' }}">
-                            <a href="/panel/webinars/purchases">جدول المقررات الدراسية</a>
+                            <a href="/panel/webinars/purchases">جدول الدورات الدراسيه</a>
                         </li>
 
                         {{-- @if ($authUser->isOrganization() || $authUser->isTeacher())

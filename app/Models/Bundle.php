@@ -358,7 +358,7 @@ class Bundle extends Model implements TranslatableContract
 
                 if (!empty($installmentOrder)) {
                     $hasBought = true;
-
+                    
                     if ($installmentOrder->checkOrderHasOverdue()) {
                         $overdueIntervalDays = getInstallmentsSettings('overdue_interval_days');
 

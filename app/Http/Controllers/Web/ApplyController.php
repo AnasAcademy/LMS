@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bundle;
+use App\Models\Webinar;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Order;
@@ -33,7 +34,9 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student'));
+        $courses = Webinar::where('unattached', 1)->get();
+
+        return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student', 'courses'));
     }
 
     /**
@@ -46,7 +49,8 @@ class ApplyController extends Controller
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         $category = Category::where('parent_id', '!=', null)->get();
-        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student'));
+        $courses = Webinar::where('unattached', 1)->get();
+        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student', 'courses'));
     }
 
     /**
@@ -62,82 +66,132 @@ class ApplyController extends Controller
 
         $category = Category::where('id', $request->category_id)->first();
         $bundle = Bundle::where('id', $request->bundle_id)->first();
-        $categoryTitle = $category->title;
+        $webinar = Webinar::where('id', $request->webinar_id)->first();
+
         $student = Student::where('user_id', auth()->user()->id)->first();
 
-
-        if ($student) {
-            $validatedData = $request->validate([
-                'user_id' => 'required',
-                'category_id' => 'required',
-                'bundle_id' =>  [
-                    'required',
-                    function ($attribute, $value, $fail) {
-                        $user = auth()->user();
-                        $student = Student::where('user_id', $user->id)->first();
-
-                        if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
-                            $fail('User has already applied for this bundle.');
+        try {
+            if ($student) {
+                $validatedData = $request->validate([
+                    'user_id' => 'required',
+                    'type' => 'required|in:courses,diplomas',
+                    'category_id' => [
+                        function ($attribute, $value, $fail) use ($request) {
+                            $type = $request->input('type');
+                            if ($type && $type == 'diplomas' && empty ($value)) {
+                                $fail('يجب تحديد الدرجه العلميه ');
+                            }
                         }
-                    },
-                ],
-                'terms' => 'accepted',
-                'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
-                'requirement_endorsement'=> 'accepted'
-            ]);
-        } else {
-            $validatedData = $request->validate([
-                'user_id' => 'required',
-                'category_id' => 'required',
-                'bundle_id' =>  [
-                    'required',
-                    function ($attribute, $value, $fail) {
-                        $user = auth()->user();
-                        $student = Student::where('user_id', $user->id)->first();
+                    ],
+                    'bundle_id' => [
+                        function ($attribute, $value, $fail) use ($request) {
+                            $type = $request->input('type');
+                            if ($type && $type == 'diplomas' && empty ($value)) {
+                                $fail('يجب تحديد التخصص العلمي ');
+                            }
+                            $user = auth()->user();
+                            $student = Student::where('user_id', $user->id)->first();
 
-                        if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
-                            $fail('User has already applied for this bundle.');
+                            if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                                $fail('User has already applied for this bundle.');
+                            }
+                        },
+                    ],
+                    'webinar_id' => [
+                        function ($attribute, $value, $fail)  use ($request){
+                            $type = $request->input('type');
+                            if ($type && $type == 'courses' && empty ($value)) {
+                                $fail('يجب تحديد الدورة  ');
+                            }
+                            $user = auth()->user();
+                            $purchasedWebinarsIds = $user->getAllPurchasedWebinarsIds();
+
+                            if ($user && in_array($value, $purchasedWebinarsIds)) {
+                                $fail('User has already applied for this webinar.');
+                            }
+                        },
+                    ],
+                    'terms' => 'accepted',
+                    'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
+                    'requirement_endorsement' => $bundle ? 'accepted'  : ''
+                ]);
+            } else {
+                $validatedData = $request->validate([
+                    'user_id' => 'required',
+                    'type' => 'required|in:courses,diplomas',
+                    'category_id' => [
+                        function ($attribute, $value, $fail) use ($request) {
+                            $type = $request->input('type');
+                            if ($type && $type == 'diplomas' && empty ($value)) {
+                                $fail('يجب تحديد الدرجه العلميه ');
+                            }
                         }
-                    },
-                ],
-                'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
-                'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
-                'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
-                'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                'birthdate' => 'required|date',
-                'phone' => 'required|min:5|max:20',
-                'mobile' => 'required|min:5|max:20',
-                'educational_qualification_country' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'secondary_school_gpa' => !$category->education ? 'required|string|max:255|min:1' : '',
-                'educational_area' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                'secondary_graduation_year' => !$category->education  ? 'required|numeric|regex:/^\d{3,10}$/' : '',
-                'school' => !$category->education  ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'university' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'faculty' => $category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'education_specialization' => $category->education  ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                'graduation_year' => $category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '',
-                'gpa' => $category->education ? 'required|string|max:255|min:1' : '',
-                'deaf' => 'required|in:0,1',
-                'disabled_type' => $request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable',
-                'gender' => 'required|in:male,female',
-                'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
-                'nationality' => 'required|string|min:3|max:25',
-                'job' => $request->workStatus == 1 ? 'required' : 'nullable',
-                'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
-                'referral_person' => 'required|string|min:3|max:255',
-                'relation' => 'required|string|min:3|max:255',
-                'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                'referral_phone' => 'required|min:3|max:20',
-                'about_us' => 'required|string|min:3|max:255',
-                'terms' => 'accepted',
-                'certificate' => $bundle->has_certificate ? 'required|boolean' : "",
-                'requirement_endorsement' => 'accepted'
-            ]);
+                    ],
+                    'bundle_id' => [
+                        function ($attribute, $value, $fail) use ($request) {
+                            $type = $request->input('type');
+                            if ($type && $type == 'diplomas' && empty ($value)) {
+                                $fail('يجب تحديد التخصص العلمي ');
+                            }
+                        },
+                    ],
+                    'webinar_id' => [
+                        function ($attribute, $value, $fail)  use ($request){
+                            $type = $request->input('type');
+                            if ($type && $type == 'courses' && empty ($value)) {
+                                $fail('يجب تحديد الدورة  ');
+                            }
+                            $user = auth()->user();
+                            $purchasedWebinarsIds = $user->getAllPurchasedWebinarsIds();
+
+                            if ($user && in_array($value, $purchasedWebinarsIds)) {
+                                $fail('User has already applied for this webinar.');
+                            }
+                        },
+                    ],
+                    'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+                    'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
+                    'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
+                    'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                    'birthdate' => 'required|date',
+                    'phone' => 'required|min:5|max:20',
+                    'mobile' => 'required|min:5|max:20',
+                    'educational_qualification_country' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    'secondary_school_gpa' => $category ? (!$category->education ? 'required|string|max:255|min:1' : '') : '',
+                    'educational_area' => $category ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                    'secondary_graduation_year' => $category ? (!$category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '') : '',
+                    'school' => $category ? (!$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    'university' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    'faculty' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    'education_specialization' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    'graduation_year' => $category ? ($category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '') : '',
+                    'gpa' => $category ? ($category->education ? 'required|string|max:255|min:1' : '') : '',
+                    'deaf' => 'required|in:0,1',
+                    'disabled_type' => $category ? ($request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable') : '',
+                    'gender' => 'required|in:male,female',
+                    'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
+                    'nationality' => 'required|string|min:3|max:25',
+                    'job' => $request->workStatus == 1 ? 'required' : 'nullable',
+                    'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
+                    'referral_person' => 'required|string|min:3|max:255',
+                    'relation' => 'required|string|min:3|max:255',
+                    'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                    'referral_phone' => 'required|min:3|max:20',
+                    'about_us' => 'required|string|min:3|max:255',
+                    'terms' => 'accepted',
+                    'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
+                    'requirement_endorsement' => $bundle ? 'accepted'  : ''
+                ]);
+            }
+        }catch (\Exception $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+            // dd($e);
         }
+
 
 
         Cookie::queue('user_data', json_encode($validatedData));
@@ -147,22 +201,22 @@ class ApplyController extends Controller
         $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
-            'amount' => 230,
+            'amount' => $request->type=='diplomas' ? 230: $webinar->price ?? 0,
             'tax' => 0,
             'total_discount' => 0,
-            'total_amount' => 230,
+            'total_amount' => $request->type=='diplomas' ? 230: $webinar->price ?? 0,
             'product_delivery_fee' => null,
             'created_at' => time(),
         ]);
         OrderItem::create([
             'user_id' => $user->id,
             'order_id' => $order->id,
-            'webinar_id' => null,
+            'webinar_id' => $request->webinar_id ?? null,
             'bundle_id' => $request->bundle_id ?? null,
-            'certificate_template_id' =>  null,
+            'certificate_template_id' => null,
             'certificate_bundle_id' => null,
-            'form_fee' => 1,
-            'product_id' =>  null,
+            'form_fee' => $request->type=='diplomas' ? 1: null,
+            'product_id' => null,
             'product_order_id' => null,
             'reserve_meeting_id' => null,
             'subscribe_id' => null,
@@ -171,8 +225,8 @@ class ApplyController extends Controller
             'installment_payment_id' => null,
             'ticket_id' => null,
             'discount_id' => null,
-            'amount' => 230,
-            'total_amount' => 230,
+            'amount' => $request->type=='diplomas' ? 230: $webinar-> price ?? 0,
+            'total_amount' => $request->type=='diplomas' ? 230: $webinar-> price ?? 0,
             'tax' => null,
             'tax_price' => 0,
             'commission' => 0,
@@ -184,79 +238,6 @@ class ApplyController extends Controller
 
 
         if (!empty($order) and $order->total_amount > 0) {
-        //     $razorpay = false;
-        //     $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
-
-        //     foreach ($paymentChannels as $paymentChannel) {
-        //         if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
-        //             $razorpay = true;
-        //         }
-        //     }
-
-        //     $userAuth = auth()->user();
-
-        //     $editOfflinePayment = null;
-        //     if (!empty($id)) {
-        //         $editOfflinePayment = OfflinePayment::where('id', $id)
-        //             ->where('user_id', $userAuth->id)
-        //             ->first();
-        //     }
-
-
-
-        //     $offlinePayments = OfflinePayment::where('user_id', $userAuth->id)->orderBy('created_at', 'desc')->get();
-
-        //     $offlineBanks = OfflineBank::query()
-        //     ->orderBy('created_at', 'desc')
-        //     ->with([
-        //         'specifications'
-        //     ])
-        //     ->get();
-
-
-
-
-            // $registrationBonusAmount = null;
-
-            // if ($userAuth->enable_registration_bonus) {
-            //     $registrationBonusSettings = getRegistrationBonusSettings();
-
-            //     $registrationBonusAccounting = Accounting::query()
-            //         ->where('user_id', $userAuth->id)
-            //         ->where('is_registration_bonus', true)
-            //         ->where('system', false)
-            //         ->first();
-
-            //     $registrationBonusAmount = (empty($registrationBonusAccounting) and !empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) ? $registrationBonusSettings['registration_bonus_amount'] : null;
-            // }
-
-
-            // $data = [
-            //     'pageTitle' => trans('public.checkout_page_title'),
-            //     'paymentChannels' => $paymentChannels,
-            //     'carts' => $carts,
-            //     'subTotal' => null,
-            //     'totalDiscount' => null,
-            //     'tax' => null,
-            //     'taxPrice' => null,
-            //     'total' => 230,
-            //     'userGroup' => $user->userGroup ? $user->userGroup->group : null,
-            //     'order' => $order,
-            //     'type' => $order->orderItems[0]->form_fee,
-            //     'count' => 0,
-            //     'userCharge' => $user->getAccountingCharge(),
-            //     'razorpay' => $razorpay,
-            //     'totalCashbackAmount' => null,
-            //     'previousUrl' => url()->previous(),
-            //     'offlinePayments' => $offlinePayments,
-            //     'offlineBanks' => $offlineBanks,
-            //     'accountCharge' => $userAuth->getAccountingCharge(),
-            //     'readyPayout' => $userAuth->getPayout(),
-            //     'totalIncome' => $userAuth->getIncome(),
-            //     'editOfflinePayment' => $editOfflinePayment,
-            //     'registrationBonusAmount' => $registrationBonusAmount,
-            // ];
-
 
             return redirect('/payment/'.$order->id);
 

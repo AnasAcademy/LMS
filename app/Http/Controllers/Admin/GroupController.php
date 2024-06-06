@@ -47,7 +47,7 @@ class GroupController extends Controller
         $this->authorize('admin_group_create');
 
         $this->validate($request, [
-            'users' => 'required|array',
+            'users' => 'array',
             'name' => 'required',
         ]);
 
@@ -110,7 +110,7 @@ class GroupController extends Controller
         $this->authorize('admin_group_edit');
 
         $this->validate($request, [
-            'users' => 'required|array',
+            'users' => 'array',
             'percent' => 'nullable',
             'name' => 'required',
         ]);

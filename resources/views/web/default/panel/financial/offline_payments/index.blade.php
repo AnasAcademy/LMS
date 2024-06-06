@@ -5,8 +5,6 @@
 @endpush
 
 @section('content')
-
-
     @if (\Session::has('msg'))
         <div class="alert alert-warning">
             <ul>
@@ -90,7 +88,11 @@
                                                         {{ $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول' }}
 
                                                         ل {{ $offlinePayment->order->orderItems->first()->bundle->title }}
+                                                    @elseif ($offlinePayment->pay_for == 'webinar')
+                                                        دفع لدورة
+                                                        {{ $offlinePayment->order->orderItems->first()->webinar->title }}
                                                     @endif
+
                                                 </span>
                                             </td>
 
@@ -161,8 +163,7 @@
                                                                     'offlineBanks' => $offlineBanks,
                                                                 ]
                                                             )
-
-                                                            @else
+                                                        @else
                                                             <span></span>
                                                         @endif
 

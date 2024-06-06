@@ -82,10 +82,19 @@ class DashboardController extends Controller
 
 
                 $bundleSales = Sale::where('buyer_id', $user->id)
-                ->whereIn('type', ['bundle', 'installment_payment'])
-                ->whereNotNull(['bundle_id', 'order_id'])
+                ->where(function ($query) {
+                    $query->whereIn('type', ['bundle', 'installment_payment'])
+                          ->whereNotNull(['bundle_id', 'order_id']);
+                })
+                ->orWhere(function ($query) use ($user) {
+                    $query->where('buyer_id', $user->id)
+                          ->where('type', 'webinar')
+                          ->whereNull('bundle_id')
+                          ->whereNotNull('order_id');
+                })
                 ->get()
                 ->unique('bundle_id');
+
 
             $data['webinarsCount'] = count($webinars);
             $data['supportsCount'] = count($supports);
@@ -95,7 +104,7 @@ class DashboardController extends Controller
             $data['webinars'] = $webinars;
             $data['bundleSales'] = $bundleSales;
         }
-// foreach ($webinars as $webinar) {
+        // foreach ($webinars as $webinar) {
 // // dd($webinar->bundle->title);
 // }
         $data['giftModal'] = $this->showGiftModal($user);
@@ -124,7 +133,7 @@ class DashboardController extends Controller
                 'gift' => $gift
             ];
 
-            $result = (string)view()->make('web.default.panel.dashboard.gift_modal', $data);
+            $result = (string) view()->make('web.default.panel.dashboard.gift_modal', $data);
             $result = str_replace(array("\r\n", "\n", "  "), '', $result);
 
             return $result;

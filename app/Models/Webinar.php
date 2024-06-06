@@ -66,6 +66,15 @@ class Webinar extends Model implements TranslatableContract
 
         return $result;
     }
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'enrollments');
+    }
 
     public function creator()
     {

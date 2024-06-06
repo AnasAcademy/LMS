@@ -80,7 +80,8 @@
 
                             @if ($bundleSales->isNotEmpty())
                                 @foreach ($bundleSales as $bundleSale)
-                                    {{ !empty($bundleSale->bundle->title) ? $bundleSale->bundle->title : 'لم يتم التسجيل بعد' }}
+                                    {{ !empty($bundleSale->bundle) ? $bundleSale->bundle->title : '' }}
+                                    {{ !empty($bundleSale->webinar) ? ' '.$bundleSale->webinar->title : '' }}
                                     @if (!$loop->last)
                                         و
                                     @endif
