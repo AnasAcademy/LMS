@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panel;
 
 use App\Exports\WebinarStudents;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\PaymentController;
 use App\Mixins\RegistrationPackage\UserPackage;
 use App\Models\Bundle;
 use App\Models\BundleFilterOption;
@@ -526,7 +527,7 @@ class BundlesController extends Controller
                         'installment_id' => $installment->id,
                         'user_id' => $user->id,
                         $columnName => $itemId,
-                        'product_order_id' => !empty($productOrder) ? $productOrder->id : null,
+                        'product_order_id' => (!empty($productOrder)) ? $productOrder->id : null,
                         'item_price' => $itemPrice,
                         'status' => $status,
                     ], [
