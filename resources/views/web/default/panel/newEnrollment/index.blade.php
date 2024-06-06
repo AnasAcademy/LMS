@@ -382,6 +382,8 @@
                     console.log(type);
                     diplomasSection.classList.remove('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
+                    CertificateSectionToggle();
+                    toggleHiddenInput();
                 } else if (type == 'courses') {
                     hiddenCourseInput.closest('div').classList.remove('d-none');
                     console.log(type);
@@ -430,8 +432,7 @@
                 //     hiddenDiplomaInput.options[0].setAttribute('selected','selected');
                 //     hiddenBundleInput.options[0].setAttribute('selected','selected');
                 // }
-                toggleHiddenInput();
-                CertificateSectionToggle();
+
 
             }
         }
