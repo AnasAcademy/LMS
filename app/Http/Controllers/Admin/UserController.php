@@ -31,6 +31,7 @@ use App\Models\UserOccupation;
 use App\Models\UserRegistrationPackage;
 use App\Models\UserSelectedBank;
 use App\Models\UserSelectedBankSpecification;
+use App\Models\Webinar;
 use App\Student;
 use App\User;
 use Illuminate\Http\Request;
@@ -1102,7 +1103,7 @@ class UserController extends Controller
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span>". $data['password']."
+                             <span style='font-weight:bold;'>كلمة المرور: </span>" . $data['password'] . "
                              <br>
                              <br>
                             واذا واجهتكم مشكلة في تسجيل الدخول يمكنكم التواصل معنا
@@ -1854,71 +1855,63 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
-    public function Courses(Request $request, $is_export_excel = false){
+    public function Courses(Request $request, $id, $is_export_excel = false)
+    {
         $this->authorize('admin_users_list');
 
-        // $users=User::whereHas('enrollments');
-        // $users=$enrollmments[0]->user;
-        // dd($users->full_name);
-        $query = User::whereHas('enrollments');
 
-        $totalStudents = deepClone($query)->count();
-        $inactiveStudents = deepClone($query)->where('status', 'inactive')
-            ->count();
-        $banStudents = deepClone($query)->where('ban', true)
-            ->whereNotNull('ban_end_at')
-            ->where('ban_end_at', '>', time())
-            ->count();
+        // $groups=Webinar::find($id)->groups;
+        // dd($groups);
+        $webinar = Webinar::find($id);
+        $query = $webinar->groups->unique();
+        $totalGroups = deepClone($query)->count();
 
-        $totalOrganizationsStudents = User::where('role_name', Role::$user     )
-            ->whereNotNull('organ_id')
-            ->count();
-        $userGroups = Group::where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        $organizations = User::select('id', 'full_name', 'created_at')
-            ->where('role_name', Role::$organization)
-            ->orderBy('created_at', 'desc')
-            ->get();
 
         $query = $this->filters($query, $request);
 
         if ($is_export_excel) {
-            $users = $query->orderBy('created_at', 'desc')->get();
+            $groups = $query->orderBy('created_at', 'desc')->get();
         } else {
-            $users = $query->orderBy('created_at', 'desc')
-                ->paginate(20);
+            $groups = $query;
 
         }
-
-        $users = $this->addUsersExtraInfo($users);
 
         if ($is_export_excel) {
-            return $users;
+            return $groups;
         }
 
-        // $purchasedFormBundle=null;
-        // $purchasedUserFormBundle=Sale::where('type', 'form_fee')
-        //         ->where('buyer_id', $user->id)
-        //         ->first();
 
         $category = Category::where('parent_id', '!=', null)->get();
-        // $requirement=$users[3]->student;
-        // dd($requirement);
+
         $data = [
             'pageTitle' => trans('public.students'),
-            'users' => $users,
+            'groups' => $groups,
+            'webinar' => $webinar,
             'category' => $category,
-            'totalStudents' => $totalStudents,
-            'inactiveStudents' => $inactiveStudents,
-            'banStudents' => $banStudents,
-            'totalOrganizationsStudents' => $totalOrganizationsStudents,
-            'userGroups' => $userGroups,
-            'organizations' => $organizations,
+            'totalGroups' => $totalGroups,
+
         ];
 
         return view('admin.students.courses', $data);
+    }
+
+    public function groupInfo( $group_id)
+    {
+        // dd($course_id.','.$group_id);
+        $group = Group::find($group_id);
+        $webinar=$group->webinar;
+        $enrollments = $group->enrollments;
+        // dd($enrollments);
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'totalStudents'=>$enrollments->count(),
+            'enrollments' => $enrollments,
+            'webinar' => $webinar,
+            'group'=>$group,
+
+        ];
+
+        return view('admin.students.groups', $data);
     }
 
 

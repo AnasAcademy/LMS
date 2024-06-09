@@ -202,6 +202,10 @@
                                                             @elseif ($offlinePayment->pay_for == 'bundle')
                                                                 الدفع كامل ل
                                                                 {{ $offlinePayment->order->orderItems->first()->bundle->title }}
+                                                            @elseif ($offlinePayment->pay_for == 'webinar')
+                                                            الدفع كامل ل
+
+                                                            {{ $offlinePayment->order->orderItems->first()->webinar->title }}
                                                             @elseif ($offlinePayment->pay_for == 'installment')
                                                                 {{ $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول' }}
 

@@ -10,6 +10,7 @@ use App\Models\Enrollment;
 use App\Models\ForumTopic;
 use App\Models\ForumTopicLike;
 use App\Models\ForumTopicPost;
+use App\Models\Group;
 use App\Models\Meeting;
 use App\Models\Noticeboard;
 use App\Models\Notification;
@@ -116,7 +117,7 @@ class User extends Authenticatable
 
     public function webinarsEnrollments()
     {
-        return $this->belongsToMany(Webinar::class, 'enrollments');
+        return $this->belongsToMany(Group::class, 'enrollments');
     }
 
     public function hasPermission($section_name)

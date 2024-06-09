@@ -434,12 +434,7 @@ class PaymentController extends Controller
                             'user_code' => $code,
                             'access_content' => 1
                         ]);
-                        // if ($userData['type'] == 'courses') {
-                        //     $user->update([
-                        //         'role_id' => 1,
-                        //         'role_name' => 'user',
-                        //     ]);
-                        // }
+
                         // update code
                         Code::latest()->first()->update(['lst_sd_code' => $code]);
                     }
@@ -452,30 +447,32 @@ class PaymentController extends Controller
                     }
                     $bundleId = $order->orderItems->first()->bundle_id;
 
-                    // Check if the student already has the bundle ID attached
-                    if ($student->bundles->contains($bundleId)) {
-                        BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
-                    } else if ($userData['type'] == 'diplomas') {
-                        $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
-                        // add there the uploading status
-                        $pivot = \DB::table('bundle_student')
-                            ->where('student_id', $student->id)
-                            ->where('bundle_id', $bundleId)->first();
+                    if (!empty($bundleId)) {
+                        // Check if the student already has the bundle ID attached
+                        if ($student->bundles->contains($bundleId)) {
+                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
+                        } else {
+                            $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
+                            // add there the uploading status
+                            $pivot = \DB::table('bundle_student')
+                                ->where('student_id', $student->id)
+                                ->where('bundle_id', $bundleId)->first();
+                        }
                     }
 
+
                     if (!empty($webinar_sale->webinar->hasGroup)) {
-                        $lastGroup = Group::latest()->first();
+                        $webinar = $webinar_sale->webinar;
+                        $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
                         if (!$lastGroup) {
-                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1]);
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id]);
                         }
                         if ($lastGroup->enrollments->count() >= 20) {
-                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1]);
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id]);
                         }
-                        $user = auth()->user();
-                        $webinar = $webinar_sale->webinar;
+
                         Enrollment::create([
                             'user_id' => $user->id,
-                            'webinar_id' => $webinar->id,
                             'group_id' => $lastGroup->id,
                         ]);
                     }
@@ -656,7 +653,7 @@ class PaymentController extends Controller
 
         $path = $path . '/' . $name;
 
-        $storage->put($path, (string)$img->encode());
+        $storage->put($path, (string) $img->encode());
 
         return $name;
     }
@@ -706,7 +703,7 @@ class PaymentController extends Controller
 
             // Check if the student already has the bundle ID attached
             if (!$student->bundles->contains($bundleId)) {
-                $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending']);
+                $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending']);
                 $pivot = \DB::table('bundle_student')
                     ->where('student_id', $student->id)
                     ->where('bundle_id', $bundleId)
@@ -728,7 +725,7 @@ class PaymentController extends Controller
             'user_id' => $user->id,
             'amount' => $order->total_amount,
             'offline_bank_id' => $account,
-            'iban' =>  $request->input('IBAN'),
+            'iban' => $request->input('IBAN'),
             'order_id' => $order->id,
             'pay_for' => $orderType,
             'status' => OfflinePayment::$waiting,
