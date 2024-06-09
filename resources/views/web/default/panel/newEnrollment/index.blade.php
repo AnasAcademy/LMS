@@ -371,6 +371,8 @@
     </script>
 
 
+
+
     {{-- type toggle --}}
     <script>
         function toggleHiddenType() {
