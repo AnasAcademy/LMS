@@ -278,7 +278,7 @@ class PaymentController extends Controller
 
             session()->put($this->order_session_key, $order->id);
 
-            return redirect('/payments/status');
+            return redirect('/payments/status/'.$order->id);
         } else {
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
@@ -368,25 +368,28 @@ class PaymentController extends Controller
         // Cart::emptyCart($order->user_id);
     }
 
-    public function payStatus(Request $request)
+    public function payStatus(Request $request, Order $order)
     {
-        $orderId = $request->get('order_id', null);
+        // $orderId = $request->get('order_id', null);
 
-        if (!empty(session()->get($this->order_session_key, null))) {
-            $orderId = session()->get($this->order_session_key, null);
-            session()->forget($this->order_session_key);
-        }
+        // if (!empty(session()->get($this->order_session_key, null))) {
+        //     $orderId = session()->get($this->order_session_key, null);
+        //     session()->forget($this->order_session_key);
+        // }
 
 
         $authUser = auth()->user();
         if ($authUser->role_name == 'admin' || $authUser->role_name == 'Financial Management User') {
-            $order = Order::find($orderId);
+            // $order = Order::find($orderId);
             $user = $order->user;
         } else {
             $user = $authUser;
-            $order = Order::where('id', $orderId)
-                ->where('user_id', $user->id)
-                ->first();
+            if ($order->user_id != $user->id) {
+                abort(403);
+            }
+            // $order = Order::where('id', $orderId)
+            //     ->where('user_id', $user->id)
+            //     ->first();
         }
 
 
@@ -434,12 +437,7 @@ class PaymentController extends Controller
                             'user_code' => $code,
                             'access_content' => 1
                         ]);
-                        // if ($userData['type'] == 'courses') {
-                        //     $user->update([
-                        //         'role_id' => 1,
-                        //         'role_name' => 'user',
-                        //     ]);
-                        // }
+
                         // update code
                         Code::latest()->first()->update(['lst_sd_code' => $code]);
                     }

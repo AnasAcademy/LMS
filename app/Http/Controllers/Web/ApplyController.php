@@ -187,6 +187,7 @@ class ApplyController extends Controller
                     'requirement_endorsement' => $bundle ? 'accepted'  : ''
                 ]);
             }
+
         }catch (\Exception $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
             // dd($e);
@@ -285,7 +286,7 @@ class ApplyController extends Controller
             'status' => Order::$paid
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 
     /**

@@ -189,7 +189,29 @@ class OfflinePaymentController extends Controller
             $PaymentController = new PaymentController();
             $PaymentController->paymentOrderAfterVerify($offlinePayment->order);
             $request->merge(['order_id' => $offlinePayment->order_id]);
-            $res = $PaymentController->payStatus($request);
+            $res = $PaymentController->payStatus($request, $offlinePayment->order);
+
+            BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'approved']);
+
+            $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title ?? '';
+            if ($offlinePayment->pay_for == 'form_fee') {
+                $purpuse = 'لحجز مقعد دراسي ';
+            } elseif ($offlinePayment->pay_for == 'bundle') {
+                $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
+            } elseif ($offlinePayment->pay_for == 'installment') {
+                $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
+            } elseif ($offlinePayment->pay_for == 'webinar') {
+                $purpuse = 'لدفع دورة ' . ($offlinePayment->order->orderItems->first()->webinar->title);
+            } else {
+                $purpuse = '';
+            }
+
+            $notifyOptions = [
+                '[amount]' => handlePrice($offlinePayment->amount),
+                '[p.body]' => "لقد تم قبول طلبك  " . $purpuse
+            ];
+            sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
+
         } else {
             Accounting::create([
                 'creator_id' => auth()->user()->id,
@@ -208,30 +230,7 @@ class OfflinePaymentController extends Controller
             RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $chargeWalletReward, Reward::CHARGE_WALLET);
         }
 
-
         $offlinePayment->update(['status' => OfflinePayment::$approved]);
-
-        BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'approved']);
-
-        $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title ?? '';
-        if ($offlinePayment->pay_for == 'form_fee') {
-            $purpuse = 'لحجز مقعد دراسي ';
-        } elseif ($offlinePayment->pay_for == 'bundle') {
-            $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
-        } elseif ($offlinePayment->pay_for == 'installment') {
-            $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
-        } elseif ($offlinePayment->pay_for == 'webinar') {
-            $purpuse = 'لدفع دورة ' . ($offlinePayment->order->orderItems->first()->webinar->title );
-        } else {
-            $purpuse = '';
-        }
-
-        $notifyOptions = [
-            '[amount]' => handlePrice($offlinePayment->amount),
-            '[p.body]' => "لقد تم قبول طلبك  " . $purpuse
-        ];
-        sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
-
         return back();
     }
 

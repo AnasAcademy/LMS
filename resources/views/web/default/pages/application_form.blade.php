@@ -166,14 +166,14 @@
                                 <label class="form-label">حدد نوع التقديم<span class="text-danger">*</span></label>
                                 <select id="typeSelect" name="type" required
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
-                                    <option disabled selected hidden value="">اختر نوع التقديم التي تريد دراستها في
+                                    <option selected hidden value="">اختر نوع التقديم التي تريد دراستها في
                                         اكاديمية انس للفنون </option>
-                                     <option value="diplomas" @if (old('type') == 'diplomas') selected @endif>
+                                    <option value="diplomas" @if (old('type') == 'diplomas') selected @endif>
                                         دبلومات </option>
                                     <option value="courses" @if (old('type') == 'courses') selected @endif>دورات</option>
                                 </select>
 
-                                 @error('type')
+                                @error('type')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
                                     </div>
@@ -191,7 +191,8 @@
                                         اكاديمية انس للفنون </option>
 
                                     @foreach ($courses as $course)
-                                        <option value="{{ $course->id }}"  @if (old('webinar_id') == $course->id) selected @endif>
+                                        <option value="{{ $course->id }}"
+                                            @if (old('webinar_id') == $course->id) selected @endif>
                                             {{ $course->title }} </option>
                                     @endforeach
 
@@ -207,99 +208,101 @@
                             {{-- diplomas --}}
                             <section class="d-none" id="diplomas_section">
 
-                            {{-- diploma --}}
-                            <div class="form-group col-12 col-sm-6">
-                                <label for="application" class="form-label"
-                                    id="degree">{{ trans('application_form.application') }}<span
-                                        class="text-danger">*</span></label>
-                                <select id="mySelect1" name="category_id"
-                                    class="form-control @error('category_id') is-invalid @enderror"
-                                    onchange="toggleHiddenInput()">
-                                    <option  selected value="">اختر الدرجة العلمية التي تريد دراستها في
-                                        اكاديمية انس للفنون </option>
-                                    @foreach ($category as $item)
-                                        <option value="{{ $item->id }}" education= "{{ $item->education }}"
-                                            {{ old('category_id', $student->category_id ?? null) == $item->id ? 'selected' : '' }}>
-                                            {{ $item->title }} </option>
-                                    @endforeach
-                                </select>
+                                {{-- diploma --}}
+                                <div class="form-group col-12 col-sm-6">
+                                    <label for="application" class="form-label"
+                                        id="degree">{{ trans('application_form.application') }}<span
+                                            class="text-danger">*</span></label>
+                                    <select id="mySelect1" name="category_id"
+                                        class="form-control @error('category_id') is-invalid @enderror"
+                                        onchange="toggleHiddenInput()">
+                                        <option selected hidden value="">اختر الدرجة العلمية التي تريد
+                                            دراستها في
+                                            اكاديمية انس للفنون </option>
+                                        @foreach ($category as $item)
+                                            <option value="{{ $item->id }}" education= "{{ $item->education }}"
+                                                {{ old('category_id', $student->category_id ?? null) == $item->id ? 'selected' : '' }}>
+                                                {{ $item->title }} </option>
+                                        @endforeach
+                                    </select>
 
-                                @error('category_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+                                    @error('category_id')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
-                            {{-- specialization --}}
-                            <div class="form-group col-12 col-sm-6 d-none">
-                                <label class="hidden-element" id="hiddenLabel1" for="bundle_id">
-                                    {{ trans('application_form.specialization') }}<span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="bundle_id" name="bundle_id"
-                                    class="hidden-element form-control @error('bundle_id') is-invalid @enderror"
-                                    value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
+                                {{-- specialization --}}
+                                <div class="form-group col-12 col-sm-6 d-none">
+                                    <label class="hidden-element" id="hiddenLabel1" for="bundle_id">
+                                        {{ trans('application_form.specialization') }}<span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="bundle_id" name="bundle_id"
+                                        class="hidden-element form-control @error('bundle_id') is-invalid @enderror"
+                                        value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
 
-                                @error('bundle_id')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+                                    @error('bundle_id')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
-                            <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll"
-                                style="color: #5F2B80;">
-                                يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من
-                                استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
-                            </div>
+                                <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll"
+                                    style="color: #5F2B80;">
+                                    يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من
+                                    استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
+                                </div>
 
-                            {{-- certificate --}}
-                            <div class="form-group col-12  d-none" id="certificate_section">
-                                <label>{{ trans('application_form.want_certificate') }} ؟ <span
-                                        class="text-danger">*</span></label>
-                                <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
-                                @error('certificate')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                                <div class="row mr-5 mt-5">
-                                    {{-- want certificate --}}
-                                    <div class="col-sm-4 col">
-                                        <label for="want_certificate">
-                                            <input type="radio" id="want_certificate" name="certificate" value="1"
-                                                onchange="showCertificateMessage()"
-                                                class=" @error('certificate') is-invalid @enderror"
-                                                {{ old('certificate', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
-                                            نعم
-                                        </label>
-                                    </div>
+                                {{-- certificate --}}
+                                <div class="form-group col-12  d-none" id="certificate_section">
+                                    <label>{{ trans('application_form.want_certificate') }} ؟ <span
+                                            class="text-danger">*</span></label>
+                                    <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
+                                    @error('certificate')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                    <div class="row mr-5 mt-5">
+                                        {{-- want certificate --}}
+                                        <div class="col-sm-4 col">
+                                            <label for="want_certificate">
+                                                <input type="radio" id="want_certificate" name="certificate"
+                                                    value="1" onchange="showCertificateMessage()"
+                                                    class=" @error('certificate') is-invalid @enderror"
+                                                    {{ old('certificate', $student->certificate ?? null) === '1' ? 'checked' : '' }}>
+                                                نعم
+                                            </label>
+                                        </div>
 
-                                    {{-- does not want certificate --}}
-                                    <div class="col">
-                                        <label for="doesn't_want_certificate">
-                                            <input type="radio" id="doesn't_want_certificate" name="certificate"
-                                                onchange="showCertificateMessage()" value="0"
-                                                class="@error('certificate') is-invalid @enderror"
-                                                {{ old('certificate', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
-                                            لا
-                                        </label>
+                                        {{-- does not want certificate --}}
+                                        <div class="col">
+                                            <label for="doesn't_want_certificate">
+                                                <input type="radio" id="doesn't_want_certificate" name="certificate"
+                                                    onchange="showCertificateMessage()" value="0"
+                                                    class="@error('certificate') is-invalid @enderror"
+                                                    {{ old('certificate', $student->certificate ?? null) === '0' ? 'checked' : '' }}>
+                                                لا
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
 
-                            <div class="col-12 d-none">
-                                <input type="checkbox" id="requirement_endorsement" name="requirement_endorsement">
-                                أقر بأني اطلعت على  <a href="https://anasacademy.uk/admission/" target="_blank">متطلبات التسجيل</a> في البرنامج التدريبي الذي اخترته وأتعهد بتقديم كافة
-                                المتطلبات قبل التخرج.
+                                <div class="col-12 d-none">
+                                    <input type="checkbox" id="requirement_endorsement" name="requirement_endorsement">
+                                    أقر بأني اطلعت على <a href="https://anasacademy.uk/admission/" target="_blank">متطلبات
+                                        التسجيل</a> في البرنامج التدريبي الذي اخترته وأتعهد بتقديم كافة
+                                    المتطلبات قبل التخرج.
 
-                                @error('requirement_endorsement')
-                                    <div class="invalid-feedback d-block">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+                                    @error('requirement_endorsement')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
 
                             </section>
@@ -1390,22 +1393,23 @@
 
                     hiddenInput.outerHTML =
                         '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
-                        '<option value="" class="placeholder" selected>اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
+                        '<option value="" class="placeholder" selected hidden>اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
                     hiddenLabel.style.display = "block";
                     hiddenLabel.closest('div').classList.remove('d-none');
                 } else {
                     hiddenInput.outerHTML =
-                        '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
+                        '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                        '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
                     hiddenLabel.style.display = "none";
                     hiddenLabel.closest('div').classList.add('d-none');
                 }
                 var selectedOption = select.options[select.selectedIndex];
                 var selectedText = selectedOption.textContent;
-                if( !isNaN(select.value) && !isNaN(parseInt(select.value))){
+                if (!isNaN(select.value) && !isNaN(parseInt(select.value))) {
                     education.style.display = "block";
-                document.getElementById('educational_area').setAttribute('required', 'required');
+                    document.getElementById('educational_area').setAttribute('required', 'required');
                 }
 
 
@@ -1432,7 +1436,7 @@
                         input.removeAttribute('required');
                     });
 
-                } else if(selectedOption.getAttribute('education') == "1"){
+                } else if (selectedOption.getAttribute('education') == "1") {
                     secondary_education.forEach(function(element) {
                         element.style.display = "none";
                     });
@@ -1455,6 +1459,14 @@
 
                 }
 
+            } else {
+                hiddenInput.outerHTML =
+                    '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                    '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
+                hiddenLabel.style.display = "none";
+                hiddenLabel.closest('div').classList.add('d-none');
+
+                // CertificateSectionToggle();
             }
         }
 
@@ -1472,7 +1484,7 @@
             var hiddenDiplomaLabel1 = document.getElementById("hiddenLabel1");
             let certificateSection = document.getElementById("certificate_section");
             let diplomasSection = document.getElementById("diplomas_section");
-            let RequirementEndorsementInput= document.getElementById("requirement_endorsement");
+            let RequirementEndorsementInput = document.getElementById("requirement_endorsement");
             let education = document.getElementById("education");
 
             var hiddenCourseInput = document.getElementById("mySelect2");
@@ -1481,76 +1493,40 @@
             if (select) {
                 var type = select.value;
                 if (type == 'diplomas') {
-                    console.log(type);
                     diplomasSection.classList.remove('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    RequirementEndorsementInput.setAttribute("required", "required");
-                    CertificateSectionToggle();
-                    toggleHiddenInput();
+                    resetSelect(hiddenCourseInput);
 
                 } else if (type == 'courses') {
                     hiddenCourseInput.closest('div').classList.remove('d-none');
-                    console.log(type);
-                    console.log(hiddenDiplomaInput.options);
-                    console.log(hiddenDiplomaInput.options[0]);
                     diplomasSection.classList.add('d-none');
-                    RequirementEndorsementInput.removeAttribute("required");
-                    education.classList.add('d-none');
-                    education.querySelectorAll('input').forEach((item)=>{
+                    education.style = "display:none";
+                    education.querySelectorAll('input').forEach((item) => {
                         item.removeAttribute('required');
-
                     })
+
+                    resetSelect(hiddenDiplomaInput);
+                    resetSelect(hiddenBundleInput);
 
                 } else {
                     diplomasSection.classList.add('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    RequirementEndorsementInput.removeAttribute("required");
+                    resetSelect(hiddenDiplomaInput);
+                    resetSelect(hiddenBundleInput);
+                    resetSelect(hiddenCourseInput);
                     // education.classList.add('d-none');
                 }
 
-                // if (type == 'diplomas') {
-                //     hiddenDiplomaLabel.style.display = "block";
-                //     hiddenDiplomaInput.style.display = "block";
-                //     hiddenDiplomaInput.setAttribute('required','required')
-                //     hiddenCourseInput.style.display = "none"
-                //     hiddenCourseLabel.style.display = "none"
-
-                //     // hiddenBundleInput.style.display = "block";
-                //     // hiddenDiplomaLabel1.style.display = "block";
-
-                // } else if (type == 'courses') {
-                //     hiddenCourseInput.style.display = "block"
-                //     hiddenCourseLabel.style.display = "block"
-                //     hiddenDiplomaLabel.style.display = "none";
-                //     hiddenDiplomaInput.style.display = "none";
-                //     hiddenDiplomaInput.removeAttribute('required')
-                //     hiddenBundleInput.removeAttribute('required')
-                //     hiddenBundleInput.style.display = "none";
-                //     hiddenDiplomaLabel1.style.display = "none";
-                //     certificateSection.classList.add("d-none");
-                //     hiddenDiplomaInput.options[0].setAttribute('selected','selected');
-                //     hiddenBundleInput.outerHTML =
-                //         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
-                //         hiddenDiplomaLabel1.style.display = "none";
-                // } else {
-                //     hiddenDiplomaLabel.style.display = "none";
-                //     hiddenDiplomaInput.style.display = "none";
-                //     hiddenDiplomaInput.removeAttribute('required')
-                //     hiddenBundleInput.removeAttribute('required')
-                //     hiddenCourseInput.style.display = "none"
-                //     hiddenCourseLabel.style.display = "none"
-                //     hiddenBundleInput.style.display = "none";
-                //     hiddenDiplomaLabel1.style.display = "none";
-                //     certificateSection.classList.add("d-none");
-                //     hiddenDiplomaInput.options[0].setAttribute('selected','selected');
-                //     hiddenBundleInput.options[0].setAttribute('selected','selected');
-                // }
-
-
-
+                toggleHiddenInput();
+                CertificateSectionToggle();
             }
         }
+
         toggleHiddenType();
+
+        function resetSelect(selector) {
+            selector.selectedIndex = 0; // This sets the first option as selected
+        }
     </script>
 
 
@@ -1592,10 +1568,15 @@
                 earlyEnroll.classList.add("d-none");
             }
 
-           let RequirementEndorsementInput= document.getElementById("requirement_endorsement");
+            let RequirementEndorsementInput = document.getElementById("requirement_endorsement");
             let RequirementEndorsementSection = RequirementEndorsementInput.closest("div");
-            RequirementEndorsementSection.classList.remove("d-none");
-            RequirementEndorsementInput.setAttribute("required", "required");
+            if(bundleSelect.selectedIndex!=0){
+                RequirementEndorsementSection.classList.remove("d-none");
+                RequirementEndorsementInput.setAttribute("required", "required");
+            }else{
+                RequirementEndorsementSection.classList.add("d-none");
+                RequirementEndorsementInput.removeAttribute("required");
+            }
         }
 
         CertificateSectionToggle();
@@ -1692,6 +1673,7 @@
                 }
             }
         }
+
 
         function setCountry() {
             let anotherCountrySection = document.getElementById("anotherCountrySection");
