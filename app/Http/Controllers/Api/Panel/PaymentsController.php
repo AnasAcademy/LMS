@@ -172,7 +172,7 @@ class PaymentsController extends Controller
 
                 session()->put($this->order_session_key, $order->id);
 
-                return redirect('/payments/status');
+                return redirect('/payments/status/'.$order->id);
             } else {
                 $toastData = [
                     'title' => trans('cart.fail_purchase'),
@@ -225,7 +225,7 @@ class PaymentsController extends Controller
         Cart::emptyCart($order->user_id);
     }
 
-    public function payStatus(Request $request)
+    public function payStatus(Request $request, Order $order)
     {
         $orderId = $request->get('order_id', null);
 

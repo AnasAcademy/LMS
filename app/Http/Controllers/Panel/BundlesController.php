@@ -118,7 +118,7 @@ class BundlesController extends Controller
                       });
             })
             ->distinct()
-            ->select('sales.bundle_id'); 
+            ->select('sales.bundle_id');
 
 
 
@@ -767,7 +767,7 @@ class BundlesController extends Controller
             'status' => Order::$paid
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 
     public function create()

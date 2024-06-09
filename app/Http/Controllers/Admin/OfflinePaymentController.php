@@ -189,7 +189,7 @@ class OfflinePaymentController extends Controller
             $PaymentController = new PaymentController();
             $PaymentController->paymentOrderAfterVerify($offlinePayment->order);
             $request->merge(['order_id' => $offlinePayment->order_id]);
-            $res = $PaymentController->payStatus($request);
+            $res = $PaymentController->payStatus($request, $offlinePayment->order);
 
             BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'approved']);
 
@@ -230,6 +230,7 @@ class OfflinePaymentController extends Controller
             RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $chargeWalletReward, Reward::CHARGE_WALLET);
         }
 
+        $offlinePayment->update(['status' => OfflinePayment::$approved]);
         return back();
     }
 

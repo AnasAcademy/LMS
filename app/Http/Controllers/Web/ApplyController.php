@@ -187,7 +187,7 @@ class ApplyController extends Controller
                     'requirement_endorsement' => $bundle ? 'accepted'  : ''
                 ]);
             }
-            
+
         }catch (\Exception $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
             // dd($e);
@@ -241,33 +241,11 @@ class ApplyController extends Controller
         if (!empty($order) and $order->total_amount > 0) {
 
             return redirect('/payment/'.$order->id);
-
-            // return view(getTemplate() . '.cart.payment', $data);
-
-            // $data = [
-            //     'pageTitle' => trans('public.checkout_page_title'),
-            //     'paymentChannels' => $paymentChannels,
-            //     'carts' => $carts,
-            //     'subTotal' => null,
-            //     'totalDiscount' => null,
-            //     'tax' => null,
-            //     'taxPrice' => null,
-            //     'total' => $request->type=='diplomas' ? 230: $webinar->price,
-            //     'userGroup' => $user->userGroup ? $user->userGroup->group : null,
-            //     'order' => $order,
-            //     'type' => $order->orderItems[0]->form_fee,
-            //     'count' => 0,
-            //     'userCharge' => $user->getAccountingCharge(),
-            //     'razorpay' => $razorpay,
-            //     'totalCashbackAmount' => null,
-            //     'previousUrl' => url()->previous(),
-            // ];
-
-            // return view(getTemplate() . '.cart.payment', $data);
-        } else {
-
-            return $this->handlePaymentOrderWithZeroTotalAmount($order);
         }
+        // else {
+
+        //     return $this->handlePaymentOrderWithZeroTotalAmount($order);
+        // }
 
         return redirect('/panel');
     }
@@ -285,7 +263,7 @@ class ApplyController extends Controller
             'status' => Order::$paid
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 
     /**
