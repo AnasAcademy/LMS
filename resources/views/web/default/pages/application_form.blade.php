@@ -1400,8 +1400,8 @@
                     hiddenLabel.closest('div').classList.remove('d-none');
                 } else {
                     hiddenInput.outerHTML =
-                       '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
-                         '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
+                        '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                        '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
                     hiddenLabel.style.display = "none";
                     hiddenLabel.closest('div').classList.add('d-none');
                 }
@@ -1459,14 +1459,14 @@
 
                 }
 
-            }else{
-                 hiddenInput.outerHTML =
-                       '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
-                         '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
-                    hiddenLabel.style.display = "none";
-                    hiddenLabel.closest('div').classList.add('d-none');
+            } else {
+                hiddenInput.outerHTML =
+                    '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                    '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
+                hiddenLabel.style.display = "none";
+                hiddenLabel.closest('div').classList.add('d-none');
 
-                    // CertificateSectionToggle();
+                // CertificateSectionToggle();
             }
         }
 
@@ -1523,6 +1523,7 @@
         }
 
         toggleHiddenType();
+
         function resetSelect(selector) {
             selector.selectedIndex = 0; // This sets the first option as selected
         }
@@ -1569,8 +1570,13 @@
 
             let RequirementEndorsementInput = document.getElementById("requirement_endorsement");
             let RequirementEndorsementSection = RequirementEndorsementInput.closest("div");
-            RequirementEndorsementSection.classList.remove("d-none");
-            RequirementEndorsementInput.setAttribute("required", "required");
+            if(bundleSelect.selectedIndex!=0){
+                RequirementEndorsementSection.classList.remove("d-none");
+                RequirementEndorsementInput.setAttribute("required", "required");
+            }else{
+                RequirementEndorsementSection.classList.add("d-none");
+                RequirementEndorsementInput.removeAttribute("required");
+            }
         }
 
         CertificateSectionToggle();
