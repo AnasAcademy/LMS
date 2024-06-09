@@ -263,10 +263,11 @@ class ApplyController extends Controller
             // ];
 
             // return view(getTemplate() . '.cart.payment', $data);
-        } else {
-
-            return $this->handlePaymentOrderWithZeroTotalAmount($order);
         }
+        // else {
+
+        //     return $this->handlePaymentOrderWithZeroTotalAmount($order);
+        // }
 
         return redirect('/panel');
     }

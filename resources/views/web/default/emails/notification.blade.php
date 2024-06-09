@@ -1,19 +1,15 @@
-@extends('web.default.layouts.email')
+ $query = Sale::query()
+                ->whereNull('sales.refund_at')
+                ->where('access_to_purchased_item', true)
+                ->where(function ($query) {
+                    $query->whereNotNull('sales.bundle_id')
+                        ->whereIn('sales.type', ['bundle', 'installment_payment']);
 
-@section('body')
-    <td class="social-title pb30"
-        style="color:#ffffff; font-family: 'IBM Plex Sans', sans-serif; font-size:14px; line-height:22px; text-align:right; padding-bottom:30px;">
-        <div mc:edit="text_33" style="color: #333; direction: rtl !important;">
+                })
+                ->distinct()
+                ->select('sales.bundle_id');
 
-            <br><br>
-            <p style="font-family: cairo, sans-serif; text-align: right;">
-                {{-- <b style="color:#5E0A83"> عنوان البطاقة</b>: --}}
-                {{ $notification['title'] }}
-            </p>
-            
-            <p style="font-family: cairo, sans-serif; direction: rtl !important; text-align: right;">
-                {!! $notification['message'] !!}
-            </p>
-        </div>
-    </td>
-@endsection
+            $combinedSales = deepClone($query)
+
+                ->orderBy('created_at', 'desc')
+                ->get();
