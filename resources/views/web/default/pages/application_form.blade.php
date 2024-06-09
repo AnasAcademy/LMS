@@ -166,7 +166,7 @@
                                 <label class="form-label">حدد نوع التقديم<span class="text-danger">*</span></label>
                                 <select id="typeSelect" name="type" required
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
-                                    <option disabled selected hidden value="">اختر نوع التقديم التي تريد دراستها في
+                                    <option selected hidden value="">اختر نوع التقديم التي تريد دراستها في
                                         اكاديمية انس للفنون </option>
                                     <option value="diplomas" @if (old('type') == 'diplomas') selected @endif>
                                         دبلومات </option>
@@ -186,7 +186,7 @@
                                         class="text-danger">*</span></label>
                                 <select id="mySelect2" name="webinar_id"
                                     class="form-control @error('webinar_id') is-invalid @enderror">
-                                    <option disabled selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
+                                    <option selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
                                         في
                                         اكاديمية انس للفنون </option>
 
@@ -216,7 +216,7 @@
                                     <select id="mySelect1" name="category_id"
                                         class="form-control @error('category_id') is-invalid @enderror"
                                         onchange="toggleHiddenInput()">
-                                        <option disabled selected hidden value="">اختر الدرجة العلمية التي تريد
+                                        <option selected hidden value="">اختر الدرجة العلمية التي تريد
                                             دراستها في
                                             اكاديمية انس للفنون </option>
                                         @foreach ($category as $item)
@@ -1393,14 +1393,15 @@
 
                     hiddenInput.outerHTML =
                         '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
-                        '<option value="" class="placeholder" disabled selected hidden>اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
+                        '<option value="" class="placeholder" selected hidden>اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
                     hiddenLabel.style.display = "block";
                     hiddenLabel.closest('div').classList.remove('d-none');
                 } else {
                     hiddenInput.outerHTML =
-                        '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
+                       '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                         '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
                     hiddenLabel.style.display = "none";
                     hiddenLabel.closest('div').classList.add('d-none');
                 }
@@ -1458,6 +1459,14 @@
 
                 }
 
+            }else{
+                 hiddenInput.outerHTML =
+                       '<select id="bundle_id" name="bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                         '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
+                    hiddenLabel.style.display = "none";
+                    hiddenLabel.closest('div').classList.add('d-none');
+
+                    // CertificateSectionToggle();
             }
         }
 
@@ -1484,23 +1493,13 @@
             if (select) {
                 var type = select.value;
                 if (type == 'diplomas') {
-                    console.log(type);
                     diplomasSection.classList.remove('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    RequirementEndorsementInput.setAttribute("required", "required");
-                    CertificateSectionToggle();
-                    toggleHiddenInput();
                     resetSelect(hiddenCourseInput);
-
-
 
                 } else if (type == 'courses') {
                     hiddenCourseInput.closest('div').classList.remove('d-none');
-                    console.log(type);
-                    console.log(hiddenDiplomaInput.options);
-                    console.log(hiddenDiplomaInput.options[0]);
                     diplomasSection.classList.add('d-none');
-                    RequirementEndorsementInput.removeAttribute("required");
                     education.style = "display:none";
                     education.querySelectorAll('input').forEach((item) => {
                         item.removeAttribute('required');
@@ -1512,60 +1511,21 @@
                 } else {
                     diplomasSection.classList.add('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    RequirementEndorsementInput.removeAttribute("required");
                     resetSelect(hiddenDiplomaInput);
                     resetSelect(hiddenBundleInput);
                     resetSelect(hiddenCourseInput);
                     // education.classList.add('d-none');
                 }
 
-                // if (type == 'diplomas') {
-                //     hiddenDiplomaLabel.style.display = "block";
-                //     hiddenDiplomaInput.style.display = "block";
-                //     hiddenDiplomaInput.setAttribute('required','required')
-                //     hiddenCourseInput.style.display = "none"
-                //     hiddenCourseLabel.style.display = "none"
-
-                //     // hiddenBundleInput.style.display = "block";
-                //     // hiddenDiplomaLabel1.style.display = "block";
-
-                // } else if (type == 'courses') {
-                //     hiddenCourseInput.style.display = "block"
-                //     hiddenCourseLabel.style.display = "block"
-                //     hiddenDiplomaLabel.style.display = "none";
-                //     hiddenDiplomaInput.style.display = "none";
-                //     hiddenDiplomaInput.removeAttribute('required')
-                //     hiddenBundleInput.removeAttribute('required')
-                //     hiddenBundleInput.style.display = "none";
-                //     hiddenDiplomaLabel1.style.display = "none";
-                //     certificateSection.classList.add("d-none");
-                //     hiddenDiplomaInput.options[0].setAttribute('selected','selected');
-                //     hiddenBundleInput.outerHTML =
-                //         '<input type="text" id="bundle_id" name="bundle_id" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
-                //         hiddenDiplomaLabel1.style.display = "none";
-                // } else {
-                //     hiddenDiplomaLabel.style.display = "none";
-                //     hiddenDiplomaInput.style.display = "none";
-                //     hiddenDiplomaInput.removeAttribute('required')
-                //     hiddenBundleInput.removeAttribute('required')
-                //     hiddenCourseInput.style.display = "none"
-                //     hiddenCourseLabel.style.display = "none"
-                //     hiddenBundleInput.style.display = "none";
-                //     hiddenDiplomaLabel1.style.display = "none";
-                //     certificateSection.classList.add("d-none");
-                //     hiddenDiplomaInput.options[0].setAttribute('selected','selected');
-                //     hiddenBundleInput.options[0].setAttribute('selected','selected');
-                // }
-
-
-
+                toggleHiddenInput();
+                CertificateSectionToggle();
             }
         }
 
+        toggleHiddenType();
         function resetSelect(selector) {
             selector.selectedIndex = 0; // This sets the first option as selected
         }
-        toggleHiddenType();
     </script>
 
 
