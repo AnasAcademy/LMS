@@ -187,6 +187,7 @@ class ApplyController extends Controller
                     'requirement_endorsement' => $bundle ? 'accepted'  : ''
                 ]);
             }
+            
         }catch (\Exception $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
             // dd($e);
