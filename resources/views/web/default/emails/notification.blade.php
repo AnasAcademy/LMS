@@ -1,15 +1,11 @@
- $query = Sale::query()
-                ->whereNull('sales.refund_at')
-                ->where('access_to_purchased_item', true)
-                ->where(function ($query) {
-                    $query->whereNotNull('sales.bundle_id')
-                        ->whereIn('sales.type', ['bundle', 'installment_payment']);
+@extends('web.default.layouts.email')
 
-                })
-                ->distinct()
-                ->select('sales.bundle_id');
+@section('body')
+    <!-- content -->
+    <td valign="top" class="bodyContent" mc:edit="body_content">
+        <h1 class="h1">{{ $notification['title'] }}</h1>
+        <p>{!! nl2br($notification['message']) !!}</p>
 
-            $combinedSales = deepClone($query)
-
-                ->orderBy('created_at', 'desc')
-                ->get();
+        <p>{{ trans('notification.email_ignore_msg') }}</p>
+    </td>
+@endsection
