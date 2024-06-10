@@ -31,7 +31,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function headings(): array
     {
-        
+
         return [
 
             'Name',
@@ -52,7 +52,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
     {
         if ($user->student) {
             $diploma = '';
-            $purchasedBundles = $user->purchasedFormBundle();
+            $purchasedBundles = $user->purchasedFormBundle;
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {

@@ -1490,7 +1490,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::where(['role_name' => Role::$user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+        $users = User::where(['role_name' => Role::$user])->whereHas('student')->whereHas('purchasedBundles')->orderBy('created_at', 'desc')->get();
 
         $usersExport = new EnrollersExport($users);
 
@@ -1797,7 +1797,7 @@ class UserController extends Controller
         //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
         //         $item->where('form_fee', true);
         //     });
-        $query = User::where(['role_name' => Role::$user]);
+        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
