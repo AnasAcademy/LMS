@@ -1,11 +1,18 @@
 @extends('web.default.layouts.email')
 
 @section('body')
-    <!-- content -->
-    <td valign="top" class="bodyContent" mc:edit="body_content">
-        <h1 class="h1">{{ $notification['title'] }}</h1>
-        <p>{!! nl2br($notification['message']) !!}</p>
+    <td class="social-title pb30"
+        style="color:#ffffff; font-family: 'IBM Plex Sans', sans-serif; font-size:14px; line-height:22px; text-align:right; padding-bottom:30px;">
+        <div mc:edit="text_33" style="color: #333; direction: rtl !important;">
 
-        <p>{{ trans('notification.email_ignore_msg') }}</p>
+            <br><br>
+            <p style="font-family: cairo, sans-serif; text-align: right;">
+                {{ $notification['title'] }}
+            </p>
+
+            <p style="font-family: cairo, sans-serif; direction: rtl !important; text-align: right;">
+                {!! $notification['message'] !!}
+            </p>
+        </div>
     </td>
 @endsection
