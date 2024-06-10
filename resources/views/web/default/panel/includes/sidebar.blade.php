@@ -87,7 +87,7 @@
         {{-- requirements link --}}
         @if (auth()->user()->Student)
             <li
-                class="sidenav-item {{ (request()->is('panel/requirements') or request()->is('panel/newEnrollment')) ? 'sidenav-item-active' : '' }}">
+                class="sidenav-item {{ (request()->is('panel/requirements') or request()->is('panel/requirements/*') or request()->is('panel/newEnrollment') or request()->is('panel/courses/applied')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#requirementsCollapse" role="button"
                     aria-expanded="false" aria-controls="requirementsCollapse">
                     <span class="sidenav-item-icon mr-10">
@@ -96,15 +96,23 @@
                     <span class="font-14 text-dark-blue font-weight-500">القبول والتسجيل</span>
                 </a>
 
-                <div class="collapse {{ (request()->is('panel/requirements') or request()->is('panel/requirements/*') or request()->is('panel/newEnrollment')) ? 'show' : '' }}"
+                <div class="collapse {{ (request()->is('panel/requirements') or request()->is('panel/requirements/*') or request()->is('panel/newEnrollment') or request()->is('panel/courses/applied')) ? 'show' : '' }}"
                     id="requirementsCollapse">
                     <ul class="sidenav-item-collapse">
-                        <li class="mt-5 {{ request()->is('panel/requirements/applied') ? 'active' : '' }}">
-                            <a href="/panel/requirements/applied">دفع رسوم البرنامج</a>
+                        @if (count(auth()->user()->getAllPurchasedWebinarsIds()) > 0 || count(auth()->user()->webinarOfflinePayments)>0)
+                        <li class="mt-5 {{ request()->is('panel/courses/applied') ? 'active' : '' }}">
+                            <a href="/panel/courses/applied">دفع رسوم الدورات</a>
                         </li>
-                        <li class="mt-5 {{ request()->is('panel/requirements') ? 'active' : '' }}">
-                            <a href="/panel/requirements">{{ trans('panel.requirements') }}</a>
-                        </li>
+                        @endif
+                        @if (count(auth()->user()->student->bundleStudent) > 0)
+                            <li class="mt-5 {{ request()->is('panel/requirements/applied') ? 'active' : '' }}">
+                                <a href="/panel/requirements/applied">دفع رسوم البرنامج</a>
+                            </li>
+
+                            <li class="mt-5 {{ request()->is('panel/requirements') ? 'active' : '' }}">
+                                <a href="/panel/requirements">{{ trans('panel.requirements') }}</a>
+                            </li>
+                        @endif
                         <li class="mt-5 {{ request()->is('panel/newEnrollment') ? 'active' : '' }}">
                             <a href="/panel/newEnrollment">طلب تسجيل جديد</a>
                         </li>
@@ -195,15 +203,17 @@
                                     href="/panel/webinars/organization_classes">{{ trans('panel.organization_classes') }}</a>
                             </li>
                         @endif
+                        @if (count(auth()->user()->purchasedBundles) > 0)
+                            <li class="mt-5 {{ request()->is('panel/bundles/purchases') ? 'active' : '' }}">
+                                <a href="/panel/bundles/purchases">جدول الدبلومات الدراسيه</a>
+                            </li>
+                        @endif
 
-                        <li class="mt-5 {{ request()->is('panel/bundles/purchases') ? 'active' : '' }}">
-                            <a href="/panel/bundles/purchases">جدول الدبلومات الدراسيه</a>
-                        </li>
-
-                        <li class="mt-5 {{ request()->is('panel/webinars/purchases') ? 'active' : '' }}">
-                            <a href="/panel/webinars/purchases">جدول الدورات الدراسيه</a>
-                        </li>
-
+                        @if (count(auth()->user()->getAllPurchasedWebinarsIds()) > 0)
+                            <li class="mt-5 {{ request()->is('panel/webinars/purchases') ? 'active' : '' }}">
+                                <a href="/panel/webinars/purchases">جدول الدورات الدراسيه</a>
+                            </li>
+                        @endif
                         {{-- @if ($authUser->isOrganization() || $authUser->isTeacher())
                         <li class="mt-5 {{ request()->is('panel/webinars/comments') ? 'active' : '' }}">
                             <a href="/panel/webinars/comments">{{ trans('panel.my_class_comments') }}</a>
