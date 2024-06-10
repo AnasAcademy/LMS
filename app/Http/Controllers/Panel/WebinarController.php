@@ -1059,23 +1059,22 @@ class WebinarController extends Controller
             ->pluck('id')
             ->toArray();
 
-        $query = Sale::query()
+            $query = Sale::query()
             ->where(function ($query) use ($user, $giftsIds) {
-                $query->where('sales.buyer_id', $user->id);
-                $query->orWhereIn('sales.gift_id', $giftsIds);
+                $query->where('sales.buyer_id', $user->id)
+                    ->orWhereIn('sales.gift_id', $giftsIds);
             })
             ->whereNull('sales.refund_at')
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
-                $query->Where(function ($query) {
-                    $query->whereNotNull('sales.webinar_id')
-                        ->where('sales.type','webinar')
-                        ->whereHas('webinar', function ($query) {
-                            $query->where('status', 'active');
-                        });
-                });
-            })->distinct('sales.webinar_id');
-
+                $query->whereNotNull('sales.webinar_id')
+                    ->where('sales.type', 'webinar')
+                    ->whereHas('webinar', function ($query) {
+                        $query->where('status', 'active');
+                    });
+            })
+            ->distinct()
+            ->select('sales.webinar_id');
 
             $sales = deepClone($query)
             ->with([

@@ -7,10 +7,9 @@
 
             <br><br>
             <p style="font-family: cairo, sans-serif; text-align: right;">
-                {{-- <b style="color:#5E0A83"> عنوان البطاقة</b>: --}}
                 {{ $notification['title'] }}
             </p>
-            
+
             <p style="font-family: cairo, sans-serif; direction: rtl !important; text-align: right;">
                 {!! $notification['message'] !!}
             </p>

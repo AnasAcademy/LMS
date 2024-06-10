@@ -61,7 +61,8 @@ class StudentImport implements ToModel
                 'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
                 'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
                 'deaf' => 'required|in:نعم,لا',
-                'gender' => 'required|in:male,female'
+                'gender' => 'required|in:male,female',
+                'birthdate' => 'required|date_format:Y-m-d'
             ];
 
             $fileData = [
@@ -70,6 +71,7 @@ class StudentImport implements ToModel
                 'email' => $row[2],
                 'deaf' => $row[22],
                 'gender' => $row[6],
+                'birthdate' => $row[5],
             ];
             // validate imported data
             $validator = Validator::make($fileData, $rules);

@@ -86,8 +86,11 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::get('/', function () {
             if (auth()->check() && auth()->user()->role_name == 'admin') {
                 return redirect('/admin');
-            } else if (auth()->check() && auth()->user()->student) {
-                return redirect('/panel/requirements');
+            }else if(auth()->check() && auth()->user()->isUser()){
+                return redirect('/panel');
+            }
+            else if (auth()->check() && auth()->user()->student) {
+                return redirect('/panel/requirements/applied');
             } else {
                 return redirect('/apply');
             }
@@ -96,12 +99,14 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
 
         Route::get('/apply', function () {
             if (auth()->check() && auth()->user()->student) {
-                return redirect('/panel/requirements');
+                return redirect('panel/newEnrollment');
             } else {
                 return app()->call('App\Http\Controllers\Web\ApplyController@index');
             }
         });
         Route::post('/apply', 'ApplyController@checkout')->name('payFee');
+
+        Route::get('/payment/{order}','PaymentController@index');
     });
 
     Route::get('/getDefaultAvatar', 'DefaultAvatarController@make');
@@ -222,7 +227,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         Route::post('/payment-request', 'PaymentController@paymentRequest');
         Route::get('/verify/{gateway}', ['as' => 'payment_verify', 'uses' => 'PaymentController@paymentVerify']);
         Route::post('/verify/{gateway}', ['as' => 'payment_verify_post', 'uses' => 'PaymentController@paymentVerify']);
-        Route::get('/status', 'PaymentController@payStatus');
+        Route::get('/status/{order}', 'PaymentController@payStatus');
         Route::get('/payku/callback/{id}', 'PaymentController@paykuPaymentVerify')->name('payku.result');
     });
 

@@ -63,10 +63,10 @@ return [
     'card_id' => 'رقم الكارت',
     'approved' => 'مقبولة',
     'approve' => 'قبول',
-    'offline' => 'دفع اوفلاين',
+    'offline' => ' حساب بنكي',
     'offline_no_result' => 'لا يوجد طلبات دفع اوفلاين...',
     'offline_no_result_hint' => 'يمكنك شحن حسابك عن طريق نظام الدفع الاوفلاين.',
-    'offline_payment_request_success_store' => 'تم قبول طلب الدفع الاوفلاين الخاص بك بنجاح...',
+    'offline_payment_request_success_store' => 'تم ارسال طلب الدفع الخاص بك عن طريق حساب بنكي بنجاح...',
 
     'charge_account_page_title' => 'شحن الحساب',
     'subscribe' => 'اشتراك',
