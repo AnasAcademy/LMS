@@ -1371,13 +1371,13 @@
                             </a>
                         </li>
 
-                        <li
+                        {{-- <li
                             class="{{ (request()->is(getAdminPanelUrl('/financial/offline_payments', false)) and request()->get('page_type') == 'history') ? 'active' : '' }}">
                             <a href="{{ getAdminPanelUrl() }}/financial/offline_payments?page_type=history"
                                 class="nav-link">
                                 <span>{{ trans('public.history') }}</span>
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
             @endcan

@@ -304,7 +304,7 @@
                             </td> --}}
                             <td>
 
-                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                @foreach ($user->purchasedBundles as $purchasedBundle)
                                     {{ $purchasedBundle->bundle->title }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;

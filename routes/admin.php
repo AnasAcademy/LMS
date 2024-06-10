@@ -62,7 +62,6 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
             Route::get('/enrollers', 'UserController@Enrollers');
-
             Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelUsers');
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
@@ -535,7 +534,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::group(['prefix' => 'offline_payments'], function () {
                 Route::get('/', 'OfflinePaymentController@index');
                 Route::get('/excel', 'OfflinePaymentController@exportExcel');
-                Route::get('/{id}/reject', 'OfflinePaymentController@reject');
+                Route::get('/{offlinePayment}/reject', 'OfflinePaymentController@reject');
                 Route::get('/{id}/approved', 'OfflinePaymentController@approved');
             });
 

@@ -16,6 +16,11 @@ use App\User;
 use App\Student;
 use App\Models\Category;
 use Illuminate\Support\Facades\Cookie;
+use App\Http\Controllers\Web\PaymentController;
+use App\Models\Accounting;
+use App\Models\OfflineBank;
+use App\Models\OfflinePayment;
+
 
 class ApplyController extends Controller
 {
@@ -108,6 +113,7 @@ class ApplyController extends Controller
                     ],
                     'terms' => 'accepted',
                     'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
+                    'requirement_endorsement' => $bundle ? 'accepted'  : ''
                 ]);
             } else {
                 $validatedData = $request->validate([
@@ -178,8 +184,10 @@ class ApplyController extends Controller
                     'about_us' => 'required|string|min:3|max:255',
                     'terms' => 'accepted',
                     'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
+                    'requirement_endorsement' => $bundle ? 'accepted'  : ''
                 ]);
             }
+
         }catch (\Exception $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
             // dd($e);
@@ -190,14 +198,14 @@ class ApplyController extends Controller
         Cookie::queue('user_data', json_encode($validatedData));
         $user = auth()->user();
 
-        $paymentChannels = PaymentChannel::where('status', 'active')->get();
+        // $paymentChannels = PaymentChannel::where('status', 'active')->get();
         $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
-            'amount' => $request->type=='diplomas' ? 230: $webinar->price??0,
+            'amount' => $request->type=='diplomas' ? 230: $webinar->price ?? 0,
             'tax' => 0,
             'total_discount' => 0,
-            'total_amount' => $request->type=='diplomas' ? 230: $webinar->price,
+            'total_amount' => $request->type=='diplomas' ? 230: $webinar->price ?? 0,
             'product_delivery_fee' => null,
             'created_at' => time(),
         ]);
@@ -231,40 +239,36 @@ class ApplyController extends Controller
 
 
         if (!empty($order) and $order->total_amount > 0) {
-            $razorpay = false;
-            $isMultiCurrency = !empty(getFinancialCurrencySettings('multi_currency'));
 
-            foreach ($paymentChannels as $paymentChannel) {
-                if ($paymentChannel->class_name == 'Razorpay' and (!$isMultiCurrency or in_array(currency(), $paymentChannel->currencies))) {
-                    $razorpay = true;
-                }
-            }
+            return redirect('/payment/'.$order->id);
 
+            // return view(getTemplate() . '.cart.payment', $data);
 
-            $data = [
-                'pageTitle' => trans('public.checkout_page_title'),
-                'paymentChannels' => $paymentChannels,
-                'carts' => $carts,
-                'subTotal' => null,
-                'totalDiscount' => null,
-                'tax' => null,
-                'taxPrice' => null,
-                'total' => $request->type=='diplomas' ? 230: $webinar->price,
-                'userGroup' => $user->userGroup ? $user->userGroup->group : null,
-                'order' => $order,
-                'type' => $order->orderItems[0]->form_fee,
-                'count' => 0,
-                'userCharge' => $user->getAccountingCharge(),
-                'razorpay' => $razorpay,
-                'totalCashbackAmount' => null,
-                'previousUrl' => url()->previous(),
-            ];
+            // $data = [
+            //     'pageTitle' => trans('public.checkout_page_title'),
+            //     'paymentChannels' => $paymentChannels,
+            //     'carts' => $carts,
+            //     'subTotal' => null,
+            //     'totalDiscount' => null,
+            //     'tax' => null,
+            //     'taxPrice' => null,
+            //     'total' => $request->type=='diplomas' ? 230: $webinar->price,
+            //     'userGroup' => $user->userGroup ? $user->userGroup->group : null,
+            //     'order' => $order,
+            //     'type' => $order->orderItems[0]->form_fee,
+            //     'count' => 0,
+            //     'userCharge' => $user->getAccountingCharge(),
+            //     'razorpay' => $razorpay,
+            //     'totalCashbackAmount' => null,
+            //     'previousUrl' => url()->previous(),
+            // ];
 
-            return view(getTemplate() . '.cart.payment', $data);
-        } else {
-
-            return $this->handlePaymentOrderWithZeroTotalAmount($order);
+            // return view(getTemplate() . '.cart.payment', $data);
         }
+        // else {
+
+        //     return $this->handlePaymentOrderWithZeroTotalAmount($order);
+        // }
 
         return redirect('/panel');
     }
@@ -282,7 +286,7 @@ class ApplyController extends Controller
             'status' => Order::$paid
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 
     /**

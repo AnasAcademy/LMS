@@ -861,9 +861,27 @@ class UserController extends Controller
 
 
     // requirement index
-    public function requirementIndex($step=1)
+    public function requirementIndex($step = 1)
     {
 
+
+        $user = auth()->user();
+
+        $student = $user->Student;
+
+        if (!$student) {
+            return redirect('/apply');
+        }
+
+        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
+
+
+
+        return view(getTemplate() . '.panel.requirements.index', ['studentBundles' => $studentBundles]);
+    }
+
+    public function requirementPaymentStep()
+    {
 
         $user = auth()->user();
 
@@ -899,14 +917,12 @@ class UserController extends Controller
                 ];
             }
         }
-// dd($bundleInstallments);
-        // if ($canSale and !empty($bundle->price) and $bundle->price > 0 and getInstallmentsSettings('status') and (empty($user) or $user->enable_installments)) {
-        //     $installmentPlans = new InstallmentPlans($user);
-        //     $installments = $installmentPlans->getPlans('bundles', $bundle->id, $bundle->type, $bundle->category_id, $bundle->teacher_id);
-        // }
-        return view(getTemplate() . '.panel.requirements.index',['studentBundles'=> $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+
+        return view(getTemplate() . '.panel.requirements.payment_step',['studentBundles'=> $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
 
     }
+
+
 
     // create requirement function
     public function createRequirement( $studentBundleId)

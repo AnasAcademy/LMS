@@ -602,6 +602,6 @@ class InstallmentsController extends Controller
             'status' => Order::$paid,
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 }

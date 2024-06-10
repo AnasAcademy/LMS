@@ -171,6 +171,13 @@ return [
         'username'=> 'المستخدم',
         'identity_attachment'=> 'الهوية الوطنية/جواز السفر',
         'admission attachment'=> 'متطلبات القبول',
+        'attachment' => 'المرفق',
+        'account' => 'اسم الحساب',
+        'user_bank' => 'اسم الحساب المحول منه',
+        'user_account_number'=>'رقم الحساب المحول منه',
+        'IBAN'=>'اي بان (IBAN)',
+        'reference_number'=>'سويفت كود (Swift Code)',
+        'date'=>'تاريخ الدفع',
     ],
 
 ];

@@ -556,15 +556,24 @@ class User extends Authenticatable
     }
     public function purchasedBundles()
     {
-        return Sale::where(function ($query) {
+        // return Sale::where(function ($query) {
+        //     $query->where('type', 'bundle')
+        //         ->orWhere('type', 'installment_payment');
+        // })
+        // ->where('buyer_id', $this->id)
+        // ->whereNotNull('bundle_id')
+        // ->orderBy('created_at', 'desc')
+        // ->get()
+        // ->unique('bundle_id');
+
+        return $this->hasMany(Sale::class, 'buyer_id')
+        ->where(function ($query) {
             $query->where('type', 'bundle')
-                ->orWhere('type', 'installment_payment');
+                  ->orWhere('type', 'installment_payment');
         })
-        ->where('buyer_id', $this->id)
         ->whereNotNull('bundle_id')
         ->orderBy('created_at', 'desc')
-        ->get()
-        ->unique('bundle_id');
+        ->distinct('bundle_id');
 
     }
 

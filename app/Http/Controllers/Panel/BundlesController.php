@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panel;
 
 use App\Exports\WebinarStudents;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\PaymentController;
 use App\Mixins\RegistrationPackage\UserPackage;
 use App\Models\Bundle;
 use App\Models\BundleFilterOption;
@@ -102,24 +103,23 @@ class BundlesController extends Controller
             ->pluck('id')
             ->toArray();
 
-        $query = Sale::query()
+            $query = Sale::query()
             ->where(function ($query) use ($user, $giftsIds) {
-                $query->where('sales.buyer_id', $user->id);
-                $query->orWhereIn('sales.gift_id', $giftsIds);
+                $query->where('sales.buyer_id', $user->id)
+                      ->orWhereIn('sales.gift_id', $giftsIds);
             })
             ->whereNull('sales.refund_at')
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
-                $query->Where(function ($query) {
-                    $query->whereNotNull('sales.bundle_id')
-                        ->whereIn('sales.type', ['bundle', 'installment_payment'])
-                        ->whereHas('bundle', function ($query) {
-                            $query->where('status', 'active');
-                        });
-                });
-
+                $query->whereNotNull('sales.bundle_id')
+                      ->whereIn('sales.type', ['bundle', 'installment_payment'])
+                      ->whereHas('bundle', function ($query) {
+                          $query->where('status', 'active');
+                      });
             })
-            ->distinct('sales.bundle_id');
+            ->distinct()
+            ->select('sales.bundle_id');
+
 
 
             $sales = deepClone($query)
@@ -526,7 +526,7 @@ class BundlesController extends Controller
                         'installment_id' => $installment->id,
                         'user_id' => $user->id,
                         $columnName => $itemId,
-                        'product_order_id' => !empty($productOrder) ? $productOrder->id : null,
+                        'product_order_id' => (!empty($productOrder)) ? $productOrder->id : null,
                         'item_price' => $itemPrice,
                         'status' => $status,
                     ], [
@@ -606,7 +606,7 @@ class BundlesController extends Controller
                                 'previousUrl' => url()->previous(),
                             ];
 
-                            return view(getTemplate() . '.cart.payment', $data);
+                            return redirect('/payment/' . $order->id);
                         } else {
 
                             return $this->handlePaymentOrderWithZeroTotalAmount($order);
@@ -668,7 +668,7 @@ class BundlesController extends Controller
                     'previousUrl' => url()->previous(),
                 ];
 
-                return view(getTemplate() . '.cart.payment', $data);
+                return redirect('/payment/' . $order->id);
             } else {
 
                 return $this->handlePaymentOrderWithZeroTotalAmount($order);
@@ -767,7 +767,7 @@ class BundlesController extends Controller
             'status' => Order::$paid
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 
     public function create()

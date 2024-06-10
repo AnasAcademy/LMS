@@ -386,7 +386,7 @@ class InstallmentsController extends Controller
                 'previousUrl' => url()->previous(),
             ];
 
-            return view(getTemplate().'.cart.payment', $data);
+            return redirect('/payment/' . $order->id);
         } else {
 
             return $this->handlePaymentOrderWithZeroTotalAmount($order);
@@ -603,6 +603,6 @@ class InstallmentsController extends Controller
             'status' => Order::$paid,
         ]);
 
-        return redirect('/payments/status?order_id='.$order->id);
+        return redirect('/payments/status/'.$order->id);
     }
 }

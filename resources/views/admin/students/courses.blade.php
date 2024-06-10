@@ -115,12 +115,11 @@
                             </td>
                             <td class="text-center mb-2" width="120">
 
-
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/show"
                                         class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
-                                        title="{{ trans('admin/main.login') }}">
-                                        <i class="fa fa-user-shield"></i>
+                                        title="عرض">
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                 @endcan
 
