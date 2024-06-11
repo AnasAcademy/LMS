@@ -151,7 +151,13 @@ class GroupController extends Controller
 
         Group::find($id)->delete();
 
-        return redirect(getAdminPanelUrl() . '/users/groups');
+        $toastData = [
+            'title' => 'حذف مجموعة دورة',
+            'msg' => 'تم الحذف بنجاح',
+            'status' => 'success',
+        ];
+
+        return back()->with('toast', $toastData);
     }
 
     public function groupRegistrationPackage(Request $request, $id)
