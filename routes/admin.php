@@ -75,7 +75,9 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@Courses');
             Route::get('/{id}', 'UserController@Courses');
             Route::get('/groups/{id}/show', 'UserController@groupInfo');
-            Route::get('/groups/{id}/update', 'UserController@groupUpdate');
+            Route::get('/groups/{group}/edit', 'UserController@groupEdit');
+            Route::put('/groups/{group}/update', 'UserController@groupUpdate');
+            Route::get('/groups/{id}/delete', 'GroupController@destroy');
 
         });
 
