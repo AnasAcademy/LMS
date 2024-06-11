@@ -143,7 +143,7 @@
                             <div class="form-group col-12 col-sm-6">
                                 <label for="application2" class="form-label" id="all_course">الدورات التدربيه<span
                                         class="text-danger">*</span></label>
-                                <select id="mySelect2" name="webinar_id"
+                                <select id="mySelect2" name="webinar_id" onchange="coursesToggle()"
                                     class="form-control @error('webinar_id') is-invalid @enderror">
                                     <option selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
                                         في
@@ -158,6 +158,17 @@
                                 </select>
 
                                 @error('webinar_id')
+                                    <div class="invalid-feedback d-block">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            {{-- course endorsement --}}
+                            <div class="d-none">
+                                <input type="checkbox" id="course_endorsement" name="course_endorsement">
+                                أقر بأن لدي خبرة عملية ومعرفة جيدة بالبرامج التي سأتقدم للاختبار بها، وأفهم أن الدورة تؤهل للاختبار فقط ولا تعلم البرامج من الصفر.
+                                @error('course_endorsement')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
                                     </div>
@@ -410,6 +421,7 @@
                 }
 
                 toggleHiddenInput();
+                 coursesToggle();
                 CertificateSectionToggle();
 
             }
@@ -419,6 +431,19 @@
 
         function resetSelect(selector) {
             selector.selectedIndex = 0; // This sets the first option as selected
+        }
+           function coursesToggle() {
+            console.log('course');
+            let courseEndorsementInput = document.getElementById("course_endorsement");
+            let courseEndorsementSection = courseEndorsementInput.closest("div");
+             var courseSelect = document.getElementById("mySelect2");
+            if (courseSelect.selectedIndex != 0) {
+                courseEndorsementSection.classList.remove("d-none");
+                courseEndorsementInput.setAttribute("required", "required");
+            } else {
+                courseEndorsementSection.classList.add("d-none");
+                courseEndorsementInput.removeAttribute("required");
+            }
         }
 
     </script>
