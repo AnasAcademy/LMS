@@ -75,6 +75,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@Courses');
             Route::get('/{id}', 'UserController@Courses');
             Route::get('/groups/{id}/show', 'UserController@groupInfo');
+            Route::get('/groups/{id}/update', 'UserController@groupUpdate');
 
         });
 

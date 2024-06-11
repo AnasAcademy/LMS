@@ -1895,7 +1895,7 @@ class UserController extends Controller
         return view('admin.students.courses', $data);
     }
 
-    public function groupInfo( $group_id)
+    public function groupInfo($group_id)
     {
         // dd($course_id.','.$group_id);
         $group = Group::find($group_id);
@@ -1912,6 +1912,10 @@ class UserController extends Controller
         ];
 
         return view('admin.students.groups', $data);
+    }
+
+    public function groupUpdate($group_id){
+        dd($group_id);
     }
 
 
