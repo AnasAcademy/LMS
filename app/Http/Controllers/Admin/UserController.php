@@ -1873,7 +1873,6 @@ class UserController extends Controller
             $groups = $query->orderBy('created_at', 'desc')->get();
         } else {
             $groups = $query;
-
         }
 
         if ($is_export_excel) {
@@ -1899,25 +1898,43 @@ class UserController extends Controller
     {
         // dd($course_id.','.$group_id);
         $group = Group::find($group_id);
-        $webinar=$group->webinar;
+        $webinar = $group->webinar;
         $enrollments = $group->enrollments;
         // dd($enrollments);
         $data = [
             'pageTitle' => trans('public.students'),
-            'totalStudents'=>$enrollments->count(),
+            'totalStudents' => $enrollments->count(),
             'enrollments' => $enrollments,
             'webinar' => $webinar,
-            'group'=>$group,
+            'group' => $group,
 
         ];
 
         return view('admin.students.groups', $data);
     }
 
-    public function groupUpdate($group_id){
-        dd($group_id);
+    public function groupEdit(Group $group)
+    {
+
+        return view('admin.students.groups.edit', compact('group'));
     }
 
+    public function groupUpdate(Request $request, Group $group)
+    {
+        $validData = $request->validate([
+            'name' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:0',
+            'start_date' => 'nullable|date',
+            'status' => 'required|in:inactive,active'
+        ]);
+        $toastData = [
+            'title' => 'تعديل بيانات مجموعة دورة',
+            'msg' => 'تم التعديل بنجاح',
+            'status' => 'success',
+        ];
+        $group->update($validData);
+        return redirect('/admin/courses/'.$group->webinar_id)->with('toast', $toastData);
+    }
 
     public function sendEmail($user, $data)
     {
