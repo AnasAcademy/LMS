@@ -33,126 +33,80 @@
             </div>
         </div>
 
-        {{-- <section class="card">
+        <div class="card">
+            <div class="card-header">
+                @can('admin_users_export_excel')
+                    <a href="{{ getAdminPanelUrl() }}/courses/excelGroup?{{ http_build_query(request()->all()) }}"
+                        class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+                @endcan
+                <div class="h-10"></div>
+            </div>
+
             <div class="card-body">
-                <form method="get" class="mb-0">
-
-                    <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="input-label">كود الطالب</label>
-                                    <input name="user_code" type="text" class="form-control"
-                                        value="{{ request()->get('user_code') }}">
-                                </div>
-                            </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">بريد الطالب</label>
-                                <input name="email" type="text" class="form-control"
-                                    value="{{ request()->get('email') }}">
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">اسم الطالب</label>
-                                <input
-                                    name={{ request()->is(getAdminPanelUrl('/students/courses', false)) ? 'full_name':'ar_name'  }}
-                                    type="text" class="form-control"
-                                    value="{{ request()->get('full_name') }}{{ request()->get('ar_name') }}">
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">هاتف الطالب</label>
-                                <input name="mobile" type="text" class="form-control"
-                                    value="{{ request()->get('mobile') }}">
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-3">
-                            <div class="form-group mt-1">
-                                <label class="input-label mb-4"> </label>
-                                <input type="submit" class="text-center btn btn-primary w-100"
-                                    value="{{ trans('admin/main.show_results') }}">
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section> --}}
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            @can('admin_users_export_excel')
-                <a href="{{ getAdminPanelUrl() }}/courses/excelGroup?{{ http_build_query(request()->all()) }}"
-                    class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
-            @endcan
-            <div class="h-10"></div>
-        </div>
-
-        <div class="card-body">
-            <div class="table-responsive text-center">
-                <table class="table table-striped font-14">
-                    <tr>
-                        <th>{{ '#' }}</th>
-                        <th>اسم المجموعه</th>
-                        <th> عدد الطلاب</th>
-                        <th width="120">{{ trans('admin/main.actions') }}</th>
-                    </tr>
-
-                    @foreach ($groups as $index => $group)
+                <div class="table-responsive text-center">
+                    <table class="table table-striped font-14">
                         <tr>
-                            <td class="text-center">{{ ++$index }}</td>
-                            <td class="text-center">{{ $group->name }}</td>
-                            <td class="text-center">
-                                {{ $group->enrollments->count() }}
-                            </td>
-                            <td class="text-center mb-2" width="120">
-
-                                @can('admin_users_impersonate')
-                                    <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/show"
-                                        class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
-                                        title="عرض">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                @endcan
-
-                                @can('admin_users_edit')
-                                    <a href="{{ getAdminPanelUrl() }}/groups/{{ $group->id }}/edit"
-                                        class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
-                                        title="{{ trans('admin/main.edit') }}">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                @endcan
-
-                                @can('admin_users_delete')
-                                    @include('admin.includes.delete_button', [
-                                        'url' => getAdminPanelUrl() . '/groups/' . $group->id . '/delete',
-                                        'btnClass' => '',
-                                        'deleteConfirmMsg' => trans('update.group_delete_confirm_msg'),
-                                    ])
-                                @endcan
-                            </td>
-
+                            <th>{{ '#' }}</th>
+                            <th>اسم المجموعه</th>
+                            <th> عدد الطلاب</th>
+                            <th> سعة المجموعة</th>
+                            <th> تاريخ البدأ</th>
+                            <th>الحالة</th>
+                            <th width="120">{{ trans('admin/main.actions') }}</th>
                         </tr>
-                    @endforeach
-                </table>
+
+                        @foreach ($groups as $group)
+                            <tr>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td class="text-center">{{ $group->name }}</td>
+                                <td class="text-center">
+                                    {{ $group->enrollments->count() }}
+                                    </td>
+                                <td class="text-center">{{ $group->capacity }}</td>
+                                <td class="text-center">{{ $group->start_date }}</td>
+                                <td class="text-center">
+                                    <span
+                                        class="{{ $group->status == 'active' ? 'text-success' : 'text-danger' }}">{{ trans('admin/main.' . $group->status) }}</span>
+                                </td>
+                                <td class="text-center mb-2" width="120">
+
+                                    @can('admin_users_impersonate')
+                                        <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/show"
+                                            class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
+                                            title="عرض">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    @endcan
+
+                                    @can('admin_users_edit')
+                                        <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/edit"
+                                            class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
+                                            title="{{ trans('admin/main.edit') }}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    @endcan
+
+                                    @can('admin_users_delete')
+                                        @include('admin.includes.delete_button', [
+                                            'url' => getAdminPanelUrl() . '/courses/groups/' . $group->id . '/delete',
+                                            'btnClass' => '',
+                                            'deleteConfirmMsg' => trans('update.group_delete_confirm_msg'),
+                                        ])
+                                    @endcan
+                                </td>
+
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
             </div>
+
+            {{-- <div class="card-footer text-center">
+                {{ $groups->appends(request()->input())->links() }}
+            </div> --}}
         </div>
 
-        {{-- <div class="card-footer text-center">
-            {{ $groups->appends(request()->input())->links() }}
-        </div> --}}
     </div>
-
-
-
 @endsection
 
 
@@ -166,8 +120,4 @@
     </script>
 
     <script src="/assets/default/js/panel/make_next_session.min.js"></script>
-
-
-
-
 @endpush
