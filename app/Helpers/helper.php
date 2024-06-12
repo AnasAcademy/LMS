@@ -2,6 +2,7 @@
 
 use App\Mixins\Financial\MultiCurrency;
 use App\Models\Code;
+use App\Models\Webinar;
 use App\User;
 use Illuminate\Support\Facades\Cookie;
 
@@ -1630,7 +1631,7 @@ function getDefaultLocale()
 
         $value = [];
 
-        if (!empty ($setting) and !empty ($setting->value) and isset ($setting->value)) {
+        if (!empty($setting) and !empty($setting->value) and isset($setting->value)) {
             $value = json_decode($setting->value, true);
         }
 
@@ -1668,7 +1669,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
         if (!empty($options['[c.title]'])) {
-            if($options['[c.title]'] == "سند سداد") {
+            if ($options['[c.title]'] == "سند سداد") {
                 $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]";
             }
             if ($options['[c.title]'] == "رسوم حجز مقعد دراسي" && !empty($options['[c.early]'])) {
@@ -2156,7 +2157,7 @@ function handlePrice($price, $showCurrency = true, $format = true, $coursePagePr
         $price = handlePriceFormat($price, $decimal, $decimalSeparator, $thousandsSeparator);
     }
     //convert price to int value
-    $price = (int)round(str_replace([$thousandsSeparator, $decimalSeparator], ['', '.'], $price));
+    $price = (int) round(str_replace([$thousandsSeparator, $decimalSeparator], ['', '.'], $price));
 
     if ($coursePagePrice) {
         return [
@@ -2304,28 +2305,88 @@ function convertToMB($size, $unit = 'B')
 }
 
 function generateStudentCode()
-    {
-        // USER CODE
-        $lastCode = Code::latest()->first();
-        if (!empty($lastCode)) {
-            if (empty($lastCode->lst_sd_code)) {
-                $lastCode->lst_sd_code = $lastCode->student_code;
-            }
-            $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-            do {
-                $nextCodeAsInt = $lastCodeAsInt + 1;
-                $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
-
-                $codeExists = User::where('user_code', $nextCode)->exists();
-
-                if ($codeExists) {
-                    $lastCodeAsInt = $nextCodeAsInt;
-                } else {
-                    break;
-                }
-            } while (true);
-
-            return $nextCode;
+{
+    // USER CODE
+    $lastCode = Code::latest()->first();
+    if (!empty($lastCode)) {
+        if (empty($lastCode->lst_sd_code)) {
+            $lastCode->lst_sd_code = $lastCode->student_code;
         }
-        return 'SD00001';
+        $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
+        do {
+            $nextCodeAsInt = $lastCodeAsInt + 1;
+            $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+
+            $codeExists = User::where('user_code', $nextCode)->exists();
+
+            if ($codeExists) {
+                $lastCodeAsInt = $nextCodeAsInt;
+            } else {
+                break;
+            }
+        } while (true);
+
+        return $nextCode;
     }
+    return 'SD00001';
+}
+// function isUserEnrolledInWebinar($webinarId)
+// {
+//     $user = Auth::user();
+
+//     $webinar = Webinar::find($webinarId);
+
+//     if (!$user || !$webinar) {
+//         return false;
+//     }
+
+//     $groups = $webinar->groups;
+
+//     foreach ($groups as $group) {
+
+//         $enrollments = $group->enrollments;
+
+//         foreach ($enrollments as $enrollment) {
+//             $enrolledUser = $enrollment->user;
+//             if ($enrolledUser->id === $user->id) {
+//                 return true;
+//             }
+//         }
+//     }
+
+//     return false;
+// }
+function isUserEnrolledInWebinarGroups(Webinar $webinar)
+{
+    if (Auth::check()) {
+        $user = Auth::user();
+        $now = \Carbon\Carbon::now();
+
+        foreach ($webinar->groups as $group) {
+            $startDate = \Carbon\Carbon::parse($group->start_date);
+
+            if (
+                $group->status == 'active' &&
+                $startDate->month == $now->month
+            ) {
+                foreach ($group->enrollments as $enrollment) {
+                    if ($enrollment->user_id == $user->id) {
+                        return ['status' => true, 'message' => 'You are enrolled in this webinar.'];
+                    }
+                }
+            } else {
+
+                if ($group->status != 'active') {
+                    return ['status' => false, 'message' => 'ممنوع الوصول للمقرر الاّن'];
+                } else if ($startDate->month != $now->month) {
+                    return ['status' => false, 'message' => 'ممنوع الوصول للمقرر الاّن'];
+                }
+            }
+        }
+
+        return ['status' => false, 'message' => 'ممنوع الوصول للمقرر الاّن'];
+    }
+
+    return ['status' => false, 'message' => 'انت غير مسجل'];
+}
+

@@ -320,7 +320,7 @@
                             </td> --}}
 
                             <td>
-                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                @foreach ($user->purchasedBundles as $purchasedBundle)
                                     {{ dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;

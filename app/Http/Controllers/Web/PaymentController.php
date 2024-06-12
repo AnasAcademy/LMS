@@ -18,6 +18,7 @@ use App\Models\RewardAccounting;
 use App\Models\Sale;
 use App\Models\TicketUser;
 use App\PaymentChannels\ChannelManager;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Code;
@@ -278,7 +279,7 @@ class PaymentController extends Controller
 
             session()->put($this->order_session_key, $order->id);
 
-            return redirect('/payments/status/'.$order->id);
+            return redirect('/payments/status/' . $order->id);
         } else {
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
@@ -468,16 +469,27 @@ class PaymentController extends Controller
                         $webinar = $webinar_sale->webinar;
                         $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
                         if (!$lastGroup) {
-                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' =>20]);
+                            $start_date = Carbon::now()->addMonth()->startOfMonth();
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $start_date]);
                         }
-                        if ($lastGroup->enrollments->count() >= $lastGroup->capacity) {
-                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
+
+                        $enrollmentsCount = $lastGroup->enrollments()->count();
+                        if ($enrollmentsCount >= $lastGroup->capacity) {
+                            $newStartDate = Carbon::parse($lastGroup->start_date)->addMonth();
+
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $newStartDate]);
                         }
+
 
                         Enrollment::create([
                             'user_id' => $user->id,
                             'group_id' => $lastGroup->id,
                         ]);
+
+
+                        // if($enrollmentsCount == $lastGroup->capacity){
+                        //     $lastGroup->update(['status' => 'active']);
+                        // }
                     }
                 } catch (\Exception $exception) {
                     dd($userData);

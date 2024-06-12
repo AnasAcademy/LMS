@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Jobs\ChangeStatusToInactive;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
@@ -34,5 +36,6 @@ class Group extends Model
     {
         return $this->belongsTo(Webinar::class);
     }
+
 
 }

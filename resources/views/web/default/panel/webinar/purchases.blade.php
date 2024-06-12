@@ -64,7 +64,7 @@
         @if (!empty($sales) and !$sales->isEmpty())
             @foreach ($sales as $sale)
                 @php
-                    $item = !empty($sale->webinar) ? $sale->webinar : $sale->bundle;
+                    $item = !empty($sale->webinar) ? $sale->webinar : null;
 
                     $lastSession = !empty($sale->webinar) ? $sale->webinar->lastSession() : null;
                     $nextSession = !empty($sale->webinar) ? $sale->webinar->nextSession() : null;
@@ -93,80 +93,88 @@
                                 <h2 class="section-title after-line">{{ trans('product.course') }}
                                     {{ $item->title }}</h2>
                             </div>
+                            @if (isUserEnrolledInWebinarGroups($item)['status'])
+                                <div class="row mt-10">
+                                    <div class="col-12">
 
-                            <div class="row mt-10">
-                                <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped text-center font-14">
 
-                                    <div class="table-responsive">
-                                        <table class="table table-striped text-center font-14">
-
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>اسم المقرر</th>
-                                                <th class="text-left">{{ trans('public.instructor') }}</th>
-                                                <th>{{ trans('public.start_date') }}</th>
-                                                <th>المهام</th>
-                                                <th>الإجراءات</th>
-                                            </tr>
-                                            @php
-                                                $totalHours = 0;
-
-                                                $totalHours += $item->duration;
-                                            @endphp
-
-                                            @if (!empty($item->title))
                                                 <tr>
-                                                    <td>{{ $loop->index + 1 }}</td>
-                                                    <th>{{ $item->title }}</th>
-
-                                                    <td class="text-left">
-                                                        {{ $item->teacher->full_name }}</td>
-                                                    <td>{{ dateTimeFormat($item->start_date, 'j F Y | H:i') }}
-                                                    </td>
-                                                    <td>
-                                                        @php
-                                                            // dd($bundleitem->item->assignments);
-                                                        @endphp
-                                                        @if (!empty($item->assignments[0]))
-                                                            <button
-                                                                type="button"style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
-                                                                disabled> يوجد مهام </button>
-                                                        @else
-                                                            <button
-                                                                type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;"
-                                                                disabled>لا يوجد مهام بعد</button>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if ($item->duration != 0)
-                                                            @if ($item->video_demo)
-                                                                <a target="_blank" rel="noopener noreferrer"
-                                                                    class="btn btn-primary" style="width:190px;height:50px"
-                                                                    href="{{ $item->video_demo }}">اضغط هنا للذهاب
-                                                                    للمحاضرا</a>
-                                                            @else
-                                                                <button class="btn btn-primary"
-                                                                    style="width:190px;height:50px; background-color: #808080;"
-                                                                    disabled>اضغط هنا للذهاب للمحاضرا</button>
-                                                            @endif
-
-                                                            <a class="btn btn-primary"
-                                                                href="{{ url('/course/learning/' . $item->slug) }}"
-                                                                target="_blank" rel="noopener noreferrer">المحاضره
-                                                                المسجله</a>
-                                                        @endif
-                                                    </td>
+                                                    <th>ID</th>
+                                                    <th>اسم المقرر</th>
+                                                    <th class="text-left">{{ trans('public.instructor') }}</th>
+                                                    <th>{{ trans('public.start_date') }}</th>
+                                                    <th>المهام</th>
+                                                    <th>الإجراءات</th>
                                                 </tr>
-                                            @endif
+                                                @php
+                                                    $totalHours = 0;
 
-                                            <tr>
-                                                <th colspan="6">إجمالي عدد الساعات:
-                                                    {{ convertMinutesToHourAndMinute($totalHours) }}</th>
-                                            </tr>
-                                        </table>
+                                                    $totalHours += $item->duration;
+                                                @endphp
+
+                                                @if (!empty($item->title))
+                                                    <tr>
+                                                        <td>{{ $loop->index + 1 }}</td>
+                                                        <th>{{ $item->title }}</th>
+
+                                                        <td class="text-left">
+                                                            {{ $item->teacher->full_name }}</td>
+                                                        <td>{{ dateTimeFormat($item->start_date, 'j F Y | H:i') }}
+                                                        </td>
+                                                        <td>
+                                                            @php
+                                                                // dd($bundleitem->item->assignments);
+                                                            @endphp
+                                                            @if (!empty($item->assignments[0]))
+                                                                <button
+                                                                    type="button"style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
+                                                                    disabled> يوجد مهام </button>
+                                                            @else
+                                                                <button
+                                                                    type="button"style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;"
+                                                                    disabled>لا يوجد مهام بعد</button>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($item->duration != 0)
+                                                                @if ($item->video_demo)
+                                                                    <a target="_blank" rel="noopener noreferrer"
+                                                                        class="btn btn-primary"
+                                                                        style="width:190px;height:50px"
+                                                                        href="{{ $item->video_demo }}">اضغط هنا للذهاب
+                                                                        للمحاضرا</a>
+                                                                @else
+                                                                    <button class="btn btn-primary"
+                                                                        style="width:190px;height:50px; background-color: #808080;"
+                                                                        disabled>اضغط هنا للذهاب للمحاضرا</button>
+                                                                @endif
+
+                                                                <a class="btn btn-primary"
+                                                                    href="{{ url('/course/learning/' . $item->slug) }}"
+                                                                    target="_blank" rel="noopener noreferrer">المحاضره
+                                                                    المسجله</a>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endif
+
+                                                <tr>
+                                                    <th colspan="6">إجمالي عدد الساعات:
+                                                        {{ convertMinutesToHourAndMinute($totalHours) }}</th>
+                                                </tr>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
+
+                            @else
+                            <div class="alert w-50 m-auto p-5 alert-warning text-center">
+                                {{ isUserEnrolledInWebinarGroups($item)['message'] }}
                             </div>
+
+                            @endif
                         @endif
                     </section>
                 @endif
