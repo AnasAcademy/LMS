@@ -189,7 +189,7 @@ class OfflinePaymentController extends Controller
             $PaymentController = new PaymentController();
             $PaymentController->paymentOrderAfterVerify($offlinePayment->order);
             $request->merge(['order_id' => $offlinePayment->order_id]);
-            $res = $PaymentController->payStatus($request, $offlinePayment->order);
+            $res = $PaymentController->payStatus($request);
 
             BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'approved']);
 
