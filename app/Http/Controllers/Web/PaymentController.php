@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use App\Models\Enrollment;
 use App\Models\Group;
+use Illuminate\Support\Facades\Cookie;
 
 
 class PaymentController extends Controller
@@ -279,7 +280,7 @@ class PaymentController extends Controller
 
             session()->put($this->order_session_key, $order->id);
 
-            return redirect('/payments/status/' . $order->id);
+            return redirect('/payments/status');
         } else {
             $toastData = [
                 'title' => trans('cart.fail_purchase'),
@@ -369,28 +370,28 @@ class PaymentController extends Controller
         // Cart::emptyCart($order->user_id);
     }
 
-    public function payStatus(Request $request, Order $order)
+    public function payStatus(Request $request)
     {
-        // $orderId = $request->get('order_id', null);
+        $orderId = $request->get('order_id', null);
 
-        // if (!empty(session()->get($this->order_session_key, null))) {
-        //     $orderId = session()->get($this->order_session_key, null);
-        //     session()->forget($this->order_session_key);
-        // }
+        if (!empty(session()->get($this->order_session_key, null))) {
+            $orderId = session()->get($this->order_session_key, null);
+            session()->forget($this->order_session_key);
+        }
 
 
         $authUser = auth()->user();
         if ($authUser->role_name == 'admin' || $authUser->role_name == 'Financial Management User') {
-            // $order = Order::find($orderId);
+            $order = Order::find($orderId);
             $user = $order->user;
         } else {
             $user = $authUser;
+            $order = Order::where('id', $orderId)
+                ->where('user_id', $user->id)
+                ->first();
             if ($order->user_id != $user->id) {
                 abort(403);
             }
-            // $order = Order::where('id', $orderId)
-            //     ->where('user_id', $user->id)
-            //     ->first();
         }
 
 
@@ -421,13 +422,27 @@ class PaymentController extends Controller
             if (($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') || ($webinar_sale && $webinar_sale->order->user_id == $user->id && $webinar_sale->order->status == 'paid')) {
                 //add as student
                 try {
-
                     $userData = $request->cookie('user_data');
-                    if ($userData) {
-                        $userData = json_decode($userData, true);
-                        $studentData = collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
+                    if (!$userData) {
+                        $userData = Cookie::get('user_data');
                     }
+                    $userData = json_decode($userData, true);
+                    $keysToExclude = [
+                        'category_id',
+                        'bundle_id',
+                        'webinar_id',
+                        'type',
+                        'terms',
+                        'certificate',
+                        'timezone',
+                        'password',
+                        'password_confirmation',
+                        'email_confirmation',
+                        'requirement_endorsement'
+                    ];
+                    $studentData = collect($userData)->except($keysToExclude)->toArray();
                     $student = $user->student;
+
 
                     if (!$student) {
                         $student = Student::create($studentData);
@@ -457,7 +472,7 @@ class PaymentController extends Controller
                             BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
                         } else {
                             $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
-                            // add there the uploading status
+
                             $pivot = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
                                 ->where('bundle_id', $bundleId)->first();
@@ -472,27 +487,17 @@ class PaymentController extends Controller
                             $start_date = Carbon::now()->addMonth()->startOfMonth();
                             $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $start_date]);
                         }
-
-                        $enrollmentsCount = $lastGroup->enrollments()->count();
-                        if ($enrollmentsCount >= $lastGroup->capacity) {
-                            $newStartDate = Carbon::parse($lastGroup->start_date)->addMonth();
-
-                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $newStartDate]);
+                        if ($lastGroup->enrollments->count() >= $lastGroup->capacity) {
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
-
 
                         Enrollment::create([
                             'user_id' => $user->id,
                             'group_id' => $lastGroup->id,
                         ]);
-
-
-                        // if($enrollmentsCount == $lastGroup->capacity){
-                        //     $lastGroup->update(['status' => 'active']);
-                        // }
                     }
                 } catch (\Exception $exception) {
-                    dd($userData);
+                    dd(['cookie'=>$userData,'error'=>$exception->getMessage()]);
                 }
             } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
                 $user = User::where('id', $user->id)->first();

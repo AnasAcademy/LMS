@@ -86,7 +86,7 @@
             </div>
 
 
-            <section class="card">
+            {{-- <section class="card">
                 <div class="card-body">
                     <form method="get" class="mb-0">
                         <div class="row">
@@ -198,7 +198,92 @@
 
                     </form>
                 </div>
+            </section> --}}
+
+            {{-- search --}}
+            <section class="card">
+                <div class="card-body">
+                    <form method="get" class="mb-0">
+
+                        <div class="row">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="input-label">اسم الطالب</label>
+                                    <input
+                                        name='user_name'
+                                        type="text" class="form-control"
+                                        value="{{ request()->get('user_name') }}">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="input-label">بريد الطالب</label>
+                                    <input name="email" type="text" class="form-control"
+                                        value="{{ request()->get('email') }}">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="input-label">نوع المبيعة</label>
+                                    <select name="type" data-plugin-selectTwo class="form-control populate">
+                                        <option value="">{{ trans('admin/main.all_status') }}</option>
+                                        <option value="form_fee" @if (request()->get('type') == 'form_fee') selected @endif>
+                                            رسوم حجز مقعد
+                                        </option>
+                                        <option value="bundle" @if (request()->get('type') == 'bundle') selected @endif>
+                                            حزمة مقررات
+                                        </option>
+                                        <option value="installment" @if (request()->get('type') == 'installment') selected @endif>
+                                            اقساط
+                                        </option>
+                                        <option value="webinar" @if (request()->get('type') == 'webinar') selected @endif>
+                                            دورة
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-12 row">
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="input-label">{{ trans('admin/main.start_date') }}</label>
+                                        <div class="input-group">
+                                            <input type="date" id="from" class="text-center form-control"
+                                                name="from" value="{{ request()->get('from') }}"
+                                                placeholder="Start Date">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="input-label">{{ trans('admin/main.end_date') }}</label>
+                                        <div class="input-group">
+                                            <input type="date" id="to" class="text-center form-control"
+                                                name="to" value="{{ request()->get('to') }}" placeholder="End Date">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group mt-1">
+                                        <label class="input-label mb-4"> </label>
+                                        <input type="submit" class="text-center btn btn-primary w-100"
+                                            value="{{ trans('admin/main.show_results') }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </form>
+                </div>
             </section>
+
 
             <div class="row">
                 <div class="col-12 col-md-12">
@@ -233,6 +318,8 @@
 
                                             <td class="text-left">
                                                 {{ !empty($sale->buyer) ? $sale->buyer->full_name : '' }}
+                                                <div class="text-primary text-small font-600-bold">
+                                                    {{ !empty($sale->buyer) ? $sale->buyer->email : '' }}</div>
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ !empty($sale->buyer) ? $sale->buyer->id : '' }}</div>
                                             </td>
@@ -286,7 +373,7 @@
                                                     @elseif($sale->type == 'certificate')
                                                         شراء شهادة
                                                     @elseif($sale->type == 'webinar')
-                                                      دورة
+                                                        دورة
                                                     @else
                                                         {{ $sale->type }}
                                                     @endif
