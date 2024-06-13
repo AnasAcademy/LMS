@@ -204,7 +204,7 @@ class PaymentController extends Controller
             ];
             return back()->with(['toast' => $toastData]);
         }
-        return redirect('/panel');
+        // return redirect('/panel');
     }
 
     public function paymentVerify(Request $request, $gateway)
