@@ -58,7 +58,7 @@
                         @foreach ($groups as $group)
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
-                                <td class="text-center">{{ $group->name }}</td>
+                                <td class="text-center">مجموعة {{ $group->name }}</td>
                                 <td class="text-center">
                                     {{ $group->enrollments->count() }}
                                     </td>
