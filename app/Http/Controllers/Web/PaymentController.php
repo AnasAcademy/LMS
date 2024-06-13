@@ -495,7 +495,7 @@ class PaymentController extends Controller
                         ]);
                     }
                 } catch (\Exception $exception) {
-                    dd([$userData,$exception]);
+                    dd(['cookie'=>$userData,'error'=>$exception->getMessage()]);
                 }
             } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
                 $user = User::where('id', $user->id)->first();
