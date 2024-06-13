@@ -2365,28 +2365,17 @@ function isUserEnrolledInWebinarGroups(Webinar $webinar)
         foreach ($webinar->groups as $group) {
             $startDate = \Carbon\Carbon::parse($group->start_date);
 
-            if (
-                $group->status == 'active' &&
-                $startDate->month == $now->month
-            ) {
+            if ($group->status == 'active' && $startDate->month == $now->month) {
                 foreach ($group->enrollments as $enrollment) {
                     if ($enrollment->user_id == $user->id) {
                         return ['status' => true, 'message' => 'You are enrolled in this webinar.'];
                     }
                 }
-            } else {
-
-                if ($group->status != 'active') {
-                    return ['status' => false, 'message' => 'ممنوع الوصول للمقرر الاّن'];
-                } else if ($startDate->month != $now->month) {
-                    return ['status' => false, 'message' => 'ممنوع الوصول للمقرر الاّن'];
-                }
             }
         }
-
         return ['status' => false, 'message' => 'ممنوع الوصول للمقرر الاّن'];
     }
-
     return ['status' => false, 'message' => 'انت غير مسجل'];
 }
+
 

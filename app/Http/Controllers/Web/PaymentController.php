@@ -485,10 +485,13 @@ class PaymentController extends Controller
                         $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
                         if (!$lastGroup) {
                             $start_date = Carbon::now()->addMonth()->startOfMonth();
-                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $start_date]);
+                            $lastGroup = Group::create(['name' => '1', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $start_date]);
                         }
-                        if ($lastGroup->enrollments->count() >= $lastGroup->capacity) {
-                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
+                        $enrollments = $lastGroup->enrollments()->count();
+                        if ($enrollments >= $lastGroup->capacity) {
+                            $newStartDate = Carbon::parse($lastGroup->start_date)->addMonth();
+                            $newGroupName = (string)((int)$lastGroup->name + 1);
+                            $lastGroup = Group::create(['name' => $newGroupName, 'creator_id' => 1, 'webinar_id' => $webinar->id, 'start_date' => $newStartDate]);
                         }
 
                         Enrollment::create([
@@ -497,7 +500,7 @@ class PaymentController extends Controller
                         ]);
                     }
                 } catch (\Exception $exception) {
-                    dd(['cookie'=>$userData,'error'=>$exception->getMessage()]);
+                    dd(['cookie' => $userData, 'error' => $exception->getMessage()]);
                 }
             } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
                 $user = User::where('id', $user->id)->first();
