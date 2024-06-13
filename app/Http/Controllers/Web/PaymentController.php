@@ -440,7 +440,6 @@ class PaymentController extends Controller
                         'requirement_endorsement'
                     ];
                     $studentData = collect($userData)->except($keysToExclude)->toArray();
-                    $user = auth()->user();
                     $student = $user->student;
 
 
@@ -496,7 +495,7 @@ class PaymentController extends Controller
                         ]);
                     }
                 } catch (\Exception $exception) {
-                    dd($userData);
+                    dd([$userData,$exception]);
                 }
             } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
                 $user = User::where('id', $user->id)->first();
