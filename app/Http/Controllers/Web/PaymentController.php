@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use App\Models\Enrollment;
 use App\Models\Group;
+use Illuminate\Support\Facades\Cookie;
 
 
 class PaymentController extends Controller
@@ -420,13 +421,28 @@ class PaymentController extends Controller
             if (($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') || ($webinar_sale && $webinar_sale->order->user_id == $user->id && $webinar_sale->order->status == 'paid')) {
                 //add as student
                 try {
-
                     $userData = $request->cookie('user_data');
-                    if ($userData) {
-                        $userData = json_decode($userData, true);
-                        $studentData = collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
+                    if (!$userData) {
+                        $userData = Cookie::get('user_data');
                     }
+                    $userData = json_decode($userData, true);
+                    $keysToExclude = [
+                        'category_id',
+                        'bundle_id',
+                        'webinar_id',
+                        'type',
+                        'terms',
+                        'certificate',
+                        'timezone',
+                        'password',
+                        'password_confirmation',
+                        'email_confirmation',
+                        'requirement_endorsement'
+                    ];
+                    $studentData = collect($userData)->except($keysToExclude)->toArray();
+                    $user = auth()->user();
                     $student = $user->student;
+
 
                     if (!$student) {
                         $student = Student::create($studentData);
@@ -468,7 +484,7 @@ class PaymentController extends Controller
                         $webinar = $webinar_sale->webinar;
                         $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
                         if (!$lastGroup) {
-                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' =>20]);
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
                         if ($lastGroup->enrollments->count() >= $lastGroup->capacity) {
                             $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
