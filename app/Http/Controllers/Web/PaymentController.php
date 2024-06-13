@@ -485,7 +485,8 @@ class PaymentController extends Controller
                         if (!$lastGroup) {
                             $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
-                        if ($lastGroup->enrollments->count() >= $lastGroup->capacity) {
+                        $enrollments=$lastGroup->enrollments->count();
+                        if ($enrollments >= $lastGroup->capacity) {
                             $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
 
