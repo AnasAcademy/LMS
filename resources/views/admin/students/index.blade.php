@@ -250,17 +250,16 @@
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
 
                     @include('admin.students.includes.importStudents', [
-                        'url' => getAdminPanelUrl()."/students/importStudent",
+                        'url' => getAdminPanelUrl() . '/students/importStudent',
                         'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
-                        'btnText' =>
-                        '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
+                        'btnText' => '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
                         'hideDefaultClass' => true,
-
                     ])
 
-                    <a href="{{asset('files/import_student_template.xlsx')}}" class="btn btn-success" download>تحميل قالب النموذج</a>
-                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات </a>
-
+                    <a href="{{ asset('files/import_student_template.xlsx') }}" class="btn btn-success" download>تحميل قالب
+                        النموذج</a>
+                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
+                    </a>
                 @else
                     <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
@@ -279,6 +278,7 @@
                         @endif
 
                         <th>{{ trans('admin/main.name') }}</th>
+                        <th>{{ 'الدبلومة المسجلة' }}</th>
                         {{-- <th>{{ trans('admin/main.classes') }}</th>
                         <th>{{ trans('admin/main.appointments') }}</th>
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
@@ -299,7 +299,7 @@
                         <tr>
                             <td>{{ ++$index }}</td>
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
-                                <td>{{ $user->user_code?? '---' }}</td>
+                                <td>{{ $user->user_code ?? '---' }}</td>
                             @endif
 
                             <td class="text-left">
@@ -323,7 +323,10 @@
                                     </div>
                                 </div>
                             </td>
-
+                            <td>
+                                {{ $user->webinar_interest_id ? \App\Models\Webinar::find($user->webinar_interest_id )->title :'' }}
+                                {{ $user->bundle_interest_id ? \App\Models\Bundle::find($user->bundle_interest_id )->title :'' }}
+                            </td>
                             {{-- <td>
                                 <div class="media-body">
                                     <div class="text-primary mt-0 mb-1 font-weight-bold">
@@ -352,11 +355,11 @@
                             @if (request()->is(getAdminPanelUrl('/students/users', false)))
                                 <td>
 
-                                    @if (($user->purchasedFormBundle()->count()<=0))
-                                    يتم مراجعه طلبه من قبل الإدارة المالية
+                                    @if ($user->purchasedFormBundle()->count() <= 0)
+                                        يتم مراجعه طلبه من قبل الإدارة المالية
                                     @endif
                                     @foreach ($user->purchasedFormBundle() as $purchasedFormBundle)
-                                        {{ $purchasedFormBundle->bundle->title  }}
+                                        {{ $purchasedFormBundle->bundle->title }}
                                         @if (!$loop->last)
                                             &nbsp;و&nbsp;
                                         @endif
@@ -475,8 +478,10 @@
                                 رفع الطلاب من اكسيل
                             </div>
                             <div class="text-small font-600-bold">
-                             لإضافة طلاب من خلال ملف اكسيل
-                        قم بتحميل قالب النموذج ثم قم بإدخال بيانات الطلاب كامله بيه ثم قم بالضغط علي زر رفع الطلاب من اكسيل ثم قم بتحديد ملف الإكسيل الذي قمت بتحميله بعد اضافه بيانات الطلاب كاملة ثم اضغط ارسال
+                                لإضافة طلاب من خلال ملف اكسيل
+                                قم بتحميل قالب النموذج ثم قم بإدخال بيانات الطلاب كامله بيه ثم قم بالضغط علي زر رفع الطلاب
+                                من اكسيل ثم قم بتحديد ملف الإكسيل الذي قمت بتحميله بعد اضافه بيانات الطلاب كاملة ثم اضغط
+                                ارسال
                             </div>
                         </div>
                     </div>

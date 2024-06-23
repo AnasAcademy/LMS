@@ -7,11 +7,13 @@ use App\Mixins\RegistrationBonus\RegistrationBonusAccounting;
 use App\Models\Accounting;
 use App\Models\Affiliate;
 use App\Models\AffiliateCode;
+use App\Models\Category;
 use App\Models\Reward;
 use App\Models\RewardAccounting;
 use App\Models\Role;
 use App\Models\Code;
 use App\Models\UserMeta;
+use App\Models\Webinar;
 use App\Providers\RouteServiceProvider;
 use App\User;
 use Illuminate\Auth\Events\Registered;
@@ -67,12 +69,16 @@ class RegisterController extends Controller
 
         $referralCode = Cookie::get('referral_code');
 
+        $category = Category::where('parent_id', '!=', null)->get();
+        $courses = Webinar::where('unattached', 1)->get();
         $data = [
             'pageTitle' => $pageTitle,
             'pageDescription' => $pageDescription,
             'pageRobot' => $pageRobot,
             'referralCode' => $referralCode,
             'referralSettings' => $referralSettings,
+            'courses' => $courses,
+            'category' => $category,
         ];
 
         return view(getTemplate() . '.auth.register', $data);
@@ -100,7 +106,33 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
             'email_confirmation' => 'required|same:email',
-            'referral_code' => 'nullable|exists:affiliates_codes,code'
+            'referral_code' => 'nullable|exists:affiliates_codes,code',
+            'type' => 'required|in:courses,diplomas',
+            'category_id' => [
+                function ($attribute, $value, $fail)use ($data) {
+                    $type = $data['type'];
+                    if ($type && $type == 'diplomas' && empty($value)) {
+                        $fail('يجب تحديد الدرجه العلميه ');
+                    }
+                }
+            ],
+            'bundle_id' => [
+                function ($attribute, $value, $fail) use ($data) {
+                    $type = $data['type'];
+                    if ($type && $type == 'diplomas' && empty($value)) {
+                        $fail('يجب تحديد التخصص العلمي ');
+                    }
+                },
+            ],
+            'webinar_id' => [
+                function ($attribute, $value, $fail) use ($data) {
+                    $type = $data['type'];
+                    if ($type && $type == 'courses' && empty($value)) {
+                        $fail('يجب تحديد الدورة  ');
+                    }
+
+                },
+            ],
         ];
 
 
@@ -108,12 +140,12 @@ class RegisterController extends Controller
             $rules['captcha'] = 'required|captcha';
         }
 
-         $validator= Validator::make($data, $rules);
+        $validator = Validator::make($data, $rules);
         $validator->setAttributeNames([
             'full_name' => __('validation.attributes.full_name'),
             // Add other attribute names for other fields
         ]);
-        return  $validator;
+        return $validator;
     }
 
     /**
@@ -156,6 +188,8 @@ class RegisterController extends Controller
             'mobile' => $data['mobile'] ?? null,
             'email' => $data['email'] ?? null,
             'full_name' => $data['full_name'],
+            'webinar_interest_id'=>$data['webinar_id'] ?? null,
+            'bundle_interest_id'=>$data['bundle_id'] ?? null,
             'status' => User::$active,
             'access_content' => $accessContent,
             'password' => Hash::make($data['password']),
@@ -182,7 +216,6 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $this->validator($request->all())->validate();
-
         $user = $this->create($request->all());
 
         event(new Registered($user));
@@ -220,35 +253,35 @@ class RegisterController extends Controller
 
         //     return redirect('/verification');
         // } elseif ($checkConfirmed['status'] == 'verified') {
-            $this->guard()->login($user);
+        $this->guard()->login($user);
 
-            $enableRegistrationBonus = false;
-            $registrationBonusAmount = null;
-            $registrationBonusSettings = getRegistrationBonusSettings();
-            if (!empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) {
-                $enableRegistrationBonus = true;
-                $registrationBonusAmount = $registrationBonusSettings['registration_bonus_amount'];
-            }
+        $enableRegistrationBonus = false;
+        $registrationBonusAmount = null;
+        $registrationBonusSettings = getRegistrationBonusSettings();
+        if (!empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) {
+            $enableRegistrationBonus = true;
+            $registrationBonusAmount = $registrationBonusSettings['registration_bonus_amount'];
+        }
 
 
-            $user->update([
-                'enable_registration_bonus' => $enableRegistrationBonus,
-                'registration_bonus_amount' => $registrationBonusAmount,
-            ]);
+        $user->update([
+            'enable_registration_bonus' => $enableRegistrationBonus,
+            'registration_bonus_amount' => $registrationBonusAmount,
+        ]);
 
-            $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
-            RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
+        $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
+        RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
 
-            if (!empty($referralCode)) {
-                Affiliate::storeReferral($user, $referralCode);
-            }
+        if (!empty($referralCode)) {
+            Affiliate::storeReferral($user, $referralCode);
+        }
 
-            $registrationBonusAccounting = new RegistrationBonusAccounting();
-            $registrationBonusAccounting->storeRegistrationBonusInstantly($user);
+        $registrationBonusAccounting = new RegistrationBonusAccounting();
+        $registrationBonusAccounting->storeRegistrationBonusInstantly($user);
 
-            if ($response = $this->registered($request, $user)) {
-                return $response;
-            }
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
         $data['title'] = "انشاء حساب جديد";
         $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
                             <br>
@@ -260,15 +293,15 @@ class RegisterController extends Controller
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span>". $request['password'].
-                            "<br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>" . $request['password'] .
+            "<br>
                 ";
         if (!empty($user) and !empty($user->email)) {
             Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
         }
-            return $request->wantsJson()
-                ? new JsonResponse([], 201)
-                : redirect($this->redirectPath());
+        return $request->wantsJson()
+            ? new JsonResponse([], 201)
+            : redirect($this->redirectPath());
         // }
     }
 }

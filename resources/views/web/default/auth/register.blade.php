@@ -89,28 +89,30 @@
                     </div>
                 @enderror
             </div>
+
+
             @if ($registerMethod == 'mobile')
                 @include('web.default.auth.register_includes.mobile_field')
 
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.email_field', ['optional' => false])
                 @endif
-
             @else
                 @include('web.default.auth.register_includes.email_field')
 
                 <div class="form-group">
-                <label class="input-label" for="email">اعد كتابة الإيميل
-                    {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
-                <input name="email_confirmation" type="text" class="form-control @error('email_confirmation') is-invalid @enderror"
-                    value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
+                    <label class="input-label" for="email">اعد كتابة الإيميل
+                        {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
+                    <input name="email_confirmation" type="text"
+                        class="form-control @error('email_confirmation') is-invalid @enderror"
+                        value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
 
-                @error('email_confirmation')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
+                    @error('email_confirmation')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
 
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.mobile_field', ['optional' => false])
@@ -218,6 +220,100 @@
             @enderror --}}
             <!--end-->
 
+            {{-- application type --}}
+            <div class="form-group col-12 col-sm-12">
+                <label class="form-label">حدد نوع التقديم<span class="text-danger">*</span></label>
+                <select id="typeSelect" name="type" required class="form-control @error('type') is-invalid @enderror"
+                    onchange="toggleHiddenType()">
+                    <option selected hidden value="">اختر نوع التقديم التي تريد دراستها في
+                        اكاديمية انس للفنون </option>
+                    <option value="diplomas" @if (old('type') == 'diplomas') selected @endif>
+                        دبلومات </option>
+                    <option value="courses" @if (old('type') == 'courses') selected @endif>دورات</option>
+                </select>
+
+                @error('type')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            {{-- course --}}
+            <div class="form-group col-12 col-sm-12 d-none">
+                <label for="application2" class="form-label" id="all_course">الدورات التدربيه<span
+                        class="text-danger">*</span></label>
+                <select id="mySelect2" name="webinar_id"
+                    class="form-control @error('webinar_id') is-invalid @enderror">
+                    <option selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
+                        في
+                        اكاديمية انس للفنون </option>
+
+                    @foreach ($courses as $course)
+                        <option value="{{ $course->id }}" @if (old('webinar_id') == $course->id) selected @endif>
+                            {{ $course->title }} </option>
+                    @endforeach
+
+                </select>
+
+                @error('webinar_id')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            {{-- diplomas --}}
+            <section class="d-none" id="diplomas_section">
+
+                {{-- diploma --}}
+                <div class="form-group col-12 col-sm-12">
+                    <label for="application" class="form-label"
+                        id="degree">{{ trans('application_form.application') }}<span
+                            class="text-danger">*</span></label>
+                    <select id="mySelect1" name="category_id"
+                        class="form-control @error('category_id') is-invalid @enderror" onchange="toggleHiddenInput()">
+                        <option selected hidden value="">اختر الدرجة العلمية التي تريد
+                            دراستها في
+                            اكاديمية انس للفنون </option>
+                        @foreach ($category as $item)
+                            <option value="{{ $item->id }}"
+                                {{ old('category_id', null) == $item->id ? 'selected' : '' }}>
+                                {{ $item->title }} </option>
+                        @endforeach
+                    </select>
+
+                    @error('category_id')
+                        <div class="invalid-feedback d-block">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+                {{-- specialization --}}
+                <div class="form-group col-12 col-sm-12 d-none">
+                    <label class="hidden-element" id="hiddenLabel1" for="bundle_id">
+                        {{ trans('application_form.specialization') }}<span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="bundle_id" name="bundle_id"
+                        class="hidden-element form-control @error('bundle_id') is-invalid @enderror"
+                        value="{{ old('bundle_id', '') }}">
+
+                    @error('bundle_id')
+                        <div class="invalid-feedback d-block">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
+                <div class="d-none font-14 font-weight-bold mb-10 col-12" id="early_enroll" style="color: #5F2B80;">
+                    يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل. بمجرد فتح التسجيل، ستتمكن من
+                    استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
+                </div>
+
+
+            </section>
+
             <button type="submit" class="btn btn-primary btn-block font-16 mt-20 py-10 cs-btn">
                 الخطوة التالية <i class="fas fa-arrow-left"></i>
             </button>
@@ -236,6 +332,108 @@
 
     </div>
 @endsection
+@php
+    $bundlesByCategory = [];
+    foreach ($category as $item) {
+        $bundlesByCategory[$item->id] = $item->bundles;
+    }
+@endphp
 @push('scripts_bottom')
-    <script src="/assets/default/vendors/select2/select2.min.js"></script>
+<script src="/assets/default/vendors/select2/select2.min.js"></script>
+
 @endpush
+
+<script>
+    function toggleHiddenInput() {
+        var bundles = @json($bundlesByCategory);
+        var select = document.getElementById("mySelect1");
+        var hiddenInput = document.getElementById("bundle_id");
+        var hiddenLabel = document.getElementById("hiddenLabel1");
+        if (select.value && hiddenLabel && hiddenInput) {
+
+            var categoryId = select.value;
+            var categoryBundles = bundles[categoryId];
+
+            if (categoryBundles) {
+                var options = categoryBundles.map(function(bundle) {
+                    var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
+                        'selected' : '';
+                    return `<option value="${bundle.id}" ${isSelected} early_enroll="${bundle.early_enroll}">${bundle.title}</option>`;
+                }).join('');
+
+                hiddenInput.outerHTML =
+                    '<select id="bundle_id" name="bundle_id"  class="form-control" >' +
+                    '<option value="" class="placeholder" selected hidden>اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
+                    options +
+                    '</select>';
+                hiddenLabel.style.display = "block";
+                hiddenLabel.closest('div').classList.remove('d-none');
+            } else {
+                hiddenInput.outerHTML =
+                    '<select id="bundle_id" name="bundle_id"  class="form-control" >' +
+                    '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
+                hiddenLabel.style.display = "none";
+                hiddenLabel.closest('div').classList.add('d-none');
+            }
+            var selectedOption = select.options[select.selectedIndex];
+            var selectedText = selectedOption.textContent;
+
+        } else {
+            hiddenInput.outerHTML =
+                '<select id="bundle_id" name="bundle_id"  class="form-control" >' +
+                '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
+            hiddenLabel.style.display = "none";
+            hiddenLabel.closest('div').classList.add('d-none');
+        }
+    }
+</script>
+<script>
+    function toggleHiddenType() {
+        console.log('toggle');
+        var select = document.getElementById("typeSelect");
+        var hiddenDiplomaInput = document.getElementById("mySelect1");
+        var hiddenDiplomaLabel = document.getElementById("degree");
+        var hiddenBundleInput = document.getElementById("bundle_id");
+        var hiddenDiplomaLabel1 = document.getElementById("hiddenLabel1");
+        let diplomasSection = document.getElementById("diplomas_section");
+
+        var hiddenCourseInput = document.getElementById("mySelect2");
+        var hiddenCourseLabel = document.getElementById("all_course");
+
+        if (select) {
+            var type = select.value;
+            if (type == 'diplomas') {
+                diplomasSection.classList.remove('d-none');
+                hiddenCourseInput.closest('div').classList.add('d-none');
+                resetSelect(hiddenCourseInput);
+                toggleHiddenInput();
+
+            } else if (type == 'courses') {
+                hiddenCourseInput.closest('div').classList.remove('d-none');
+                diplomasSection.classList.add('d-none');
+
+
+                resetSelect(hiddenDiplomaInput);
+                resetSelect(hiddenBundleInput);
+
+            } else {
+                diplomasSection.classList.add('d-none');
+                console.log(hiddenCourseInput);
+                hiddenCourseInput.closest('div').classList.add('d-none');
+                resetSelect(hiddenDiplomaInput);
+                resetSelect(hiddenBundleInput);
+                resetSelect(hiddenCourseInput);
+            }
+
+            toggleHiddenInput();
+            // coursesToggle();
+        }
+    }
+
+    toggleHiddenType();
+
+    function resetSelect(selector) {
+        selector.selectedIndex = 0; // This sets the first option as selected
+    }
+</script>
+

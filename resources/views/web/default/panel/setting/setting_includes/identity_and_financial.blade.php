@@ -5,7 +5,7 @@
             <p class="font-14 text-primary">{{ trans('site.identity_and_financial_verified') }}</p>
         @else
             <p class="font-14 text-danger">{{ trans('site.identity_and_financial_not_verified') }}</p>
-        @endif
+         @endif
     </div>
 
     <div class="row mt-20">
