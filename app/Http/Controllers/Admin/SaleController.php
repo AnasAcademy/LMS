@@ -190,20 +190,21 @@ class SaleController extends Controller
 
         if (!empty($type)) {
         $query->when($type, function ($query) use ($type) {
-                $query->whereHas('order.orderItems', function ($q) use ($type) {
-                    if($type=='form_fee'){
-                        $q->where('type', 'form_fee');
-                    }
-                    else if($type=="webinar"){
-                        $q->whereNotNull('webinar_id');
-                    }
-                    else if($type=="bundle"){
-                        $q->whereNotNull('bundle_id');
-                    }
-                    else if($type=="installment"){
-                        $q->whereNotNull('installment_payment_id');
-                    }
-                });
+            $query->whereHas('order.orderItems')->where('type', $type);
+                // $query->whereHas('order.orderItems', function ($q) use ($type) {
+                //     if($type=='form_fee'){
+                //         $q->where('type', 'form_fee');
+                //     }
+                //     else if($type=="webinar"){
+                //         $q->whereNotNull('webinar_id');
+                //     }
+                //     else if($type=="bundle"){
+                //         $q->whereNotNull('bundle_id')->whereNull('form_fee');
+                //     }
+                //     else if($type=="installment"){
+                //         $q->whereNotNull('installment_payment_id');
+                //     }
+                // });
             });
         }
 

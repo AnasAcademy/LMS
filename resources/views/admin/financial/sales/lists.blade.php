@@ -236,7 +236,7 @@
                                         <option value="bundle" @if (request()->get('type') == 'bundle') selected @endif>
                                             حزمة مقررات
                                         </option>
-                                        <option value="installment" @if (request()->get('type') == 'installment') selected @endif>
+                                        <option value="installment_payment" @if (request()->get('type') == 'installment_payment') selected @endif>
                                             اقساط
                                         </option>
                                         <option value="webinar" @if (request()->get('type') == 'webinar') selected @endif>
