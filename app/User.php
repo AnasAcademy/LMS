@@ -32,6 +32,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use App\Models\OrderItem;
 use App\Models\Service;
+use App\Models\ServiceUser;
 
 class User extends Authenticatable
 {
@@ -998,7 +999,11 @@ class User extends Authenticatable
 
     public function services()
     {
-        return $this->hasMany(Service::class);
+        return $this->belongsToMany(Service::class)
+        ->using(ServiceUser::class)
+            ->withPivot(['id', 'status', 'approved_by', 'message', 'content'])
+            ->withTimestamps()
+            ->orderBy('service_user.created_at', 'desc');
     }
 
     public function createdService()

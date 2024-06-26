@@ -34,19 +34,19 @@
             @endisset
 
             @isset($service->apply_link)
-                <a target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-10 px-50" style=""
+                <a target="_self" rel="noopener noreferrer" class="btn btn-primary mt-10 px-50" style=""
                     href="{{ $service->apply_link }}">
                     تقديم طلب
                 </a>
             @endisset
 
 
-            @isset($service->review_link)
-                <a target="_blank" rel="noopener noreferrer" class="mt-10 text-decoration-underline font-weight-500"
+            {{-- @isset($service->review_link)
+                <a target="_self" rel="noopener noreferrer" class="mt-10 text-decoration-underline font-weight-500"
                     style="" href="{{ $service->review_link }}">
                     مراجعة طلب سابق
                 </a>
-            @endisset
+            @endisset --}}
         </div>
     </div>
 @endisset
