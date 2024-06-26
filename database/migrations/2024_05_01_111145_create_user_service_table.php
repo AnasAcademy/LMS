@@ -23,6 +23,9 @@ return new class extends Migration
 
             $table->enum('status',['pending', 'approved', 'rejected', 'paid'])->default('pending');
 
+            $table->string('message')->nullable();
+            $table->string('content')->nullable();
+
             $table->unsignedInteger('approved_by')->nullable();
             $table->foreign('approved_by')->references('id')->on('users')->cascadeOnUpdate()->nullOnDelete();
 
