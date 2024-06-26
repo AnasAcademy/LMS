@@ -304,6 +304,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     // services Routes
     Route::group(['prefix' => 'services'], function () {
         Route::get('/', 'ServiceController@index');
+        Route::get('/{service}/bundleTransform', 'ServiceController@bundleTransformRequest');
+        Route::post('/{service}/bundleTransform', 'ServiceController@bundleTransform');
+        Route::get('/{service}/apply', 'ServiceController@store');
 
     });
 
