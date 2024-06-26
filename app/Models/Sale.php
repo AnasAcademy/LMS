@@ -36,6 +36,11 @@ class Sale extends Model
         return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
     }
 
+    public function service()
+    {
+        return $this->belongsTo('App\Models\service', 'service_id', 'id');
+    }
+    
     public function certificate_template()
     {
         return $this->belongsTo('App\Models\CertificateTemplate', 'certificate_template_id', 'id');
@@ -122,6 +127,8 @@ class Sale extends Model
             $orderType = Order::$bundle;
         }elseif (!empty($orderItem->certificate_template_id)) {
             $orderType = Order::$certificate;
+        }elseif (!empty($orderItem->service_id)) {
+            $orderType = "service";
         }
 
         if (!empty($orderItem->gift_id)) {
@@ -136,6 +143,7 @@ try{
             'order_id' => $orderItem->order_id,
             'webinar_id' => (empty($orderItem->gift_id) and !empty($orderItem->webinar_id)) ? $orderItem->webinar_id : null,
             'bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->bundle_id)) ? $orderItem->bundle_id : null,
+            'service_id' => (empty($orderItem->gift_id) and !empty($orderItem->service_id)) ? $orderItem->service_id : null,
             'certificate_template_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_template_id)) ? $orderItem->certificate_template_id : null,
             'certificate_bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_bundle_id)) ? $orderItem->certificate_bundle_id : null,
             'form_fee' => (empty($orderItem->gift_id) and !empty($orderItem->form_fee)) ? $orderItem->form_fee : null,
@@ -186,6 +194,8 @@ try{
             $title = $orderItem->webinar->title;
         }elseif (!empty($orderItem->form_fee)) {
             $title = "رسوم حجز مقعد";
+        }elseif (!empty($orderItem->service_id)) {
+            $title = "طلب خدمة ". $orderItem->service->title;
         }elseif (!empty($orderItem->bundle_id)) {
             $title = $orderItem->bundle->title;
         } elseif (!empty($orderItem->certificate_template_id)) {
@@ -233,9 +243,12 @@ try{
         } else {
             // dd($orderItem->bundle->early_enroll);
             $notifyOptions = [
-                '[c.title]' => $title,
+                '[c.title]' => $title
             ];
+            if(!empty($orderItem->service_id)){
+                $notifyOptions['[p.body]'] ='لقد تم ارسال طلبك لخدمة ' . $orderItem->service->title ." ودفع رسوم الطلب بنجاح";
 
+            }
             sendNotification('new_sales', $notifyOptions, $seller_id);
             sendNotification('new_purchase', $notifyOptions, $orderItem->user_id);
         }
@@ -258,6 +271,7 @@ try{
             ];
             sendNotification("subscription_plan_activated", $notifyOptions, 1);
         }
+
     }
 
     public function getIncomeItem()
