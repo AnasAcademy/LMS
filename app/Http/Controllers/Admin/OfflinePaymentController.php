@@ -202,6 +202,14 @@ class OfflinePaymentController extends Controller
                 $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
             } elseif ($offlinePayment->pay_for == 'webinar') {
                 $purpuse = 'لدفع دورة ' . ($offlinePayment->order->orderItems->first()->webinar->title);
+            } elseif ($offlinePayment->pay_for == 'service') {
+                $purpuse = 'لدفع رسوم خدمة  ' . ($offlinePayment->order->orderItems->first()->service->title);
+                $offlinePayment->order->orderItems
+                    ->first()
+                    ->service->users()
+                    ->where('user_id', $offlinePayment->user_id)
+                    ->first()->pivot->update(['status' => 'pending']);
+
             } else {
                 $purpuse = '';
             }

@@ -91,6 +91,22 @@
                                                     @elseif ($offlinePayment->pay_for == 'webinar')
                                                         دفع لدورة
                                                         {{ $offlinePayment->order->orderItems->first()->webinar->title }}
+
+                                                          @elseif ($offlinePayment->pay_for == 'service')
+                                                          @php
+                                                              $user = $offlinePayment->order->orderItems->first()->service->users()->where('user_id', auth()->user()->id)->first();
+                                                          @endphp
+                                                          {{-- @include('admin.services.requestContentMessage', [
+                                                            'url' => '#',
+                                                            'btnClass' => 'd-flex align-items-center justify-content-center mt-1 text-primary',
+                                                            'btnText' =>
+                                                                '<span class="ml-2">' .' رسوم طلب خدمة '. $offlinePayment->order->orderItems->first()->service->title .' </span>',
+                                                            'hideDefaultClass' => true,
+                                                            'deleteConfirmMsg' => 'test',
+                                                            'message' => $user->pivot->content,
+                                                            'id' => $user->pivot->id,
+                                                        ]) --}}
+                                                        {{ ' رسوم طلب خدمة '. $offlinePayment->order->orderItems->first()->service->title }}
                                                     @endif
 
                                                 </span>

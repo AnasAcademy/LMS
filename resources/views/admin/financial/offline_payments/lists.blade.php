@@ -27,7 +27,7 @@
                                 </div>
                             </div> --}}
 
-                              <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
+                            <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
                                 <div class="form-group">
                                     <label class="input-label">طالب</label>
                                     <select name="user_ids[]" multiple="multiple" class="form-control search-user-select2"
@@ -79,7 +79,7 @@
                                                 {{ trans('admin/main.rejected') }}
                                             </option>
                                             <option value="canceled" @if (request()->get('status') == 'canceled') selected @endif>
-                                              ملغي
+                                                ملغي
                                             </option>
                                         </select>
                                     </div>
@@ -179,7 +179,7 @@
                                     <tbody>
                                         @if ($offlinePayments->count() > 0)
                                             @foreach ($offlinePayments as $offlinePayment)
-                                                <tr @if ($offlinePayment->status == 'canceled')  style="opacity: 0.5" @endif>
+                                                <tr @if ($offlinePayment->status == 'canceled') style="opacity: 0.5" @endif>
                                                     <td class="text-left">
                                                         {{ $offlinePayment->user->full_name }}
                                                     </td>
@@ -203,14 +203,41 @@
                                                                 الدفع كامل ل
                                                                 {{ $offlinePayment->order->orderItems->first()->bundle->title }}
                                                             @elseif ($offlinePayment->pay_for == 'webinar')
-                                                            الدفع كامل ل
+                                                                الدفع كامل ل
 
-                                                            {{ $offlinePayment->order->orderItems->first()->webinar->title }}
+                                                                {{ $offlinePayment->order->orderItems->first()->webinar->title }}
                                                             @elseif ($offlinePayment->pay_for == 'installment')
                                                                 {{ $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول' }}
-
                                                                 ل
                                                                 {{ $offlinePayment->order->orderItems->first()->bundle->title }}
+                                                            @elseif ($offlinePayment->pay_for == 'service')
+                                                                @php
+                                                                    $user = $offlinePayment->order->orderItems
+                                                                        ->first()
+                                                                        ->service->users()
+                                                                        ->where('user_id', $offlinePayment->user_id)
+                                                                        ->first();
+                                                                @endphp
+
+                                                                @include(
+                                                                    'admin.services.requestContentMessage',
+                                                                    [
+                                                                        'url' => '#',
+                                                                        'btnClass' =>
+                                                                            'd-flex align-items-center justify-content-center mt-1 text-primary',
+                                                                        'btnText' =>
+                                                                            '<span class="ml-2">' .
+                                                                            ' رسوم طلب خدمة ' .
+                                                                            $offlinePayment->order->orderItems->first()->service->title .
+                                                                            ' </span>',
+                                                                        'hideDefaultClass' => true,
+                                                                        'deleteConfirmMsg' => 'test',
+                                                                        'message' => $user->pivot->content,
+                                                                        'id' => $user->pivot->id,
+                                                                    ]
+                                                                )
+
+                                                                {{-- {{ ' رسوم طلب خدمة '. $offlinePayment->order->orderItems->first()->service->title }} --}}
                                                             @endif
                                                         </span>
                                                     </td>

@@ -26,6 +26,9 @@
         else if(!empty($order->orderItems[0]->webinar)){
             $subTitle .= 'الرسوم الدراسية للدورة '.($order->orderItems[0]->webinar->title).': '.($total).' ريال سعودي';
         }
+        else if(!empty($order->orderItems[0]->service)){
+            $subTitle .= 'الرسوم لطلب خدمة  '.($order->orderItems[0]->service->title).': '.($total).' ريال سعودي';
+        }
         // close subtitle
         $subTitle .= '</span>';
     @endphp

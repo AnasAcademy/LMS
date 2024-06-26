@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use App\Models\Enrollment;
 use App\Models\Group;
-
+use App\Models\ServiceUser;
 
 class PaymentController extends Controller
 {
@@ -406,8 +406,7 @@ class PaymentController extends Controller
                 ->first();
 
             $bundle_sale = Sale::where('order_id', $order->id)
-                ->where('type', 'bundle')
-                ->orWhere('type', 'installment_payment')
+                ->whereIn('type', ['bundle', 'installment_payment'])
                 ->where('buyer_id', $user->id)
                 ->first();
 
@@ -416,7 +415,13 @@ class PaymentController extends Controller
                 ->where('buyer_id', $user->id)
                 ->first();
 
+            $service_sale = Sale::where('order_id', $order->id)
+                ->where('type', 'service')
+                ->where('buyer_id', $user->id)
+                ->first();
+
             $pivot = null;
+
             if (($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') || ($webinar_sale && $webinar_sale->order->user_id == $user->id && $webinar_sale->order->status == 'paid')) {
                 //add as student
                 try {
@@ -490,6 +495,15 @@ class PaymentController extends Controller
                 ]);
 
                 BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved']);
+            } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
+                $serviceRequestContent = $request->cookie('service_content');
+                $service = $service_sale->order->orderItems->first()->service;
+                if ($serviceRequestContent) {
+                    $serviceRequestContent = json_decode($serviceRequestContent, true);
+                    $service->users()->attach($user, ['content' => $serviceRequestContent]);
+                }else{
+                    ServiceUser::where(['user_id' => $user->id, 'service_id' => $service->id])->update(['status' => 'pending']);
+                }
             }
 
             if (!empty($data['order']) && $data['order']->status === Order::$paid) {
@@ -498,12 +512,18 @@ class PaymentController extends Controller
                     'msg' => trans('cart.success_pay_msg'),
                     'status' => 'success'
                 ];
+
+                if (!empty($service_sale)) {
+                    return redirect('/panel/services')->with(['toast' => $toastData, 'success'=> "تم ارسال الطلب بنجاح"]);
+                }
+
                 if (empty($sale)) {
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
                 if (!empty($sale) && isset($pivot->id)) {
                     return redirect('/panel/requirements/applied')->with(['toast' => $toastData]);
                 }
+
                 // if (!empty($sale) && isset($pivot->id) && ($sale->bundle->early_enroll == 0)) {
                 //     return redirect('/panel/bundles/' . $pivot->id . '/requirements')->with(['toast' => $toastData]);
                 // }
@@ -714,6 +734,14 @@ class PaymentController extends Controller
             }
         } else if ($item->webinar_id) {
             $orderType = 'webinar';
+        } else if ($item->service_id) {
+            $orderType = 'service';
+            $serviceRequestContent = $request->cookie('service_content');
+            $service = $item->service;
+            if ($serviceRequestContent) {
+                $serviceRequestContent = json_decode($serviceRequestContent, true);
+                $service->users()->attach($user, ['content' => $serviceRequestContent, 'status'=>'paying']);
+            }
         } else {
             $orderType = $item->installment_payment_id ? 'installment' : 'bundle';
             $student = Student::where('user_id', auth()->user()->id)->first();
