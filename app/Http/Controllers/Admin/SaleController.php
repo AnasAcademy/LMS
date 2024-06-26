@@ -31,6 +31,24 @@ class SaleController extends Controller
             'count' => deepClone($query)->whereNotNull('webinar_id')->count(),
             'amount' => deepClone($query)->whereNotNull('webinar_id')->sum('total_amount'),
         ];
+
+        $formFeeSales = [
+            'count' => deepClone($query)->whereNotNull('form_fee')->count(),
+            'amount' => deepClone($query)->whereNotNull('form_fee')->sum('total_amount')
+        ];
+
+        $bundlesSales = [
+            'count' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->count(),
+            'amount' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->sum('total_amount'),
+        ];
+
+        // $servicesSales = [
+        //     // 'count' => deepClone($query)->whereNotNull('service_id')->count(),
+        //     // 'amount' => deepClone($query)->whereNotNull('service_id')->sum('total_amount'),
+        //     'count' => deepClone($query)->where('type', 'service')->count(),
+        //     'amount' => deepClone($query)->where('type', 'service')->sum('total_amount'),
+        // ];
+
         $appointmentSales = [
             'count' => deepClone($query)->whereNotNull('meeting_id')->count(),
             'amount' => deepClone($query)->whereNotNull('meeting_id')->sum('total_amount'),
@@ -67,6 +85,9 @@ class SaleController extends Controller
             'classesSales' => $classesSales,
             'appointmentSales' => $appointmentSales,
             'failedSales' => $failedSales,
+            'formFeeSales' => $formFeeSales,
+            'bundlesSales' => $bundlesSales,
+            // 'servicesSales' => $servicesSales,
         ];
 
         $teacher_ids = $request->get('teacher_ids');

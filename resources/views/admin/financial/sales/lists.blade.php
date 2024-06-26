@@ -32,9 +32,49 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
-                        <div class="card-icon bg-success">
+                        <div class="card-icon bg-info">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                            <div class="card-header">
+                                <h4>{{ 'مبيعات حجز مقعد' }}</h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $formFeeSales['count'] }}
+                            </div>
+
+                            <div class="text-info font-weight-bold">
+                                {{ handlePrice($formFeeSales['amount']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="card card-statistic-1">
+                        <div class="card-icon bg-warning">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                            <div class="card-header">
+                                <h4>{{ 'مبيعات الدبلومات' }}</h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $bundlesSales['count'] }}
+                            </div>
+                            <div class="text-warning font-weight-bold">
+                                {{ handlePrice($bundlesSales['amount']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="card card-statistic-1">
+                        <div class="card-icon bg-dark">
                             <i class="fas fa-play-circle"></i>
                         </div>
                         <div class="card-wrap">
@@ -44,13 +84,33 @@
                             <div class="card-body">
                                 {{ $classesSales['count'] }}
                             </div>
-                            <div class="text-success font-weight-bold">
+                            <div class="text-dark font-weight-bold">
                                 {{ handlePrice($classesSales['amount']) }}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+
+                {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="card card-statistic-1">
+                        <div class="card-icon bg-success">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                            <div class="card-header">
+                                <h4>{{'مبيعات الخدمات الإلكترونية'}}</h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $servicesSales['count'] }}
+                            </div>
+                            <div class="text-success font-weight-bold">
+                                {{ handlePrice($servicesSales['amount']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+
+                {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-warning">
                             <i class="fas fa-calendar-alt"></i>
@@ -67,7 +127,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-danger">
