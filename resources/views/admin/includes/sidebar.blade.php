@@ -163,7 +163,7 @@
             @endcan
 
             {{-- services --}}
-            {{-- <li
+             {{-- <li
                 class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                     <i class="fas fa-graduation-cap"></i>
@@ -171,16 +171,21 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li
-                        class="{{ request()->is(getAdminPanelUrl('/services', false)) ? 'active' : '' }}">
-                        <a class="nav-link"
-                            href="{{ getAdminPanelUrl() }}/services">{{ 'قائمة' }}</a>
-                    </li>
-
-                    <li
                         class="{{ request()->is(getAdminPanelUrl('/services/create', false)) ? 'active' : '' }}">
                         <a class="nav-link"
                             href="{{ getAdminPanelUrl() }}/services/create">{{ 'جديد' }}</a>
                     </li>
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/services', false)) ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ getAdminPanelUrl() }}/services">{{ 'قائمة' }}</a>
+                    </li>
+                    <li
+                        class="{{ request()->is(getAdminPanelUrl('/services/requests', false)) ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ getAdminPanelUrl() }}/services/requests">{{ 'قائمة بالطلبات' }}</a>
+                    </li>
+
                 </ul>
             </li> --}}
 
