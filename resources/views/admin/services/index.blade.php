@@ -46,7 +46,7 @@
                                         <th class="text-center">{{ 'Index' }}</th>
                                         <th class="text-center">{{ 'العنوان' }}</th>
                                         <th class="text-center">{{ 'الوصف' }}</th>
-                                        <th class="text-center">{{ 'السعر' }}</th>
+                                        <th class="text-center">{{ ' السعر (ر.س)' }}</th>
                                         <th class="text-center">{{ 'الحالة' }}</th>
                                         <th class="text-center">{{ 'المنشئ' }}</th>
                                         <th class="text-center">{{ 'تاريخ الإنشاء ' }}</th>
@@ -58,7 +58,7 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td class="text-center">{{ $service->title }}</td>
                                             <td class="text-center">{{ $service->description }}</td>
-                                            <td class="text-center">{{ $service->price }}</td>
+                                            <td class="text-center">{{ $service->price>0 ? $service->price : 'مجانية' }}</td>
                                             <td class="text-center">{{ trans('admin/main.'.$service->status) }}</td>
                                             <td class="text-center">{{ $service->created_by ?  $service->createdBy->full_name  : '' }}</td>
 
