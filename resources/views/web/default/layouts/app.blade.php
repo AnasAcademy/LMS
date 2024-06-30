@@ -47,6 +47,9 @@
       justify-content: center;
       height: 100vh;
     }
+    .main-image .img-cover{
+        display:none !important;
+    }
     </style>
 
 
