@@ -83,7 +83,7 @@
 
                     </ul>
                 </li>
-            @endcan()
+            @endcan
 
             @can('diploma_students_info')
                 {{-- register user --}}

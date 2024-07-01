@@ -92,6 +92,9 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
         });
 
         Route::group(['prefix' => 'users'], function () {
+
+            Route::get('/excelGroup', 'GroupController@exportExcel');
+
             Route::get('/create', 'UserController@create');
             Route::post('/store', 'UserController@store');
             Route::post('/storeexcel', 'UserController@storeexcel');
@@ -129,6 +132,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::post('/{id}/update', 'GroupController@update');
                 Route::get('/{id}/delete', 'GroupController@destroy');
                 Route::post('/{id}/groupRegistrationPackage', 'GroupController@groupRegistrationPackage');
+
+
             });
 
             Route::group(['prefix' => 'become-instructors'], function () {

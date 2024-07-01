@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\GroupExport;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Models\GroupRegistrationPackage;
 use App\Models\GroupUser;
 use App\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GroupController extends Controller
 {
@@ -90,9 +92,11 @@ class GroupController extends Controller
         $group = Group::findOrFail($id);
 
         $userGroups = GroupUser::where('group_id', $id)
-            ->with(['user' => function ($query) {
-                $query->select('id', 'full_name');
-            }])
+            ->with([
+                'user' => function ($query) {
+                    $query->select('id', 'full_name');
+                }
+            ])
             ->get();
 
         $data = [
@@ -103,6 +107,20 @@ class GroupController extends Controller
         ];
 
         return view('admin.users.groups.new', $data);
+    }
+    public function exportExcel(Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+        $group_id = $request->query('id');
+        $group = Group::find($group_id);
+        if ($group) {
+            $enrollments = $group->enrollments;
+            $groupExport = new GroupExport($enrollments);
+
+            return Excel::download($groupExport, 'groups.xlsx');
+        }
+        return back();
+
     }
 
     public function update(Request $request, $id)

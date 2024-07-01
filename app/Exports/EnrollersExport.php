@@ -34,7 +34,8 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
 
         return [
 
-            'Name',
+            'Arabic Name',
+            'English Name',
             'diploma',
             'created at',
             'Status',
@@ -66,6 +67,7 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
 
             return [
                 $user->student->ar_name,
+                $user->student->en_name,
                 $diploma,
                 dateTimeFormat($created_at, 'j M Y | H:i'),
                 $user->status,
