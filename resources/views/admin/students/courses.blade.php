@@ -78,7 +78,7 @@
                                         </a>
                                     @endcan
 
-                                    @can('admin_users_edit')
+                                    @can('admin_group_edit')
                                         <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/edit"
                                             class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
                                             title="{{ trans('admin/main.edit') }}">

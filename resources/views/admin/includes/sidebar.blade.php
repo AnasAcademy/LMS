@@ -84,7 +84,8 @@
                     </ul>
                 </li>
             @endcan()
-            @can('students_info')
+
+            @can('diploma_students_info')
                 {{-- register user --}}
                 <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
@@ -109,7 +110,8 @@
                         </li>
                     </ul>
                 </li>
-
+            @endcan
+            @can('students_info')
                 <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-graduation-cap"></i>
@@ -117,16 +119,13 @@
                     </a>
                     <ul class="dropdown-menu">
                         @php
-                            $webinars = App\Models\Webinar::where('hasGroup', 1)
-                                ->get();
+                            $webinars = App\Models\Webinar::where('hasGroup', 1)->get();
                         @endphp
                         @foreach ($webinars as $webinar)
-                            <li
-                            class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
-                            <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
-                                href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
-                        </li>
-
+                            <li class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
+                                <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
+                                    href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
+                            </li>
                         @endforeach
                     </ul>
                 </li>
