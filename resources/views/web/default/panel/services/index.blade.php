@@ -29,7 +29,7 @@
 @endpush
 
 @section('content')
-    @include('web.default.panel.services.includes.progress')
+    @include('web.default.panel.services.includes.progress', ['title' => ' الخدمات الإلكترونية'])
 
     @if (Session::has('success'))
         <div class="container d-flex justify-content-center mt-80">
