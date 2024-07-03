@@ -173,6 +173,7 @@
                                         <th>{{ 'اي بان(IBAN)' }}</th>
                                         <th>{{ trans('update.attachment') }}</th>
                                         <th>{{ trans('admin/main.status') }}</th>
+                                        <th class="text-center">{{ 'تاريخ الطلب ' }}</th>
                                         <th width="150px">{{ trans('admin/main.actions') }}</th>
                                     </thead>
 
@@ -302,6 +303,9 @@
                                                             @break
                                                         @endswitch
                                                     </td>
+                                                     <td class="font-12">
+                                                    {{ Carbon\Carbon::parse($offlinePayment->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                                </td>
 
                                                     <td class="py-2 text-center">
                                                         <div class="d-flex">
