@@ -36,7 +36,7 @@ class Accounting extends Model
         return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
     }
 
-     public function certificate_template()
+    public function certificate_template()
     {
         return $this->belongsTo('App\Models\CertificateTemplate', 'certificate_template_id', 'id');
     }
@@ -172,17 +172,20 @@ class Accounting extends Model
 
         if (!empty($orderItem->webinar_id)) {
             $notifyOptions['[c.title]'] = $orderItem->webinar->title;
-        }elseif (!empty($orderItem->form_fee)) {
+        } elseif (!empty($orderItem->form_fee)) {
             $notifyOptions['[c.title]'] = "رسوم حجز مقعد دراسي";
-            $notifyOptions['[c.early]'] = $orderItem->bundle->early_enroll ? $orderItem->bundle->early_enroll : 0 ;
+            $notifyOptions['[c.early]'] = $orderItem->bundle->early_enroll ? $orderItem->bundle->early_enroll : 0;
+        } elseif (!empty($orderItem->service_id)) {
+            $notifyOptions['[c.title]']  = "طلب خدمة " . $orderItem->service->title;
+            $notifyOptions['[p.body]'] = 'لقد تم ارسال طلبك لخدمة ' . $orderItem->service->title . " ودفع رسوم الطلب بنجاح";
         } elseif (!empty($orderItem->installment_payment_id)) {
             $notifyOptions['[c.title]'] = trans('update.installment');
-            $notifyOptions['[c.bundle]']= $orderItem->bundle->title ?? null;
-        }elseif (!empty($orderItem->bundle_id)) {
+            $notifyOptions['[c.bundle]'] = $orderItem->bundle->title ?? null;
+        } elseif (!empty($orderItem->bundle_id)) {
             $notifyOptions['[c.title]'] = $orderItem->bundle->title;
-        }elseif (!empty($orderItem->certificate_template_id)) {
+        } elseif (!empty($orderItem->certificate_template_id)) {
             $notifyOptions['[c.title]'] = "certificate";
-        }elseif (!empty($orderItem->reserve_meeting_id)) {
+        } elseif (!empty($orderItem->reserve_meeting_id)) {
             $notifyOptions['[c.title]'] = trans('meeting.reservation_appointment');
         } elseif (!empty($orderItem->product_id)) {
             $notifyOptions['[c.title]'] = $orderItem->product->title;
@@ -240,9 +243,9 @@ class Accounting extends Model
             'amount' => $orderItem->total_amount - $orderItem->tax_price - $orderItem->commission_price,
             'webinar_id' => $orderItem->webinar_id,
             'bundle_id' => $orderItem->bundle_id,
-            'certificate_template_id' =>$orderItem->certificate_template_id,
-            'certificate_bundle_id' =>$orderItem->certificate_bundle_id,
-            'form_fee' =>$orderItem->form_fee,
+            'certificate_template_id' => $orderItem->certificate_template_id,
+            'certificate_bundle_id' => $orderItem->certificate_bundle_id,
+            'form_fee' => $orderItem->form_fee,
             'meeting_time_id' => $orderItem->reserveMeeting ? $orderItem->reserveMeeting->meeting_time_id : null,
             'subscribe_id' => $orderItem->subscribe_id ?? null,
             'promotion_id' => $orderItem->promotion_id ?? null,

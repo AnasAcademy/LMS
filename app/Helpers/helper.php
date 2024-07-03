@@ -1662,11 +1662,13 @@ function deepClone($object)
 
 function sendNotification($template, $options, $user_id = null, $group_id = null, $sender = 'system', $type = 'single')
 {
+
     $templateId = getNotificationTemplates($template);
     $notificationTemplate = \App\Models\NotificationTemplate::where('id', $templateId)->first();
 
     if (!empty($notificationTemplate)) {
         $title = str_replace(array_keys($options), array_values($options), $notificationTemplate->title);
+
         if (!empty($options['[c.title]'])) {
             if($options['[c.title]'] == "سند سداد") {
                 $notificationTemplate->template = "تهانينا تم سدادكم قسط البرنامج [c.bundle] بقيمة [amount]";
@@ -1679,27 +1681,27 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
 
         }
 
+
         if (!empty($options['[p.body]'])) {
             $notificationTemplate->template = "[p.body] بقيمه [amount]";
 
         }
 
 
-
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
-        // dd($message);
         $check = \App\Models\Notification::where('user_id', $user_id)
-            ->where('group_id', $group_id)
-            ->where('title', $title)
-            ->where('message', $message)
-            ->where('sender', $sender)
-            ->where('type', $type)
-            ->first();
+        ->where('group_id', $group_id)
+        ->where('title', $title)
+        ->where('message', $message)
+        ->where('sender', $sender)
+        ->where('type', $type)
+        ->first();
 
         $ignoreDuplicateTemplates = ['new_badge', 'registration_package_expired'];
 
         if (empty($check) or !in_array($template, $ignoreDuplicateTemplates)) {
-            \App\Models\Notification::create([
+
+            $new = \App\Models\Notification::create([
                 'user_id' => $user_id,
                 'group_id' => $group_id,
                 'title' => $title,
@@ -1708,6 +1710,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                 'type' => $type,
                 'created_at' => time()
             ]);
+
 
             if (env('APP_ENV') == 'production') {
                 $user = \App\User::where('id', $user_id)->first();
@@ -1740,7 +1743,7 @@ function sendNotificationToEmail($template, $options, $data)
         $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
 
 
-        if (env('APP_ENV') == 'development') {
+        if (env('APP_ENV') == 'production') {
             try {
                 \Mail::to($data['email'])->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $data['name']]));
             } catch (Exception $exception) {
