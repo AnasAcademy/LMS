@@ -151,6 +151,13 @@ class OfflinePaymentController extends Controller
             } else {
                 $status = 'rejected';
             }
+        } elseif ($offlinePayment->pay_for == 'service') {
+            $purpuse = 'لدفع رسوم خدمة  ' . ($offlinePayment->order->orderItems->first()->service->title);
+            $offlinePayment->order->orderItems
+                ->first()
+                ->service->users()
+                ->where('user_id', $offlinePayment->user_id)
+                ->first()->pivot->update(['status' => 'paying_rejected']);
         } else {
             $purpuse = '';
             $status = 'rejected';
@@ -204,12 +211,12 @@ class OfflinePaymentController extends Controller
                 $purpuse = 'لدفع دورة ' . ($offlinePayment->order->orderItems->first()->webinar->title);
             } elseif ($offlinePayment->pay_for == 'service') {
                 $purpuse = 'لدفع رسوم خدمة  ' . ($offlinePayment->order->orderItems->first()->service->title);
+                
                 $offlinePayment->order->orderItems
                     ->first()
                     ->service->users()
                     ->where('user_id', $offlinePayment->user_id)
                     ->first()->pivot->update(['status' => 'pending']);
-
             } else {
                 $purpuse = '';
             }
@@ -219,7 +226,6 @@ class OfflinePaymentController extends Controller
                 '[p.body]' => "لقد تم قبول طلبك  " . $purpuse
             ];
             sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
-
         } else {
             Accounting::create([
                 'creator_id' => auth()->user()->id,
