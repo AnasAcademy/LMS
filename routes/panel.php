@@ -304,10 +304,10 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     // services Routes
     Route::group(['prefix' => 'services'], function () {
         Route::get('/', 'ServiceController@index');
+        Route::get('/requests', 'ServiceController@requests');
         Route::get('/{service}/bundleTransform', 'ServiceController@bundleTransformRequest');
         Route::post('/{service}/bundleTransform', 'ServiceController@bundleTransform');
         Route::get('/{service}/apply', 'ServiceController@store');
-
     });
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
@@ -317,7 +317,6 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('{id}/conversations', 'SupportsController@index');
         Route::post('{id}/conversations', 'SupportsController@storeConversations');
         Route::get('{id}/close', 'SupportsController@close');
-
         Route::group(['prefix' => 'tickets'], function () {
             Route::get('/', 'SupportsController@tickets');
             Route::get('{id}/conversations', 'SupportsController@tickets');
