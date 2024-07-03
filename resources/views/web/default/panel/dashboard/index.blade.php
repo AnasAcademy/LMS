@@ -76,6 +76,8 @@
                             {{ $authUser->user_code }}</li>
                         <li class="mt-1 text-gray font-16 font-weight-bold text-left"> البريد الاكاديمي :
                             {{ $authUser->user_code }}@anasacademy.uk</li>
+                        <li class="mt-1 text-gray font-16 font-weight-bold text-left"> كلمة المرور:
+                           SD$$2025</li>
                         <li class="mt-1 text-gray font-16 font-weight-bold text-left"> البرنامج الدراسي :
 
                             @if ($bundleSales->isNotEmpty())
