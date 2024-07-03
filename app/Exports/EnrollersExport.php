@@ -53,7 +53,7 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
         if ($user->student) {
             $diploma = '';
             $created_at='';
-            $purchasedBundles = $user->purchasedBundles();
+            $purchasedBundles = $user->purchasedBundles;
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {
