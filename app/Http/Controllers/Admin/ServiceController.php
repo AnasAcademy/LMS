@@ -127,14 +127,18 @@ class ServiceController extends Controller
             'title' => 'required|string|min:3',
             'description' => 'nullable|string|min:10',
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
-            'apply_link' => 'required|url',
-            'review_link' => 'required|url',
+            // 'apply_link' => 'required|url',
+            // 'review_link' => 'required|url',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
 
         $request['created_by'] = $authUser->id;
-        Service::create($request->all());
+        $data = $request->all();
+        $lastService = (Service::get()->last()->id)+1;
+        $data['apply_link']= env('APP_URL').'panel/services/'.$lastService.'/apply';
+        $data['review_link']= env('APP_URL').'panel/services/'.$lastService.'/review';
+        Service::create($data);
         return back()->with('success', 'تم إنشاء الخدمة بنجاح');
     }
 
