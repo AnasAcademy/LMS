@@ -99,10 +99,10 @@
                 <div class="collapse {{ (request()->is('panel/requirements') or request()->is('panel/requirements/*') or request()->is('panel/newEnrollment') or request()->is('panel/courses/applied')) ? 'show' : '' }}"
                     id="requirementsCollapse">
                     <ul class="sidenav-item-collapse">
-                        @if (count(auth()->user()->getAllPurchasedWebinarsIds()) > 0 || count(auth()->user()->webinarOfflinePayments)>0)
-                        <li class="mt-5 {{ request()->is('panel/courses/applied') ? 'active' : '' }}">
-                            <a href="/panel/courses/applied">دفع رسوم الدورات</a>
-                        </li>
+                        @if (count(auth()->user()->getAllPurchasedWebinarsIds()) > 0 || count(auth()->user()->webinarOfflinePayments) > 0)
+                            <li class="mt-5 {{ request()->is('panel/courses/applied') ? 'active' : '' }}">
+                                <a href="/panel/courses/applied">دفع رسوم الدورات</a>
+                            </li>
                         @endif
                         @if (count(auth()->user()->student->bundleStudent) > 0)
                             <li class="mt-5 {{ request()->is('panel/requirements/applied') ? 'active' : '' }}">
@@ -755,13 +755,29 @@
         @endcan --}}
 
         {{-- services --}}
-        {{-- <li class="sidenav-item {{ request()->is('panel/services') ? 'sidenav-item-active' : '' }}">
-            <a href="/panel/services" class="d-flex align-items-center">
+
+        {{-- <li class="sidenav-item {{ request()->is('panel/service*') ? 'sidenav-item-active' : '' }}">
+            <a class="d-flex align-items-center" data-toggle="collapse" href="#servicesCollapse" role="button"
+                aria-expanded="false" aria-controls="servicesCollapse">
                 <span class="sidenav-setting-icon sidenav-item-icon mr-10">
                     @include('web.default.panel.includes.sidebar_icons.service', ['class' => 'cls-1'])
                 </span>
-                <span class="font-14 text-dark-blue font-weight-500">الخدمات  الإلكترونية</span>
+                <span class="font-14 text-dark-blue font-weight-500">الخدمات الإلكترونية</span>
             </a>
+
+            <div class="collapse {{ request()->is('panel/services*') ? 'show' : '' }}" id="servicesCollapse">
+                <ul class="sidenav-item-collapse">
+                    <li class="{{ request()->is('panel/services', false) ? 'active' : '' }}">
+                        <a class="nav-link" href="/panel/services">{{ 'قائمة' }}</a>
+                    </li>
+
+                    @if (auth()->user()->services->count() > 0)
+                        <li class="{{ request()->is('panel/services/requests', false) ? 'active' : '' }}">
+                            <a class="nav-link" href="/panel/services/requests">{{ 'قائمة بالطلبات' }}</a>
+                        </li>
+                    @endif
+                </ul>
+            </div>
         </li> --}}
 
         {{-- Setting --}}
