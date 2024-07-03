@@ -26,6 +26,15 @@ class ServiceController extends Controller
         return view(getTemplate() . '.panel.services.index', compact('services'));
     }
 
+    public function requests()
+    {
+        //
+        $services = auth()->user()->services()->paginate(10);
+
+        // dd($services);
+        return view(getTemplate() . '.panel.services.requests', compact('services'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -42,13 +51,16 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Service $service)
+    public function store(Request $request, Service $service, $content=null)
     {
         //
         $user = auth()->user();
-        $content = $service->title;
+        if(empty($content)){
+            $content = $service->title;
+        }
+
         if ($service->price > 0) {
-            
+
             Cookie::queue('service_content', json_encode($content));
             $order = $this->createOrder($service);
             return redirect('/payment/' . $order->id);
@@ -98,16 +110,7 @@ class ServiceController extends Controller
         }
 
 
-        $user = auth()->user();
-        if ($service->price > 0) {
-            Cookie::queue('service_content', json_encode($content));
-            $order = $this->createOrder($service);
-            return redirect('/payment/' . $order->id);
-
-        } else {
-            $service->users()->attach($user, ['content' => $content]);
-            return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
-        }
+       return $this->store($request, $service, $content);
     }
     /**
      * Display the specified resource.
