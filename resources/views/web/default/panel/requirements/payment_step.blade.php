@@ -33,9 +33,11 @@
                     class="bg-white position-relative col-xl-9 col-12 justify-content-center align-items-center rounded-sm mb-80 py-35 px-0">
                     <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}
-                        <span class="font-14 font-weight-bold text-center text-danger mt-15 discount pr-2">
-                            خصم 30%
-                        </span>
+                        @if(!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()))
+                            <span class="font-14 font-weight-bold text-center text-danger mt-15 discount pr-2">
+                                خصم 30%
+                            </span>
+                        @endif
                     </h2>
 
 
