@@ -309,9 +309,9 @@ class Bundle extends Model implements TranslatableContract
                                 if ($installmentOrder->checkOrderHasOverdue()) {
                                     $overdueIntervalDays = getInstallmentsSettings('overdue_interval_days');
 
-                                    if (empty($overdueIntervalDays) or $installmentOrder->overdueDaysPast() > $overdueIntervalDays) {
-                                        $hasBought = false;
-                                    }
+                                    // if (empty($overdueIntervalDays) or $installmentOrder->overdueDaysPast() > $overdueIntervalDays) {
+                                    //     $hasBought = false;
+                                    // }
                                 }
                             }
                         } else {
@@ -358,13 +358,13 @@ class Bundle extends Model implements TranslatableContract
 
                 if (!empty($installmentOrder)) {
                     $hasBought = true;
-                    
+
                     if ($installmentOrder->checkOrderHasOverdue()) {
                         $overdueIntervalDays = getInstallmentsSettings('overdue_interval_days');
 
-                        if (empty($overdueIntervalDays) or $installmentOrder->overdueDaysPast() > $overdueIntervalDays) {
-                            $hasBought = false;
-                        }
+                        // if (empty($overdueIntervalDays) or $installmentOrder->overdueDaysPast() > $overdueIntervalDays) {
+                        //     $hasBought = false;
+                        // }
                     }
                 }
             }
