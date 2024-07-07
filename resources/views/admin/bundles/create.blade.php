@@ -138,6 +138,21 @@
                                                 @enderror
                                             </div>
 
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">عنوان رابط (URL) جدول المحاضرات</label>
+                                                <input type="text" name="content_table"
+                                                    value="{{ !empty($bundle) ? $bundle->content_table : old('content_table') }}"
+                                                    class="form-control @error('content_table')  is-invalid @enderror"
+                                                    placeholder="" />
+
+                                                @error('content_table')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+
                                             @if (!empty($bundle) and $bundle->creator->isOrganization())
                                                 <div class="form-group mt-15 ">
                                                     <label
