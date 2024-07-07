@@ -51,7 +51,7 @@
                         @elseif ($studentBundle->bundle->early_enroll)
                             <div class="w-100 text-center">
                                 <p class="alert alert-info text-center mx-30">
-                                    يرجى ملاحظة أن التسجيل الرسمي سيبدأ في شهر يوليو المقبل.
+                                    يرجى ملاحظة أن التسجيل الرسمي سيبدأ يوم 30 يوليو.
                                     <br> بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
                                 </p>
                             </div>
