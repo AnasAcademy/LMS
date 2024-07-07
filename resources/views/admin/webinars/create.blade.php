@@ -424,9 +424,9 @@
                                                 <p class="mt-1">- {{ trans('update.access_days_input_hint') }}</p>
                                             </div>
 
-                                            <div class="form-group mt-15" style="display: none">
+                                            <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('public.price') }} ({{ $currency }})</label>
-                                                <input type="text" name="price" value="" class="form-control @error('price')  is-invalid @enderror" placeholder="{{ trans('public.0_for_free') }}"/>
+                                                <input type="text" name="price" value="{{ !empty($webinar) ? $webinar->price : old('price') }}" class="form-control @error('price')  is-invalid @enderror" placeholder="{{ trans('public.0_for_free') }}"/>
                                                 @error('price')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
