@@ -138,6 +138,21 @@
                                                 @enderror
                                             </div>
 
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">عنوان رابط (URL) جدول المحاضرات</label>
+                                                <input type="text" name="content_table"
+                                                    value="{{ !empty($bundle) ? $bundle->content_table : old('content_table') }}"
+                                                    class="form-control @error('content_table')  is-invalid @enderror"
+                                                    placeholder="" />
+
+                                                @error('content_table')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+
                                             @if (!empty($bundle) and $bundle->creator->isOrganization())
                                                 <div class="form-group mt-15 ">
                                                     <label
@@ -422,7 +437,7 @@
                                                     <input type="hidden" name="has_certificate" value="0">
                                                     <input type="checkbox" name="has_certificate" id="has_certificate"
                                                         style="accent-color:var(--primary)"
-                                                        @if (isset($bundle->has_certificate)) checked @endif value="1">
+                                                        @if (isset($bundle->has_certificate) && $bundle->has_certificate==1) checked @endif value="1">
 
                                                     <label for="has_certificate"
                                                         class="form-check-label mr-2 font-weight-bold"> يضم شهادة الشهادة

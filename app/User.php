@@ -6,9 +6,11 @@ use App\Bitwise\UserLevelOfTraining;
 use App\Models\Accounting;
 use App\Models\Badge;
 use App\Models\BundleWebinar;
+use App\Models\Enrollment;
 use App\Models\ForumTopic;
 use App\Models\ForumTopicLike;
 use App\Models\ForumTopicPost;
+use App\Models\Group;
 use App\Models\Meeting;
 use App\Models\Noticeboard;
 use App\Models\Notification;
@@ -20,6 +22,7 @@ use App\Models\ReserveMeeting;
 use App\Models\RewardAccounting;
 use App\Models\Role;
 use App\Models\Follow;
+use App\Models\OfflinePayment;
 use App\Models\Sale;
 use App\Models\Section;
 use App\Student;
@@ -29,6 +32,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use App\Models\OrderItem;
 use App\Models\Service;
+use App\Models\ServiceUser;
 
 class User extends Authenticatable
 {
@@ -108,6 +112,16 @@ class User extends Authenticatable
         return $this->role_name === Role::$organization;
     }
 
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function webinarsEnrollments()
+    {
+        return $this->belongsToMany(Group::class, 'enrollments');
+    }
+
     public function hasPermission($section_name)
     {
         if (self::isAdmin() || self::isUser()) {
@@ -177,7 +191,6 @@ class User extends Authenticatable
                     $bit = $tmp;
                 }
             } catch (\Exception $exception) {
-
             }
         }
 
@@ -544,18 +557,26 @@ class User extends Authenticatable
     }
     public function purchasedBundles()
     {
-        return Sale::where(function ($query) {
+        // return Sale::where(function ($query) {
+        //     $query->where('type', 'bundle')
+        //         ->orWhere('type', 'installment_payment');
+        // })
+        // ->where('buyer_id', $this->id)
+        // ->whereNotNull('bundle_id')
+        // ->orderBy('created_at', 'desc')
+        // ->get()
+        // ->unique('bundle_id');
+
+        return $this->hasMany(Sale::class, 'buyer_id')
+        ->where(function ($query) {
             $query->where('type', 'bundle')
-                ->orWhere('type', 'installment_payment');
+                  ->orWhere('type', 'installment_payment');
         })
-        ->where('buyer_id', $this->id)
         ->whereNotNull('bundle_id')
         ->orderBy('created_at', 'desc')
-        ->get()
-        ->unique('bundle_id');
+        ->distinct('bundle_id');
 
     }
-
 
     public function salesCount()
     {
@@ -978,11 +999,30 @@ class User extends Authenticatable
 
     public function services()
     {
-        return $this->hasMany(Service::class);
+        return $this->belongsToMany(Service::class)
+        ->using(ServiceUser::class)
+            ->withPivot(['id', 'status', 'approved_by', 'message', 'content'])
+            ->withTimestamps()
+            ->orderBy('service_user.created_at', 'desc');
     }
 
     public function createdService()
     {
         return $this->hasMany(Service::class, "created_by");
+    }
+
+    public function offlinePayments()
+    {
+        return $this->hasMany(OfflinePayment::class, "user_id");
+    }
+
+    public function webinarOfflinePayments()
+    {
+        return $this->hasMany(OfflinePayment::class, "user_id")
+        ->where(function($query){
+            $query->where('pay_for', 'webinar')
+            ->whereIn('status', ['waiting', 'reject']);
+        });
+
     }
 }

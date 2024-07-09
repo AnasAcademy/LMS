@@ -7,9 +7,7 @@
 
 <section class="row mx-0 col-12">
     {{-- <div class="col-12 text-center mb-20">
-        @if (
-            !($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())) &&
-                !empty($bundleData['bundle']->studentRequirement))
+        @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())) && !empty($bundleData['bundle']->studentRequirement))
             <p class="alert alert-success text-center">
                 لقد تم بالفعل رفع متطلبات القبول وتم الموافقة عليها يرجي الذهاب للخطوة
                 التاليه
@@ -46,18 +44,25 @@
                                             $realPrice = handleCoursePagePrice($bundleData['bundle']->bundle->price);
                                         @endphp
                                         @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
-                                            {{-- <p style="text-decoration: line-through;">
-                                                                            {{   handleCoursePagePrice(($bundleData['bundle']->bundle->price / (1 - $bundleData['bundle']->bundle->discount_rate)))['price'] }}
-                                                                        </p> --}}
+                                            <p style="text-decoration: line-through;">
+                                                {{-- {{ handleCoursePagePrice($bundleData['bundle']->bundle->price / (1 - $bundleData['bundle']->bundle->discount_rate))['price'] }} --}}
+
+                                               {{ round($bundleData['bundle']->bundle->price /(1 - 0.3)) }} ر.س
+
+                                                {{-- {{ handleCoursePagePrice(($bundleData['bundle']->bundle->price + ($bundleData['bundle']->bundle->price * 0.30)) )}} --}}
+
+                                            </p>
                                             <span id="realPrice" data-value="{{ $bundleData['bundle']->bundle->price }}"
                                                 data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
                                                 class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-36 text-primary @endif">
                                                 {{ $realPrice['price'] }}
                                             </span>
+
                                             {{-- <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
-                                                                            خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
-                                                                            % عند دفع كامل الرسوم مرة واحده
-                                                                        </p> --}}
+                                                 خصم
+                                                {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}
+                                                % عند دفع كامل الرسوم مرة واحده
+                                            </p> --}}
                                         @endif
 
                                         @if (!empty($realPrice['tax']) and empty($activeSpecialOffer))
@@ -138,37 +143,14 @@
     </div>
 
     {{-- installment --}}
-    @if (!empty($bundleData['installments']) && count($bundleData['installments']))
+    @if (!empty($bundleData['installments']) && count($bundleData['installments']) > 0)
         <div class="col-12 col-md-6">
-
-            {{-- Installments --}}
-            @if (
-                !empty($bundleData['installments']) and
-                    count($bundleData['installments']) and
-                    getInstallmentsSettings('installment_plans_position') == 'top_of_page')
-                @foreach ($bundleData['installments'] as $installmentRow)
-                    @include('web.default.installment.card', [
-                        'installment' => $installmentRow,
-                        'itemPrice' => $bundleData['bundle']->bundle->getPrice(),
-                        'itemId' => $bundleData['bundle']->bundle->id,
-                        'itemType' => 'bundles',
-                    ])
-                @endforeach
-            @endif
-            {{-- Installments --}}
-            @if (
-                !empty($bundleData['installments']) and
-                    count($bundleData['installments']) and
-                    getInstallmentsSettings('installment_plans_position') == 'bottom_of_page')
-                @foreach ($bundleData['installments'] as $installmentRow)
-                    @include('web.default.installment.card', [
-                        'installment' => $installmentRow,
-                        'itemPrice' => $bundleData['bundle']->bundle->getPrice(),
-                        'itemId' => $bundleData['bundle']->bundle->id,
-                        'itemType' => 'bundles',
-                    ])
-                @endforeach
-            @endif
+            @include('web.default.installment.card', [
+                'installment' => $bundleData['installments']->last(),
+                'itemPrice' => $bundleData['bundle']->bundle->getPrice(),
+                'itemId' => $bundleData['bundle']->bundle->id,
+                'itemType' => 'bundles',
+            ])
         </div>
     @endif
 </section>

@@ -37,7 +37,8 @@ use App\Models\PaymentChannel;
 use App\Http\Controllers\Web\traits\InstallmentsTrait;
 use App\Mixins\Installment\InstallmentPlans;
 use App\Models\Bundle;
-
+use App\Models\Sale;
+use Illuminate\Support\Collection;
 class UserController extends Controller
 {
     use InstallmentsTrait;
@@ -919,6 +920,39 @@ class UserController extends Controller
         }
 
         return view(getTemplate() . '.panel.requirements.payment_step',['studentBundles'=> $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+
+    }
+
+    public function appliedCourses()
+    {
+
+        $user = auth()->user();
+
+        $student = $user->Student;
+
+        if (!$student) {
+            return redirect('/apply');
+        }
+
+        $webinarSales = Sale::where('buyer_id', $user->id)->whereNotNull('webinar_id')->with('order.orderItems')->get()->sortByDesc('created_at');
+        $offlinePayments = $user->offlinePayments->where('pay_for', 'webinar')->whereIn('status', ['waiting', 'reject'])->sortByDesc('created_at');
+
+        $webinarsOrders = new Collection();
+
+        foreach ($offlinePayments as $offlinePayment) {
+            $off = $offlinePayment->order->orderItems->first();
+            $off->status = $offlinePayment->status;
+            $webinarsOrders->push($off);
+        }
+
+        foreach( $webinarSales as $webinarSale){
+            $web= $webinarSale->order->orderItems->first();
+            $web->status= "approved";
+            $webinarsOrders->push($web);
+        }
+
+
+        return view(getTemplate() . '.panel.requirements.courses_payment',['webinarsOrders' => $webinarsOrders]);
 
     }
 

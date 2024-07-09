@@ -8,8 +8,8 @@
 
         </a>
 
-        <div class="ml-10' }}">
-            <h4 class="font-20 text-secondary font-weight-bold">الخدمات الإلكترونية</h4>
+        <div class="ml-10">
+            <h4 class="font-20 text-secondary font-weight-bold"> {!! $title !!} </h4>
         </div>
     </div>
 </div>

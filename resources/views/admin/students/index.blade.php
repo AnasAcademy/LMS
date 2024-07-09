@@ -312,9 +312,9 @@
                                         <div class="mt-0 mb-1 font-weight-bold">
                                             {{ $user->student ? $user->student->ar_name : $user->full_name }}</div>
 
-                                        @if ($user->mobile)
+                                        @if ($user->mobile || $user->student)
                                             <div class="text-primary text-left font-600-bold" style="font-size:12px;">
-                                                {{ $user->mobile }}</div>
+                                                {{ $user->mobile ?? $user->student->phone }}</div>
                                         @endif
 
                                         @if ($user->email)

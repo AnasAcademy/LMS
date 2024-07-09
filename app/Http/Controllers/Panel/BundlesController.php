@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Panel;
 
 use App\Exports\WebinarStudents;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\PaymentController;
 use App\Mixins\RegistrationPackage\UserPackage;
 use App\Models\Bundle;
 use App\Models\BundleFilterOption;
 use App\Models\Category;
+use App\Models\Gift;
 use App\Models\Role;
 use App\Models\Sale;
 use App\Models\Tag;
@@ -17,6 +19,7 @@ use App\Models\Webinar;
 use App\Models\WebinarFilterOption;
 use App\Models\WebinarPartnerTeacher;
 use App\User;
+use App\Models\Session;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
@@ -84,6 +87,152 @@ class BundlesController extends Controller
         ];
 
         return view('web.default.panel.bundle.index', $data);
+    }
+    public function purchases(Request $request)
+    {
+        $user = auth()->user();
+
+        $giftsIds = Gift::query()->where('email', $user->email)
+            ->where('status', 'active')
+            ->whereNull('product_id')
+            ->where(function ($query) {
+                $query->whereNull('date');
+                $query->orWhere('date', '<', time());
+            })
+            ->whereHas('sale')
+            ->pluck('id')
+            ->toArray();
+
+            $query = Sale::query()
+            ->where(function ($query) use ($user, $giftsIds) {
+                $query->where('sales.buyer_id', $user->id)
+                      ->orWhereIn('sales.gift_id', $giftsIds);
+            })
+            ->whereNull('sales.refund_at')
+            ->where('access_to_purchased_item', true)
+            ->where(function ($query) {
+                $query->whereNotNull('sales.bundle_id')
+                      ->whereIn('sales.type', ['bundle', 'installment_payment'])
+                      ->whereHas('bundle', function ($query) {
+                          $query->where('status', 'active');
+                      });
+            })
+            ->distinct()
+            ->select('sales.bundle_id');
+
+
+
+            $sales = deepClone($query)
+            ->with([
+                'webinar' => function ($query) {
+                    $query->with([
+                        'files',
+                        'reviews' => function ($query) {
+                            $query->where('status', 'active');
+                        },
+                        'category',
+                        'teacher' => function ($query) {
+                            $query->select('id', 'full_name');
+                        },
+                    ]);
+                    $query->withCount([
+                        'sales' => function ($query) {
+                            $query->whereNull('refund_at');
+                        }
+                    ]);
+                },
+                'bundle' => function ($query) {
+                    $query->with([
+                        'reviews' => function ($query) {
+                            $query->where('status', 'active');
+                        },
+                        'category',
+                        'teacher' => function ($query) {
+                            $query->select('id', 'full_name');
+                        },
+                    ]);
+                }
+            ])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+
+        $time = time();
+
+        $giftDurations = 0;
+        $giftUpcoming = 0;
+        $giftPurchasedCount = 0;
+
+        foreach ($sales as $sale) {
+            if (!empty($sale->gift_id)) {
+                $gift = $sale->gift;
+
+                $sale->webinar_id = $gift->webinar_id;
+                $sale->bundle_id = $gift->bundle_id;
+
+                $sale->webinar = !empty($gift->webinar_id) ? $gift->webinar : null;
+                $sale->bundle = !empty($gift->bundle_id) ? $gift->bundle : null;
+
+                $sale->gift_recipient = !empty($gift->receipt) ? $gift->receipt->full_name : $gift->name;
+                $sale->gift_sender = $sale->buyer->full_name;
+                $sale->gift_date = $gift->date;;
+
+                $giftPurchasedCount += 1;
+
+                if (!empty($sale->webinar)) {
+                    $giftDurations += $sale->webinar->duration;
+
+                    if ($sale->webinar->start_date > $time) {
+                        $giftUpcoming += 1;
+                    }
+                }
+
+                if (!empty($sale->bundle)) {
+                    $bundleWebinars = $sale->bundle->bundleWebinars;
+
+                    foreach ($bundleWebinars as $bundleWebinar) {
+                        $giftDurations += $bundleWebinar->webinar->duration;
+                    }
+                }
+            }
+        }
+
+        $purchasedCount = deepClone($query)
+            ->where(function ($query) {
+                $query->whereHas('webinar');
+                $query->orWhereHas('bundle');
+            })
+            ->count();
+
+        $webinarsHours = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
+            ->select(DB::raw('sum(webinars.duration) as duration'))
+            ->sum('duration');
+        $bundlesHours = deepClone($query)->join('bundle_webinars', 'bundle_webinars.bundle_id', 'sales.bundle_id')
+            ->join('webinars', 'webinars.id', 'bundle_webinars.webinar_id')
+            ->select(DB::raw('sum(webinars.duration) as duration'))
+            ->sum('duration');
+
+        $hours = $webinarsHours + $bundlesHours + $giftDurations;
+
+        $upComing = deepClone($query)->join('webinars', 'webinars.id', 'sales.webinar_id')
+            ->where('webinars.start_date', '>', $time)
+            ->count();
+
+        $data = [
+            'pageTitle' => trans('webinars.webinars_purchases_page_title'),
+            'sales' => $sales,
+            'purchasedCount' => $purchasedCount + $giftPurchasedCount,
+            'hours' => $hours,
+            'upComing' => $upComing + $giftUpcoming
+        ];
+
+        return view(getTemplate() . '.panel.bundle.purchases', $data);
+    }
+    public function getJoinInfo(Request $request)
+    {
+       //to do
+
+        return response()->json([], 422);
     }
     public function createOrderAndOrderItems($bundle,$installment_payment_id, $calculate, $user, $discountCoupon = null)
     {
@@ -377,7 +526,7 @@ class BundlesController extends Controller
                         'installment_id' => $installment->id,
                         'user_id' => $user->id,
                         $columnName => $itemId,
-                        'product_order_id' => !empty($productOrder) ? $productOrder->id : null,
+                        'product_order_id' => (!empty($productOrder)) ? $productOrder->id : null,
                         'item_price' => $itemPrice,
                         'status' => $status,
                     ], [
@@ -618,7 +767,7 @@ class BundlesController extends Controller
             'status' => Order::$paid
         ]);
 
-        return redirect('/payments/status?order_id=' . $order->id);
+        return redirect('/payments/status/' . $order->id);
     }
 
     public function create()

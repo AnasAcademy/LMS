@@ -312,22 +312,15 @@
                             <td class="text-center mb-2" width="120">
                                 @can('admin_users_transform')
                                     @if (!empty($user->student))
-                                    @include('admin.includes.confirm_transform_button', [
-                                                            'url' =>
-                                                                getAdminPanelUrl() .
-                                                                '/users/' .
-                                                                $user->id .
-                                                                '/transform',
-                                                            'btnClass' =>
-                                                                'btn-transparent  text-primary',
-                                                            'btnText' =>
-                                                                ' <i class="fa fa-arrows-alt"></i>',
-                                                            'hideDefaultClass' => true,
-                                                            'id' => $user->id
-                                                        ])
+                                        @include('admin.includes.confirm_transform_button', [
+                                            'url' => getAdminPanelUrl() . '/users/' . $user->id . '/transform',
+                                            'btnClass' => 'btn-transparent  text-primary',
+                                            'btnText' => '<i class="fa fa-retweet"></i>',
+                                            'hideDefaultClass' => true,
+                                            'id' => $user->id,
+                                        ])
                                     @endif
                                 @endcan
-
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/impersonate" target="_blank"
                                         class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
@@ -423,17 +416,16 @@
     <script src="/assets/default/js/panel/make_next_session.min.js"></script>
     {{-- bundle toggle and education section toggle --}}
     <script>
-        function toggleHiddenInput() {
+        function toggleHiddenInput(event) {
             var bundles = @json($bundlesByCategory);
-            var select = document.getElementById("mySelect1");
-            var hiddenInput = document.getElementById("bundle_id");
-            var hiddenLabel = document.getElementById("hiddenLabel1");
-            let education = document.getElementById("education");
-            let high_education = document.getElementsByClassName("high_education");
-            let secondary_education = document.getElementsByClassName("secondary_education");
-            let certificateSection = document.getElementById("certificate_section");
-            if (select.value && hiddenLabel && hiddenInput) {
-                var categoryId = select.value;
+
+            let selectInput = event.target;
+            let myForm = selectInput.closest('form');
+            let hiddenInput = myForm.bundle_id;
+            let certificateSection = myForm.certificate_section;
+
+            if (selectInput.value && hiddenInput) {
+                var categoryId = selectInput.value;
                 var categoryBundles = bundles[categoryId];
 
                 if (categoryBundles) {
@@ -444,32 +436,24 @@
                     }).join('');
 
                     hiddenInput.outerHTML =
-                        '<select id="bundle_id" name="toDiploma"  class="form-control" onchange="CertificateSectionToggle()" required>' +
+                        '<select id="bundle_id" name="toDiploma"  class="form-control" onchange="CertificateSectionToggle(event)" required>' +
                         '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
-                    hiddenLabel.style.display = "block";
-
-                } else {
-                    hiddenInput.outerHTML =
-                        '<input type="text" id="bundle_id" name="toDiploma" placeholder="ادخل الإسم باللغه العربية فقط"  class="hidden-element form-control">';
-                    hiddenLabel.style.display = "none";
                 }
-                var selectedOption = select.options[select.selectedIndex];
-                var selectedText = selectedOption.textContent;
-
-
             }
         }
-        toggleHiddenInput();
     </script>
 
 
     {{-- Certificate Section Toggle --}}
     <script>
-        function CertificateSectionToggle() {
-            let certificateSection = document.getElementById("certificate_section");
-            let bundleSelect = document.getElementById("bundle_id");
+        function CertificateSectionToggle(event) {
+
+            let myForm = event.target.closest('form');
+
+            let certificateSection = myForm.querySelector("#certificate_section");
+            let bundleSelect = myForm.querySelector("#bundle_id");
             // Get the selected option
             var selectedOption = bundleSelect.options[bundleSelect.selectedIndex];
             if (selectedOption.getAttribute('has_certificate') == 1) {
@@ -480,24 +464,19 @@
             }
         }
 
-        function showCertificateMessage() {
-            let messageSection = document.getElementById("certificate_message");
-            let certificateOption = document.querySelector("input[name='certificate']:checked");
+        function showCertificateMessage(event) {
+            let myForm = event.target.closest('form');
+            let messageSection = myForm.querySelector("#certificate_message");
+            let certificateOption = myForm.querySelector("input[name='certificate']:checked");
             if (certificateOption.value === "1") {
-                messageSection.innerHTML = "سوف تحصل على خصم 23%"
+                messageSection.innerHTML = "سوف يحصل على خصم 23%"
             } else if (certificateOption.value === "0") {
-                messageSection.innerHTML = "بيفوتك الحصول علي خصم 23%"
+                messageSection.innerHTML = "بيفوته الحصول علي خصم 23%"
 
             } else {
                 messageSection.innerHTML = ""
 
             }
         }
-
-        showCertificateMessage();
-
-
-        CertificateSectionToggle();
     </script>
-
 @endpush

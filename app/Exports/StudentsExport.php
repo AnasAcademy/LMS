@@ -31,7 +31,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function headings(): array
     {
-        
+
         return [
 
             'Name',

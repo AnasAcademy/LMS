@@ -57,6 +57,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@staffs');
         });
 
+
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
@@ -68,6 +69,15 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
+
+        });
+        Route::group(['prefix' => 'courses'], function () {
+            Route::get('/', 'UserController@Courses');
+            Route::get('/{id}', 'UserController@Courses');
+            Route::get('/groups/{id}/show', 'UserController@groupInfo');
+            Route::get('/groups/{group}/edit', 'UserController@groupEdit');
+            Route::put('/groups/{group}/update', 'UserController@groupUpdate');
+            Route::get('/groups/{id}/delete', 'GroupController@destroy');
 
         });
 
@@ -286,6 +296,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/order-items', 'WebinarController@orderItems');
             Route::post('/{id}/getContentItemByLocale', 'WebinarController@getContentItemByLocale');
 
+
             Route::get('/{id}/statistics', 'WebinarStatisticController@index');
 
             Route::group(['prefix' => 'features'], function () {
@@ -326,6 +337,9 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // services routes
          Route::group(['prefix' => 'services'], function () {
+            Route::get('/requests', 'ServiceController@requests');
+            Route::get('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
+            Route::get('/requests/{serviceUser}/reject', 'ServiceController@rejectRequest');
             Route::resource('', 'ServiceController')->parameters(['' => 'service']);
             Route::get('/{service}/delete', 'ServiceController@destroy');
         });

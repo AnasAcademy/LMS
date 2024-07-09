@@ -21,6 +21,10 @@ class Service extends Model
 
 
     public function users(){
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+                    ->using(ServiceUser::class)
+                    ->withPivot(['id','status', 'approved_by', 'message', 'content'])
+                    ->withTimestamps()
+                    ->orderBy('service_user.created_at', 'desc');
     }
 }

@@ -14,6 +14,7 @@ use App\Models\BecomeInstructor;
 use App\Models\Bundle;
 use App\Models\Category;
 use App\Models\Code;
+use App\Models\Enrollment;
 use App\Models\ForumTopic;
 use App\Models\Group;
 use App\Models\GroupUser;
@@ -30,6 +31,7 @@ use App\Models\UserOccupation;
 use App\Models\UserRegistrationPackage;
 use App\Models\UserSelectedBank;
 use App\Models\UserSelectedBankSpecification;
+use App\Models\Webinar;
 use App\Student;
 use App\User;
 use Illuminate\Http\Request;
@@ -1101,7 +1103,7 @@ class UserController extends Controller
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span>". $data['password']."
+                             <span style='font-weight:bold;'>كلمة المرور: </span>" . $data['password'] . "
                              <br>
                              <br>
                             واذا واجهتكم مشكلة في تسجيل الدخول يمكنكم التواصل معنا
@@ -1488,7 +1490,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::where(['role_name' => Role::$user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+        $users = User::where(['role_name' => Role::$user])->whereHas('student')->whereHas('purchasedBundles')->orderBy('created_at', 'desc')->get();
 
         $usersExport = new EnrollersExport($users);
 
@@ -1795,7 +1797,7 @@ class UserController extends Controller
         //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
         //         $item->where('form_fee', true);
         //     });
-        $query = User::where(['role_name' => Role::$user]);
+        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
@@ -1853,7 +1855,86 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
+    public function Courses(Request $request, $id, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
 
+
+        // $groups=Webinar::find($id)->groups;
+        // dd($groups);
+        $webinar = Webinar::find($id);
+        $query = $webinar->groups->unique();
+        $totalGroups = deepClone($query)->count();
+
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $groups = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $groups = $query;
+        }
+
+        if ($is_export_excel) {
+            return $groups;
+        }
+
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'groups' => $groups,
+            'webinar' => $webinar,
+            'category' => $category,
+            'totalGroups' => $totalGroups,
+
+        ];
+
+        return view('admin.students.courses', $data);
+    }
+
+    public function groupInfo($group_id)
+    {
+        // dd($course_id.','.$group_id);
+        $group = Group::find($group_id);
+        $webinar = $group->webinar;
+        $enrollments = $group->enrollments;
+        // dd($enrollments);
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'totalStudents' => $enrollments->count(),
+            'enrollments' => $enrollments,
+            'webinar' => $webinar,
+            'group' => $group,
+
+        ];
+
+        return view('admin.students.groups', $data);
+    }
+
+    public function groupEdit(Group $group)
+    {
+
+        return view('admin.students.groups.edit', compact('group'));
+    }
+
+    public function groupUpdate(Request $request, Group $group)
+    {
+        $validData = $request->validate([
+            'name' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:0',
+            'start_date' => 'nullable|date',
+            'status' => 'required|in:inactive,active'
+        ]);
+        $toastData = [
+            'title' => 'تعديل بيانات مجموعة دورة',
+            'msg' => 'تم التعديل بنجاح',
+            'status' => 'success',
+        ];
+        $group->update($validData);
+        return redirect('/admin/courses/'.$group->webinar_id)->with('toast', $toastData);
+    }
 
     public function sendEmail($user, $data)
     {

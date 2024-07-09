@@ -19,9 +19,15 @@
         } elseif (!empty($type) && $type == 1) {
             $subTitle .= 'رسوم حجز مقعد : ' . $total . ' ريال سعودي';
             // $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
-        } else {
-            $subTitle .=
-                'الرسوم الدراسية للبرنامج ' . $order->orderItems[0]->bundle->title . ': ' . $total . ' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->bundle)){
+             $subTitle .= 'الرسوم الدراسية للبرنامج '.($order->orderItems[0]->bundle->title).': '.($total).' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->webinar)){
+            $subTitle .= 'الرسوم الدراسية للدورة '.($order->orderItems[0]->webinar->title).': '.($total).' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->service)){
+            $subTitle .= 'الرسوم لطلب خدمة  '.($order->orderItems[0]->service->title).': '.($total).' ريال سعودي';
         }
         // close subtitle
         $subTitle .= '</span>';

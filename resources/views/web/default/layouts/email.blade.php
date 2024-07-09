@@ -312,7 +312,7 @@
                                                                     href="https://anasacademy.uk/" target="_blank"
                                                                     style="color: #4e54cb; text-decoration: none; height:auto;">
                                                                     <img class="img logo"
-                                                                        src="https://support.anasacademy.uk//storage/public/Logo-04.png"
+                                                                        src="https://support.anasacademy.uk/storage/public/Logo-04.png"
                                                                         style="float: left !important;-ms-interpolation-mode: bicubic;height:auto;padding:10px; width: 135px !important;" /></a>
                                                             </td>
 

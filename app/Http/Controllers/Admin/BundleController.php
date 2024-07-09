@@ -300,6 +300,7 @@ class BundleController extends Controller
             'created_at' => time(),
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
+            'content_table' => $data['content_table'] ?? null,
         ]);
 
         if ($bundle) {
@@ -523,6 +524,7 @@ class BundleController extends Controller
             'status' => $data['status'],
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
+            'content_table' => $data['content_table'] ?? null,
         ]);
 
         if ($bundle) {

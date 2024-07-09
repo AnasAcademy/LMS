@@ -343,6 +343,7 @@ class WebinarController extends Controller
             'category_id' => 'required',
             'duration' => 'required|numeric',
             'capacity' => 'required',
+            'price' => 'required'
         ]);
 
         $data = $request->all();
@@ -350,7 +351,7 @@ class WebinarController extends Controller
         // if ($data['type'] != Webinar::$webinar) {
         //     $data['start_date'] = null;
         // }
-
+        $category = Category::find($data['category_id']);
         if (!empty($data['start_date'])) {
             if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
                 $data['timezone'] = getTimezone();
@@ -373,9 +374,10 @@ class WebinarController extends Controller
             $data['video_demo_source'] = 'upload';
         }
 
-        $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
+        // $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
         $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
 
+        dd($data);
         $webinar = Webinar::create([
             'type' => $data['type'],
             'slug' => $data['slug'],
@@ -406,6 +408,8 @@ class WebinarController extends Controller
             'status' => Webinar::$pending,
             'created_at' => time(),
             'updated_at' => time(),
+            'unattached' => ($category->parent_id==null)? 1 : 0,
+            'hasGroup'   =>($category->parent_id==null)? 1 : 0
         ]);
 
         if ($webinar) {
@@ -687,7 +691,7 @@ class WebinarController extends Controller
         $newCreatorId = !empty($data['organ_id']) ? $data['organ_id'] : $data['teacher_id'];
         $changedCreator = ($webinar->creator_id != $newCreatorId);
 
-        $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
+        // $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
         $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
 
         $webinar->update([
