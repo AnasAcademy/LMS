@@ -168,7 +168,7 @@
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
                                     <option selected hidden value="">اختر نوع التقديم التي تريد دراستها في
                                         اكاديمية انس للفنون </option>
-                                    <option value="diplomas" @if (old('type') == 'diplomas') selected @endif>
+                                    <option value="diplomas" @if (old('type') == 'diplomas') selected @endif selected>
                                         دبلومات </option>
                                     <option value="courses" @if (old('type') == 'courses') selected @endif>دورات</option>
                                 </select>
@@ -233,7 +233,7 @@
                                             اكاديمية انس للفنون </option>
                                         @foreach ($category as $item)
                                             <option value="{{ $item->id }}" education= "{{ $item->education }}"
-                                                {{ old('category_id', $student->category_id ?? null) == $item->id ? 'selected' : '' }}>
+                                                {{ old('category_id', $bundle->category_id ?? null) == $item->id ? 'selected' : '' }}>
                                                 {{ $item->title }} </option>
                                         @endforeach
                                     </select>
@@ -252,7 +252,7 @@
                                     </label>
                                     <input type="text" id="bundle_id" name="bundle_id"
                                         class="hidden-element form-control @error('bundle_id') is-invalid @enderror"
-                                        value="{{ old('bundle_id', $student ? $student->bundle_id : '') }}">
+                                        value="{{ old('bundle_id', $bundle ? $bundle->id : '') }}">
 
                                     @error('bundle_id')
                                         <div class="invalid-feedback d-block">
@@ -398,7 +398,7 @@
                                                 class="text-danger">*</span></label>
                                         @php
                                             $nationalities = [
-                                                ' سعودي/ة',
+                                                'سعودي/ة',
                                                 'اماراتي/ة',
                                                 'اردني/ة',
                                                 'بحريني/ة',
@@ -600,614 +600,6 @@
                             </section>
 
 
-                            {{-- contact details --}}
-                            <section>
-                                <h2 class="form-main-title">معلومات التواصل</h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-
-                                    {{-- email --}}
-                                    <div class="form-group col-12">
-                                        <label for="email">{{ trans('application_form.email') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="email" id="email" name="email"
-                                            value="{{ old('email', $student ? $student->email : $user->email ?? '') }}"
-                                            placeholder="تسجيل البريد الإلكتروني" required
-                                            class="form-control  @error('email') is-invalid @enderror">
-
-                                        @error('email')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- phone number --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="phone">{{ trans('application_form.phone') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="tel" id="phone" name="phone" required
-                                            value="{{ old('phone', $student ? $student->phone : $user->mobile ?? '') }}"
-                                            class="form-control @error('phone') is-invalid @enderror">
-
-                                        @error('phone')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- mobile number --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="mobile">{{ 'رقم جوال اخر' }}</label> <span
-                                            class="text-danger">*</span>
-                                        <input type="tel" id="mobile" name="mobile" required
-                                            value="{{ old('mobile', $student ? $student->mobile : $user->mobile ?? '') }}"
-                                            class="form-control  @error('mobile') is-invalid @enderror">
-
-                                        @error('mobile')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-
-                                </section>
-
-                            </section>
-
-                            {{--  education --}}
-                            <section id="education">
-                                <h2 class="form-main-title">المؤهلات التعليمية</h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-
-                                    {{-- المؤهل التعليمي --}}
-                                    <div class="form-group col-12 col-sm-6">
-
-                                        <label for="educational_qualification_country"
-                                            class="form-label high_education">بلد مصدر
-                                            شهادة
-                                            البكالوريوس<span class="text-danger">*</span></label>
-
-                                        <label for="educational_qualification_country"
-                                            class="form-label secondary_education">بلد مصدر
-                                            شهادة
-                                            الثانوية<span class="text-danger">*</span></label>
-
-                                        <select id="educational_qualification_country"
-                                            name="educational_qualification_country"
-                                            class="form-control @error('educational_qualification_country') is-invalid @enderror"
-                                            onchange="educationCountryToggle()">
-                                            <option value="" class="placeholder" disabled="">اختر دولتك</option>
-                                            @foreach ($countries as $country)
-                                                <option value="{{ $country }}"
-                                                    {{ old('educational_qualification_country', $student->educational_qualification_country ?? null) == $country ? 'selected' : '' }}>
-                                                    {{ $country }}</option>
-                                            @endforeach
-
-                                            <option value="اخرى"
-                                                {{ $student && !in_array($student->educational_qualification_country, $countries) ? 'selected' : '' }}
-                                                id="anotherEducationCountryOption">اخرى</option>
-                                        </select>
-                                        @error('educational_qualification_country')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-
-                                    </div>
-
-                                    {{-- مصدر شهادة البكالوريوس --}}
-                                    <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection"
-                                        style="display: none">
-
-                                        <label for="university" class="form-label high_education">
-                                            ادخل مصدر شهادة البكالوريوس<span class="text-danger">*</span>
-                                        </label>
-                                        <label for="university" class="form-label secondary_education">
-                                            ادخل مصدر شهادة الثانوية<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="anotherEducationCountry"
-                                            class="form-control @error('anotherEducationCountry') is-invalid @enderror"
-                                            name="anotherEducationCountry" placeholder="ادخل مصدر الشهادة"
-                                            value="{{ old('anotherEducationCountry', $student && !in_array($student->educational_qualification_country, $countries) ? $student->educational_qualification_country : '') }}"
-                                            onkeyup="setEducationCountry()">
-
-                                        @error('anotherEducationCountry')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-
-                                    {{-- معدل المرحلة الثانوية --}}
-                                    <div class="form-group col-12 col-sm-6 secondary_education">
-                                        <label for="secondary_school_gpa" class="form-label">
-                                            معدل المرحلة الثانوية<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="secondary_school_gpa"
-                                            class="form-control @error('secondary_school_gpa') is-invalid @enderror"
-                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية"
-                                            value="{{ old('secondary_school_gpa', $student ? $student->secondary_school_gpa : '') }}">
-
-                                        @error('secondary_school_gpa')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- المنطقة التعليمية --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="educational_area" class="form-label">
-                                            المنطقة التعليمية<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="educational_area"
-                                            class="form-control @error('educational_area') is-invalid @enderror"
-                                            name="educational_area" placeholder="أدخل المنطقة التعليمية"
-                                            value="{{ old('educational_area', $student ? $student->educational_area : '') }}">
-
-                                        @error('educational_area')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{--  سنة الحصول على الشهادة الثانوية --}}
-                                    <div class="form-group col-12 col-sm-6 secondary_education">
-                                        <label for="secondary_graduation_year" class="form-label">
-                                            سنة الحصول على الشهادة الثانوية<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="secondary_graduation_year"
-                                            class="form-control @error('secondary_graduation_year') is-invalid @enderror"
-                                            name="secondary_graduation_year"
-                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية"
-                                            value="{{ old('secondary_graduation_year', $student ? $student->secondary_graduation_year : '') }}">
-
-                                        @error('secondary_graduation_year')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- المدرسة --}}
-                                    <div class="form-group col-12 col-sm-6 secondary_education">
-                                        <label for="school" class="form-label">
-                                            المدرسة<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="school"
-                                            class="form-control @error('school') is-invalid @enderror" name="school"
-                                            placeholder="أدخل المدرسة"
-                                            value="{{ old('school', $student ? $student->school : '') }}">
-
-                                        @error('school')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-
-                                    {{-- الجامعه --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
-                                        <label for="university" class="form-label">
-                                            الجامعة<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="university"
-                                            class="form-control @error('university') is-invalid @enderror"
-                                            name="university" placeholder="أدخل الجامعة"
-                                            value="{{ old('university', $student ? $student->university : '') }}">
-
-                                        @error('university')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- الكليه --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
-                                        <label for="faculty" class="form-label">
-                                            الكلية<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="faculty"
-                                            class="form-control @error('faculty') is-invalid @enderror" name="faculty"
-                                            placeholder="أدخل الكلية"
-                                            value="{{ old('faculty', $student ? $student->faculty : '') }}">
-
-                                        @error('faculty')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- التخصص  --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
-                                        <label for="education_specialization" class="form-label">
-                                            التخصص<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="education_specialization"
-                                            class="form-control @error('education_specialization') is-invalid @enderror"
-                                            name="education_specialization" placeholder="أدخل التخصص"
-                                            value="{{ old('education_specialization', $student ? $student->education_specialization : '') }}">
-
-                                        @error('education_specialization')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- سنة التخرج --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
-                                        <label for="graduation_year" class="form-label">
-                                            سنة التخرج<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="graduation_year"
-                                            class="form-control @error('graduation_year') is-invalid @enderror"
-                                            name="graduation_year" placeholder="أدخل سنة التخرج"
-                                            value="{{ old('graduation_year', $student ? $student->graduation_year : '') }}">
-
-
-                                        @error('graduation_year')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- المعدل --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
-                                        <label for="gpa" class="form-label">
-                                            المعدل<span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="gpa"
-                                            class="form-control @error('gpa') is-invalid @enderror" name="gpa"
-                                            placeholder="أدخل المعدل "
-                                            value="{{ old('gpa', $student ? $student->gpa : '') }}">
-
-                                        @error('gpa')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </section>
-                            </section>
-
-                            {{-- working --}}
-                            <section>
-                                <h2 class="form-main-title">بيانات المهنة </h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0 workingSection">
-                                    {{-- work status --}}
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label>{{ trans('application_form.status') }}<span
-                                                class="text-danger">*</span></label>
-
-                                        @error('workStatus')
-                                            <div class="invalid-feedback d-inline">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-
-                                        <div class="row mr-5 mt-5">
-                                            {{-- working status --}}
-                                            <div class="col-sm-4 col">
-                                                <label for="working">
-                                                    <input type="radio" id="working" name="workStatus"
-                                                        class="@error('workStatus') is-invalid @enderror" value="1"
-                                                        required
-                                                        {{ old('workStatus', $student->job ?? null) != false ? 'checked' : '' }}>
-                                                    {{ trans('application_form.working') }}
-                                                </label>
-                                            </div>
-
-                                            {{-- not working Status --}}
-                                            <div class="col">
-                                                <label for="not_working">
-                                                    <input type="radio" id="not_working" name="workStatus" required
-                                                        class="@error('workStatus') is-invalid @enderror" value="0"
-                                                        {{ old('workStatus', $student->job ?? null) == false ? 'checked' : '' }}>
-                                                    {{ trans('application_form.not_working') }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- job details --}}
-                                    <div class="col-12" id="job" style="display: none">
-                                        <div class="row">
-                                            <div class="form-group col-12 col-sm-6">
-                                                <label for="job_title">الوظيفة<span class="text-danger">*</span></label>
-                                                <input type="text" id="job_title" name="job"
-                                                    class="form-control @error('job') is-invalid @enderror"
-                                                    placeholder="أدخل الوظيفة"
-                                                    value="{{ old('job', $student ? $student->job : '') }}">
-
-
-                                                @error('job')
-                                                    <div class="invalid-feedback d-block">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="form-group col-12 col-sm-6">
-                                                <label for="employment_type">جهة العمل<span
-                                                        class="text-danger">*</span></label>
-                                                <select id="employment_type" name="job_type"
-                                                    class="form-control @error('job_type') is-invalid @enderror">
-                                                    <option value="" selected disabled>اختر جهة العمل</option>
-                                                    <option value="governmental"
-                                                        {{ old('job_type', $student->job_type ?? null) == 'governmental' ? 'selected' : '' }}>
-                                                        حكومية</option>
-                                                    <option value="private"
-                                                        {{ old('job_type', $student->job_type ?? null) == 'private' ? 'selected' : '' }}>
-                                                        خاصة</option>
-                                                </select>
-
-                                                @error('job_type')
-                                                    <div class="invalid-feedback d-block">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                            </section>
-
-                            {{-- healthy --}}
-                            <section>
-                                <h2 class="form-main-title">الحالة الصحية</h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-
-                                    {{-- deaf status --}}
-                                    <div class="col-12 row">
-                                        {{-- deaf --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label for="deaf">{{ trans('application_form.deaf_patient') }}؟ <span
-                                                    class="text-danger">*</span></label>
-
-                                            @error('deaf')
-                                                <div class="invalid-feedback d-inline">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-                                            <div class="row mr-5 mt-5">
-                                                {{-- deaf --}}
-                                                <div class="col-sm-4 col">
-                                                    <label for="deaf">
-                                                        <input type="radio" id="deaf" name="deaf"
-                                                            class="@error('deaf') is-invalid @enderror" value="1"
-                                                            required
-                                                            {{ old('deaf', $student->deaf ?? null) == 1 ? 'checked' : '' }}>
-                                                        نعم
-                                                    </label>
-                                                </div>
-
-                                                {{-- not deaf --}}
-                                                <div class="col">
-                                                    <label for="not_deaf">
-                                                        <input type="radio" id="not_deaf" name="deaf"
-                                                            class="@error('deaf') is-invalid @enderror" value="0"
-                                                            required
-                                                            {{ old('deaf', $student->deaf ?? null) == 0 ? 'checked' : '' }}>
-                                                        لا
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- disabled --}}
-                                    <div class="col-12 row">
-
-                                        {{-- disabled --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label>هل أنت من ذوي الإعاقة؟<span class="text-danger">*</span></label>
-
-                                            @error('disabled')
-                                                <div class="invalid-feedback d-inline">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-                                            <div class="row mr-5 mt-5">
-                                                {{-- disabled --}}
-                                                <div class="col-sm-4 col">
-                                                    <label for="disabled">
-                                                        <input type="radio" id="disabled" name="disabled"
-                                                            class="@error('disabled') is-invalid @enderror"
-                                                            value="1" required
-                                                            {{ old('disabled', $student->disabled_type ?? null) != false ? 'checked' : '' }}>
-                                                        نعم
-                                                    </label>
-                                                </div>
-
-                                                {{-- not disabled --}}
-                                                <div class="col">
-                                                    <label for="not_disabled">
-                                                        <input type="radio" id="not_disabled" name="disabled"
-                                                            class="@error('disabled') is-invalid @enderror"
-                                                            value="0" required
-                                                            {{ old('disabled', $student->disabled_type ?? null) == false ? 'checked' : '' }}>
-                                                        لا
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        {{-- disabled type --}}
-                                        <div class="form-group col-12 col-sm-6" id="disabled_type_section"
-                                            style="display: none">
-                                            <label for="disabled_type">{{ 'حدد نوع الإعاقة' }} <span
-                                                    class="text-danger">*</span></label>
-                                            <select id="disabled_type" name="disabled_type"
-                                                class="form-control @error('disabled_type') is-invalid @enderror">
-                                                <option value="" class="placeholder" disabled="" selected>أختر
-                                                    نوع
-                                                    الإعاقة
-                                                </option>
-                                                <option value="option1"
-                                                    {{ old('disabled_type', $student->disabled_type ?? null) == 'option1' ? 'selected' : '' }}>
-                                                    اعاقة ذهنية</option>
-                                                <option value="option2"
-                                                    {{ old('disabled_type', $student->disabled_type ?? null) == 'option2' ? 'selected' : '' }}>
-                                                    اعاقة بدنية</option>
-                                            </select>
-
-                                            @error('disabled_type')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                    </div>
-
-                                    {{-- healthy problem --}}
-                                    <div class="col-12 row">
-                                        {{-- healthy status --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label for="healthy">{{ trans('application_form.health_proplem') }}؟<span
-                                                    class="text-danger">*</span></label>
-
-
-                                            @error('healthy')
-                                                <div class="invalid-feedback d-inline">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-                                            <div class="row mr-5 mt-5">
-                                                {{-- healthy --}}
-                                                <div class="col-sm-4 col">
-                                                    <label for="healthy">
-                                                        <input type="radio" id="healthy" name="healthy"
-                                                            class=" @error('healthy') is-invalid @enderror"
-                                                            value="1" required
-                                                            {{ old('healthy', $student->healthy_problem ?? null) != false ? 'checked' : '' }}>
-                                                        نعم
-                                                    </label>
-                                                </div>
-
-                                                {{-- not healthy --}}
-                                                <div class="col">
-                                                    <label for="not_healthy">
-                                                        <input type="radio" id="not_healthy" name="healthy"
-                                                            class=" @error('healthy') is-invalid @enderror"
-                                                            value="0" required
-                                                            {{ old('healthy', $student->healthy_problem ?? null) == false ? 'checked' : '' }}>
-                                                        لا
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        {{-- healthy problem --}}
-                                        <div class="form-group col-12 col-sm-6" id="healthy_problem_section"
-                                            style="display: none">
-                                            <label for="healthy_problem">ادخل المشكلة الصحية<span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" id="healthy_problem"
-                                                class="form-control @error('healthy_problem') is-invalid @enderror"
-                                                name="healthy_problem" placeholder="ادخل المشكلة الصحية"
-                                                value="{{ old('healthy_problem', $student ? $student->healthy_problem : '') }}">
-
-                                            @error('healthy_problem')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-
-                                        </div>
-                                    </div>
-                                </section>
-                            </section>
-
-                            {{-- Relatives --}}
-                            <section>
-                                <h2 class="form-main-title">معلومات الأقرباء في حال الطوارئ</h2>
-                                <section
-                                    class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="referral_person">{{ trans('application_form.referral_name') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" id="referral_person" name="referral_person"
-                                            value="{{ old('referral_person', $student ? $student->referral_person : '') }}"
-                                            placeholder="أدخل الأسم الثنائي" required
-                                            class="form-control  @error('referral_person') is-invalid @enderror">
-
-                                        @error('referral_person')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-
-                                    </div>
-
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="relation">{{ trans('application_form.referral_state') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" id="relation" name="relation"
-                                            value="{{ old('relation', $student ? $student->relation : '') }}"
-                                            placeholder="أدخل صلة القرابة" required
-                                            class="form-control  @error('relation') is-invalid @enderror">
-
-                                        @error('relation')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label for="referral_email">{{ trans('application_form.email') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="email" id="referral_email" name="referral_email"
-                                            value="{{ old('referral_email', $student ? $student->referral_email : '') }}"
-                                            placeholder="أدخل بريد الكتروني" required
-                                            class="form-control  @error('referral_email') is-invalid @enderror">
-
-
-                                        @error('referral_email')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-
-                                    </div>
-
-                                    <div class="form-group col-12 col-sm-6">
-                                        <label>{{ trans('application_form.phone') }}<span
-                                                class="text-danger">*</span></label>
-                                        <input type="tel" id="referral_phone" placeholder="أدخل جوال"
-                                            name="referral_phone"
-                                            value="{{ old('referral_phone', $student ? $student->referral_phone : '') }}"
-                                            class="form-control  @error('referral_phone') is-invalid @enderror">
-
-                                        @error('referral_phone')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-                                </section>
-                            </section>
-
                             {{-- about us --}}
                             <div class="form-group col-12">
                                 <label>{{ trans('application_form.heard_about_us') }}<span
@@ -1299,8 +691,13 @@
                                     </ul>
                                 </div>
                             @endif --}}
+
+                            <input type="hidden" id="direct_register" name="direct_register" value="">
+                            <button type="button" id="form_button"
+                                class="btn btn-primary">تسجيل مباشر</button>
+
                             <button type="submit"
-                                class="btn btn-primary">{{ trans('application_form.submit') }}</button>
+                                class="btn btn-gray mr-3">حجز مقعد</button>
                         </form>
                     </div>
                 </Section>
@@ -1322,6 +719,18 @@
     <script src="/assets/default/vendors/parallax/parallax.min.js"></script>
     <script src="/assets/default/js/parts/home.min.js"></script>
 
+    {{-- submit form --}}
+    <script>
+
+        let form = document.getElementById('myForm');
+        let formButton = document.getElementById('form_button');
+        let directRegisterInput = document.getElementById('direct_register');
+         directRegisterInput.value="";
+        formButton.onclick = function() {
+            directRegisterInput.value = true;
+            form.submit();
+        }
+    </script>
     {{-- job script --}}
     <script>
         var working = document.getElementById("working");
@@ -1398,7 +807,7 @@
 
                 if (categoryBundles) {
                     var options = categoryBundles.map(function(bundle) {
-                        var isSelected = bundle.id == "{{ old('bundle_id', $student->bundle_id ?? null) }}" ?
+                        var isSelected = bundle.id == "{{ old('bundle_id', $bundle->id ?? null) }}" ?
                             'selected' : '';
                         return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}" early_enroll="${bundle.early_enroll}">${bundle.title}</option>`;
                     }).join('');
@@ -1844,4 +1253,5 @@
         }
         educationCountryToggle();
     </script>
+
 @endpush
