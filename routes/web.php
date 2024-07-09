@@ -104,6 +104,8 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
                 return app()->call('App\Http\Controllers\Web\ApplyController@index');
             }
         });
+
+        Route::get('/apply/{bundle}', 'ApplyController@index');
         Route::post('/apply', 'ApplyController@checkout')->name('payFee');
 
         Route::get('/payment/{order}','PaymentController@index');
