@@ -446,6 +446,7 @@ class PaymentController extends Controller
                         'requirement_endorsement'
                     ];
                     $studentData = collect($userData)->except($keysToExclude)->toArray();
+                    $studentData['email']=$user->email;
                     $student = $user->student;
 
 
