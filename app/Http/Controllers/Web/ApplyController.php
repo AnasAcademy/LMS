@@ -20,7 +20,7 @@ use App\Http\Controllers\Web\PaymentController;
 use App\Models\Accounting;
 use App\Models\OfflineBank;
 use App\Models\OfflinePayment;
-
+use App\Models\Code;
 
 class ApplyController extends Controller
 {
@@ -29,14 +29,14 @@ class ApplyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Bundle $bundle)
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        $category = Category::where('parent_id', '!=', null)->get();
+        $category = Category::whereNull('parent_id')->whereHas('bundles')->get();
         $courses = Webinar::where('unattached', 1)->get();
 
-        return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student', 'courses'));
+        return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student', 'courses', 'bundle'));
     }
 
     /**
@@ -48,7 +48,7 @@ class ApplyController extends Controller
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        $category = Category::where('parent_id', '!=', null)->get();
+        $category = Category::whereNull('parent_id')->whereHas('bundles')->get();
         $courses = Webinar::where('unattached', 1)->get();
         return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student', 'courses'));
     }
@@ -61,7 +61,6 @@ class ApplyController extends Controller
      */
     public function checkout(Request $request, $carts = null)
     {
-        // dd($request->all());
         app()->setLocale('ar');
 
         $category = Category::where('id', $request->category_id)->first();
@@ -156,31 +155,31 @@ class ApplyController extends Controller
                     'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
                     'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
                     'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
-                    'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                    // 'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
                     'birthdate' => 'required|date',
-                    'phone' => 'required|min:5|max:20',
-                    'mobile' => 'required|min:5|max:20',
-                    'educational_qualification_country' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
-                    'secondary_school_gpa' => $category ? (!$category->education ? 'required|string|max:255|min:1' : '') : '',
-                    'educational_area' => $category ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
-                    'secondary_graduation_year' => $category ? (!$category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '') : '',
-                    'school' => $category ? (!$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
-                    'university' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
-                    'faculty' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
-                    'education_specialization' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
-                    'graduation_year' => $category ? ($category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '') : '',
-                    'gpa' => $category ? ($category->education ? 'required|string|max:255|min:1' : '') : '',
-                    'deaf' => 'required|in:0,1',
-                    'disabled_type' => $category ? ($request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable') : '',
+                    // 'phone' => 'required|min:5|max:20',
+                    // 'mobile' => 'required|min:5|max:20',
+                    // 'educational_qualification_country' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    // 'secondary_school_gpa' => $category ? (!$category->education ? 'required|string|max:255|min:1' : '') : '',
+                    // 'educational_area' => $category ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '',
+                    // 'secondary_graduation_year' => $category ? (!$category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '') : '',
+                    // 'school' => $category ? (!$category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    // 'university' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    // 'faculty' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    // 'education_specialization' => $category ? ($category->education ? 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u' : '') : '',
+                    // 'graduation_year' => $category ? ($category->education ? 'required|numeric|regex:/^\d{3,10}$/' : '') : '',
+                    // 'gpa' => $category ? ($category->education ? 'required|string|max:255|min:1' : '') : '',
+                    // 'deaf' => 'required|in:0,1',
+                    // 'disabled_type' => $category ? ($request->disabled == 1 ? 'required|string|max:255|min:3' : 'nullable') : '',
                     'gender' => 'required|in:male,female',
-                    'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
-                    'nationality' => 'required|string|min:3|max:25',
-                    'job' => $request->workStatus == 1 ? 'required' : 'nullable',
-                    'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
-                    'referral_person' => 'required|string|min:3|max:255',
-                    'relation' => 'required|string|min:3|max:255',
-                    'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                    'referral_phone' => 'required|min:3|max:20',
+                    // 'healthy_problem' => $request->healthy == 1 ? 'required|string|max:255|min:3' : 'nullable',
+                    // 'nationality' => 'required|string|min:3|max:25',
+                    // 'job' => $request->workStatus == 1 ? 'required' : 'nullable',
+                    // 'job_type' => $request->workStatus == 1 ? 'required' : 'nullable',
+                    // 'referral_person' => 'required|string|min:3|max:255',
+                    // 'relation' => 'required|string|min:3|max:255',
+                    // 'referral_email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
+                    // 'referral_phone' => 'required|min:3|max:20',
                     'about_us' => 'required|string|min:3|max:255',
                     'terms' => 'accepted',
                     'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
@@ -189,14 +188,46 @@ class ApplyController extends Controller
             }
 
         }catch (\Exception $e) {
+            dd($e);
             return redirect()->back()->withErrors($e->validator)->withInput();
             // dd($e);
         }
 
+        $user = auth()->user();
 
+        if($request->direct_register){
+            $keysToExclude = [
+                'category_id',
+                'bundle_id',
+                'webinar_id',
+                'type',
+                'terms',
+                'certificate',
+                'timezone',
+                'password',
+                'password_confirmation',
+                'email_confirmation',
+                'requirement_endorsement'
+            ];
+            $studentData = collect($validatedData)->except($keysToExclude)->toArray();
+            $studentData['email'] = $user->email;
+            $student = Student::create($studentData);
+            $code = generateStudentCode();
+            $user->update([
+                'user_code' => $code,
+                'access_content' => 1
+            ]);
+
+            // update code
+            Code::latest()->first()->update(['lst_sd_code' => $code]);
+
+            $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null]);
+
+            return redirect("/panel/requirements/applied");
+        }
 
         Cookie::queue('user_data', json_encode($validatedData));
-        $user = auth()->user();
+
 
         // $paymentChannels = PaymentChannel::where('status', 'active')->get();
         $order = Order::create([
