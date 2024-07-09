@@ -70,7 +70,7 @@
             </div>
         @endif
 
-        <form method="post" action="/register" class="mt-35">
+        <form method="post" action="/register" class="mt-35" id="registerForm">
 
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
@@ -95,22 +95,22 @@
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.email_field', ['optional' => false])
                 @endif
-
             @else
                 @include('web.default.auth.register_includes.email_field')
 
                 <div class="form-group">
-                <label class="input-label" for="email">اعد كتابة الإيميل
-                    {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
-                <input name="email_confirmation" type="text" class="form-control @error('email_confirmation') is-invalid @enderror"
-                    value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
+                    <label class="input-label" for="email">اعد كتابة الإيميل
+                        {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
+                    <input name="email_confirmation" type="text"
+                        class="form-control @error('email_confirmation') is-invalid @enderror"
+                        value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
 
-                @error('email_confirmation')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
+                    @error('email_confirmation')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
 
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.mobile_field', ['optional' => false])
@@ -122,7 +122,7 @@
 
             <div class="password-section">
 
-                <div class="form-group  col-12 p-0">
+                <div class="form-group col-12 p-0">
                     <label class="input-label" for="password">{{ trans('auth.password') }}:</label>
                     <input name="password" type="password" class="form-control @error('password') is-invalid @enderror"
                         id="password" aria-describedby="passwordHelp">
@@ -218,6 +218,41 @@
             @enderror --}}
             <!--end-->
 
+
+            {{-- programs --}}
+            <div class="form-group mt-15">
+                <label class="input-label">البرنامج</label>
+
+                <select id="categories" class="custom-select @error('bundle_id')  is-invalid @enderror" name="bundle_id"
+                    required>
+                    <option selected disabled>{{ trans('public.choose_category') }}
+                    </option>
+                    @foreach ($categories as $category)
+                        @if (!empty($category->bundles) and count($category->bundles))
+                            <optgroup label="{{ $category->title }}">
+                                @foreach ($category->bundles as $bundle)
+                                    <option value="{{ $bundle->id }}" @if(old('bundle_id')==$bundle->id) selected @endif>
+                                        {{ $bundle->title }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                    @endforeach
+                    {{-- <optgroup label="دورات تدريبية">
+                        @foreach ($courses as $course)
+                            <option value="{{ $course->id }}">
+                                {{ $course->title }}</option>
+                        @endforeach
+                    </optgroup> --}}
+                </select>
+
+                @error('bundle_id')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+
             <button type="submit" class="btn btn-primary btn-block font-16 mt-20 py-10 cs-btn">
                 الخطوة التالية <i class="fas fa-arrow-left"></i>
             </button>
@@ -239,3 +274,20 @@
 @push('scripts_bottom')
     <script src="/assets/default/vendors/select2/select2.min.js"></script>
 @endpush
+<script>
+    window.onload = function() {
+        let form = document.getElementById('registerForm');
+        console.log(form);
+        console.log(registerForm);
+        form.onsubmit = function(event) {
+            event.preventDefault();
+            let code = document.getElementsByClassName('iti__selected-dial-code')[0].innerHTML;
+            console.log(code);
+
+            document.getElementById('code').value = code;
+
+            form.submit();
+
+        }
+    }
+</script>

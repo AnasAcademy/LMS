@@ -23,6 +23,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
+use App\Models\Category;
+use App\Models\Webinar;
+use App\Student;
+use App\BundleStudent;
 
 class RegisterController extends Controller
 {
@@ -67,12 +71,18 @@ class RegisterController extends Controller
 
         $referralCode = Cookie::get('referral_code');
 
+        $categories =
+            $categories = Category::whereNull('parent_id')->get();
+        $courses = Webinar::where('unattached', 1)->get();
         $data = [
             'pageTitle' => $pageTitle,
             'pageDescription' => $pageDescription,
             'pageRobot' => $pageRobot,
             'referralCode' => $referralCode,
             'referralSettings' => $referralSettings,
+            'categories'  => $categories,
+            'courses'  => $courses,
+
         ];
 
         return view(getTemplate() . '.auth.register', $data);
@@ -88,19 +98,16 @@ class RegisterController extends Controller
     {
         $registerMethod = getGeneralSettings('register_method') ?? 'mobile';
 
-        if (!empty($data['mobile']) and !empty($data['country_code'])) {
-            $data['mobile'] = ltrim($data['country_code'], '+') . ltrim($data['mobile'], '0');
-        }
-
         $rules = [
             'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
-            'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users',
-            'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users',
+            'mobile' => 'required|numeric|unique:users',
+            'email' => 'required|email|max:255|unique:users',
             'full_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required|same:password',
             'email_confirmation' => 'required|same:email',
-            'referral_code' => 'nullable|exists:affiliates_codes,code'
+            'referral_code' => 'nullable|exists:affiliates_codes,code',
+            'bundle_id' =>  'required|exists:bundles,id'
         ];
 
 
@@ -108,7 +115,7 @@ class RegisterController extends Controller
             $rules['captcha'] = 'required|captcha';
         }
 
-         $validator= Validator::make($data, $rules);
+        $validator = Validator::make($data, $rules);
         $validator->setAttributeNames([
             'full_name' => __('validation.attributes.full_name'),
             // Add other attribute names for other fields
@@ -125,7 +132,7 @@ class RegisterController extends Controller
     public function create(array $data)
     {
         if (!empty($data['mobile']) and !empty($data['country_code'])) {
-            $data['mobile'] = ltrim($data['country_code'], '+') . ltrim($data['mobile'], '0');
+            $data['mobile'] = $data['country_code'] . ' ' . ltrim($data['mobile'], '0');
         }
 
         $referralSettings = getReferralSettings();
@@ -175,15 +182,27 @@ class RegisterController extends Controller
             ]);
         }
 
-        return $user;
+        return [$user, $data];
     }
 
 
     public function register(Request $request)
     {
+    
         $this->validator($request->all())->validate();
 
-        $user = $this->create($request->all());
+        [$user, $data] = $this->create($request->all());
+
+        // $student = Student::create([
+        //     'user_id' => $user->id,
+        //     'ar_name' => $data['full_name'],
+        //     'email' => $data['email'],
+        //     'phone' => $data['mobile'],
+        //     'mobile' => $data['mobile'],
+        //     'status' => 'pending'
+        // ]);
+
+        // $studentBundle = BundleStudent::create(['student_id' => $student->id, 'bundle_id' => $data['bundle_id'], 'status'=> 'applying']);
 
         event(new Registered($user));
 
@@ -220,35 +239,35 @@ class RegisterController extends Controller
 
         //     return redirect('/verification');
         // } elseif ($checkConfirmed['status'] == 'verified') {
-            $this->guard()->login($user);
+        $this->guard()->login($user);
 
-            $enableRegistrationBonus = false;
-            $registrationBonusAmount = null;
-            $registrationBonusSettings = getRegistrationBonusSettings();
-            if (!empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) {
-                $enableRegistrationBonus = true;
-                $registrationBonusAmount = $registrationBonusSettings['registration_bonus_amount'];
-            }
+        $enableRegistrationBonus = false;
+        $registrationBonusAmount = null;
+        $registrationBonusSettings = getRegistrationBonusSettings();
+        if (!empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) {
+            $enableRegistrationBonus = true;
+            $registrationBonusAmount = $registrationBonusSettings['registration_bonus_amount'];
+        }
 
 
-            $user->update([
-                'enable_registration_bonus' => $enableRegistrationBonus,
-                'registration_bonus_amount' => $registrationBonusAmount,
-            ]);
+        $user->update([
+            'enable_registration_bonus' => $enableRegistrationBonus,
+            'registration_bonus_amount' => $registrationBonusAmount,
+        ]);
 
-            $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
-            RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
+        $registerReward = RewardAccounting::calculateScore(Reward::REGISTER);
+        RewardAccounting::makeRewardAccounting($user->id, $registerReward, Reward::REGISTER, $user->id, true);
 
-            if (!empty($referralCode)) {
-                Affiliate::storeReferral($user, $referralCode);
-            }
+        if (!empty($referralCode)) {
+            Affiliate::storeReferral($user, $referralCode);
+        }
 
-            $registrationBonusAccounting = new RegistrationBonusAccounting();
-            $registrationBonusAccounting->storeRegistrationBonusInstantly($user);
+        $registrationBonusAccounting = new RegistrationBonusAccounting();
+        $registrationBonusAccounting->storeRegistrationBonusInstantly($user);
 
-            if ($response = $this->registered($request, $user)) {
-                return $response;
-            }
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
         $data['title'] = "انشاء حساب جديد";
         $data['body'] = " تهانينا تم انشاء حساب لكم في اكاديمية انس للفنون
                             <br>
@@ -260,15 +279,15 @@ class RegisterController extends Controller
                             <br>
                             <span style='font-weight:bold;'>البريد الالكتروني: </span> $user->email
                             <br>
-                             <span style='font-weight:bold;'>كلمة المرور: </span>". $request['password'].
-                            "<br>
+                             <span style='font-weight:bold;'>كلمة المرور: </span>" . $request['password'] .
+            "<br>
                 ";
         if (!empty($user) and !empty($user->email)) {
             Mail::to($user->email)->send(new SendNotifications(['title' => $data['title'] ?? '', 'message' => $data['body'] ?? '']));
         }
-            return $request->wantsJson()
-                ? new JsonResponse([], 201)
-                : redirect($this->redirectPath());
+        return $request->wantsJson()
+            ? new JsonResponse([], 201)
+            : redirect(($this->redirectPath()."/$request->bundle_id"));
         // }
     }
 }
