@@ -539,7 +539,12 @@ class PaymentController extends Controller
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
                 if (!empty($sale) && isset($pivot->id)) {
-                    return redirect('/panel/requirements/applied')->with(['toast' => $toastData]);
+                    if (count($sale->bundle->category->categoryRequirements) > 0) {
+                        return redirect("/panel/requirements")->with(['toast' => $toastData]);
+                    } else {
+                        return redirect("/panel/requirements/applied")->with(['toast' => $toastData]);
+                    }
+
                 }
 
                 // if (!empty($sale) && isset($pivot->id) && ($sale->bundle->early_enroll == 0)) {
@@ -729,10 +734,15 @@ class PaymentController extends Controller
             $userData = json_decode($userData, true);
 
             $student = Student::where('user_id', auth()->user()->id)->first();
+
             if (!$student) {
                 if ($userData) {
                     $studentData =
                         collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
+
+                    $studentData['email']=$$user->email;
+                    $studentData['mobile']=$$user->mobile;
+                    $studentData['phone']=$$user->mobile;
                     $student = Student::create($studentData);
                 } else {
                     return redirect('/apply');
