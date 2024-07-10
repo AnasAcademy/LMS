@@ -48,6 +48,13 @@
         ];
     }
 
+    if($user->student){
+        $progressSteps[10] =[
+            'lang' => 'public.about',
+            'icon' => 'about'
+        ];
+    }
+
     $currentStep = empty($currentStep) ? 1 : $currentStep;
 @endphp
 

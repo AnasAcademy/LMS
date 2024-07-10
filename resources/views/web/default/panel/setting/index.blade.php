@@ -60,6 +60,12 @@
                     @include('web.default.panel.setting.setting_includes.settings')
                 @endif
                 @break
+                
+                @case(10)
+                @if($user->student)
+                    @include('web.default.panel.setting.setting_includes.personal_details')
+                @endif
+                @break
             @endswitch
         @endif
     </form>
