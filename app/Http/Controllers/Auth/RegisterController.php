@@ -71,8 +71,14 @@ class RegisterController extends Controller
 
         $referralCode = Cookie::get('referral_code');
 
-        $categories =
-            $categories = Category::whereNull('parent_id')->get();
+        $categories = Category::whereNull('parent_id')
+        ->where(function ($query) {
+            $query->whereHas('bundles')
+            ->orWhereHas('subCategories', function ($query) {
+                $query->whereHas('bundles');
+            });
+        })->get();
+
         $courses = Webinar::where('unattached', 1)->get();
         $data = [
             'pageTitle' => $pageTitle,
@@ -97,10 +103,12 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         $registerMethod = getGeneralSettings('register_method') ?? 'mobile';
-
+        if (!empty($data['mobile']) and !empty($data['country_code'])) {
+            $data['mobile'] = $data['country_code'] . ' ' . ltrim($data['mobile'], '0');
+        }
         $rules = [
             'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
-            'mobile' => 'required|numeric|unique:users',
+            'mobile' => 'required|unique:users',
             'email' => 'required|email|max:255|unique:users',
             'full_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
             'password' => 'required|string|min:6|confirmed',
@@ -131,9 +139,7 @@ class RegisterController extends Controller
      */
     public function create(array $data)
     {
-        if (!empty($data['mobile']) and !empty($data['country_code'])) {
-            $data['mobile'] = $data['country_code'] . ' ' . ltrim($data['mobile'], '0');
-        }
+
 
         $referralSettings = getReferralSettings();
         $usersAffiliateStatus = (!empty($referralSettings) and !empty($referralSettings['users_affiliate_status']));
@@ -188,7 +194,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-    
+
         $this->validator($request->all())->validate();
 
         [$user, $data] = $this->create($request->all());
