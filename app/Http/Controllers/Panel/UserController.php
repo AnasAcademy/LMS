@@ -159,7 +159,7 @@ class UserController extends Controller
             $rules = array_merge($rules, [
                 'full_name' => 'required|string',
                 'email' => (($registerMethod == 'email') ? 'required' : 'nullable') . '|email|max:255|unique:users,email,' . $user->id,
-                'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|numeric|unique:users,mobile,' . $user->id,
+                'mobile' => (($registerMethod == 'mobile') ? 'required' : 'nullable') . '|unique:users,mobile,' . $user->id,
             ]);
         }
 
@@ -208,6 +208,10 @@ class UserController extends Controller
                     'about' => $data['about'],
                     'bio' => $data['bio'],
                 ];
+            } elseif ($step == 4) {
+                // dd($request->all());
+                $user->student->update($request->except(['step', '_token', 'next_step']));
+            } elseif ($step == 6) {
             } elseif ($step == 6) {
                 UserOccupation::where('user_id', $user->id)->delete();
                 if (!empty($data['occupations'])) {
@@ -267,46 +271,19 @@ class UserController extends Controller
                         UserZoomApi::where('user_id', $user->id)->delete();
                     }
                 }
-            } elseif ($step == 9) {
-                $updateData = [
-                    "level_of_training" => !empty($data['level_of_training']) ? (new UserLevelOfTraining())->getValue($data['level_of_training']) : null,
-                    "meeting_type" => $data['meeting_type'] ?? null,
-                    "group_meeting" => (!empty($data['group_meeting']) and $data['group_meeting'] == 'on'),
-                    "country_id" => $data['country_id'] ?? null,
-                    "province_id" => $data['province_id'] ?? null,
-                    "city_id" => $data['city_id'] ?? null,
-                    "district_id" => $data['district_id'] ?? null,
-                    "location" => (!empty($data['latitude']) and !empty($data['longitude'])) ? DB::raw("POINT(" . $data['latitude'] . "," . $data['longitude'] . ")") : null,
+            }
+            elseif ($step == 9) {
+                $data = [
+                    "job"=>$request->workStatus==1? $request->job: null ,
+                    "job_type"=> $request->workStatus == 1 ? $request->job : null,
+                    "healthy_problem"=> $request->healthy==1? $request->healthy_problem : null,
+                    "disabled_type"=> $request->disabled==1?$request->disabled_type : null,
+                    "deaf"=>$request->deaf,
                 ];
-
-                $updateUserMeta = [
-                    "gender" => $data['gender'] ?? null,
-                    "age" => $data['age'] ?? null,
-                    "address" => $data['address'] ?? null,
-                    'live_chat_js_code' => !empty($data['live_chat_js_code']) ? $data['live_chat_js_code'] : null
-                ];
-
-                foreach ($updateUserMeta as $name => $value) {
-                    $checkMeta = UserMeta::where('user_id', $user->id)
-                        ->where('name', $name)
-                        ->first();
-
-                    if (!empty($checkMeta)) {
-                        if (!empty($value)) {
-                            $checkMeta->update([
-                                'value' => $value
-                            ]);
-                        } else {
-                            $checkMeta->delete();
-                        }
-                    } else if (!empty($value)) {
-                        UserMeta::create([
-                            'user_id' => $user->id,
-                            'name' => $name,
-                            'value' => $value
-                        ]);
-                    }
-                }
+                $user->student->update($data);
+            }
+            elseif($step == 10){
+                $user->student->update($request->except(['step', '_token', 'next_step']));
             }
 
             if (!empty($updateData)) {
@@ -319,12 +296,12 @@ class UserController extends Controller
                 $url = "/panel/manage/{$userType}/{$user->id}/edit";
             }
 
-            if ($step <= 9) {
+            if ($step <= 10) {
                 if ($nextStep) {
                     $step = $step + 1;
                 }
 
-                $url .= '/step/' . (($step <= 8) ? $step : 9);
+                $url .= '/step/' . (($step <= 9) ? $step : 10);
             }
 
             $toastData = [
@@ -874,8 +851,12 @@ class UserController extends Controller
             return redirect('/apply');
         }
 
-        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
+        // $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
 
+        $studentBundles = BundleStudent::where('student_id', $student->id)
+        ->whereHas('bundle.category.categoryRequirements') // Assuming 'requirements' is the relationship or attribute in Category
+        ->get()
+        ->reverse();
 
 
         return view(getTemplate() . '.panel.requirements.index', ['studentBundles' => $studentBundles]);
