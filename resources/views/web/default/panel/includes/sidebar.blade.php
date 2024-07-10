@@ -109,9 +109,11 @@
                                 <a href="/panel/requirements/applied">دفع رسوم البرنامج</a>
                             </li>
 
-                            <li class="mt-5 {{ request()->is('panel/requirements') ? 'active' : '' }}">
-                                <a href="/panel/requirements">{{ trans('panel.requirements') }}</a>
-                            </li>
+                            @if (count(auth()->user()->student->bundleStudent()->whereHas('bundle.category.categoryRequirements')->get()) > 0)
+                                <li class="mt-5 {{ request()->is('panel/requirements') ? 'active' : '' }}">
+                                    <a href="/panel/requirements">{{ trans('panel.requirements') }}</a>
+                                </li>
+                            @endif
                         @endif
                         <li class="mt-5 {{ request()->is('panel/newEnrollment') ? 'active' : '' }}">
                             <a href="/panel/newEnrollment">طلب تسجيل جديد</a>
