@@ -33,10 +33,19 @@ class ApplyController extends Controller
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        $category = Category::whereNull('parent_id')->whereHas('bundles')->get();
+        // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
+
+        $categories = Category::whereNull('parent_id')
+        ->where(function ($query) {
+            $query->whereHas('bundles')
+            ->orWhereHas('subCategories', function ($query) {
+                $query->whereHas('bundles');
+            });
+        })->get();
+
         $courses = Webinar::where('unattached', 1)->get();
 
-        return view(getTemplate() . '.pages.application_form', compact('user', 'category', 'student', 'courses', 'bundle'));
+        return view(getTemplate() . '.pages.application_form', compact('user', 'categories', 'student', 'courses', 'bundle'));
     }
 
     /**
@@ -48,9 +57,18 @@ class ApplyController extends Controller
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        $category = Category::whereNull('parent_id')->whereHas('bundles')->get();
+        // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
+        $categories = Category::whereNull('parent_id')
+        ->where(function ($query) {
+            $query->whereHas('bundles')
+            ->orWhereHas('subCategories', function ($query) {
+                $query->whereHas('bundles');
+            });
+        }) ->get();
+
+            // dd($categories);
         $courses = Webinar::where('unattached', 1)->get();
-        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'category', 'student', 'courses'));
+        return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'categories', 'student', 'courses'));
     }
 
     /**
@@ -66,26 +84,26 @@ class ApplyController extends Controller
         $category = Category::where('id', $request->category_id)->first();
         $bundle = Bundle::where('id', $request->bundle_id)->first();
         $webinar = Webinar::where('id', $request->webinar_id)->first();
-
-        $student = Student::where('user_id', auth()->user()->id)->first();
+        $user = auth()->user();
+        $student = Student::where('user_id', $user->id)->first();
 
         try {
             if ($student) {
                 $validatedData = $request->validate([
                     'user_id' => 'required',
-                    'type' => 'required|in:courses,diplomas',
-                    'category_id' => [
-                        function ($attribute, $value, $fail) use ($request) {
-                            $type = $request->input('type');
-                            if ($type && $type == 'diplomas' && empty ($value)) {
-                                $fail('يجب تحديد الدرجه العلميه ');
-                            }
-                        }
-                    ],
+                    // 'type' => 'required|in:courses,diplomas',
+                    // 'category_id' => [
+                    //     function ($attribute, $value, $fail) use ($request) {
+                    //         $type = $request->input('type');
+                    //         if ($type && $type == 'diplomas' && empty ($value)) {
+                    //             $fail('يجب تحديد الدرجه العلميه ');
+                    //         }
+                    //     }
+                    // ],
                     'bundle_id' => [
+                        'required',
                         function ($attribute, $value, $fail) use ($request) {
-                            $type = $request->input('type');
-                            if ($type && $type == 'diplomas' && empty ($value)) {
+                            if (empty($value)) {
                                 $fail('يجب تحديد التخصص العلمي ');
                             }
                             $user = auth()->user();
@@ -97,9 +115,9 @@ class ApplyController extends Controller
                         },
                     ],
                     'webinar_id' => [
-                        function ($attribute, $value, $fail)  use ($request){
+                        function ($attribute, $value, $fail)  use ($request) {
                             $type = $request->input('type');
-                            if ($type && $type == 'courses' && empty ($value)) {
+                            if ($type && $type == 'courses' && empty($value)) {
                                 $fail('يجب تحديد الدورة  ');
                             }
                             $user = auth()->user();
@@ -117,27 +135,20 @@ class ApplyController extends Controller
             } else {
                 $validatedData = $request->validate([
                     'user_id' => 'required',
-                    'type' => 'required|in:courses,diplomas',
-                    'category_id' => [
-                        function ($attribute, $value, $fail) use ($request) {
-                            $type = $request->input('type');
-                            if ($type && $type == 'diplomas' && empty ($value)) {
-                                $fail('يجب تحديد الدرجه العلميه ');
-                            }
-                        }
-                    ],
-                    'bundle_id' => [
-                        function ($attribute, $value, $fail) use ($request) {
-                            $type = $request->input('type');
-                            if ($type && $type == 'diplomas' && empty ($value)) {
-                                $fail('يجب تحديد التخصص العلمي ');
-                            }
-                        },
-                    ],
+                    // 'type' => 'required|in:courses,diplomas',
+                    // 'category_id' => [
+                    //     function ($attribute, $value, $fail) use ($request) {
+                    //         $type = $request->input('type');
+                    //         if ($type && $type == 'diplomas' && empty ($value)) {
+                    //             $fail('يجب تحديد الدرجه العلميه ');
+                    //         }
+                    //     }
+                    // ],
+                    'bundle_id' => "required|exists:bundles,id",
                     'webinar_id' => [
-                        function ($attribute, $value, $fail)  use ($request){
+                        function ($attribute, $value, $fail)  use ($request) {
                             $type = $request->input('type');
-                            if ($type && $type == 'courses' && empty ($value)) {
+                            if ($type && $type == 'courses' && empty($value)) {
                                 $fail('يجب تحديد الدورة  ');
                             }
                             $user = auth()->user();
@@ -185,45 +196,55 @@ class ApplyController extends Controller
                     'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
                     'requirement_endorsement' => $bundle ? 'accepted'  : ''
                 ]);
-            }
 
-        }catch (\Exception $e) {
-            dd($e);
+                if ($request->direct_register) {
+                    $studentData = [
+                        'ar_name' => $request->ar_name,
+                        'ar_name' => $request->en_name,
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'phone' => $user->mobile,
+                        'mobile' => $user->mobile,
+                        'gender' => $request->gender,
+                        'birthdate' => $request->birthdate,
+                        'identifier_num' => $request->identifier_num,
+                        'country' => $request->country,
+                        'area' => $request->area,
+                        'city' => $request->city,
+                        'town' => $request->town,
+                        'about_us' => $request->about_us,
+
+                    ];
+
+                    $student = Student::create($studentData);
+                    $code = generateStudentCode();
+                    $user->update([
+                        'user_code' => $code,
+                        'access_content' => 1
+                    ]);
+
+                    // update code
+                    Code::latest()->first()->update(['lst_sd_code' => $code]);
+                }
+            }
+        } catch (\Exception $e) {
+            // dd($e);
             return redirect()->back()->withErrors($e->validator)->withInput();
             // dd($e);
         }
 
-        $user = auth()->user();
 
-        if($request->direct_register){
-            $keysToExclude = [
-                'category_id',
-                'bundle_id',
-                'webinar_id',
-                'type',
-                'terms',
-                'certificate',
-                'timezone',
-                'password',
-                'password_confirmation',
-                'email_confirmation',
-                'requirement_endorsement'
-            ];
-            $studentData = collect($validatedData)->except($keysToExclude)->toArray();
-            $studentData['email'] = $user->email;
-            $student = Student::create($studentData);
-            $code = generateStudentCode();
-            $user->update([
-                'user_code' => $code,
-                'access_content' => 1
-            ]);
 
-            // update code
-            Code::latest()->first()->update(['lst_sd_code' => $code]);
+
+        if ($request->direct_register) {
 
             $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null]);
 
-            return redirect("/panel/requirements/applied");
+            if(count($bundle->category->categoryRequirements)>0){
+                return redirect("/panel/requirements");
+            }else{
+                return redirect("/panel/requirements/applied");
+            }
         }
 
         Cookie::queue('user_data', json_encode($validatedData));
@@ -233,10 +254,10 @@ class ApplyController extends Controller
         $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
-            'amount' => $request->type=='diplomas' ? 230: $webinar->price ?? 0,
+            'amount' => 230,
             'tax' => 0,
             'total_discount' => 0,
-            'total_amount' => $request->type=='diplomas' ? 230: $webinar->price ?? 0,
+            'total_amount' => 230,
             'product_delivery_fee' => null,
             'created_at' => time(),
         ]);
@@ -247,7 +268,7 @@ class ApplyController extends Controller
             'bundle_id' => $request->bundle_id ?? null,
             'certificate_template_id' => null,
             'certificate_bundle_id' => null,
-            'form_fee' => $request->type=='diplomas' ? 1: null,
+            'form_fee' => 1,
             'product_id' => null,
             'product_order_id' => null,
             'reserve_meeting_id' => null,
@@ -257,8 +278,8 @@ class ApplyController extends Controller
             'installment_payment_id' => null,
             'ticket_id' => null,
             'discount_id' => null,
-            'amount' => $request->type=='diplomas' ? 230: $webinar-> price ?? 0,
-            'total_amount' => $request->type=='diplomas' ? 230: $webinar-> price ?? 0,
+            'amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
+            'total_amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
             'tax' => null,
             'tax_price' => 0,
             'commission' => 0,
@@ -271,7 +292,7 @@ class ApplyController extends Controller
 
         if (!empty($order) and $order->total_amount > 0) {
 
-            return redirect('/payment/'.$order->id);
+            return redirect('/payment/' . $order->id);
 
             // return view(getTemplate() . '.cart.payment', $data);
 
@@ -300,6 +321,8 @@ class ApplyController extends Controller
 
         //     return $this->handlePaymentOrderWithZeroTotalAmount($order);
         // }
+
+
 
         return redirect('/panel');
     }
