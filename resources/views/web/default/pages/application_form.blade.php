@@ -162,7 +162,7 @@
                             <input type="hidden" name="user_id" value="{{ $user->id ?? '' }}">
 
                             {{-- application type --}}
-                            <div class="form-group col-12 col-sm-6">
+                            {{-- <div class="form-group col-12 col-sm-6">
                                 <label class="form-label">حدد نوع التقديم<span class="text-danger">*</span></label>
                                 <select id="typeSelect" name="type" required
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
@@ -178,10 +178,10 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                             {{-- course --}}
-                            <div class="form-group col-12 col-sm-6">
+                            {{-- <div class="form-group col-12 col-sm-6">
                                 <label for="application2" class="form-label" id="all_course">الدورات التدربيه<span
                                         class="text-danger">*</span></label>
                                 <select id="mySelect2" name="webinar_id"  onchange="coursesToggle()"
@@ -203,10 +203,10 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                             {{-- course endorsement --}}
-                            <div class="col-12 d-none">
+                            {{-- <div class="col-12 d-none">
                                 <input type="checkbox" id="course_endorsement" name="course_endorsement">
                                 أقر بأن لدي خبرة عملية ومعرفة جيدة بالبرامج التي سأتقدم للاختبار بها، وأفهم أن الدورة تؤهل للاختبار فقط ولا تعلم البرامج من الصفر.
                                 @error('course_endorsement')
@@ -214,14 +214,14 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div>
+                            </div> --}}
 
 
                             {{-- diplomas --}}
-                            <section class="d-none" id="diplomas_section">
+                            <section class="" id="diplomas_section">
 
                                 {{-- diploma --}}
-                                <div class="form-group col-12 col-sm-6">
+                                {{-- <div class="form-group col-12 col-sm-6">
                                     <label for="application" class="form-label"
                                         id="degree">{{ trans('application_form.application') }}<span
                                             class="text-danger">*</span></label>
@@ -243,16 +243,52 @@
                                             {{ $message }}
                                         </div>
                                     @enderror
-                                </div>
+                                </div> --}}
 
                                 {{-- specialization --}}
-                                <div class="form-group col-12 col-sm-6 d-none">
-                                    <label class="hidden-element" id="hiddenLabel1" for="bundle_id">
-                                        {{ trans('application_form.specialization') }}<span class="text-danger">*</span>
+                                <div class="form-group col-12 col-sm-6">
+                                    <label for="bundle_id">
+                                        البرنامج<span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" id="bundle_id" name="bundle_id"
-                                        class="hidden-element form-control @error('bundle_id') is-invalid @enderror"
-                                        value="{{ old('bundle_id', $bundle ? $bundle->id : '') }}">
+                                    {{-- <input type="text" id="bundle_id" name="bundle_id"
+                                        class="form-control @error('bundle_id') is-invalid @enderror"
+                                        value="{{ old('bundle_id', $bundle ? $bundle->id : '') }}"> --}}
+
+
+                                    <select id="bundle_id" class="custom-select @error('bundle_id')  is-invalid @enderror"
+                                        name="bundle_id" required onchange="CertificateSectionToggle()">
+                                        <option selected disabled>{{ trans('public.choose_category') }}
+                                        </option>
+
+                                         {{-- Loop through top-level categories --}}
+                                        @foreach ($categories as $category)
+                                            <optgroup label="{{ $category->title }}">
+
+                                                {{-- Display bundles directly under the current category --}}
+                                                @foreach ($category->bundles as $bundleItem)
+                                                    <option value="{{ $bundleItem->id }}"
+                                                        has_certificate="{{ $bundleItem->has_certificate }}"
+                                                        early_enroll="{{ $bundleItem->early_enroll }}"
+                                                        @if (old('bundle_id', $bundle->id ?? null) == $bundleItem->id) selected @endif>
+                                                        {{ $bundleItem->title }}</option>
+                                                @endforeach
+
+                                                {{-- Display bundles under subcategories --}}
+                                                @foreach ($category->subCategories as $subCategory)
+                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                        <option value="{{ $bundleItem->id }}"
+                                                            has_certificate="{{ $bundleItem->has_certificate }}"
+                                                            early_enroll="{{ $bundleItem->early_enroll }}"
+                                                            @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                                            {{ $bundleItem->title }}</option>
+                                                    @endforeach
+                                                @endforeach
+
+                                            </optgroup>
+                                        @endforeach
+
+                                    </select>
+
 
                                     @error('bundle_id')
                                         <div class="invalid-feedback d-block">
@@ -693,11 +729,9 @@
                             @endif --}}
 
                             <input type="hidden" id="direct_register" name="direct_register" value="">
-                            <button type="button" id="form_button"
-                                class="btn btn-primary">تسجيل مباشر</button>
+                            <button type="button" id="form_button" class="btn btn-primary">تسجيل مباشر</button>
 
-                            <button type="submit"
-                                class="btn btn-gray mr-3">حجز مقعد</button>
+                            <button type="submit" class="btn btn-gray mr-3">حجز مقعد</button>
                         </form>
                     </div>
                 </Section>
@@ -709,7 +743,7 @@
 @endsection
 @php
     $bundlesByCategory = [];
-    foreach ($category as $item) {
+    foreach ($categories as $item) {
         $bundlesByCategory[$item->id] = $item->bundles;
     }
 @endphp
@@ -721,43 +755,17 @@
 
     {{-- submit form --}}
     <script>
-
         let form = document.getElementById('myForm');
         let formButton = document.getElementById('form_button');
         let directRegisterInput = document.getElementById('direct_register');
-         directRegisterInput.value="";
+        directRegisterInput.value = "";
         formButton.onclick = function() {
             directRegisterInput.value = true;
             form.submit();
         }
     </script>
-    {{-- job script --}}
-    <script>
-        var working = document.getElementById("working");
-        var notWorking = document.getElementById("not_working");
-        var job = document.getElementById("job");
 
-        function toggleJobFields() {
-            if (working.checked) {
-                job.style.display = "block";
-                var inputs = document.querySelectorAll('#job input');
-                inputs.forEach(function(input) {
-                    input.setAttribute('required', 'required');
-                });
 
-            } else {
-                job.style.display = "none";
-                var inputs = document.querySelectorAll('#job input');
-                inputs.forEach(function(input) {
-                    input.removeAttribute('required');
-                });
-            }
-        }
-
-        working.addEventListener("change", toggleJobFields);
-        notWorking.addEventListener("change", toggleJobFields);
-        toggleJobFields();
-    </script>
 
     {{-- about us script --}}
     <script>
@@ -892,7 +900,7 @@
         }
 
 
-        toggleHiddenInput();
+        // toggleHiddenInput();
     </script>
 
     {{-- type toggle --}}
@@ -943,7 +951,7 @@
             }
         }
 
-        toggleHiddenType();
+        // toggleHiddenType();
 
         function resetSelect(selector) {
             selector.selectedIndex = 0; // This sets the first option as selected
@@ -953,7 +961,7 @@
             console.log('course');
             let courseEndorsementInput = document.getElementById("course_endorsement");
             let courseEndorsementSection = courseEndorsementInput.closest("div");
-             var courseSelect = document.getElementById("mySelect2");
+            var courseSelect = document.getElementById("mySelect2");
             if (courseSelect.selectedIndex != 0) {
                 courseEndorsementSection.classList.remove("d-none");
                 courseEndorsementInput.setAttribute("required", "required");
@@ -1124,63 +1132,6 @@
         toggleHiddenInputs();
     </script>
 
-    {{--  healthy section toggle --}}
-    <script>
-        // healthy section display
-        function toggleHealthyProblemSection() {
-            let healthyProblemSection = document.getElementById("healthy_problem_section");
-            let healthyStatus = document.getElementById("healthy");
-            if (healthyStatus.checked) {
-                healthyProblemSection.style.display = "block";
-                var inputs = document.querySelectorAll('#healthy_problem_section input');
-                inputs.forEach(function(input) {
-                    input.setAttribute('required', 'required');
-                });
-            } else {
-                healthyProblemSection.style.display = "none";
-                var inputs = document.querySelectorAll('#healthy_problem_section input');
-                inputs.forEach(function(input) {
-                    input.removeAttribute('required');
-                });
-            }
-
-        }
-
-        let healthy = document.getElementById("healthy");
-        let notHealthy = document.getElementById("not_healthy");
-        healthy.addEventListener("change", toggleHealthyProblemSection);
-        notHealthy.addEventListener("change", toggleHealthyProblemSection);
-        toggleHealthyProblemSection();
-    </script>
-
-    {{-- disabled section toggle --}}
-
-    <script>
-        // disabled section display
-        function toggleDisabledSection() {
-            let disabledTypeSection = document.getElementById("disabled_type_section");
-            let disabledStatus = document.getElementById("disabled");
-            if (disabledStatus.checked) {
-                disabledTypeSection.style.display = "block";
-                var inputs = document.querySelectorAll('#disabled_type_section select');
-                inputs.forEach(function(input) {
-                    input.setAttribute('required', 'required');
-                });
-            } else {
-                disabledTypeSection.style.display = "none";
-                var inputs = document.querySelectorAll('#disabled_type_section select');
-                inputs.forEach(function(input) {
-                    input.removeAttribute('required');
-                });
-            }
-
-        }
-        let disabled = document.getElementById("disabled");
-        let notDisabled = document.getElementById("not_disabled");
-        disabled.addEventListener("change", toggleDisabledSection);
-        notDisabled.addEventListener("change", toggleDisabledSection);
-        toggleDisabledSection();
-    </script>
 
     {{-- nationality toggle --}}
     <script>
@@ -1211,47 +1162,6 @@
 
             }
         }
-    </script>
-
-    {{-- education section --}}
-    <script>
-        function educationCountryToggle() {
-            let anotherEducationCountrySection = document.getElementById("anotherEducationCountrySection");
-            let anotherEducationCountry = document.getElementById("anotherEducationCountry");
-            let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
-            let educationalQualificationCountry = document.getElementById("educational_qualification_country");
-
-            if (educationalQualificationCountry && educationalQualificationCountry.value == "اخرى") {
-                anotherEducationCountrySection.style.display = "block";
-                var inputs = document.querySelectorAll('#anotherEducationCountrySection input');
-                inputs.forEach(function(input) {
-                    input.setAttribute('required', 'required');
-                });
-                anotherEducationCountryOption.value = anotherEducationCountry.value;
-
-            } else {
-                anotherEducationCountrySection.style.display = "none";
-                anotherEducationCountryOption.value = "اخرى";
-                var inputs = document.querySelectorAll('#anotherEducationCountrySection input');
-                inputs.forEach(function(input) {
-                    input.removeAttribute('required');
-                });
-            }
-
-        }
-
-        function setEducationCountry() {
-            let anotherEducationCountrySection = document.getElementById("anotherEducationCountrySection");
-            let anotherEducationCountry = document.getElementById("anotherEducationCountry");
-            let anotherEducationCountryOption = document.getElementById("anotherEducationCountryOption");
-            let educationalQualificationCountry = document.getElementById("educational_qualification_country");
-
-            if (anotherEducationCountrySection.style.display != "none") {
-                anotherEducationCountryOption.value = anotherEducationCountry.value;
-            }
-
-        }
-        educationCountryToggle();
     </script>
 
 @endpush
