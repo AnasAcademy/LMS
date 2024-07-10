@@ -227,16 +227,32 @@
                     required>
                     <option selected disabled>{{ trans('public.choose_category') }}
                     </option>
-                    @foreach ($categories as $category)
-                        @if (!empty($category->bundles) and count($category->bundles))
-                            <optgroup label="{{ $category->title }}">
-                                @foreach ($category->bundles as $bundle)
-                                    <option value="{{ $bundle->id }}" @if(old('bundle_id')==$bundle->id) selected @endif>
-                                        {{ $bundle->title }}</option>
-                                @endforeach
-                            </optgroup>
-                        @endif
-                    @endforeach
+                   {{-- Loop through top-level categories --}}
+                                        @foreach ($categories as $category)
+                                            <optgroup label="{{ $category->title }}">
+
+                                                {{-- Display bundles directly under the current category --}}
+                                                @foreach ($category->bundles as $bundleItem)
+                                                    <option value="{{ $bundleItem->id }}"
+                                                        has_certificate="{{ $bundleItem->has_certificate }}"
+                                                        early_enroll="{{ $bundleItem->early_enroll }}"
+                                                        @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                                        {{ $bundleItem->title }}</option>
+                                                @endforeach
+
+                                                {{-- Display bundles under subcategories --}}
+                                                @foreach ($category->subCategories as $subCategory)
+                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                        <option value="{{ $bundleItem->id }}"
+                                                            has_certificate="{{ $bundleItem->has_certificate }}"
+                                                            early_enroll="{{ $bundleItem->early_enroll }}"
+                                                            @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                                            {{ $bundleItem->title }}</option>
+                                                    @endforeach
+                                                @endforeach
+
+                                            </optgroup>
+                                        @endforeach
                     {{-- <optgroup label="دورات تدريبية">
                         @foreach ($courses as $course)
                             <option value="{{ $course->id }}">
