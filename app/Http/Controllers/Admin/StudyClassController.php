@@ -105,4 +105,11 @@ class StudyClassController extends Controller
         ];
         return back()->with(['toast' => $toastData]);
     }
+
+
+    public function students(StudyClass $class){
+
+        $enrollments = $class->enrollments()->paginate(10);
+        return view('admin.study_classes.student', compact('enrollments'));
+    }
 }

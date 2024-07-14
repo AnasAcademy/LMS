@@ -84,7 +84,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'StudyClassController@index');
             Route::post('/', 'StudyClassController@store');
             Route::get('/{class}/delete', 'StudyClassController@destroy');
-            // Route::get('/groups/{id}/show', 'UserController@groupInfo');
+            Route::get('/{class}/students', 'StudyClassController@students');
             // Route::get('/groups/{group}/edit', 'UserController@groupEdit');
             // Route::put('/groups/{group}/update', 'UserController@groupUpdate');
             // Route::get('/groups/{id}/delete', 'GroupController@destroy');

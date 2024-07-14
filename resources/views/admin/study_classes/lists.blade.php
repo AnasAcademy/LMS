@@ -62,15 +62,15 @@
                                                     </button>
                                                     <div class="dropdown-menu text-left webinars-lists-dropdown">
 
-                                                        @can('admin_webinar_students_lists')
-                                                            <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/students"
-                                                                target="_blank"
-                                                                class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
-                                                                title="{{ trans('admin/main.students') }}">
-                                                                <i class="fa fa-users"></i>
-                                                                <span class="ml-2">{{ trans('admin/main.students') }}</span>
-                                                            </a>
-                                                        @endcan
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/students"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">{{ trans('admin/main.students') }}</span>
+                                                        </a>
+
 
 
 
