@@ -445,7 +445,7 @@ class BundleController extends Controller
             $data['slug'] = Bundle::makeSlug($data['title']);
         }
 
-        $data['status'] = $publish ? Bundle::$active : ($reject ? Bundle::$inactive : ($isDraft ? Bundle::$isDraft : Bundle::$pending));
+        // $data['status'] = $publish ? Bundle::$active : ($reject ? Bundle::$inactive : ($isDraft ? Bundle::$isDraft : Bundle::$pending));
         $data['updated_at'] = time();
         $data['subscribe'] = !empty($data['subscribe']) ? true : false;
 
