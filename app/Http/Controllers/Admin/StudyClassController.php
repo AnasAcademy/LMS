@@ -40,6 +40,18 @@ class StudyClassController extends Controller
     public function store(Request $request)
     {
         //
+
+       $validData= $request->validate([
+            'title'=>'required'
+        ]);
+
+        StudyClass::create($validData);
+        $toastData = [
+            'title' => 'إضافة دفعة',
+            'msg' => "تم اضافة دفعة جديدة بنجاح",
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
     /**
