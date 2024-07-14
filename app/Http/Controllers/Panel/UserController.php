@@ -39,6 +39,7 @@ use App\Mixins\Installment\InstallmentPlans;
 use App\Models\Bundle;
 use App\Models\Sale;
 use Illuminate\Support\Collection;
+
 class UserController extends Controller
 {
     use InstallmentsTrait;
@@ -204,15 +205,21 @@ class UserController extends Controller
                     $updateData['avatar'] = $profileImage;
                 }
             } elseif ($step == 3) {
-                $updateData = [
-                    'about' => $data['about'],
-                    'bio' => $data['bio'],
-                ];
-            } elseif ($step == 4) {
-                // dd($request->all());
                 $user->student->update($request->except(['step', '_token', 'next_step']));
+            } elseif ($step == 4) {
+                $user->student->update($request->except(['step', '_token', 'next_step']));
+            } elseif ($step == 5) {
+                $data = [
+                    "job" => $request->workStatus == 1 ? $request->job : null,
+                    "job_type" => $request->workStatus == 1 ? $request->job : null,
+                    "healthy_problem" => $request->healthy == 1 ? $request->healthy_problem : null,
+                    "disabled_type" => $request->disabled == 1 ? $request->disabled_type : null,
+                    "deaf" => $request->deaf,
+                ];
+                $user->student->update($data);
             } elseif ($step == 6) {
-            } elseif ($step == 6) {
+                $user->student->update($request->except(['step', '_token', 'next_step']));
+            } elseif ($step == 8) {
                 UserOccupation::where('user_id', $user->id)->delete();
                 if (!empty($data['occupations'])) {
 
@@ -223,7 +230,7 @@ class UserController extends Controller
                         ]);
                     }
                 }
-            } elseif ($step == 7) {
+            } elseif ($step == 9) {
                 $updateData = [
                     'identity_scan' => $data['identity_scan'] ?? '',
                     'certificate' => $data['certificate'] ?? '',
@@ -254,7 +261,7 @@ class UserController extends Controller
                         UserSelectedBankSpecification::query()->insert($specificationInsert);
                     }
                 }
-            } elseif ($step == 8) {
+            } elseif ($step == 10) {
                 if (!$user->isUser()) {
                     if (!empty($data['zoom_api_key']) and !empty($data['zoom_api_secret'])) {
                         UserZoomApi::updateOrCreate(
@@ -271,19 +278,11 @@ class UserController extends Controller
                         UserZoomApi::where('user_id', $user->id)->delete();
                     }
                 }
-            }
-            elseif ($step == 9) {
-                $data = [
-                    "job"=>$request->workStatus==1? $request->job: null ,
-                    "job_type"=> $request->workStatus == 1 ? $request->job : null,
-                    "healthy_problem"=> $request->healthy==1? $request->healthy_problem : null,
-                    "disabled_type"=> $request->disabled==1?$request->disabled_type : null,
-                    "deaf"=>$request->deaf,
+            } elseif ($step == 10) {
+                $updateData = [
+                    'about' => $data['about'],
+                    'bio' => $data['bio'],
                 ];
-                $user->student->update($data);
-            }
-            elseif($step == 10){
-                $user->student->update($request->except(['step', '_token', 'next_step']));
             }
 
             if (!empty($updateData)) {
@@ -854,9 +853,9 @@ class UserController extends Controller
         // $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
 
         $studentBundles = BundleStudent::where('student_id', $student->id)
-        ->whereHas('bundle.category.categoryRequirements') // Assuming 'requirements' is the relationship or attribute in Category
-        ->get()
-        ->reverse();
+            ->whereHas('bundle.category.categoryRequirements') // Assuming 'requirements' is the relationship or attribute in Category
+            ->get()
+            ->reverse();
 
 
         return view(getTemplate() . '.panel.requirements.index', ['studentBundles' => $studentBundles]);
@@ -900,8 +899,7 @@ class UserController extends Controller
             }
         }
 
-        return view(getTemplate() . '.panel.requirements.payment_step',['studentBundles'=> $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
-
+        return view(getTemplate() . '.panel.requirements.payment_step', ['studentBundles' => $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
     }
 
     public function appliedCourses()
@@ -926,21 +924,20 @@ class UserController extends Controller
             $webinarsOrders->push($off);
         }
 
-        foreach( $webinarSales as $webinarSale){
-            $web= $webinarSale->order->orderItems->first();
-            $web->status= "approved";
+        foreach ($webinarSales as $webinarSale) {
+            $web = $webinarSale->order->orderItems->first();
+            $web->status = "approved";
             $webinarsOrders->push($web);
         }
 
 
-        return view(getTemplate() . '.panel.requirements.courses_payment',['webinarsOrders' => $webinarsOrders]);
-
+        return view(getTemplate() . '.panel.requirements.courses_payment', ['webinarsOrders' => $webinarsOrders]);
     }
 
 
 
     // create requirement function
-    public function createRequirement( $studentBundleId)
+    public function createRequirement($studentBundleId)
     {
         $user = auth()->user();
 
@@ -948,7 +945,7 @@ class UserController extends Controller
 
         $studentBundle = BundleStudent::find($studentBundleId);
 
-        if (!$student || !$studentBundle ) {
+        if (!$student || !$studentBundle) {
             return redirect('/apply');
         }
 
@@ -959,13 +956,13 @@ class UserController extends Controller
             'requirementUploaded' => false,
             'requirementStatus' => StudentRequirement::pending,
             'bundle' => $studentBundle->bundle,
-            'studentBundleId' =>$studentBundleId
+            'studentBundleId' => $studentBundleId
         ];
 
-       $studentRequirments = $studentBundle->studentRequirement;
+        $studentRequirments = $studentBundle->studentRequirement;
 
         if ($studentRequirments) {
-            if($studentRequirments->status !="rejected"){
+            if ($studentRequirments->status != "rejected") {
                 return redirect('/panel/requirements');
             }
             $data["requirementUploaded"] = true;
@@ -977,7 +974,7 @@ class UserController extends Controller
 
 
     // store requirement function
-    public function storeRequirement(Request $request,$studentBundleId)
+    public function storeRequirement(Request $request, $studentBundleId)
     {
         $request->validate([
             'user_code' => 'required|string',
@@ -994,7 +991,7 @@ class UserController extends Controller
 
         $studentBundle = BundleStudent::find($studentBundleId);
 
-        if (!$student || !$studentBundle ) {
+        if (!$student || !$studentBundle) {
             return redirect('/apply');
         }
 
@@ -1003,8 +1000,8 @@ class UserController extends Controller
 
 
         $identity_attachment = $request->file('identity_attachment');
-        if( !in_array(strtolower($identity_attachment->getClientOriginalExtension()),['jpg','jpeg','png','pdf'])){
-            return back()->withInput($request->all())->withErrors(['identity_attachment'=> "يجب أن يكون الهوية الوطنية/جواز السفر ملف من النوع: jpeg, jpg, png, pdf والملف المرفع بامتداد ".$identity_attachment->getClientOriginalExtension()]);
+        if (!in_array(strtolower($identity_attachment->getClientOriginalExtension()), ['jpg', 'jpeg', 'png', 'pdf'])) {
+            return back()->withInput($request->all())->withErrors(['identity_attachment' => "يجب أن يكون الهوية الوطنية/جواز السفر ملف من النوع: jpeg, jpg, png, pdf والملف المرفع بامتداد " . $identity_attachment->getClientOriginalExtension()]);
         }
         $identity_attachmentName =  $user->user_code . '_' . $request['identity_type'] . '.' . $identity_attachment->getClientOriginalExtension();
         $identity_attachmentPath = $identity_attachment->storeAs('studentRequirements', $identity_attachmentName);
@@ -1033,7 +1030,7 @@ class UserController extends Controller
 
 
     // financial requirements function
-    public function account($id = null, $bundleId=10)
+    public function account($id = null, $bundleId = 10)
     {
         $userAuth = auth()->user();
 
@@ -1041,7 +1038,7 @@ class UserController extends Controller
 
         $studentBundle = BundleStudent::where("student_id", $student->id)->where("bundle_id", $bundleId)->latest()->first();
 
-        if (!$student || !$studentBundle ) {
+        if (!$student || !$studentBundle) {
             return redirect('/apply');
         }
 
