@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class StudyClass extends Model
 {
     use HasFactory;
+    protected $guarded=[];
 
     public function enrollments(){
         return $this->hasMany(BundleStudent::class, 'class_id');
