@@ -134,7 +134,6 @@
                                         class="form-control @error('bundle_id') is-invalid @enderror"
                                         value="{{ old('bundle_id', $bundle ? $bundle->id : '') }}"> --}}
 
-
                                     <select id="bundle_id" class="custom-select @error('bundle_id')  is-invalid @enderror"
                                         name="bundle_id" required onchange="CertificateSectionToggle()">
                                         <option selected disabled>{{ trans('public.choose_category') }}
@@ -144,8 +143,9 @@
                                         @foreach ($categories as $category)
                                             <optgroup label="{{ $category->title }}">
 
+
                                                 {{-- Display bundles directly under the current category --}}
-                                                @foreach ($category->bundles as $bundleItem)
+                                                @foreach ($category->bundles()->where('status', 'active')->get() as $bundleItem)
                                                     <option value="{{ $bundleItem->id }}"
                                                         has_certificate="{{ $bundleItem->has_certificate }}"
                                                         early_enroll="{{ $bundleItem->early_enroll }}"
@@ -155,7 +155,7 @@
 
                                                 {{-- Display bundles under subcategories --}}
                                                 @foreach ($category->subCategories as $subCategory)
-                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                    @foreach ($subCategory->bundles()->where('status', 'active')->get() as $bundleItem)
                                                         <option value="{{ $bundleItem->id }}"
                                                             has_certificate="{{ $bundleItem->has_certificate }}"
                                                             early_enroll="{{ $bundleItem->early_enroll }}"

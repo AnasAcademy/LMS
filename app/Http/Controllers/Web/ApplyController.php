@@ -37,9 +37,13 @@ class ApplyController extends Controller
 
         $categories = Category::whereNull('parent_id')
         ->where(function ($query) {
-            $query->whereHas('bundles')
+            $query->whereHas('bundles', function ($query) {
+                $query->where('status', "active");
+            })
             ->orWhereHas('subCategories', function ($query) {
-                $query->whereHas('bundles');
+                $query->whereHas('bundles', function ($query) {
+                    $query->where('status', "active");
+                });
             });
         })->get();
 
@@ -60,11 +64,15 @@ class ApplyController extends Controller
         // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
         $categories = Category::whereNull('parent_id')
         ->where(function ($query) {
-            $query->whereHas('bundles')
+            $query->whereHas('bundles', function ($query) {
+                $query->where('status', "active");
+            })
             ->orWhereHas('subCategories', function ($query) {
-                $query->whereHas('bundles');
+                $query->whereHas('bundles', function ($query) {
+                    $query->where('status', "active");
+                });
             });
-        }) ->get();
+        })->get();
 
             // dd($categories);
         $courses = Webinar::where('unattached', 1)->get();
