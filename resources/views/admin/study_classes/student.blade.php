@@ -6,10 +6,11 @@
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>{{ trans('admin/main.students') }} {{ trans('admin/main.list') }}</h1>
+            <h1>{{ trans('admin/main.list') }} {{ trans('admin/main.students') }} {{ $class->title }}</h1>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a>{{ trans('admin/main.students') }}</a></div>
-                <div class="breadcrumb-item"><a href="#">{{ trans('admin/main.users_list') }}</a></div>
+                <div class="breadcrumb-item active"><a href="/admin/classes" style="color: #6c757d">الدفعات الدراسية</a></div>
+                <div class="breadcrumb-item active"><a>{{ $class->title }}</a></div>
+                <div class="breadcrumb-item"><a href="#">{{ trans('admin/main.students') }}</a></div>
             </div>
         </div>
     </section>
@@ -65,7 +66,7 @@
             </form>
         </div>
     </section>
-   
+
 
     <div class="card">
         <div class="card-header">
@@ -100,7 +101,7 @@
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
-                                        <img src="{{  $enrollment->student->registeredUser->getAvatar() }}"
+                                        <img src="{{ $enrollment->student->registeredUser->getAvatar() }}"
                                             alt="{{ $enrollment->student ? $enrollment->student->ar_name : null }}">
                                     </figure>
                                     <div class="media-body ml-1">
@@ -122,41 +123,55 @@
 
 
                             <td>
+                                @foreach ($enrollment->student->classBundleStudent($class->id) as $record)
 
-                                {{ $enrollment->bundle->title }}
-
+                                    {{ $record->bundle->title }}
+                                    @if (!$loop->last)
+                                        و
+                                        @endif
+                                @endforeach
+                            </td>
+                            <td>
+                                @foreach ($enrollment->student->classBundleStudent($class->id) as $record)
+                                    {{ dateTimeFormat(strtotime($enrollment->created_at), 'j M Y | H:i') }}
+                                    @if (!$loop->last)
+                                      و
+                                    @endif
+                                @endforeach
                             </td>
 
 
-                            <td>
-                                {{ dateTimeFormat($enrollment->created_at, 'j M Y | H:i') }}
-                            </td>
+
 
                             <td>
-                                @if ( $enrollment->student->registeredUser->ban and !empty( $enrollment->student->registeredUser->ban_end_at) and  $enrollment->student->registeredUser->ban_end_at > time())
+                                @if (
+                                    $enrollment->student->registeredUser->ban and
+                                        !empty($enrollment->student->registeredUser->ban_end_at) and
+                                        $enrollment->student->registeredUser->ban_end_at > time())
                                     <div class="mt-0 mb-1 font-weight-bold text-danger">{{ trans('admin/main.ban') }}
                                     </div>
                                     <div class="text-small font-600-bold">Until
-                                        {{ dateTimeFormat( $enrollment->student->registeredUser->ban_end_at, 'Y/m/j') }}</div>
+                                        {{ dateTimeFormat($enrollment->student->registeredUser->ban_end_at, 'Y/m/j') }}
+                                    </div>
                                 @else
                                     <div
-                                        class="mt-0 mb-1 font-weight-bold {{  $enrollment->student->registeredUser->status == 'active' ? 'text-success' : 'text-warning' }}">
-                                        {{ trans('admin/main.' .  $enrollment->student->registeredUser->status) }}</div>
+                                        class="mt-0 mb-1 font-weight-bold {{ $enrollment->student->registeredUser->status == 'active' ? 'text-success' : 'text-warning' }}">
+                                        {{ trans('admin/main.' . $enrollment->student->registeredUser->status) }}</div>
                                 @endif
                             </td>
 
                             <td class="text-center mb-2" width="120">
 
                                 @can('admin_users_impersonate')
-                                    <a href="{{ getAdminPanelUrl() }}/users/{{  $enrollment->student->registeredUser->id }}/impersonate" target="_blank"
-                                        class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
-                                        title="{{ trans('admin/main.login') }}">
+                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->student->registeredUser->id }}/impersonate"
+                                        target="_blank" class="btn-transparent  text-primary" data-toggle="tooltip"
+                                        data-placement="top" title="{{ trans('admin/main.login') }}">
                                         <i class="fa fa-user-shield"></i>
                                     </a>
                                 @endcan
 
                                 @can('admin_users_edit')
-                                    <a href="{{ getAdminPanelUrl() }}/users/{{  $enrollment->student->registeredUser->id }}/edit"
+                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->student->registeredUser->id }}/edit"
                                         class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
                                         title="{{ trans('admin/main.edit') }}">
                                         <i class="fa fa-edit"></i>
@@ -165,7 +180,11 @@
 
                                 @can('admin_users_delete')
                                     @include('admin.includes.delete_button', [
-                                        'url' => getAdminPanelUrl() . '/users/' .  $enrollment->student->registeredUser->id . '/delete',
+                                        'url' =>
+                                            getAdminPanelUrl() .
+                                            '/users/' .
+                                            $enrollment->student->registeredUser->id .
+                                            '/delete',
                                         'btnClass' => '',
                                         'deleteConfirmMsg' => trans('update.user_delete_confirm_msg'),
                                     ])
