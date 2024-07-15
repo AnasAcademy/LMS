@@ -12,6 +12,6 @@ class StudyClass extends Model
     protected $guarded=[];
 
     public function enrollments(){
-        return $this->hasMany(BundleStudent::class, 'class_id');
+        return $this->hasMany(BundleStudent::class, 'class_id')->groupBy('student_id');
     }
 }
