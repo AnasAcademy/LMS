@@ -91,7 +91,7 @@
                     </div>
                 </div>
 
-                {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-success">
                             <i class="fas fa-dollar-sign"></i>
@@ -108,7 +108,7 @@
                             </div>
                         </div>
                     </div>
-                </div> --}}
+                </div>
 
                 {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
@@ -294,13 +294,20 @@
                                             رسوم حجز مقعد
                                         </option>
                                         <option value="bundle" @if (request()->get('type') == 'bundle') selected @endif>
-                                            حزمة مقررات
+دفع كامل الرسوم
                                         </option>
+                                        <option value="upfront" @if (request()->get('type') == 'upfront') selected @endif>
+                                            قسط التسجيل
+                                        </option>
+
                                         <option value="installment_payment" @if (request()->get('type') == 'installment_payment') selected @endif>
                                             اقساط
                                         </option>
                                         <option value="webinar" @if (request()->get('type') == 'webinar') selected @endif>
                                             دورة
+                                        </option>
+                                        <option value="service" @if (request()->get('type') == 'service') selected @endif>
+                                            خدمات الكترونية
                                         </option>
                                     </select>
                                 </div>
@@ -423,17 +430,20 @@
                                                     @elseif($sale->type == \App\Models\Sale::$product)
                                                         {{ trans('update.product') }}
                                                     @elseif($sale->type == \App\Models\Sale::$bundle)
-                                                        {{ trans('update.bundle') }}
+                                                       دفع كامل الرسوم
                                                     @elseif($sale->type == \App\Models\Sale::$gift)
                                                         {{ trans('update.gift') }}
                                                     @elseif($sale->type == \App\Models\Sale::$installmentPayment)
-                                                        {{ trans('update.installment_payment') }}
+                                                    {{ $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل' }}
+
                                                     @elseif($sale->type == 'form_fee')
                                                         رسوم نموذج القبول
                                                     @elseif($sale->type == 'certificate')
                                                         شراء شهادة
                                                     @elseif($sale->type == 'webinar')
                                                         دورة
+                                                        @elseif($sale->type == 'service')
+                                                        خدمة الكترونية
                                                     @else
                                                         {{ $sale->type }}
                                                     @endif
