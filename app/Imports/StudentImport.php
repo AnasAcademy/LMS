@@ -22,6 +22,7 @@ use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\Code;
 use App\Models\Accounting;
+use App\Models\StudyClass;
 use App\Models\TicketUser;
 
 
@@ -168,10 +169,15 @@ class StudentImport implements ToModel
                 return null;
             }
 
+            $class =  StudyClass::get()->last();
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+            }
             // apply bundle for student
             $bundleStudent = BundleStudent::create([
                 'student_id' => $student->id,
                 'bundle_id' => $bundle->id,
+                'class_id' => $class->id,
             ]);
 
             // create order

@@ -21,6 +21,8 @@ use App\Models\Accounting;
 use App\Models\OfflineBank;
 use App\Models\OfflinePayment;
 use App\Models\Code;
+use App\Models\StudyClass;
+use Illuminate\Support\Facades\Date;
 
 class ApplyController extends Controller
 {
@@ -246,7 +248,13 @@ class ApplyController extends Controller
 
         if ($request->direct_register) {
 
-            $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null]);
+            $class =  StudyClass::get()->last();
+            if(!$class){
+                $class = StudyClass::create(['title'=> "الدفعة الأولي"]);
+            }
+            $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null, 'class_id' => $class->id,
+            'created_at' => Date::now(),  // Set current timestamp for created_at
+            'updated_at' => Date::now()]);
 
             if(count($bundle->category->categoryRequirements)>0){
                 return redirect("/panel/requirements");
@@ -286,8 +294,10 @@ class ApplyController extends Controller
             'installment_payment_id' => null,
             'ticket_id' => null,
             'discount_id' => null,
-            'amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
-            'total_amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
+            'amount' =>  230,
+            'total_amount' =>230,
+            // 'amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
+            // 'total_amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
             'tax' => null,
             'tax_price' => 0,
             'commission' => 0,

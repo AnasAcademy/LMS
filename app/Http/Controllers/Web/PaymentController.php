@@ -34,6 +34,8 @@ use App\Models\Group;
 use Illuminate\Support\Facades\Cookie;
 
 use App\Models\ServiceUser;
+use App\Models\StudyClass;
+use Illuminate\Support\Facades\Date;
 
 class PaymentController extends Controller
 {
@@ -473,11 +475,18 @@ class PaymentController extends Controller
                     $bundleId = $order->orderItems->first()->bundle_id;
 
                     if (!empty($bundleId)) {
+                        $class =  StudyClass::get()->last();
+                        if (!$class) {
+                            $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+                        }
+
                         // Check if the student already has the bundle ID attached
                         if ($student->bundles->contains($bundleId)) {
                             BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
                         } else {
-                            $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
+                            $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'class_id' => $class->id,
+                            'created_at' => Date::now(),  // Set current timestamp for created_at
+                            'updated_at' => Date::now()]);
 
                             $pivot = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
@@ -752,9 +761,16 @@ class PaymentController extends Controller
 
         if ($item->form_fee) {
 
+            $class =  StudyClass::get()->last();
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+            }
             // Check if the student already has the bundle ID attached
             if (!$student->bundles->contains($bundleId)) {
-                $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending']);
+                $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending', 'class_id' => $class->id,
+                'created_at' => Date::now(),  // Set current timestamp for created_at
+                'updated_at' => Date::now()]);
+                
                 $pivot = \DB::table('bundle_student')
                     ->where('student_id', $student->id)
                     ->where('bundle_id', $bundleId)
