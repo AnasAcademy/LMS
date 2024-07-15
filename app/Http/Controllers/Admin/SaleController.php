@@ -42,17 +42,18 @@ class SaleController extends Controller
             'amount' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->sum('total_amount'),
         ];
 
-        // $servicesSales = [
-        //     // 'count' => deepClone($query)->whereNotNull('service_id')->count(),
-        //     // 'amount' => deepClone($query)->whereNotNull('service_id')->sum('total_amount'),
-        //     'count' => deepClone($query)->where('type', 'service')->count(),
-        //     'amount' => deepClone($query)->where('type', 'service')->sum('total_amount'),
-        // ];
+        $servicesSales = [
+            // 'count' => deepClone($query)->whereNotNull('service_id')->count(),
+            // 'amount' => deepClone($query)->whereNotNull('service_id')->sum('total_amount'),
+            'count' => deepClone($query)->where('type', 'service')->count(),
+            'amount' => deepClone($query)->where('type', 'service')->sum('total_amount'),
+        ];
 
         $appointmentSales = [
             'count' => deepClone($query)->whereNotNull('meeting_id')->count(),
             'amount' => deepClone($query)->whereNotNull('meeting_id')->sum('total_amount'),
         ];
+
         $failedSales = Order::where('status', Order::$fail)->count();
 
         $salesQuery = $this->getSalesFilters($query, $request);
@@ -87,7 +88,7 @@ class SaleController extends Controller
             'failedSales' => $failedSales,
             'formFeeSales' => $formFeeSales,
             'bundlesSales' => $bundlesSales,
-            // 'servicesSales' => $servicesSales,
+            'servicesSales' => $servicesSales,
         ];
 
         $teacher_ids = $request->get('teacher_ids');
@@ -122,6 +123,14 @@ class SaleController extends Controller
             $sale->item_seller = ($item and $item->creator) ? $item->creator->full_name : trans('update.deleted_item');
             $sale->seller_id = ($item and $item->creator) ? $item->creator->id : '';
             $sale->sale_type = ($item and $item->creator) ? $item->creator->id : '';
+        } else if (!empty($sale->service_id)) {
+            $item = !empty($sale->service_id) ? $sale->service : null;
+
+            $sale->item_title = $item ? $item->title : trans('update.deleted_item');
+            $sale->item_id = $item ? $item->id : '';
+            $sale->item_seller = '---';
+            $sale->seller_id = '';
+            $sale->sale_type = "";
         } elseif (!empty($sale->meeting_id)) {
             $sale->item_title = trans('panel.meeting');
             $sale->item_id = $sale->meeting_id;
@@ -210,23 +219,33 @@ class SaleController extends Controller
         }
 
         if (!empty($type)) {
-        $query->when($type, function ($query) use ($type) {
-            $query->whereHas('order.orderItems')->where('type', $type);
-                // $query->whereHas('order.orderItems', function ($q) use ($type) {
-                //     if($type=='form_fee'){
-                //         $q->where('type', 'form_fee');
-                //     }
-                //     else if($type=="webinar"){
-                //         $q->whereNotNull('webinar_id');
-                //     }
-                //     else if($type=="bundle"){
-                //         $q->whereNotNull('bundle_id')->whereNull('form_fee');
-                //     }
-                //     else if($type=="installment"){
-                //         $q->whereNotNull('installment_payment_id');
-                //     }
-                // });
-            });
+
+            if ($type == 'upfront') {
+
+                $query->when($type, function ($query) {
+                    $query->whereHas('order.orderItems', function ($item) {
+
+                        $item->whereHas('installmentPayment', function ($payment) {
+                            $payment->where("type", "upfront");
+                        });
+                    });
+                })->where('type', 'installment_payment');
+
+            } else if($type == 'installment_payment') {
+                $query->when($type, function ($query) {
+                    $query->whereHas('order.orderItems', function ($item) {
+
+                        $item->whereHas('installmentPayment', function ($payment) {
+                            $payment->where("type", "step");
+                        });
+                    });
+                })->where('type', 'installment_payment');
+
+            } else {
+                $query->when($type, function ($query) use ($type) {
+                    $query->whereHas('order.orderItems')->where('type', $type);
+                });
+            }
         }
 
         if (!empty($status)) {
