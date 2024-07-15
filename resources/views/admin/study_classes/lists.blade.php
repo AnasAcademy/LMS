@@ -18,7 +18,7 @@
 
         <div class="section-body">
             <div class="d-flex justify-content-end align-items-center mb-10">
-                <button id="userAddExperiences" type="button" data-toggle="modal" data-target="#exampleModal"
+                <button id="" type="button" data-toggle="modal" data-target="#exampleModal"
                     class="btn btn-primary btn-sm mb-3">إنشاء دفعة جديدة</button>
             </div>
             <div class="row">
@@ -53,7 +53,6 @@
                                             <td class="font-12">{{ $class->updated_at }}
                                             </td>
 
-
                                             <td width="150">
                                                 <div class="btn-group dropdown table-actions">
                                                     <button type="button" class="btn-transparent dropdown-toggle"
@@ -71,6 +70,20 @@
                                                             <span class="ml-2">{{ trans('admin/main.students') }}</span>
                                                         </a>
 
+                                                         @include('admin.study_classes.create', [
+                                                            'url' =>
+                                                                getAdminPanelUrl() .
+                                                                '/classes/' .
+                                                                $class->id .
+                                                                '/delete',
+                                                            'btnClass' =>
+                                                                'd-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm mt-1',
+                                                            'btnText' =>
+                                                                ' <i class="fa fa-edit"></i><span class="ml-2">' .
+                                                                'تعديل' .
+                                                                '</span>',
+                                                            'class' => $class,
+                                                        ])
 
 
 
@@ -89,6 +102,9 @@
                                                                     '</span>',
                                                             ])
                                                         @endcan
+
+
+
                                                     </div>
                                                 </div>
                                             </td>
@@ -111,19 +127,23 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="examplelLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">إنشاء دفعة جديدة</h5>
+
+                    <h5 class="modal-title" id="examplelLabel">إنشاء دفعة جديدة</h5>
+
+
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
-            <form action="/admin/classes" method="post">
+            <form action="/admin/classes" method="post" class="modal-body">
                 @csrf
-                <div class="modal-body">
+                <div class="">
                     <div class="form-group">
                         <label for="title">عنوان الدفعة الدراسية</label>
                         <input type="text" name="title" id="title" class="form-control">
