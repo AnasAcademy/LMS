@@ -83,9 +83,21 @@ class StudyClassController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, StudyClass $class)
     {
         //
+
+        $validData = $request->validate([
+            'title' => 'required'
+        ]);
+
+        $class->update($validData);
+        $toastData = [
+            'title' => 'تعديل دفعة',
+            'msg' => "تم تعديل بيانات الدفعة بنجاح",
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
     /**
@@ -110,6 +122,6 @@ class StudyClassController extends Controller
     public function students(StudyClass $class){
 
         $enrollments = $class->enrollments()->paginate(10);
-        return view('admin.study_classes.student', compact('enrollments'));
+        return view('admin.study_classes.student', compact('enrollments', "class"));
     }
 }
