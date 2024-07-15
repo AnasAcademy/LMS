@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Bitwise\UserLevelOfTraining;
+use App\BundleStudent;
 use App\Exports\EnrollersExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
@@ -97,9 +98,9 @@ class UserController extends Controller
                 ]);
             }
             $certificate = !empty($validatedData['certificate']) ? $validatedData['certificate'] : null;
-            $student->bundles()->detach($validatedData['fromDiploma']);
-            $student->bundles()->attach($validatedData['toDiploma'], ['certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
-
+            // $student->bundles()->detach($validatedData['fromDiploma']);
+            // $student->bundles()->attach($validatedData['toDiploma'], ['certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
+            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $validatedData['fromDiploma']])->update(['bundle_id' => $validatedData['toDiploma'], 'certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
 
 
             $toastData = [
