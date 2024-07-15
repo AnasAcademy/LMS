@@ -279,7 +279,7 @@
                                                         <option value="{{ $bundleItem->id }}"
                                                             has_certificate="{{ $bundleItem->has_certificate }}"
                                                             early_enroll="{{ $bundleItem->early_enroll }}"
-                                                            @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                                            @if (old('bundle_id', $bundle->id ?? null) == $bundleItem->id) selected @endif>
                                                             {{ $bundleItem->title }}</option>
                                                     @endforeach
                                                 @endforeach
