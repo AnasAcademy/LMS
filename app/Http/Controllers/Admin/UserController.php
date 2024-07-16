@@ -345,7 +345,7 @@ class UserController extends Controller
         return view('admin.users.instructors', $data);
     }
 
-    private function addUsersExtraInfo($users)
+    public function addUsersExtraInfo($users)
     {
         foreach ($users as $user) {
             $salesQuery = Sale::where('seller_id', $user->id)
@@ -398,7 +398,7 @@ class UserController extends Controller
         return $users;
     }
 
-    private function filters($query, $request)
+    public function filters($query, $request)
     {
         $from = $request->input('from');
         $to = $request->input('to');
@@ -592,7 +592,7 @@ class UserController extends Controller
         return view('admin.users.create', $data);
     }
 
-    private function username($data)
+    public function username($data)
     {
         $email_regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
 
@@ -883,7 +883,7 @@ class UserController extends Controller
         return view('admin.users.edit', $data);
     }
 
-    private function getPurchasedClassesData($user)
+    public function getPurchasedClassesData($user)
     {
         $manualAddedClasses = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -927,7 +927,7 @@ class UserController extends Controller
         ];
     }
 
-    private function getPurchasedBundlesData($user)
+    public function getPurchasedBundlesData($user)
     {
         $manualAddedBundles = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -971,7 +971,7 @@ class UserController extends Controller
         ];
     }
 
-    private function getPurchasedProductsData($user)
+    public function getPurchasedProductsData($user)
     {
         $manualAddedProducts = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -1151,7 +1151,7 @@ class UserController extends Controller
         return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
     }
 
-    private function handleUserCertificateAdditional($userId, $value)
+    public function handleUserCertificateAdditional($userId, $value)
     {
         $name = 'certificate_additional';
 
