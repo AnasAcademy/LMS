@@ -5,6 +5,7 @@ namespace App;
 use App\StudentRequirement;
 use App\Student;
 use App\Models\Bundle;
+use App\Models\StudyClass;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class BundleStudent extends Pivot
@@ -22,5 +23,10 @@ class BundleStudent extends Pivot
     public function bundle()
     {
         return $this->belongsTo(Bundle::class, "bundle_id");
+    }
+
+
+    public function class(){
+        return $this->belongsTo(StudyClass::class, "class_id");
     }
 }
