@@ -30,6 +30,7 @@ return new class extends Migration
         Schema::table('bundle_student', function (Blueprint $table) {
             //
             $table->dropForeign('bundle_student_class_id_foreign');
+            $table->dropColumn('class_id');
         });
     }
 };
