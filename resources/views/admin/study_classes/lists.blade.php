@@ -61,16 +61,7 @@
                                                     </button>
                                                     <div class="dropdown-menu text-left webinars-lists-dropdown">
 
-
-                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/students"
-                                                            target="_self"
-                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
-                                                            title="{{ trans('admin/main.students') }}">
-                                                            <i class="fa fa-users"></i>
-                                                            <span class="ml-2">{{ trans('admin/main.students') }}</span>
-                                                        </a>
-
-                                                         @include('admin.study_classes.create', [
+                                                        @include('admin.study_classes.create', [
                                                             'url' =>
                                                                 getAdminPanelUrl() .
                                                                 '/classes/' .
@@ -104,6 +95,41 @@
                                                         @endcan
 
 
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/students"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">{{ trans('admin/main.students') }}</span>
+                                                        </a>
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/users"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">نموذج حجز مقعد</span>
+                                                        </a>
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/enrollers"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">تسجيل الدبلومات</span>
+                                                        </a>
+
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/requirements"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">نموذج المتطلبات</span>
+                                                        </a>
+
+
+
 
                                                     </div>
                                                 </div>
@@ -127,13 +153,12 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="examplelLabel"
-    aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="examplelLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
 
-                    <h5 class="modal-title" id="examplelLabel">إنشاء دفعة جديدة</h5>
+                <h5 class="modal-title" id="examplelLabel">إنشاء دفعة جديدة</h5>
 
 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
