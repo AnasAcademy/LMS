@@ -546,36 +546,48 @@ class User extends Authenticatable
 
         return Sale::whereIn('webinar_id', $webinarIds)->sum('amount');
     }
-    public function purchasedFormBundle()
+    public function purchasedFormBundle($class_id = null)
     {
-        return Sale::where('type', 'form_fee')
+        $purchasedFormBundleQuery = Sale::where('type', 'form_fee')
             ->where('buyer_id', $this->id)
-            ->whereNotNull('bundle_id')
-            // ->orderBy('created_at', 'desc')
-            ->get()
+            ->whereNotNull('bundle_id');
+
+        if (!empty($class_id)) {
+            $purchasedFormBundleQuery = $purchasedFormBundleQuery->where('class_id', $class_id);
+        }
+
+        return $purchasedFormBundleQuery->get()
             ->unique('bundle_id');
     }
-    public function purchasedBundles()
+
+    public function purchasedFormBundleUnique($class_id = null)
     {
-        // return Sale::where(function ($query) {
-        //     $query->where('type', 'bundle')
-        //         ->orWhere('type', 'installment_payment');
-        // })
-        // ->where('buyer_id', $this->id)
-        // ->whereNotNull('bundle_id')
-        // ->orderBy('created_at', 'desc')
-        // ->get()
-        // ->unique('bundle_id');
+        $purchasedFormBundleQuery =
+            $this->hasMany(Sale::class, 'buyer_id')
+            ->whereNotNull('bundle_id')
+            ->groupBy('buyer_id', 'bundle_id')
+            ->havingRaw('COUNT(*) = 1');
+        if (!empty($class_id)) {
+            $purchasedFormBundleQuery = $purchasedFormBundleQuery->where('class_id', $class_id);
+        }
 
-        return $this->hasMany(Sale::class, 'buyer_id')
-        ->where(function ($query) {
-            $query->where('type', 'bundle')
-                  ->orWhere('type', 'installment_payment');
-        })
-        ->whereNotNull('bundle_id')
-        ->orderBy('created_at', 'desc')
-        ->distinct('bundle_id');
+        return $purchasedFormBundleQuery->distinct('bundle_id');
+    }
 
+    public function purchasedBundles($class_id = null)
+    {
+        $purchasedBundlesQuery = $this->hasMany(Sale::class, 'buyer_id')
+            ->where(function ($query) {
+                $query->where('type', 'bundle')
+                    ->orWhere('type', 'installment_payment');
+            })
+            ->whereNotNull('bundle_id')
+            ->orderBy('created_at', 'desc');
+        if (!empty($class_id)) {
+            $purchasedBundlesQuery = $purchasedBundlesQuery->where('class_id', $class_id);
+        }
+
+        return $purchasedBundlesQuery->distinct('bundle_id');
     }
 
     public function salesCount()
@@ -1000,7 +1012,7 @@ class User extends Authenticatable
     public function services()
     {
         return $this->belongsToMany(Service::class)
-        ->using(ServiceUser::class)
+            ->using(ServiceUser::class)
             ->withPivot(['id', 'status', 'approved_by', 'message', 'content'])
             ->withTimestamps()
             ->orderBy('service_user.created_at', 'desc');
@@ -1019,10 +1031,9 @@ class User extends Authenticatable
     public function webinarOfflinePayments()
     {
         return $this->hasMany(OfflinePayment::class, "user_id")
-        ->where(function($query){
-            $query->where('pay_for', 'webinar')
-            ->whereIn('status', ['waiting', 'reject']);
-        });
-
+            ->where(function ($query) {
+                $query->where('pay_for', 'webinar')
+                    ->whereIn('status', ['waiting', 'reject']);
+            });
     }
 }
