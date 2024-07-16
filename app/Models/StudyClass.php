@@ -14,4 +14,10 @@ class StudyClass extends Model
     public function enrollments(){
         return $this->hasMany(BundleStudent::class, 'class_id')->groupBy('student_id');
     }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class, 'class_id');
+    }
+
 }
