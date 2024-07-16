@@ -210,7 +210,7 @@ class ApplyController extends Controller
                 if ($request->direct_register) {
                     $studentData = [
                         'ar_name' => $request->ar_name,
-                        'ar_name' => $request->en_name,
+                        'en_name' => $request->en_name,
                         'user_id' => $user->id,
                         'email' => $user->email,
                         'phone' => $user->mobile,
@@ -252,7 +252,7 @@ class ApplyController extends Controller
             if(!$class){
                 $class = StudyClass::create(['title'=> "الدفعة الأولي"]);
             }
-            $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null, 'class_id' => $class->id,
+            $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null,
             'created_at' => Date::now(),  // Set current timestamp for created_at
             'updated_at' => Date::now()]);
 
