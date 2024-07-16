@@ -3,6 +3,11 @@
 @push('libraries_top')
 @endpush
 
+@php
+    $segments = explode('/', request()->path());
+    $lastSegment = end($segments);
+@endphp
+
 @section('content')
     <section class="section">
         <div class="section-header">
@@ -83,7 +88,7 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
-                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                        @if ( $lastSegment === 'users')
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="input-label">كود الطالب</label>
@@ -106,7 +111,7 @@
                             <div class="form-group">
                                 <label class="input-label">اسم الطالب</label>
                                 <input
-                                    name={{ request()->is(getAdminPanelUrl('/students/users', false)) ? 'ar_name' : 'full_name' }}
+                                    name={{ $lastSegment === 'users' ? 'ar_name' : 'full_name' }}
                                     type="text" class="form-control"
                                     value="{{ request()->get('ar_name') }}{{ request()->get('full_name') }}">
                             </div>
@@ -245,7 +250,7 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                @if ( $lastSegment === 'users')
                     <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
 
@@ -274,7 +279,8 @@
                 <table class="table table-striped font-14">
                     <tr>
                         <th>{{ '#' }}</th>
-                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
+
+                        @if ( $lastSegment === 'users')
                             <th>كود الطالب</th>
                         @endif
 
@@ -284,7 +290,7 @@
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
                         <th>{{ trans('admin/main.income') }}</th>
                         <th>{{ trans('admin/main.user_group') }}</th> --}}
-                        @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                        @if ( $lastSegment === 'users')
                             <th> الدبلومات المسجلة</th>
                         @endif
 
@@ -298,7 +304,7 @@
                     @foreach ($users as $index => $user)
                         <tr>
                             <td>{{ ++$index }}</td>
-                            @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                            @if ( $lastSegment === 'users')
                                 <td>{{ $user->user_code?? '---' }}</td>
                             @endif
 
@@ -349,13 +355,14 @@
                             <td>
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td> --}}
-                            @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                            @if ( $lastSegment === 'users')
                                 <td>
 
-                                    @if (($user->purchasedFormBundle()->count()<=0))
+                                    @if (($user->purchasedFormBundleUnique($class->id ?? null)->count()<=0))
                                     يتم مراجعه طلبه من قبل الإدارة المالية
                                     @endif
-                                    @foreach ($user->purchasedFormBundle() as $purchasedFormBundle)
+
+                                    @foreach ($user->purchasedFormBundleUnique($class->id ?? null)->get() as $purchasedFormBundle)
                                         {{ $purchasedFormBundle->bundle->title  }}
                                         @if (!$loop->last)
                                             &nbsp;و&nbsp;
@@ -364,12 +371,7 @@
                                 </td>
                             @endif
 
-                            {{-- <td>
-                                {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
-                            </td> --}}
-                            {{-- <td>
-                                {{ $user->user_code }}
-                            </td> --}}
+
 
                             <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
 
@@ -468,7 +470,7 @@
                         <div class="text-small font-600-bold">{{ trans('admin/main.students_hint_description_3') }}</div>
                     </div>
                 </div>
-                @if (request()->is(getAdminPanelUrl('/students/users', false)))
+                @if ( $lastSegment === 'users')
                     <div class="col-6">
                         <div class="media-body">
                             <div class="text-primary mt-25 mb-1 font-weight-bold">

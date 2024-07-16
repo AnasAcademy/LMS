@@ -277,47 +277,16 @@
                                 </div>
                             </td>
 
-                            {{-- <td>
-                                <div class="media-body">
-                                    <div class="text-primary mt-0 mb-1 font-weight-bold">
-                                        {{ $user->classesPurchasedsCount }}</div>
-                                    <div class="text-small font-600-bold">{{ handlePrice($user->classesPurchasedsSum) }}
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="media-body">
-                                    <div class="text-primary mt-0 mb-1 font-weight-bold">
-                                        {{ $user->meetingsPurchasedsCount }}</div>
-                                    <div class="text-small font-600-bold">{{ handlePrice($user->meetingsPurchasedsSum) }}
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>{{ handlePrice($user->getAccountingBalance()) }}</td>
-
-                            <td>{{ handlePrice($user->getIncome()) }}</td>
-
-                            <td>
-                                {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
-                            </td> --}}
+                            
                             <td>
 
-                                @foreach ($user->purchasedBundles as $purchasedBundle)
+                                @foreach ($user->purchasedBundles($class->id ?? null)->get() as $purchasedBundle)
                                     {{ $purchasedBundle->bundle->title }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;
                                     @endif
                                 @endforeach
                             </td>
-
-                            {{-- <td>
-                                {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
-                            </td> --}}
-                            {{-- <td>
-                                {{ $user->user_code }}
-                            </td> --}}
 
                             <td>
                                 @foreach ($user->purchasedBundles as $purchasedBundle)
