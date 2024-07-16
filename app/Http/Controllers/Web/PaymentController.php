@@ -426,6 +426,11 @@ class PaymentController extends Controller
 
             $pivot = null;
 
+            $class =  StudyClass::get()->last();
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+            }
+
             if (($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') || ($webinar_sale && $webinar_sale->order->user_id == $user->id && $webinar_sale->order->status == 'paid')) {
                 //add as student
                 try {
@@ -448,7 +453,7 @@ class PaymentController extends Controller
                         'requirement_endorsement'
                     ];
                     $studentData = collect($userData)->except($keysToExclude)->toArray();
-                    $studentData['email']=$user->email;
+                    $studentData['email'] = $user->email;
                     $student = $user->student;
 
 
@@ -475,18 +480,16 @@ class PaymentController extends Controller
                     $bundleId = $order->orderItems->first()->bundle_id;
 
                     if (!empty($bundleId)) {
-                        $class =  StudyClass::get()->last();
-                        if (!$class) {
-                            $class = StudyClass::create(['title' => "الدفعة الأولي"]);
-                        }
 
                         // Check if the student already has the bundle ID attached
                         if ($student->bundles->contains($bundleId)) {
-                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
+                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved', 'class_id' => $class->id]);
                         } else {
-                            $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'class_id' => $class->id,
-                            'created_at' => Date::now(),  // Set current timestamp for created_at
-                            'updated_at' => Date::now()]);
+                            $student->bundles()->attach($bundleId, [
+                                'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'class_id' => $class->id,
+                                'created_at' => Date::now(),  // Set current timestamp for created_at
+                                'updated_at' => Date::now()
+                            ]);
 
                             $pivot = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
@@ -501,7 +504,7 @@ class PaymentController extends Controller
                         if (!$lastGroup) {
                             $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
-                        $enrollments=$lastGroup->enrollments->count();
+                        $enrollments = $lastGroup->enrollments->count();
                         if ($enrollments >= $lastGroup->capacity) {
                             $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
@@ -512,7 +515,7 @@ class PaymentController extends Controller
                         ]);
                     }
                 } catch (\Exception $exception) {
-                    dd(['cookie'=>$userData,'error'=>$exception->getMessage()]);
+                    dd(['cookie' => $userData, 'error' => $exception->getMessage()]);
                 }
             } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
                 $user = User::where('id', $user->id)->first();
@@ -521,14 +524,14 @@ class PaymentController extends Controller
                     'role_name' => 'user',
                 ]);
 
-                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved']);
+                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $class->id]);
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
                 $service = $service_sale->order->orderItems->first()->service;
                 if ($serviceRequestContent) {
                     $serviceRequestContent = json_decode($serviceRequestContent, true);
                     $service->users()->attach($user, ['content' => $serviceRequestContent]);
-                }else{
+                } else {
                     ServiceUser::where(['user_id' => $user->id, 'service_id' => $service->id])->update(['status' => 'pending']);
                 }
             }
@@ -541,7 +544,7 @@ class PaymentController extends Controller
                 ];
 
                 if (!empty($service_sale)) {
-                    return redirect('/panel/services')->with(['toast' => $toastData, 'success'=> "تم ارسال الطلب بنجاح"]);
+                    return redirect('/panel/services')->with(['toast' => $toastData, 'success' => "تم ارسال الطلب بنجاح"]);
                 }
 
                 if (empty($sale)) {
@@ -553,7 +556,6 @@ class PaymentController extends Controller
                     } else {
                         return redirect("/panel/requirements/applied")->with(['toast' => $toastData]);
                     }
-
                 }
 
                 // if (!empty($sale) && isset($pivot->id) && ($sale->bundle->early_enroll == 0)) {
@@ -749,9 +751,9 @@ class PaymentController extends Controller
                     $studentData =
                         collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
 
-                    $studentData['email']=$$user->email;
-                    $studentData['mobile']=$$user->mobile;
-                    $studentData['phone']=$$user->mobile;
+                    $studentData['email'] = $$user->email;
+                    $studentData['mobile'] = $$user->mobile;
+                    $studentData['phone'] = $$user->mobile;
                     $student = Student::create($studentData);
                 } else {
                     return redirect('/apply');
@@ -767,10 +769,12 @@ class PaymentController extends Controller
             }
             // Check if the student already has the bundle ID attached
             if (!$student->bundles->contains($bundleId)) {
-                $student->bundles()->attach($bundleId, ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending', 'class_id' => $class->id,
-                'created_at' => Date::now(),  // Set current timestamp for created_at
-                'updated_at' => Date::now()]);
-                
+                $student->bundles()->attach($bundleId, [
+                    'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending', 'class_id' => $class->id,
+                    'created_at' => Date::now(),  // Set current timestamp for created_at
+                    'updated_at' => Date::now()
+                ]);
+
                 $pivot = \DB::table('bundle_student')
                     ->where('student_id', $student->id)
                     ->where('bundle_id', $bundleId)
@@ -784,7 +788,7 @@ class PaymentController extends Controller
             $service = $item->service;
             if ($serviceRequestContent) {
                 $serviceRequestContent = json_decode($serviceRequestContent, true);
-                $service->users()->attach($user, ['content' => $serviceRequestContent, 'status'=>'paying']);
+                $service->users()->attach($user, ['content' => $serviceRequestContent, 'status' => 'paying']);
             }
         } else {
             $orderType = $item->installment_payment_id ? 'installment' : 'bundle';
