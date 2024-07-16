@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Group;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 use App\Models\StudyClass;
+use App\StudentRequirement;
+use App\User;
 
 class StudyClassController extends Controller
 {
@@ -123,5 +128,145 @@ class StudyClassController extends Controller
 
         $enrollments = $class->enrollments()->paginate(10);
         return view('admin.study_classes.student', compact('enrollments', "class"));
+    }
+
+    public function Users(Request $request, StudyClass $class, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+
+        $usersQuery = User::whereHas('student.bundleStudent', function ($query) use ($class) {
+            $query->where('class_id', $class->id);
+        });
+        $query = $usersQuery->whereHas('student')->whereHas('purchasedFormBundleUnique', function ($query) use ($class) {
+            $query->where('class_id', $class->id);
+        });
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+        ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+        ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = (new UserController())->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+            ->paginate(20);
+        }
+
+        $users = (new UserController())->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+            'class' => $class
+        ];
+
+        return view('admin.students.index', $data);
+    }
+    public function Enrollers(Request $request, StudyClass $class, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+
+
+        // $usersQuery = User::whereHas('student.bundleStudent', function ($query) use ($class) {
+        //         $query->where('class_id', $class->id);
+        //     });
+
+        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function ($query) use ($class) {
+            $query->where('class_id', $class->id);
+        });
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+        ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+        ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query =(new UserController())->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+            ->paginate(20);
+        }
+
+        $users =(new UserController())->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+            'class' => $class
+        ];
+
+        return view('admin.students.enrollers', $data);
+    }
+
+
+    public function requirements(Request $request, StudyClass $class)
+    {
+        $query = StudentRequirement::whereHas('bundleStudent', function ($query) use ($class) {
+            $query->where('class_id', $class->id); // Filter by class_id
+        })->orderByDesc('created_at');
+        $query =(new RequirementController())->filters($query, $request);
+        $requirements = $query->paginate(20);
+
+        return view('admin.requirements.index', ['requirements' => $requirements]);
     }
 }
