@@ -118,6 +118,13 @@
                                                             <i class="fa fa-users"></i>
                                                             <span class="ml-2">تسجيل الدبلومات</span>
                                                         </a>
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/scholarship"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">تسجيل المنح الدراسية</span>
+                                                        </a>
 
 
                                                         <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/requirements"
