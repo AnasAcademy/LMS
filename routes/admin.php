@@ -62,10 +62,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
             Route::get('/enrollers', 'UserController@Enrollers');
+            Route::get('/scholarship', 'UserController@ScholarshipStudent');
             Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelUsers');
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
             Route::post('/importStudent', 'UserController@importExcelStudents');
+            Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
@@ -86,6 +88,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{class}/delete', 'StudyClassController@destroy');
             Route::get('/{class}/students', 'StudyClassController@students');
             Route::get('/{class}/enrollers', 'StudyClassController@Enrollers');
+            Route::get('/{class}/scholarship', 'StudyClassController@ScholarshipStudent');
             Route::get('/{class}/users', 'StudyClassController@Users');
             Route::get('/{class}/requirements', 'StudyClassController@requirements');
 
