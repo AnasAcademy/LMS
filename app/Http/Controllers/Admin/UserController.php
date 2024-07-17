@@ -1478,6 +1478,47 @@ class UserController extends Controller
             return back()->with(['toast' => $toastData]);
         }
     }
+    public function importExcelScholarshipStudents(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $import = new StudentImport(true);
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => 'تم اضافه الطلبة بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            dd($toastData);
+            return back()->with(['toast' => $toastData]);
+        }
+    }
 
 
     public function exportBundles()
@@ -1794,10 +1835,6 @@ class UserController extends Controller
     public function Enrollers(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
-
-        //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
-        //         $item->where('form_fee', true);
-        //     });
         $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -1856,6 +1893,64 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
+    public function ScholarshipStudent(Request $request, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function($query){
+            $query->where("payment_method", 'scholarship' );
+        });
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+            ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+            ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+                ->paginate(20);
+        }
+
+        $users = $this->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+        ];
+
+        return view('admin.students.enrollers', $data);
+    }
+
     public function Courses(Request $request, $id, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
