@@ -30,17 +30,29 @@ use App\Models\TicketUser;
 
 class StudentImport implements ToModel
 {
-    private $skipFirstRow = true;
-    private $currentRow = 1; // Initialize row counter
-    private $errors = [];
+    protected $skipFirstRow = true;
+
+    protected $currentRow = 1; // Initialize row counter
+    protected $scholarship;
+    protected $errors = [];
     /**
      * @param array $row
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
+
+
+     public function __construct($scholarship=false){
+        $this->scholarship = $scholarship;
+     }
     public function model(array $row)
     {
         try {
+            // Skip processing if the row is empty
+            if (empty(array_filter($row))) {
+                return null;
+            }
+
             if ($this->skipFirstRow) {
                 $this->skipFirstRow = false;
                 return null;
@@ -96,6 +108,7 @@ class StudentImport implements ToModel
                 'created_at'=>time()
             ]);
 
+
             // if the user was created newly send an email to him with email and password
             if ($user->wasRecentlyCreated) {
                 $data['title'] = "انشاء حساب جديد";
@@ -112,7 +125,7 @@ class StudentImport implements ToModel
                              <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy123
                             <br>
                 ";
-                $this->sendEmail($user, $data);
+                // $this->sendEmail($user, $data);
             }
 
             // update user code
@@ -184,11 +197,11 @@ class StudentImport implements ToModel
             $order = Order::create([
                 'user_id' => $user->id,
                 'status' => Order::$paid,
-                'amount' => 230,
-                'payment_method' => 'payment_channel',
+                'amount' =>  $this->scholarship? 0: 230,
+                'payment_method' =>  $this->scholarship? 'scholarship': 'payment_channel',
                 'tax' => 0,
                 'total_discount' => 0,
-                'total_amount' => 230,
+                'total_amount' =>  $this->scholarship ? 0 : 230,
                 'product_delivery_fee' => null,
                 'created_at' => time(),
             ]);
@@ -201,7 +214,7 @@ class StudentImport implements ToModel
                 'bundle_id' => $bundle->id ?? null,
                 'certificate_template_id' =>  null,
                 'certificate_bundle_id' => null,
-                'form_fee' => 1,
+                'form_fee' => $this->scholarship ? null: 1,
                 'product_id' =>  null,
                 'product_order_id' => null,
                 'reserve_meeting_id' => null,
@@ -211,8 +224,8 @@ class StudentImport implements ToModel
                 'installment_payment_id' => null,
                 'ticket_id' => null,
                 'discount_id' => null,
-                'amount' => 230,
-                'total_amount' => 230,
+                'amount' =>  $this->scholarship? $bundle->price: 230,
+                'total_amount' =>  $this->scholarship? 0 : 230,
                 'tax' => null,
                 'tax_price' => 0,
                 'commission' => 0,
@@ -221,6 +234,13 @@ class StudentImport implements ToModel
                 'discount' => 0,
                 'created_at' => time(),
             ]);
+
+            if($this->scholarship){
+                $user->update([
+                    'role_id' => 1,
+                    'role_name' => 'user',
+                ]);
+            }
 
             // create sale
             $sale = Sale::createSales($orderItem, $order->payment_method);
