@@ -230,8 +230,7 @@ class SaleController extends Controller
                         });
                     });
                 })->where('type', 'installment_payment');
-
-            } else if($type == 'installment_payment') {
+            } else if ($type == 'installment_payment') {
                 $query->when($type, function ($query) {
                     $query->whereHas('order.orderItems', function ($item) {
 
@@ -240,7 +239,8 @@ class SaleController extends Controller
                         });
                     });
                 })->where('type', 'installment_payment');
-
+            } else if ($type == 'scholarship') {
+                $query->where('payment_method', 'scholarship');
             } else {
                 $query->when($type, function ($query) use ($type) {
                     $query->whereHas('order.orderItems')->where('type', $type);
