@@ -91,14 +91,14 @@
                     </div>
                 </div>
 
-                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-success">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
-                                <h4>{{'مبيعات الخدمات الإلكترونية'}}</h4>
+                                <h4>{{ 'مبيعات الخدمات الإلكترونية' }}</h4>
                             </div>
                             <div class="card-body">
                                 {{ $servicesSales['count'] }}
@@ -270,9 +270,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="input-label">اسم الطالب</label>
-                                    <input
-                                        name='user_name'
-                                        type="text" class="form-control"
+                                    <input name='user_name' type="text" class="form-control"
                                         value="{{ request()->get('user_name') }}">
                                 </div>
                             </div>
@@ -294,13 +292,14 @@
                                             رسوم حجز مقعد
                                         </option>
                                         <option value="bundle" @if (request()->get('type') == 'bundle') selected @endif>
-دفع كامل الرسوم
+                                            دفع كامل الرسوم
                                         </option>
                                         <option value="upfront" @if (request()->get('type') == 'upfront') selected @endif>
                                             قسط التسجيل
                                         </option>
 
-                                        <option value="installment_payment" @if (request()->get('type') == 'installment_payment') selected @endif>
+                                        <option value="installment_payment"
+                                            @if (request()->get('type') == 'installment_payment') selected @endif>
                                             اقساط
                                         </option>
                                         <option value="webinar" @if (request()->get('type') == 'webinar') selected @endif>
@@ -308,6 +307,9 @@
                                         </option>
                                         <option value="service" @if (request()->get('type') == 'service') selected @endif>
                                             خدمات الكترونية
+                                        </option>
+                                        <option value="scholarship" @if (request()->get('type') == 'scholarship') selected @endif>
+                                            منح دراسية
                                         </option>
                                     </select>
                                 </div>
@@ -331,7 +333,8 @@
                                         <label class="input-label">{{ trans('admin/main.end_date') }}</label>
                                         <div class="input-group">
                                             <input type="date" id="to" class="text-center form-control"
-                                                name="to" value="{{ request()->get('to') }}" placeholder="End Date">
+                                                name="to" value="{{ request()->get('to') }}"
+                                                placeholder="End Date">
                                         </div>
                                     </div>
                                 </div>
@@ -430,19 +433,22 @@
                                                     @elseif($sale->type == \App\Models\Sale::$product)
                                                         {{ trans('update.product') }}
                                                     @elseif($sale->type == \App\Models\Sale::$bundle)
-                                                       دفع كامل الرسوم
+                                                        @if ($sale->payment_method == 'scholarship')
+                                                            منحة دراسية
+                                                        @else
+                                                            دفع كامل الرسوم
+                                                        @endif
                                                     @elseif($sale->type == \App\Models\Sale::$gift)
                                                         {{ trans('update.gift') }}
                                                     @elseif($sale->type == \App\Models\Sale::$installmentPayment)
-                                                    {{ $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل' }}
-
+                                                        {{ $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل' }}
                                                     @elseif($sale->type == 'form_fee')
                                                         رسوم نموذج القبول
                                                     @elseif($sale->type == 'certificate')
                                                         شراء شهادة
                                                     @elseif($sale->type == 'webinar')
                                                         دورة
-                                                        @elseif($sale->type == 'service')
+                                                    @elseif($sale->type == 'service')
                                                         خدمة الكترونية
                                                     @else
                                                         {{ $sale->type }}
