@@ -260,12 +260,12 @@
                                         <option selected disabled>{{ trans('public.choose_category') }}
                                         </option>
 
-                                         {{-- Loop through top-level categories --}}
+                                        {{-- Loop through top-level categories --}}
                                         @foreach ($categories as $category)
                                             <optgroup label="{{ $category->title }}">
 
                                                 {{-- Display bundles directly under the current category --}}
-                                                @foreach ($category->bundles()->where("status", "active")->get() as $bundleItem)
+                                                @foreach ($category->bundles()->where('status', 'active')->get() as $bundleItem)
                                                     <option value="{{ $bundleItem->id }}"
                                                         has_certificate="{{ $bundleItem->has_certificate }}"
                                                         early_enroll="{{ $bundleItem->early_enroll }}"
@@ -346,6 +346,19 @@
                                     المتطلبات قبل التخرج.
 
                                     @error('requirement_endorsement')
+                                        <div class="invalid-feedback d-block">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 d-none mt-3">
+                                    <input type="checkbox" id="register_endorsement" name="register_endorsement">
+
+                                    أقر بأنني سألتزم بتسديد قيمة البرنامج المسجل به، في حال عدم التسديد فإن أكاديمية أنس
+                                    للفنون البصرية تحتفظ بالحق في اتخاذ الإجراءات المناسبة التي قد تشمل إلغاء التسجيل أو فرض
+                                    رسوم تأخير إضافية.
+
+                                    @error('register_endorsement')
                                         <div class="invalid-feedback d-block">
                                             {{ $message }}
                                         </div>
@@ -744,7 +757,7 @@
 @php
     $bundlesByCategory = [];
     foreach ($categories as $item) {
-        $bundlesByCategory[$item->id] = $item->bundles()->where("status", "active")->get();
+        $bundlesByCategory[$item->id] = $item->bundles()->where('status', 'active')->get();
     }
 @endphp
 @push('scripts_bottom')
@@ -1020,6 +1033,16 @@
                 RequirementEndorsementSection.classList.add("d-none");
                 RequirementEndorsementInput.removeAttribute("required");
             }
+
+            let registerEndorsementInput = document.getElementById("register_endorsement");
+            let registerEndorsementSection = registerEndorsementInput.closest("div");
+            if (bundleSelect.selectedIndex != 0) {
+                registerEndorsementSection.classList.remove("d-none");
+                registerEndorsementInput.setAttribute("required", "required");
+            } else {
+                registerEndorsementSection.classList.add("d-none");
+                registerEndorsementInput.removeAttribute("required");
+            }
         }
 
         CertificateSectionToggle();
@@ -1163,5 +1186,4 @@
             }
         }
     </script>
-
 @endpush
