@@ -562,16 +562,24 @@ class User extends Authenticatable
 
     public function purchasedFormBundleUnique($class_id = null)
     {
-        $purchasedFormBundleQuery =
-            $this->hasMany(Sale::class, 'buyer_id')
+        $purchasedFormBundleQuery = $this->hasMany(Sale::class, 'buyer_id')
+            ->where('type', 'form_fee')
             ->whereNotNull('bundle_id')
-            ->groupBy('buyer_id', 'bundle_id')
-            ->havingRaw('COUNT(*) = 1');
+            ->whereNotExists(function ($query) {
+                $query->selectRaw(1)
+                    ->from('sales as s2')
+                    ->whereRaw('s2.bundle_id = sales.bundle_id')
+                    ->where(function ($query) {
+                        $query->where('s2.type', 'bundle')
+                            ->orWhere('s2.type', 'installment_payment');
+                    })
+                    ->whereRaw('s2.buyer_id = sales.buyer_id');
+            });
         if (!empty($class_id)) {
             $purchasedFormBundleQuery = $purchasedFormBundleQuery->where('class_id', $class_id);
         }
 
-        return $purchasedFormBundleQuery->distinct('bundle_id');
+        return $purchasedFormBundleQuery;
     }
 
     public function purchasedBundles($class_id = null)
