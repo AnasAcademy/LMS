@@ -88,7 +88,7 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
-                        @if ( $lastSegment === 'users')
+                        @if ($lastSegment === 'users')
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="input-label">كود الطالب</label>
@@ -110,9 +110,8 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">اسم الطالب</label>
-                                <input
-                                    name={{ $lastSegment === 'users' ? 'ar_name' : 'full_name' }}
-                                    type="text" class="form-control"
+                                <input name={{ $lastSegment === 'users' ? 'ar_name' : 'full_name' }} type="text"
+                                    class="form-control"
                                     value="{{ request()->get('ar_name') }}{{ request()->get('full_name') }}">
                             </div>
                         </div>
@@ -250,22 +249,21 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                @if ( $lastSegment === 'users')
+                @if ($lastSegment === 'users')
                     <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
 
                     @include('admin.students.includes.importStudents', [
-                        'url' => getAdminPanelUrl()."/students/importStudent",
+                        'url' => getAdminPanelUrl() . '/students/importStudent',
                         'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
-                        'btnText' =>
-                        '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
+                        'btnText' => '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
                         'hideDefaultClass' => true,
-
                     ])
 
-                    <a href="{{asset('files/import_student_template.xlsx')}}" class="btn btn-success" download>تحميل قالب النموذج</a>
-                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات </a>
-
+                    <a href="{{ asset('files/import_student_template.xlsx') }}" class="btn btn-success" download>تحميل قالب
+                        النموذج</a>
+                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
+                    </a>
                 @else
                     <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
@@ -280,7 +278,7 @@
                     <tr>
                         <th>{{ '#' }}</th>
 
-                        @if ( $lastSegment === 'users')
+                        @if ($lastSegment === 'users')
                             <th>كود الطالب</th>
                         @endif
 
@@ -290,7 +288,7 @@
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
                         <th>{{ trans('admin/main.income') }}</th>
                         <th>{{ trans('admin/main.user_group') }}</th> --}}
-                        @if ( $lastSegment === 'users')
+                        @if ($lastSegment === 'users')
                             <th> الدبلومات المسجلة</th>
                         @endif
 
@@ -304,8 +302,8 @@
                     @foreach ($users as $index => $user)
                         <tr>
                             <td>{{ ++$index }}</td>
-                            @if ( $lastSegment === 'users')
-                                <td>{{ $user->user_code?? '---' }}</td>
+                            @if ($lastSegment === 'users')
+                                <td>{{ $user->user_code ?? '---' }}</td>
                             @endif
 
                             <td class="text-left">
@@ -355,25 +353,42 @@
                             <td>
                                 {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
                             </td> --}}
-                            @if ( $lastSegment === 'users')
+                            @if ($lastSegment === 'users')
+                                @php
+                                    $userPurchasedFormBundles = $user
+                                        ->purchasedFormBundleUnique($class->id ?? null)
+                                        ->get();
+                                @endphp
+
                                 <td>
 
-                                    @if (($user->purchasedFormBundleUnique($class->id ?? null)->count()<=0))
-                                    يتم مراجعه طلبه من قبل الإدارة المالية
+                                    @if ($user->purchasedFormBundleUnique($class->id ?? null)->count() <= 0)
+                                        يتم مراجعه طلبه من قبل الإدارة المالية
                                     @endif
 
-                                    @foreach ($user->purchasedFormBundleUnique($class->id ?? null)->get() as $purchasedFormBundle)
-                                        {{ $purchasedFormBundle->bundle->title  }}
+                                    @foreach ($userPurchasedFormBundles as $purchasedFormBundle)
+                                        {{ $purchasedFormBundle->bundle->title }}
                                         @if (!$loop->last)
                                             &nbsp;و&nbsp;
                                         @endif
                                     @endforeach
                                 </td>
+
+                                <td>
+                                    
+                                    @foreach ($userPurchasedFormBundles as $purchasedFormBundle)
+                                        {{ dateTimeFormat($purchasedFormBundle->created_at, 'j M Y | H:i') }}
+                                        @if (!$loop->last)
+                                            &nbsp;و&nbsp;
+                                        @endif
+                                    @endforeach
+                                </td>
+                            @else
+                                <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
                             @endif
 
 
 
-                            <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
 
                             <td>
                                 @if ($user->ban and !empty($user->ban_end_at) and $user->ban_end_at > time())
@@ -470,15 +485,17 @@
                         <div class="text-small font-600-bold">{{ trans('admin/main.students_hint_description_3') }}</div>
                     </div>
                 </div>
-                @if ( $lastSegment === 'users')
+                @if ($lastSegment === 'users')
                     <div class="col-6">
                         <div class="media-body">
                             <div class="text-primary mt-25 mb-1 font-weight-bold">
                                 رفع الطلاب من اكسيل
                             </div>
                             <div class="text-small font-600-bold">
-                             لإضافة طلاب من خلال ملف اكسيل
-                        قم بتحميل قالب النموذج ثم قم بإدخال بيانات الطلاب كامله بيه ثم قم بالضغط علي زر رفع الطلاب من اكسيل ثم قم بتحديد ملف الإكسيل الذي قمت بتحميله بعد اضافه بيانات الطلاب كاملة ثم اضغط ارسال
+                                لإضافة طلاب من خلال ملف اكسيل
+                                قم بتحميل قالب النموذج ثم قم بإدخال بيانات الطلاب كامله بيه ثم قم بالضغط علي زر رفع الطلاب
+                                من اكسيل ثم قم بتحديد ملف الإكسيل الذي قمت بتحميله بعد اضافه بيانات الطلاب كاملة ثم اضغط
+                                ارسال
                             </div>
                         </div>
                     </div>
