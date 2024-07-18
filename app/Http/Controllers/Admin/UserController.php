@@ -1774,7 +1774,7 @@ class UserController extends Controller
         //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
         //         $item->where('form_fee', true);
         //     });
-        $query = User::where(['role_name' => Role::$registered_user])->whereHas('student');
+        $query = User::whereHas('student')->whereHas('purchasedFormBundleUnique');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
@@ -1835,7 +1835,11 @@ class UserController extends Controller
     public function Enrollers(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
-        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles');
+        $query = User::where(['role_name' => Role::$user])->whereHas(
+        'purchasedBundles', function ($query){
+            $query->where("payment_method", "!=", 'scholarship');
+        });
+
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
