@@ -33,6 +33,7 @@ class ApplyController extends Controller
      */
     public function index(Bundle $bundle)
     {
+        return view("web.default.pages.registration_close");
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
@@ -57,6 +58,7 @@ class ApplyController extends Controller
      */
     public function newEnrollment()
     {
+        return view("web.default.pages.registration_close");
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
 

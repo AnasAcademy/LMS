@@ -62,6 +62,9 @@ class RegisterController extends Controller
 
     public function showRegistrationForm()
     {
+
+        return view("web.default.pages.registration_close");
+        
         $seoSettings = getSeoMetas('register');
         $pageTitle = !empty($seoSettings['title']) ? $seoSettings['title'] : trans('site.register_page_title');
         $pageDescription = !empty($seoSettings['description']) ? $seoSettings['description'] : trans('site.register_page_title');
