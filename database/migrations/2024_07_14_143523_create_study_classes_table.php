@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('study_classes', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('status')->nullable()->default(null);
+            $table->date("start_date")->nullable()->default(null);
+            $table->date("end_date")->nullable()->default(null);
             $table->timestamps();
         });
     }
