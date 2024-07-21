@@ -591,11 +591,11 @@ class User extends Authenticatable
             })
             ->whereNotNull('bundle_id')
             ->orderBy('created_at', 'desc');
-        if (!empty($class_id)) {
-            $purchasedBundlesQuery = $purchasedBundlesQuery->where('class_id', $class_id);
-        }
+        // if (!empty($class_id)) {
+        //     $purchasedBundlesQuery = $purchasedBundlesQuery->where('class_id', $class_id);
+        // }
 
-        return $purchasedBundlesQuery->distinct('bundle_id');
+        return $purchasedBundlesQuery->groupBy('bundle_id');
     }
 
     public function salesCount()
