@@ -243,7 +243,7 @@ class SaleController extends Controller
                 $query->where('payment_method', 'scholarship');
             } else {
                 $query->when($type, function ($query) use ($type) {
-                    $query->whereHas('order.orderItems')->where('type', $type);
+                    $query->whereHas('order.orderItems')->where('type', $type)->where('payment_method', "!=",'scholarship');
                 });
             }
         }
