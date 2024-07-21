@@ -50,7 +50,8 @@ class CategoryController extends Controller
         $this->validate($request, [
             'title' => 'required|min:3|max:128',
             'slug' => 'nullable|max:255|unique:categories,slug',
-            'icon' => 'required'
+            'icon' => 'required',
+            'status' => 'required|in:active,inactive'
         ]);
 
         $data = $request->all();
@@ -65,6 +66,7 @@ class CategoryController extends Controller
             'slug' => $data['slug'] ?? Category::makeSlug($data['title']),
             'icon' => $data['icon'],
             'order' => $order,
+            'status' => $data['status']
         ]);
 
         CategoryTranslation::updateOrCreate([
@@ -120,6 +122,7 @@ class CategoryController extends Controller
             'title' => 'required|min:3|max:255',
             'slug' => 'nullable|max:255|unique:categories,slug,' . $category->id,
             'icon' => 'required',
+            'status' => 'required|in:active,inactive'
         ]);
 
         $data = $request->all();
@@ -128,6 +131,7 @@ class CategoryController extends Controller
             'icon' => $data['icon'],
             'slug' => $data['slug'] ?? Category::makeSlug($data['title']),
             'order' => $data['order'] ?? $category->order,
+            'status' => $data['status']
         ]);
 
         CategoryTranslation::updateOrCreate([
