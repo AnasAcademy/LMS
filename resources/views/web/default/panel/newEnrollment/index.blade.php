@@ -143,23 +143,22 @@
                                         @foreach ($categories as $category)
                                             <optgroup label="{{ $category->title }}">
 
-
                                                 {{-- Display bundles directly under the current category --}}
-                                                @foreach ($category->bundles()->where('status', 'active')->get() as $bundleItem)
+                                                @foreach ($category->activeBundles as $bundleItem)
                                                     <option value="{{ $bundleItem->id }}"
                                                         has_certificate="{{ $bundleItem->has_certificate }}"
                                                         early_enroll="{{ $bundleItem->early_enroll }}"
-                                                        @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                                        @if (old('bundle_id', $bundle->id ?? null) == $bundleItem->id) selected @endif>
                                                         {{ $bundleItem->title }}</option>
                                                 @endforeach
 
                                                 {{-- Display bundles under subcategories --}}
-                                                @foreach ($category->subCategories as $subCategory)
-                                                    @foreach ($subCategory->bundles()->where('status', 'active')->get() as $bundleItem)
+                                                @foreach ($category->activeSubCategories as $subCategory)
+                                                    @foreach ($subCategory->activeBundles as $bundleItem)
                                                         <option value="{{ $bundleItem->id }}"
                                                             has_certificate="{{ $bundleItem->has_certificate }}"
                                                             early_enroll="{{ $bundleItem->early_enroll }}"
-                                                            @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                                            @if (old('bundle_id', $bundle->id ?? null) == $bundleItem->id) selected @endif>
                                                             {{ $bundleItem->title }}</option>
                                                     @endforeach
                                                 @endforeach

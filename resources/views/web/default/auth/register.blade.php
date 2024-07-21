@@ -232,7 +232,7 @@
                                             <optgroup label="{{ $category->title }}">
 
                                                 {{-- Display bundles directly under the current category --}}
-                                                @foreach ($category->bundles as $bundleItem)
+                                                @foreach ($category->activeBundles as $bundleItem)
                                                     <option value="{{ $bundleItem->id }}"
                                                         has_certificate="{{ $bundleItem->has_certificate }}"
                                                         early_enroll="{{ $bundleItem->early_enroll }}"
@@ -241,8 +241,8 @@
                                                 @endforeach
 
                                                 {{-- Display bundles under subcategories --}}
-                                                @foreach ($category->subCategories as $subCategory)
-                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                @foreach ($category->activeSubCategories as $subCategory)
+                                                    @foreach ($subCategory->activeBundles as $bundleItem)
                                                         <option value="{{ $bundleItem->id }}"
                                                             has_certificate="{{ $bundleItem->has_certificate }}"
                                                             early_enroll="{{ $bundleItem->early_enroll }}"
