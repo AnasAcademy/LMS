@@ -71,13 +71,13 @@ class RegisterController extends Controller
 
         $referralCode = Cookie::get('referral_code');
 
-        $categories = Category::whereNull('parent_id')
-        ->where(function ($query) {
-            $query->whereHas('bundles')
-            ->orWhereHas('subCategories', function ($query) {
-                $query->whereHas('bundles');
-            });
-        })->get();
+        $categories = Category::whereNull('parent_id')->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereHas('activeBundles')
+                    ->orWhereHas('activeSubCategories', function ($query) {
+                        $query->whereHas('activeBundles');
+                    });
+            })->get();
 
         $courses = Webinar::where('unattached', 1)->get();
         $data = [
@@ -106,6 +106,7 @@ class RegisterController extends Controller
         if (!empty($data['mobile']) and !empty($data['country_code'])) {
             $data['mobile'] = $data['country_code'] . ' ' . ltrim($data['mobile'], '0');
         }
+
         $rules = [
             'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
             'mobile' => 'required|unique:users',
@@ -148,6 +149,10 @@ class RegisterController extends Controller
             $data['timezone'] = getGeneralSettings('default_time_zone') ?? null;
         }
 
+        if (!empty($data['mobile']) and !empty($data['country_code'])) {
+            $data['mobile'] = $data['country_code'] . ' ' . ltrim($data['mobile'], '0');
+        }
+
         $disableViewContentAfterUserRegister = getFeaturesSettings('disable_view_content_after_user_register');
         $accessContent = !((!empty($disableViewContentAfterUserRegister) and $disableViewContentAfterUserRegister));
 
@@ -163,6 +168,7 @@ class RegisterController extends Controller
                 $roleId = Role::getOrganizationRoleId();
             }
         }
+
         $user = User::create([
             'role_name' => 'registered_user',
             'role_id' => 13,
@@ -293,7 +299,7 @@ class RegisterController extends Controller
         }
         return $request->wantsJson()
             ? new JsonResponse([], 201)
-            : redirect(($this->redirectPath()."/$request->bundle_id"));
+            : redirect(($this->redirectPath() . "/$request->bundle_id"));
         // }
     }
 }

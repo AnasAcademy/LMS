@@ -37,17 +37,13 @@ class ApplyController extends Controller
         $student = Student::where('user_id', $user->id)->first();
         // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
 
-        $categories = Category::whereNull('parent_id')
-        ->where(function ($query) {
-            $query->whereHas('bundles', function ($query) {
-                $query->where('status', "active");
-            })
-            ->orWhereHas('subCategories', function ($query) {
-                $query->whereHas('bundles', function ($query) {
-                    $query->where('status', "active");
-                });
-            });
-        })->get();
+        $categories = Category::whereNull('parent_id')->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereHas('activeBundles')
+                    ->orWhereHas('activeSubCategories', function ($query) {
+                        $query->whereHas('activeBundles');
+                    });
+            })->get();
 
         $courses = Webinar::where('unattached', 1)->get();
 
@@ -63,20 +59,16 @@ class ApplyController extends Controller
     {
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
-        // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
-        $categories = Category::whereNull('parent_id')
-        ->where(function ($query) {
-            $query->whereHas('bundles', function ($query) {
-                $query->where('status', "active");
-            })
-            ->orWhereHas('subCategories', function ($query) {
-                $query->whereHas('bundles', function ($query) {
-                    $query->where('status', "active");
-                });
-            });
-        })->get();
 
-            // dd($categories);
+        $categories = Category::whereNull('parent_id')->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereHas('activeBundles')
+                    ->orWhereHas('activeSubCategories', function ($query) {
+                        $query->whereHas('activeBundles');
+                    });
+            })->get();
+
+        // dd($categories);
         $courses = Webinar::where('unattached', 1)->get();
         return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'categories', 'student', 'courses'));
     }
@@ -249,16 +241,18 @@ class ApplyController extends Controller
         if ($request->direct_register) {
 
             $class =  StudyClass::get()->last();
-            if(!$class){
-                $class = StudyClass::create(['title'=> "الدفعة الأولي"]);
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
             }
-            $student->bundles()->attach($request->bundle_id, ['certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null,
-            'created_at' => Date::now(),  // Set current timestamp for created_at
-            'updated_at' => Date::now()]);
+            $student->bundles()->attach($request->bundle_id, [
+                'certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null,
+                'created_at' => Date::now(),  // Set current timestamp for created_at
+                'updated_at' => Date::now()
+            ]);
 
-            if(count($bundle->category->categoryRequirements)>0){
+            if (count($bundle->category->categoryRequirements) > 0) {
                 return redirect("/panel/requirements");
-            }else{
+            } else {
                 return redirect("/panel/requirements/applied");
             }
         }
@@ -295,7 +289,7 @@ class ApplyController extends Controller
             'ticket_id' => null,
             'discount_id' => null,
             'amount' =>  230,
-            'total_amount' =>230,
+            'total_amount' => 230,
             // 'amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
             // 'total_amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
             'tax' => null,
