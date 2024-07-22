@@ -79,7 +79,7 @@
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
-                                <h4>{{ trans('admin/main.classes_sales') }}</h4>
+                                <h4>مبيعات الدورات</h4>
                             </div>
                             <div class="card-body">
                                 {{ $classesSales['count'] }}
@@ -443,7 +443,7 @@
                                                     @elseif($sale->type == \App\Models\Sale::$installmentPayment)
                                                         {{ $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل' }}
                                                     @elseif($sale->type == 'form_fee')
-                                                        رسوم نموذج القبول
+                                                         رسوم حجز مقعد
                                                     @elseif($sale->type == 'certificate')
                                                         شراء شهادة
                                                     @elseif($sale->type == 'webinar')
