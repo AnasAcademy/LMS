@@ -122,11 +122,11 @@
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
                                         <img src="{{ $enrollment->getAvatar() }}"
-                                            alt="{{ $enrollment->student ? $enrollment->student->ar_name : null }}">
+                                            alt="{{ $enrollment->student ? $enrollment->student->ar_name : $enrollment->full_name }}">
                                     </figure>
                                     <div class="media-body ml-1">
                                         <div class="mt-0 mb-1 font-weight-bold">
-                                            {{ $enrollment->student ? $enrollment->student->ar_name : null }}</div>
+                                            {{ $enrollment->student ? $enrollment->student->ar_name :$enrollment->full_name }}</div>
 
                                         @if ($enrollment->mobile)
                                             <div class="text-primary text-left font-600-bold" style="font-size:12px;">
