@@ -23,7 +23,8 @@ class StudyClassController extends Controller
     {
         //
         $classes = StudyClass::paginate(10);
-        return view('admin.study_classes.lists', compact('classes'));
+        $pageTitle = 'الدفعات الدراسية';
+        return view('admin.study_classes.lists', compact('classes', 'pageTitle'));
     }
 
     /**
@@ -127,7 +128,8 @@ class StudyClassController extends Controller
     public function students(StudyClass $class){
 
         $enrollments = $class->enrollments()->paginate(10);
-        return view('admin.study_classes.student', compact('enrollments', "class"));
+         $pageTitle = trans('public.students');
+        return view('admin.study_classes.student', compact('enrollments', "class", 'pageTitle'));
     }
 
     public function Users(Request $request, StudyClass $class, $is_export_excel = false)

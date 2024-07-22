@@ -27,7 +27,7 @@
                             <h4>{{ trans('admin/main.total_students') }}</h4>
                         </div>
                         <div class="card-body">
-                            {{ $enrollments->count() }}
+                            {{ $class->enrollments->count() }}
                         </div>
                     </div>
                 </div>
