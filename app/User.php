@@ -591,13 +591,23 @@ class User extends Authenticatable
             })
             ->whereNotNull('bundle_id')
             ->orderBy('created_at', 'desc');
-        // if (!empty($class_id)) {
-        //     $purchasedBundlesQuery = $purchasedBundlesQuery->where('class_id', $class_id);
-        // }
+        if (!empty($class_id)) {
+            $purchasedBundlesQuery = $purchasedBundlesQuery->where('class_id', $class_id);
+        }
 
         return $purchasedBundlesQuery->groupBy('bundle_id');
     }
 
+
+    public function bundleSales($class_id = null){
+        $bundleSales= $this->hasMany(Sale::class, 'buyer_id')->whereNotNull('bundle_id');
+
+        if (!empty($class_id)) {
+            $bundleSales = $bundleSales->where('class_id', $class_id);
+        }
+
+        return $bundleSales->groupBy('bundle_id');
+    }
     public function salesCount()
     {
         return Sale::where('seller_id', $this->id)
