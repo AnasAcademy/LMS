@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\salesExport;
 use App\Http\Controllers\Controller;
 use App\Models\Accounting;
+use App\Models\Bundle;
 use App\Models\Order;
 use App\Models\ReserveMeeting;
 use App\Models\Sale;
@@ -89,6 +90,7 @@ class SaleController extends Controller
             'formFeeSales' => $formFeeSales,
             'bundlesSales' => $bundlesSales,
             'servicesSales' => $servicesSales,
+            'bundles' => Bundle::get()
         ];
 
         $teacher_ids = $request->get('teacher_ids');
@@ -195,6 +197,7 @@ class SaleController extends Controller
         $type = $request->get('type');
         $email = $request->get('email');
         $user_code = $request->get('user_code');
+        $bundle_title = $request->get('bundle_title');
 
         if (!empty($item_title)) {
             $ids = Webinar::whereTranslationLike('title', "%$item_title%")->pluck('id')->toArray();
@@ -222,6 +225,14 @@ class SaleController extends Controller
             $query->when($user_code, function ($query) use ($user_code) {
                 $query->whereHas('buyer', function ($q) use ($user_code) {
                     $q->where('user_code', 'like', "%$user_code%");
+                });
+            });
+
+        }
+        if (!empty($bundle_title)) {
+            $query->when($bundle_title, function ($query) use ($bundle_title) {
+                $query->whereHas('bundle', function ($q) use ($bundle_title) {
+                    $q->where('slug', 'like', "%$bundle_title%");
                 });
             });
 

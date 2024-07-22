@@ -2,7 +2,7 @@
 
 
 @php
-   $filters= request()->getQueryString();
+    $filters = request()->getQueryString();
 @endphp
 
 @section('content')
@@ -271,7 +271,7 @@
                     <form method="get" class="mb-0">
 
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">كود الطالب</label>
                                     <input name='user_code' type="text" class="form-control"
@@ -279,7 +279,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">اسم الطالب</label>
                                     <input name='user_name' type="text" class="form-control"
@@ -288,7 +288,7 @@
                             </div>
 
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">بريد الطالب</label>
                                     <input name="email" type="text" class="form-control"
@@ -296,7 +296,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">نوع المبيعة</label>
                                     <select name="type" data-plugin-selectTwo class="form-control populate">
@@ -328,9 +328,16 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">عنوان البرنامج</label>
+                                    <input name="bundle_title" class="form-control"  value="{{ request()->get('bundle_title') }}">
+                                </div>
+                            </div>
+
                             <div class="col-12 row">
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="input-label">{{ trans('admin/main.start_date') }}</label>
                                         <div class="input-group">
@@ -341,7 +348,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="input-label">{{ trans('admin/main.end_date') }}</label>
                                         <div class="input-group">
@@ -352,7 +359,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group mt-1">
                                         <label class="input-label mb-4"> </label>
                                         <input type="submit" class="text-center btn btn-primary w-100"
@@ -372,7 +379,7 @@
                     <div class="card">
                         <div class="card-header">
                             @can('admin_sales_export')
-                                <a href="{{ getAdminPanelUrl() }}/financial/sales/export?{{  $filters }}"
+                                <a href="{{ getAdminPanelUrl() }}/financial/sales/export?{{ $filters }}"
                                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
                             @endcan
                         </div>
@@ -457,7 +464,7 @@
                                                     @elseif($sale->type == \App\Models\Sale::$installmentPayment)
                                                         {{ $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل' }}
                                                     @elseif($sale->type == 'form_fee')
-                                                         رسوم حجز مقعد
+                                                        رسوم حجز مقعد
                                                     @elseif($sale->type == 'certificate')
                                                         شراء شهادة
                                                     @elseif($sale->type == 'webinar')
