@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+
+@php
+   $filters= request()->getQueryString();
+@endphp
+
 @section('content')
     <section class="section">
         <div class="section-header">
@@ -353,14 +358,12 @@
                     </form>
                 </div>
             </section>
-
-
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="card">
                         <div class="card-header">
                             @can('admin_sales_export')
-                                <a href="{{ getAdminPanelUrl() }}/financial/sales/export"
+                                <a href="{{ getAdminPanelUrl() }}/financial/sales/export?{{  $filters }}"
                                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
                             @endcan
                         </div>
