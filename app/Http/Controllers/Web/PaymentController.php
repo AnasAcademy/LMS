@@ -483,10 +483,10 @@ class PaymentController extends Controller
 
                         // Check if the student already has the bundle ID attached
                         if ($student->bundles->contains($bundleId)) {
-                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved', 'class_id' => $class->id]);
+                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved', 'class_id' => $sale->class_id]);
                         } else {
                             $student->bundles()->attach($bundleId, [
-                                'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'class_id' => $class->id,
+                                'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'class_id' => $sale->class_id,
                                 'created_at' => Date::now(),  // Set current timestamp for created_at
                                 'updated_at' => Date::now()
                             ]);
@@ -524,7 +524,8 @@ class PaymentController extends Controller
                     'role_name' => 'user',
                 ]);
 
-                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $class->id]);
+                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
+                
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
                 $service = $service_sale->order->orderItems->first()->service;
