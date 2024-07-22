@@ -125,10 +125,17 @@ class StudyClassController extends Controller
     }
 
 
-    public function students(StudyClass $class){
+    public function students(StudyClass $class, Request $request){
 
-        $enrollments = $class->enrollments()->paginate(10);
-         $pageTitle = trans('public.students');
+        $pageTitle = trans('public.students');
+        $query = User::whereHas(
+            'bundleSales',
+            function ($query) use ($class) {
+                $query->where("class_id", $class->id)->groupBy('buyer_id');
+            }
+        );
+
+         $enrollments = (new UserController())->filters($query, $request)->paginate(10);
         return view('admin.study_classes.student', compact('enrollments', "class", 'pageTitle'));
     }
 
