@@ -27,7 +27,7 @@
                             <h4>{{ trans('admin/main.total_students') }}</h4>
                         </div>
                         <div class="card-body">
-                            {{ $class->enrollments->count() }}
+                            {{ $class->enrollments()->count() }}
                         </div>
                     </div>
                 </div>
@@ -116,26 +116,26 @@
                     @foreach ($enrollments as $enrollment)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $enrollment->student->registeredUser->user_code }}</td>
+                            <td>{{ $enrollment->user_code }}</td>
 
                             <td class="text-left">
                                 <div class="d-flex align-items-center">
                                     <figure class="avatar mr-2">
-                                        <img src="{{ $enrollment->student->registeredUser->getAvatar() }}"
+                                        <img src="{{ $enrollment->getAvatar() }}"
                                             alt="{{ $enrollment->student ? $enrollment->student->ar_name : null }}">
                                     </figure>
                                     <div class="media-body ml-1">
                                         <div class="mt-0 mb-1 font-weight-bold">
                                             {{ $enrollment->student ? $enrollment->student->ar_name : null }}</div>
 
-                                        @if ($enrollment->student->registeredUser->mobile)
+                                        @if ($enrollment->mobile)
                                             <div class="text-primary text-left font-600-bold" style="font-size:12px;">
-                                                {{ $enrollment->student->registeredUser->mobile }}</div>
+                                                {{ $enrollment->mobile }}</div>
                                         @endif
 
-                                        @if ($enrollment->student->registeredUser->email)
+                                        @if ($enrollment->email)
                                             <div class="text-primary text-small font-600-bold">
-                                                {{ $enrollment->student->registeredUser->email }}</div>
+                                                {{ $enrollment->email }}</div>
                                         @endif
                                     </div>
                                 </div>
@@ -143,7 +143,7 @@
 
 
                             <td>
-                                @foreach ($enrollment->student->classBundleStudent($class->id) as $record)
+                                @foreach ($enrollment->bundleSales($class->id)->get() as $record)
                                     {{ $record->bundle->title }}
                                     @if (!$loop->last)
                                         و
@@ -151,7 +151,7 @@
                                 @endforeach
                             </td>
                             <td>
-                                @foreach ($enrollment->student->classBundleStudent($class->id) as $record)
+                                @foreach ($enrollment->bundleSales($class->id)->get() as $record)
                                     {{ dateTimeFormat(strtotime($enrollment->created_at), 'j M Y | H:i') }}
                                     @if (!$loop->last)
                                         و
@@ -164,25 +164,25 @@
 
                             <td>
                                 @if (
-                                    $enrollment->student->registeredUser->ban and
-                                        !empty($enrollment->student->registeredUser->ban_end_at) and
-                                        $enrollment->student->registeredUser->ban_end_at > time())
+                                    $enrollment->ban and
+                                        !empty($enrollment->ban_end_at) and
+                                        $enrollment->ban_end_at > time())
                                     <div class="mt-0 mb-1 font-weight-bold text-danger">{{ trans('admin/main.ban') }}
                                     </div>
                                     <div class="text-small font-600-bold">Until
-                                        {{ dateTimeFormat($enrollment->student->registeredUser->ban_end_at, 'Y/m/j') }}
+                                        {{ dateTimeFormat($enrollment->ban_end_at, 'Y/m/j') }}
                                     </div>
                                 @else
                                     <div
-                                        class="mt-0 mb-1 font-weight-bold {{ $enrollment->student->registeredUser->status == 'active' ? 'text-success' : 'text-warning' }}">
-                                        {{ trans('admin/main.' . $enrollment->student->registeredUser->status) }}</div>
+                                        class="mt-0 mb-1 font-weight-bold {{ $enrollment->status == 'active' ? 'text-success' : 'text-warning' }}">
+                                        {{ trans('admin/main.' . $enrollment->status) }}</div>
                                 @endif
                             </td>
 
                             <td class="text-center mb-2" width="120">
 
                                 @can('admin_users_impersonate')
-                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->student->registeredUser->id }}/impersonate"
+                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->id }}/impersonate"
                                         target="_blank" class="btn-transparent  text-primary" data-toggle="tooltip"
                                         data-placement="top" title="{{ trans('admin/main.login') }}">
                                         <i class="fa fa-user-shield"></i>
@@ -190,7 +190,7 @@
                                 @endcan
 
                                 @can('admin_users_edit')
-                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->student->registeredUser->id }}/edit"
+                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->id }}/edit"
                                         class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
                                         title="{{ trans('admin/main.edit') }}">
                                         <i class="fa fa-edit"></i>
@@ -202,7 +202,7 @@
                                         'url' =>
                                             getAdminPanelUrl() .
                                             '/users/' .
-                                            $enrollment->student->registeredUser->id .
+                                            $enrollment->id .
                                             '/delete',
                                         'btnClass' => '',
                                         'deleteConfirmMsg' => trans('update.user_delete_confirm_msg'),
