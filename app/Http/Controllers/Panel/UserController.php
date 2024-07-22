@@ -864,6 +864,8 @@ class UserController extends Controller
     public function requirementPaymentStep()
     {
 
+        $message = " انتهاء التسجيل في البرامج الدراسيه للدفعه الثامنه";
+        return view('web.default.pages.registration_close', compact('message'));
         $user = auth()->user();
 
         $student = $user->Student;
