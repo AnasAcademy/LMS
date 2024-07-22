@@ -194,6 +194,7 @@ class SaleController extends Controller
         $userName = $request->get('user_name');
         $type = $request->get('type');
         $email = $request->get('email');
+        $user_code = $request->get('user_code');
 
         if (!empty($item_title)) {
             $ids = Webinar::whereTranslationLike('title', "%$item_title%")->pluck('id')->toArray();
@@ -216,6 +217,14 @@ class SaleController extends Controller
                     $q->where('email', 'like', "%$email%");
                 });
             });
+        }
+        if (!empty($user_code)) {
+            $query->when($user_code, function ($query) use ($user_code) {
+                $query->whereHas('buyer', function ($q) use ($user_code) {
+                    $q->where('user_code', 'like', "%$user_code%");
+                });
+            });
+
         }
 
         if (!empty($type)) {

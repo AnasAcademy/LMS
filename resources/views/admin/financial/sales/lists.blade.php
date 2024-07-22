@@ -271,6 +271,13 @@
                     <form method="get" class="mb-0">
 
                         <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="input-label">كود الطالب</label>
+                                    <input name='user_code' type="text" class="form-control"
+                                        value="{{ request()->get('user_code') }}">
+                                </div>
+                            </div>
 
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -279,6 +286,7 @@
                                         value="{{ request()->get('user_name') }}">
                                 </div>
                             </div>
+
 
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -358,6 +366,7 @@
                     </form>
                 </div>
             </section>
+
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="card">
@@ -395,6 +404,8 @@
                                                     {{ !empty($sale->buyer) ? $sale->buyer->email : '' }}</div>
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ !empty($sale->buyer) ? $sale->buyer->id : '' }}</div>
+                                                <div class="text-primary text-small font-600-bold">Code :
+                                                    {{ !empty($sale->buyer) ? $sale->buyer->user_code : '' }}</div>
                                             </td>
 
                                             <td class="text-left">
