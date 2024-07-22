@@ -46,7 +46,7 @@
                                                     {{ $class->title }}
                                                 </p>
 
-                                            <td>{{ count($class->enrollments) }}</td>
+                                            <td>{{ ($class->enrollments()->count()) }}</td>
                                             <td class="font-12">{{ $class->created_at }}
                                             </td>
 
