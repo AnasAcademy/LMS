@@ -152,7 +152,7 @@
                             </td>
                             <td>
                                 @foreach ($enrollment->bundleSales($class->id)->get() as $record)
-                                    {{ dateTimeFormat(strtotime($enrollment->created_at), 'j M Y | H:i') }}
+                                    {{ dateTimeFormat($enrollment->created_at, 'j M Y | H:i') }}
                                     @if (!$loop->last)
                                         و
                                     @endif
