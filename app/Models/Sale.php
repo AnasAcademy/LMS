@@ -147,7 +147,7 @@ class Sale extends Model
             if(empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
             && !empty($orderItem->installmentPayment->step)  ){
                 $class =
-                BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class;
+                BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class ?? $class;
             }
             $sale = Sale::create([
                 'buyer_id' => $orderItem->user_id,
