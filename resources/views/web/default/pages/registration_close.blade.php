@@ -8,7 +8,13 @@
 
                     <img src="/store/1/close.png" alt="" class="col-10 col-md-8">
 
-                    <p class="font-20">التسجيل مغلق حاليا ترقب حتي يتم فتحه مجددا.</p>
+                    <p class="font-20">
+                        @if (isset($message))
+                            {{ $message }}
+                        @else
+                            التسجيل مغلق حاليا ترقب حتي يتم فتحه مجددا.
+                        @endif
+                    </p>
                 </div>
             </div>
         </div>
