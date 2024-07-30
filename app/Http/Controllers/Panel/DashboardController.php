@@ -85,17 +85,20 @@ class DashboardController extends Controller
                 ->where(function ($query) {
                     $query->whereIn('type', ['bundle', 'installment_payment'])
                           ->whereNotNull(['bundle_id', 'order_id']);
-                })
-                ->orWhere(function ($query) use ($user) {
+                })->get()->unique('bundle_id');
+
+                $webinarSales = Sale::where('buyer_id', $user->id)
+                ->Where(function ($query) use ($user) {
                     $query->where('buyer_id', $user->id)
                           ->where('type', 'webinar')
                           ->whereNull('bundle_id')
                           ->whereNotNull('order_id');
                 })
                 ->get()
-                ->unique('bundle_id');
+                ->unique('webinar_id');
 
-
+            // Merge both collections
+            $bundleSales = $bundleSales->merge($webinarSales);
             $data['webinarsCount'] = count($webinars);
             $data['supportsCount'] = count($supports);
             $data['commentsCount'] = count($comments);
