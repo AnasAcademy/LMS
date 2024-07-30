@@ -58,7 +58,7 @@ class ApplyController extends Controller
      */
     public function newEnrollment()
     {
-        return view("web.default.pages.registration_close");
+        // return view("web.default.pages.registration_close");
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
 
