@@ -525,7 +525,7 @@ class PaymentController extends Controller
                 ]);
 
                 BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
-                
+
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
                 $service = $service_sale->order->orderItems->first()->service;
@@ -752,9 +752,9 @@ class PaymentController extends Controller
                     $studentData =
                         collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
 
-                    $studentData['email'] = $$user->email;
-                    $studentData['mobile'] = $$user->mobile;
-                    $studentData['phone'] = $$user->mobile;
+                    $studentData['email'] = $user->email;
+                    $studentData['mobile'] = $user->mobile;
+                    $studentData['phone'] = $user->mobile;
                     $student = Student::create($studentData);
                 } else {
                     return redirect('/apply');
