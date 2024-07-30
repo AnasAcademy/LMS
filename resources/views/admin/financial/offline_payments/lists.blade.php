@@ -233,8 +233,8 @@
                                                                             ' </span>',
                                                                         'hideDefaultClass' => true,
                                                                         'deleteConfirmMsg' => 'test',
-                                                                        'message' => $user->pivot->content,
-                                                                        'id' => $user->pivot->id,
+                                                                        'message' => $user->pivot->content ?? '',
+                                                                        'id' => $user->pivot->id ?? 0,
                                                                     ]
                                                                 )
 
