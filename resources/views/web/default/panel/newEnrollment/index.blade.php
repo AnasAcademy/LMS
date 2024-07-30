@@ -127,8 +127,8 @@
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
                                     <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
                                         اكاديمية انس للفنون </option>
-                                    <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
-                                        برامج </option>
+                                    {{-- <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                                        برامج </option> --}}
                                     <option value="courses" @if (old('type', request()->type) == 'courses') selected @endif>دورات</option>
                                 </select>
 
@@ -190,7 +190,7 @@
                                         value="{{ old('bundle_id', $bundle ? $bundle->id : '') }}"> --}}
 
                                     <select id="bundle_id" class="custom-select @error('bundle_id')  is-invalid @enderror"
-                                        name="bundle_id" required onchange="CertificateSectionToggle()">
+                                        name="bundle_id" onchange="CertificateSectionToggle()">
                                         <option selected hidden value="">اختر البرنامج الذي تريد
                                             دراسته في
                                             اكاديمية انس للفنون </option>
