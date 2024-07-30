@@ -162,15 +162,15 @@
                             <input type="hidden" name="user_id" value="{{ $user->id ?? '' }}">
 
                             {{-- application type --}}
-                            {{-- <div class="form-group col-12 col-sm-6">
+                            <div class="form-group col-12 col-sm-6">
                                 <label class="form-label">حدد نوع التقديم<span class="text-danger">*</span></label>
                                 <select id="typeSelect" name="type" required
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
-                                    <option selected hidden value="">اختر نوع التقديم التي تريد دراستها في
+                                    <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
                                         اكاديمية انس للفنون </option>
-                                    <option value="diplomas" @if (old('type') == 'diplomas') selected @endif selected>
-                                        دبلومات </option>
-                                    <option value="courses" @if (old('type') == 'courses') selected @endif>دورات</option>
+                                    {{-- <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                                        برامج </option> --}}
+                                    <option value="courses" @if (old('type', request()->type) == 'courses') selected @endif>دورات</option>
                                 </select>
 
                                 @error('type')
@@ -178,21 +178,21 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div> --}}
+                            </div>
 
                             {{-- course --}}
-                            {{-- <div class="form-group col-12 col-sm-6">
+                            <div class="form-group col-12 col-sm-6">
                                 <label for="application2" class="form-label" id="all_course">الدورات التدربيه<span
                                         class="text-danger">*</span></label>
-                                <select id="mySelect2" name="webinar_id"  onchange="coursesToggle()"
+                                <select id="mySelect2" name="webinar_id" onchange="coursesToggle()"
                                     class="form-control @error('webinar_id') is-invalid @enderror">
-                                    <option selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
+                                    <option selected hidden value="">اختر الدورة التدربيه التي تريد دراسته
                                         في
                                         اكاديمية انس للفنون </option>
 
                                     @foreach ($courses as $course)
                                         <option value="{{ $course->id }}"
-                                            @if (old('webinar_id') == $course->id) selected @endif>
+                                            @if (old('webinar_id', request()->webinar) == $course->id) selected @endif>
                                             {{ $course->title }} </option>
                                     @endforeach
 
@@ -203,18 +203,19 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div> --}}
+                            </div>
 
                             {{-- course endorsement --}}
-                            {{-- <div class="col-12 d-none">
+                            <div class="col-12 d-none">
                                 <input type="checkbox" id="course_endorsement" name="course_endorsement">
-                                أقر بأن لدي خبرة عملية ومعرفة جيدة بالبرامج التي سأتقدم للاختبار بها، وأفهم أن الدورة تؤهل للاختبار فقط ولا تعلم البرامج من الصفر.
+                                أقر بأن لدي خبرة عملية ومعرفة جيدة بالبرامج التي سأتقدم للاختبار بها، وأفهم أن الدورة تؤهل
+                                للاختبار فقط ولا تعلم البرامج من الصفر.
                                 @error('course_endorsement')
                                     <div class="invalid-feedback d-block">
                                         {{ $message }}
                                     </div>
                                 @enderror
-                            </div> --}}
+                            </div>
 
 
                             {{-- diplomas --}}
@@ -228,8 +229,8 @@
                                     <select id="mySelect1" name="category_id"
                                         class="form-control @error('category_id') is-invalid @enderror"
                                         onchange="toggleHiddenInput()">
-                                        <option selected hidden value="">اختر الدرجة العلمية التي تريد
-                                            دراستها في
+                                        <option selected hidden value="">اختر البرنامج الذي تريد
+                                            دراسته في
                                             اكاديمية انس للفنون </option>
                                         @foreach ($category as $item)
                                             <option value="{{ $item->id }}" education= "{{ $item->education }}"
@@ -250,15 +251,12 @@
                                     <label for="bundle_id">
                                         البرنامج<span class="text-danger">*</span>
                                     </label>
-                                    {{-- <input type="text" id="bundle_id" name="bundle_id"
-                                        class="form-control @error('bundle_id') is-invalid @enderror"
-                                        value="{{ old('bundle_id', $bundle ? $bundle->id : '') }}"> --}}
-
 
                                     <select id="bundle_id" class="custom-select @error('bundle_id')  is-invalid @enderror"
-                                        name="bundle_id" required onchange="CertificateSectionToggle()">
-                                        <option selected disabled>{{ trans('public.choose_category') }}
-                                        </option>
+                                        name="bundle_id" onchange="CertificateSectionToggle()">
+                                        <option selected hidden value="">اختر البرنامج الذي تريد
+                                            دراسته في
+                                            اكاديمية انس للفنون </option>
 
                                         {{-- Loop through top-level categories --}}
                                         @foreach ($categories as $category)
@@ -269,7 +267,7 @@
                                                     <option value="{{ $bundleItem->id }}"
                                                         has_certificate="{{ $bundleItem->has_certificate }}"
                                                         early_enroll="{{ $bundleItem->early_enroll }}"
-                                                        @if (old('bundle_id', $bundle->id ?? null) == $bundleItem->id) selected @endif>
+                                                        @if (old('bundle_id', request()->bundle) == $bundleItem->id) selected @endif>
                                                         {{ $bundleItem->title }}</option>
                                                 @endforeach
 
@@ -279,7 +277,7 @@
                                                         <option value="{{ $bundleItem->id }}"
                                                             has_certificate="{{ $bundleItem->has_certificate }}"
                                                             early_enroll="{{ $bundleItem->early_enroll }}"
-                                                            @if (old('bundle_id', $bundle->id ?? null) == $bundleItem->id) selected @endif>
+                                                            @if (old('bundle_id', request()->bundle) == $bundleItem->id) selected @endif>
                                                             {{ $bundleItem->title }}</option>
                                                     @endforeach
                                                 @endforeach
@@ -744,7 +742,9 @@
                             <input type="hidden" id="direct_register" name="direct_register" value="">
                             <button type="button" id="form_button" class="btn btn-primary">تسجيل مباشر</button>
 
-                            <button type="submit" class="btn btn-gray mr-3">حجز مقعد</button>
+                            <button type="submit" class="btn btn-gray mr-3" id="formSubmit">
+                              تسجيل
+                            </button>
                         </form>
                     </div>
                 </Section>
@@ -774,7 +774,23 @@
         directRegisterInput.value = "";
         formButton.onclick = function() {
             directRegisterInput.value = true;
-            form.submit();
+            if (form.checkValidity()) {
+                form.submit();
+            } else {
+                console.log("form failed");
+                var invalidFields = form.querySelectorAll(':invalid');
+                if (invalidFields.length > 0) {
+                    console.log(invalidFields[0]);
+                    // Focus on the first invalid field
+                    invalidFields[0].focus();
+                    // Optionally scroll the field into view
+                    invalidFields[0].scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    invalidFields[0].reportValidity(); // Triggers the display of the built-in validation message
+
+                }
+            }
         }
     </script>
 
@@ -828,7 +844,7 @@
 
                 if (categoryBundles) {
                     var options = categoryBundles.map(function(bundle) {
-                        var isSelected = bundle.id == "{{ old('bundle_id', $bundle->id ?? null) }}" ?
+                        var isSelected = bundle.id == "{{ old('bundle_id', request()->bundle) }}" ?
                             'selected' : '';
                         return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}" early_enroll="${bundle.early_enroll}">${bundle.title}</option>`;
                     }).join('');
@@ -920,7 +936,7 @@
     <script>
         function toggleHiddenType() {
             var select = document.getElementById("typeSelect");
-            var hiddenDiplomaInput = document.getElementById("mySelect1");
+            // var hiddenDiplomaInput = document.getElementById("mySelect1");
             var hiddenDiplomaLabel = document.getElementById("degree");
             var hiddenBundleInput = document.getElementById("bundle_id");
             var hiddenDiplomaLabel1 = document.getElementById("hiddenLabel1");
@@ -931,40 +947,45 @@
             var hiddenCourseInput = document.getElementById("mySelect2");
             var hiddenCourseLabel = document.getElementById("all_course");
 
+            let formButton = document.getElementById('form_button');
+            let formSubmit = document.getElementById('formSubmit');
+
+
             if (select) {
                 var type = select.value;
-                if (type == 'diplomas') {
+                if (type == 'programs') {
                     diplomasSection.classList.remove('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
+                    formSubmit.innerHTML = " حجز مقعد";
+                    formButton.classList.remove('d-none');
                     resetSelect(hiddenCourseInput);
 
                 } else if (type == 'courses') {
                     hiddenCourseInput.closest('div').classList.remove('d-none');
                     diplomasSection.classList.add('d-none');
-                    education.style = "display:none";
-                    education.querySelectorAll('input').forEach((item) => {
-                        item.removeAttribute('required');
-                    })
-
-                    resetSelect(hiddenDiplomaInput);
+                    // resetSelect(hiddenDiplomaInput);
                     resetSelect(hiddenBundleInput);
+                     formSubmit.innerHTML = "تسجيل";
+                       formButton.classList.add('d-none');
 
                 } else {
                     diplomasSection.classList.add('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                    resetSelect(hiddenDiplomaInput);
+                     formSubmit.innerHTML = "تسجيل";
+                       formButton.classList.add('d-none');
+                    // resetSelect(hiddenDiplomaInput);
                     resetSelect(hiddenBundleInput);
                     resetSelect(hiddenCourseInput);
                     // education.classList.add('d-none');
                 }
 
-                toggleHiddenInput();
+                // toggleHiddenInput();
                 coursesToggle();
                 CertificateSectionToggle();
             }
         }
 
-        // toggleHiddenType();
+        toggleHiddenType();
 
         function resetSelect(selector) {
             selector.selectedIndex = 0; // This sets the first option as selected

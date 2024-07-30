@@ -33,7 +33,7 @@ class ApplyController extends Controller
      */
     public function index(Bundle $bundle)
     {
-        return view("web.default.pages.registration_close");
+        // return view("web.default.pages.registration_close");
         $user = auth()->user();
         $student = Student::where('user_id', $user->id)->first();
         // $categories = Category::whereNull('parent_id')->whereHas('bundles')->get();
@@ -95,20 +95,20 @@ class ApplyController extends Controller
             if ($student) {
                 $validatedData = $request->validate([
                     'user_id' => 'required',
-                    // 'type' => 'required|in:courses,diplomas',
+                    'type' => 'required|in:courses,programs',
                     // 'category_id' => [
                     //     function ($attribute, $value, $fail) use ($request) {
                     //         $type = $request->input('type');
-                    //         if ($type && $type == 'diplomas' && empty ($value)) {
+                    //         if ($type && $type == 'programs' && empty ($value)) {
                     //             $fail('يجب تحديد الدرجه العلميه ');
                     //         }
                     //     }
                     // ],
                     'bundle_id' => [
-                        'required',
                         function ($attribute, $value, $fail) use ($request) {
-                            if (empty($value)) {
-                                $fail('يجب تحديد التخصص العلمي ');
+                            $type = $request->input('type');
+                            if ($type && $type == 'programs' && empty($value)) {
+                                $fail('يجب تحديد البرنامج ');
                             }
                             $user = auth()->user();
                             $student = Student::where('user_id', $user->id)->first();
@@ -139,16 +139,21 @@ class ApplyController extends Controller
             } else {
                 $validatedData = $request->validate([
                     'user_id' => 'required',
-                    // 'type' => 'required|in:courses,diplomas',
-                    // 'category_id' => [
-                    //     function ($attribute, $value, $fail) use ($request) {
-                    //         $type = $request->input('type');
-                    //         if ($type && $type == 'diplomas' && empty ($value)) {
-                    //             $fail('يجب تحديد الدرجه العلميه ');
-                    //         }
-                    //     }
-                    // ],
-                    'bundle_id' => "required|exists:bundles,id",
+                    'type' => 'required|in:courses,programs',
+                    'bundle_id' => [
+                        function ($attribute, $value, $fail) use ($request) {
+                            $type = $request->input('type');
+                            if ($type && $type == 'programs' && empty($value)) {
+                                $fail('يجب تحديد البرنامج ');
+                            }
+                            $user = auth()->user();
+                            $student = Student::where('user_id', $user->id)->first();
+
+                            if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                                $fail('User has already applied for this bundle.');
+                            }
+                        },
+                    ],
                     'webinar_id' => [
                         function ($attribute, $value, $fail)  use ($request) {
                             $type = $request->input('type');
@@ -234,7 +239,6 @@ class ApplyController extends Controller
         } catch (\Exception $e) {
             // dd($e);
             return redirect()->back()->withErrors($e->validator)->withInput();
-            // dd($e);
         }
 
 
@@ -266,10 +270,10 @@ class ApplyController extends Controller
         $order = Order::create([
             'user_id' => $user->id,
             'status' => Order::$pending,
-            'amount' => 230,
+            'amount' =>  $request->type == 'programs' ? 230 : $webinar->price ?? 0,
             'tax' => 0,
             'total_discount' => 0,
-            'total_amount' => 230,
+            'total_amount' =>  $request->type == 'programs' ? 230 : $webinar->price ?? 0,
             'product_delivery_fee' => null,
             'created_at' => time(),
         ]);
@@ -280,7 +284,7 @@ class ApplyController extends Controller
             'bundle_id' => $request->bundle_id ?? null,
             'certificate_template_id' => null,
             'certificate_bundle_id' => null,
-            'form_fee' => 1,
+            'form_fee' => $request->type == 'programs' ? 1 : null,
             'product_id' => null,
             'product_order_id' => null,
             'reserve_meeting_id' => null,
@@ -290,10 +294,10 @@ class ApplyController extends Controller
             'installment_payment_id' => null,
             'ticket_id' => null,
             'discount_id' => null,
-            'amount' =>  230,
-            'total_amount' => 230,
-            // 'amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
-            // 'total_amount' => $request->type == 'diplomas' ? 230 : $webinar->price ?? 0,
+            // 'amount' =>  230,
+            // 'total_amount' => 230,
+            'amount' => $request->type == 'programs' ? 230 : $webinar->price ?? 0,
+            'total_amount' => $request->type == 'programs' ? 230 : $webinar->price ?? 0,
             'tax' => null,
             'tax_price' => 0,
             'commission' => 0,
@@ -307,35 +311,7 @@ class ApplyController extends Controller
         if (!empty($order) and $order->total_amount > 0) {
 
             return redirect('/payment/' . $order->id);
-
-            // return view(getTemplate() . '.cart.payment', $data);
-
-            // $data = [
-            //     'pageTitle' => trans('public.checkout_page_title'),
-            //     'paymentChannels' => $paymentChannels,
-            //     'carts' => $carts,
-            //     'subTotal' => null,
-            //     'totalDiscount' => null,
-            //     'tax' => null,
-            //     'taxPrice' => null,
-            //     'total' => $request->type=='diplomas' ? 230: $webinar->price,
-            //     'userGroup' => $user->userGroup ? $user->userGroup->group : null,
-            //     'order' => $order,
-            //     'type' => $order->orderItems[0]->form_fee,
-            //     'count' => 0,
-            //     'userCharge' => $user->getAccountingCharge(),
-            //     'razorpay' => $razorpay,
-            //     'totalCashbackAmount' => null,
-            //     'previousUrl' => url()->previous(),
-            // ];
-
-            // return view(getTemplate() . '.cart.payment', $data);
         }
-        // else {
-
-        //     return $this->handlePaymentOrderWithZeroTotalAmount($order);
-        // }
-
 
 
         return redirect('/panel');

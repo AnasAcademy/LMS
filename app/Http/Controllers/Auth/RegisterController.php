@@ -63,8 +63,8 @@ class RegisterController extends Controller
     public function showRegistrationForm()
     {
 
-        return view("web.default.pages.registration_close");
-        
+        // return view("web.default.pages.registration_close");
+
         $seoSettings = getSeoMetas('register');
         $pageTitle = !empty($seoSettings['title']) ? $seoSettings['title'] : trans('site.register_page_title');
         $pageDescription = !empty($seoSettings['description']) ? $seoSettings['description'] : trans('site.register_page_title');
@@ -110,6 +110,8 @@ class RegisterController extends Controller
             $data['mobile'] = $data['country_code'] . ' ' . ltrim($data['mobile'], '0');
         }
 
+        $type = $data['type'];
+
         $rules = [
             'country_code' => ($registerMethod == 'mobile') ? 'required' : 'nullable',
             'mobile' => 'required|unique:users',
@@ -119,9 +121,10 @@ class RegisterController extends Controller
             'password_confirmation' => 'required|same:password',
             'email_confirmation' => 'required|same:email',
             'referral_code' => 'nullable|exists:affiliates_codes,code',
-            'bundle_id' =>  'required|exists:bundles,id'
+            'type' => 'required|in:courses,programs',
+            'bundle_id' =>( ($type == 'programs') ? 'required' : "")  ,
+            'webinar_id' => ( ($type == 'courses') ? 'required' : "" ) ,
         ];
-
 
         if (!empty(getGeneralSecuritySettings('captcha_for_register'))) {
             $rules['captcha'] = 'required|captcha';
@@ -302,7 +305,7 @@ class RegisterController extends Controller
         }
         return $request->wantsJson()
             ? new JsonResponse([], 201)
-            : redirect(($this->redirectPath() . "/$request->bundle_id"));
+            : redirect(($this->redirectPath() . "?type=$request->type&&bundle=$request->bundle_id&&webinar=$request->webinar_id"));
         // }
     }
 }
