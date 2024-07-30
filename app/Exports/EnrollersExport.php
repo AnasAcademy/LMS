@@ -34,13 +34,15 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
 
         return [
 
-            'Name',
+            'Student code',
+            'Arabic Name',
+            'English Name',
+            'Email',
             'diploma',
             'created at',
             'Status',
             'Mobile',
-            'Email',
-            'Student code',
+
 
         ];
     }
@@ -65,20 +67,22 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
 
 
             return [
+                $user->user_code,
                 $user->student->ar_name,
+                $user->student->en_name,
+                $user->email,
                 $diploma,
                 dateTimeFormat($created_at, 'j M Y | H:i'),
                 $user->status,
                 $user->mobile,
-                $user->email,
-                $user->user_code,
             ];
         } else {
             return [
                 '',
+                '',
+                '',
+                '',
                 'غير مسجل بعد',
-                '',
-                '',
                 '',
                 '',
                 ''
