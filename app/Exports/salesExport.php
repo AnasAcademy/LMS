@@ -31,6 +31,7 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             trans('admin/main.id'),
+            'كود الطالب',
             trans('admin/main.student'),
             'البريد الالكتروني',
             // trans('admin/main.student') . ' ' . trans('admin/main.id'),
@@ -71,7 +72,7 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
         else if ($sale->type == \App\Models\Sale::$installmentPayment)
             $type =   $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل';
         else if ($sale->type == 'form_fee')
-            $type = "رسوم نموذج القبول";
+            $type = "رسوم حجز مقعد";
         else if ($sale->type == 'certificate')
             $type = "شراء شهادة";
         else if ($sale->type == 'webinar')
@@ -81,12 +82,12 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
 
         return [
             $sale->id,
+            !empty($sale->buyer) ? $sale->buyer->user_code : 'Deleted User',
             !empty($sale->buyer) ? $sale->buyer->full_name : 'Deleted User',
             !empty($sale->buyer) ? $sale->buyer->email : 'Deleted User',
-            // !empty($sale->buyer) ? $sale->buyer->id : 'Deleted User',
             $sale->item_seller,
             // $sale->seller_id,
-            $paidAmount,
+            (string)$paidAmount,
             $sale->item_title,
             // $sale->item_id,
             $type,
