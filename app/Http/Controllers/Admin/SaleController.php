@@ -24,13 +24,13 @@ class SaleController extends Controller
         $query = Sale::whereNull('product_order_id');
 
         $totalSales = [
-            'count' => deepClone($query)->count(),
-            'amount' => deepClone($query)->sum('total_amount'),
+            'count' => deepClone($query)->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $classesSales = [
-            'count' => deepClone($query)->whereNotNull('webinar_id')->count(),
-            'amount' => deepClone($query)->whereNotNull('webinar_id')->sum('total_amount'),
+            'count' => deepClone($query)->whereNotNull('webinar_id')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNotNull('webinar_id')->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $formFeeSales = [
@@ -39,20 +39,20 @@ class SaleController extends Controller
         ];
 
         $bundlesSales = [
-            'count' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->count(),
-            'amount' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->sum('total_amount'),
+            'count' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $servicesSales = [
             // 'count' => deepClone($query)->whereNotNull('service_id')->count(),
             // 'amount' => deepClone($query)->whereNotNull('service_id')->sum('total_amount'),
-            'count' => deepClone($query)->where('type', 'service')->count(),
-            'amount' => deepClone($query)->where('type', 'service')->sum('total_amount'),
+            'count' => deepClone($query)->where('type', 'service')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->where('type', 'service')->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $appointmentSales = [
-            'count' => deepClone($query)->whereNotNull('meeting_id')->count(),
-            'amount' => deepClone($query)->whereNotNull('meeting_id')->sum('total_amount'),
+            'count' => deepClone($query)->whereNotNull('meeting_id')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNotNull('meeting_id')->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $failedSales = Order::where('status', Order::$fail)->count();
@@ -293,8 +293,14 @@ class SaleController extends Controller
         return $query;
     }
 
-    public function refund($id)
+    public function refund($id, Request $request)
     {
+
+        $request->validate([
+            'message' => 'required',
+        ]);
+
+
         $this->authorize('admin_sales_refund');
 
         $sale = Sale::findOrFail($id);
@@ -334,9 +340,13 @@ class SaleController extends Controller
             }
         }
 
-        $sale->update(['refund_at' => time(), 'total_amount' => 0]);
-
-        return back();
+        $sale->update(['refund_at' => time(), 'total_amount' => 0, 'message' => $request->message ."<br>"]);
+        $toastData = [
+            'title' => 'طلب استيرداد مبلغ',
+            'msg' => 'تم الاستيرداد بنجاح',
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
     public function invoice($id)
