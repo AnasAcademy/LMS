@@ -482,6 +482,17 @@
                                             <td>
                                                 @if (!empty($sale->refund_at))
                                                     <span class="text-warning">{{ trans('admin/main.refund') }}</span>
+                                                    @include('admin.includes.message_button', [
+                                                                    'url' => '#',
+                                                                    'btnClass' => 'd-flex align-items-center mt-1',
+                                                                    'btnText' =>
+                                                                        '<span class="ml-2">' .
+                                                                        ' سبب الإستيرداد</span>',
+                                                                    'hideDefaultClass' => true,
+                                                                    'deleteConfirmMsg' => 'سبب  طلب الإستيرداد',
+                                                                    'message' => $sale->message,
+                                                                    'id' => $sale->id,
+                                                                ])
                                                 @elseif(!$sale->access_to_purchased_item)
                                                     <span class="text-danger">{{ trans('update.access_blocked') }}</span>
                                                 @else
@@ -500,7 +511,7 @@
 
                                                 @can('admin_sales_refund')
                                                     @if (empty($sale->refund_at) and $sale->payment_method != \App\Models\Sale::$subscribe)
-                                                        @include('admin.includes.delete_button', [
+                                                        @include('admin.includes.send_message', [
                                                             'url' =>
                                                                 getAdminPanelUrl() .
                                                                 '/financial/sales/' .
@@ -508,6 +519,9 @@
                                                                 '/refund',
                                                             'tooltip' => trans('admin/main.refund'),
                                                             'btnIcon' => 'fa-times-circle',
+                                                            'id' => $sale->id,
+                                                            'title' =>"تأكيد طلب الإسترداد",
+                                                            'subTitle' => "اذكر سبب الاستيرداد"
                                                         ])
                                                     @endif
                                                 @endcan
