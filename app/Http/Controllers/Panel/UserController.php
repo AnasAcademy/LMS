@@ -864,11 +864,11 @@ class UserController extends Controller
     public function requirementPaymentStep()
     {
         $user = auth()->user();
-        $usersId = [2480, 2447, 2382, 2196, 2080 ];
-        if(!in_array($user->id, $usersId)){
-            $message = " انتهاء التسجيل في البرامج الدراسيه للدفعه الثامنه";
-            return view('web.default.pages.registration_close', compact('message'));
-        }
+        // $usersId = [2480, 2447, 2382, 2196, 2080 ];
+        // if(!in_array($user->id, $usersId)){
+        //     $message = " انتهاء التسجيل في البرامج الدراسيه للدفعه الثامنه";
+        //     return view('web.default.pages.registration_close', compact('message'));
+        // }
 
         $student = $user->Student;
 
