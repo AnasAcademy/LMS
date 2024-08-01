@@ -334,7 +334,7 @@ class SaleController extends Controller
             }
         }
 
-        $sale->update(['refund_at' => time()]);
+        $sale->update(['refund_at' => time(), 'total_amount' => 0]);
 
         return back();
     }
