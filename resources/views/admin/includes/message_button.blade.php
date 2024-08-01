@@ -16,7 +16,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-primary" id="messageModalLabel">{{ 'سبب رفض الطلب' }}</h5>
+                <h5 class="modal-title text-primary" id="messageModalLabel">{!! $btnText ?? 'سبب رفض الطلب' !!}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -26,7 +26,7 @@
                 @if (empty($message))
                     <div class="form-control border-0" id="message" style="height: auto">
                         <p>
-                            <span class="d-block text-danger font-weight-bold">السبب الرئيسى للرفض </span>
+                            <span class="d-block text-danger font-weight-bold"> {!! $deleteConfirmMsg ?? 'السبب الرئيسى للرفض ' !!}</span>
                             لم يذكر سبب
                         </p>
                     </div>
@@ -37,7 +37,7 @@
                     <div class="form-control border-0" id="message" style="height: auto">
 
                         <p>
-                            <span class="d-block text-danger font-weight-bold">السبب الرئيسى للرفض </span>
+                           <span class="d-block text-danger font-weight-bold"> {!! $deleteConfirmMsg ?? 'السبب الرئيسى للرفض ' !!}</span>
 
                             {{ $mainReason }}
                         </p>
