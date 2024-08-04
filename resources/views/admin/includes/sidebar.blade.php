@@ -164,7 +164,7 @@
             @endcan
 
             {{-- services --}}
-            {{-- <li
+             <li
                 class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                     <i class="fas fa-graduation-cap"></i>
@@ -188,7 +188,7 @@
                     </li>
 
                 </ul>
-            </li> --}}
+            </li>
 
             @can('admin_webinars')
                 <li
