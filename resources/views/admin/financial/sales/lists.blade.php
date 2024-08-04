@@ -335,6 +335,22 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">{{ trans('admin/main.status') }}</label>
+                                    <select name="status" data-plugin-selectTwo class="form-control populate">
+                                        <option value="">{{ trans('admin/main.all_status') }}</option>
+                                        <option value="success" @if (request()->get('status') == 'success') selected @endif>
+                                            {{ trans('admin/main.success') }}</option>
+                                        <option value="refund" @if (request()->get('status') == 'refund') selected @endif>
+                                            {{ trans('admin/main.refund') }}</option>
+                                        {{--
+                                        <option value="blocked" @if (request()->get('status') == 'blocked') selected @endif>
+                                            {{ trans('update.access_blocked') }}</option>
+                                             --}}
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-12 row">
 
                                 <div class="col-md-4">
