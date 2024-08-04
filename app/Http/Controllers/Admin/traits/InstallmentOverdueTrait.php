@@ -24,11 +24,11 @@ trait InstallmentOverdueTrait
         $query = $this->getOverdueListsQuery($request);
         $orders = $this->getInstallmentFilter($query, $request)->paginate(20);
 
-        $categories = Category::whereNull('parent_id')->where('status', 'active')
+        $categories = Category::whereNull('parent_id')
             ->where(function ($query) {
-                $query->whereHas('activeBundles')
-                    ->orWhereHas('activeSubCategories', function ($query) {
-                        $query->whereHas('activeBundles');
+                $query->whereHas('bundles')
+                    ->orWhereHas('subCategories', function ($query) {
+                        $query->whereHas('bundles');
                     });
         })->get();
 
@@ -87,13 +87,14 @@ trait InstallmentOverdueTrait
         $orders = $this->getInstallmentFilter($query, $request)->paginate(20);
 
         // dd( $orders);
-        $categories = Category::whereNull('parent_id')->where('status', 'active')
-            ->where(function ($query) {
-                $query->whereHas('activeBundles')
-                    ->orWhereHas('activeSubCategories', function ($query) {
-                        $query->whereHas('activeBundles');
-                    });
-            })->get();
+        $categories = Category::whereNull('parent_id')
+        ->where(function ($query) {
+            $query->whereHas('bundles')
+            ->orWhereHas('subCategories', function ($query) {
+                $query->whereHas('bundles');
+            });
+        })->get();
+
 
         $data = [
             'pageTitle' => trans('update.overdue_installments'),
