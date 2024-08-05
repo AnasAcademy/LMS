@@ -168,8 +168,10 @@
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
                                     <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
                                         اكاديمية انس للفنون </option>
-                                    {{-- <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
-                                        برامج </option> --}}
+                                    @if (count($categories) > 0)
+                                        <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                                            برامج </option>
+                                    @endif
                                     <option value="courses" @if (old('type', request()->type) == 'courses') selected @endif>دورات</option>
                                 </select>
 
@@ -743,7 +745,7 @@
                             <button type="button" id="form_button" class="btn btn-primary">تسجيل مباشر</button>
 
                             <button type="submit" class="btn btn-gray mr-3" id="formSubmit">
-                              تسجيل
+                                تسجيل
                             </button>
                         </form>
                     </div>
@@ -965,14 +967,14 @@
                     diplomasSection.classList.add('d-none');
                     // resetSelect(hiddenDiplomaInput);
                     resetSelect(hiddenBundleInput);
-                     formSubmit.innerHTML = "تسجيل";
-                       formButton.classList.add('d-none');
+                    formSubmit.innerHTML = "تسجيل";
+                    formButton.classList.add('d-none');
 
                 } else {
                     diplomasSection.classList.add('d-none');
                     hiddenCourseInput.closest('div').classList.add('d-none');
-                     formSubmit.innerHTML = "تسجيل";
-                       formButton.classList.add('d-none');
+                    formSubmit.innerHTML = "تسجيل";
+                    formButton.classList.add('d-none');
                     // resetSelect(hiddenDiplomaInput);
                     resetSelect(hiddenBundleInput);
                     resetSelect(hiddenCourseInput);

@@ -127,8 +127,10 @@
                                     class="form-control @error('type') is-invalid @enderror" onchange="toggleHiddenType()">
                                     <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
                                         اكاديمية انس للفنون </option>
-                                    {{-- <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
-                                        برامج </option> --}}
+                                    @if (count($categories) > 0)
+                                        <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                                            برامج </option>
+                                    @endif
                                     <option value="courses" @if (old('type', request()->type) == 'courses') selected @endif>دورات</option>
                                 </select>
 

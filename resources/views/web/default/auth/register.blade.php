@@ -225,8 +225,10 @@
                     onchange="toggleHiddenType()">
                     <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
                         اكاديمية انس للفنون </option>
-                    {{-- <option value="programs" @if (old('type') == 'programs') selected @endif>
-                        برامج </option> --}}
+                    @if (count($categories) > 0)
+                        <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                            برامج </option>
+                    @endif
                     <option value="courses" @if (old('type') == 'courses') selected @endif>دورات</option>
                 </select>
 
@@ -241,8 +243,7 @@
             <div class="form-group">
                 <label for="application2" class="form-label" id="all_course">الدورات التدربيه<span
                         class="text-danger">*</span></label>
-                <select id="mySelect2" name="webinar_id"
-                    class="form-control @error('webinar_id') is-invalid @enderror">
+                <select id="mySelect2" name="webinar_id" class="form-control @error('webinar_id') is-invalid @enderror">
                     <option selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
                         في
                         اكاديمية انس للفنون </option>
@@ -268,9 +269,9 @@
 
                     <select id="bundle_id" class="custom-select @error('bundle_id')  is-invalid @enderror"
                         name="bundle_id">
-                       <option selected hidden value="">اختر البرنامج التدربي الذي تريد دراسته
-                        في
-                        اكاديمية انس للفنون </option>
+                        <option selected hidden value="">اختر البرنامج التدربي الذي تريد دراسته
+                            في
+                            اكاديمية انس للفنون </option>
 
                         {{-- Loop through top-level categories --}}
                         @foreach ($categories as $category)
@@ -351,7 +352,7 @@
 
         }
 
-         toggleHiddenType();
+        toggleHiddenType();
 
     }
 </script>
@@ -400,5 +401,4 @@
         selector.selectedIndex = 0; // This sets the first option as selected
         selector.removeAttribute('required');
     }
-
 </script>
