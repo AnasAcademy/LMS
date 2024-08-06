@@ -1836,9 +1836,11 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_list');
         $query = User::where(['role_name' => Role::$user])->whereHas(
-        'purchasedBundles', function ($query){
-            $query->where("payment_method", "!=", 'scholarship');
-        });
+            'purchasedBundles',
+            function ($query) {
+                $query->where("payment_method", "!=", 'scholarship');
+            }
+        );
 
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -1900,8 +1902,8 @@ class UserController extends Controller
     public function ScholarshipStudent(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
-        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function($query){
-            $query->where("payment_method", 'scholarship' );
+        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function ($query) {
+            $query->where("payment_method", 'scholarship');
         });
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -2033,7 +2035,7 @@ class UserController extends Controller
             'status' => 'success',
         ];
         $group->update($validData);
-        return redirect('/admin/courses/'.$group->webinar_id)->with('toast', $toastData);
+        return redirect('/admin/courses/' . $group->webinar_id)->with('toast', $toastData);
     }
 
     public function sendEmail($user, $data)
@@ -2054,5 +2056,35 @@ class UserController extends Controller
             'type' => "single",
             'created_at' => time()
         ]);
+    }
+
+    function changeGroup(Request $request, Group $group)
+    {
+        try {
+            $request->validate([
+                'from' => 'required|exists:groups,id',
+                'to' => 'required|exists:groups,id',
+                'user_id' => 'required|exists:users,id'
+            ]);
+
+            $user =  auth()->user();
+            Enrollment::where(['user_id' => $request->user_id, 'group_id' => $request->from])->update(["group_id" => $request->to]);
+
+            $toastData = [
+                'title' => 'تحويل من جروب لأخر',
+                'msg' => 'تم التحويل بنجاح',
+                'status' => 'success',
+            ];
+            return back()->with('toast', $toastData);
+        } catch (\Throwable $th) {
+            // dd($th->getMessage());
+            $toastData = [
+                'title' => '',
+                'msg' => $th->getMessage(),
+                'status' => 'error',
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        }
     }
 }

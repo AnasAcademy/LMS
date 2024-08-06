@@ -103,7 +103,20 @@
                             </td>
 
                             <td class="text-center mb-2" width="120">
-
+                                @can('admin_users_transform')
+                                    @if (!empty($enrollment->user->student))
+                                        @include('admin.includes.transform_button', [
+                                            'url' => getAdminPanelUrl() . '/courses/groups/' .$group->id . '/change',
+                                            'btnClass' => 'btn-transparent  text-primary',
+                                            'btnText' => '<i class="fa fa-retweet"></i>',
+                                            'hideDefaultClass' => true,
+                                            'id' =>$enrollment->user->id,
+                                            'from' =>$group,
+                                            'items' => $group->webinar->groups,
+                                            'user' => $enrollment->user
+                                        ])
+                                    @endif
+                                @endcan
 
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->user->id }}/impersonate"
