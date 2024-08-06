@@ -79,6 +79,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/groups/{id}/show', 'UserController@groupInfo');
             Route::get('/groups/{group}/edit', 'UserController@groupEdit');
             Route::put('/groups/{group}/update', 'UserController@groupUpdate');
+            Route::post('/groups/{group}/change', 'UserController@changeGroup');
             Route::get('/groups/{id}/delete', 'GroupController@destroy');
 
         });
