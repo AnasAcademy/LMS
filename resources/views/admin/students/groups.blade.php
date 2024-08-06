@@ -113,7 +113,8 @@
                                             'id' =>$enrollment->user->id,
                                             'from' =>$group,
                                             'items' => $group->webinar->groups,
-                                            'user' => $enrollment->user
+                                            'user' => $enrollment->user,
+                                            'title' => "تحويل الطالب من المجوعة " . $group->name . " إلي مجموعة اخري "
                                         ])
                                     @endif
                                 @endcan
