@@ -217,6 +217,11 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
+
+                                <div class="mt-3">
+                                    <input type="checkbox" id="course_endorsement2" >
+                                    إقرار بعدم تجاوز المتدرب فترة 30 يوم للتقدم للاختبار متضمنة فترة التأهيل وعند التجاوز يتطلب من المتدرب دفع غرامة مالية تحددها الأكاديمية ليتمكن من تمديد الدورة التأهيلية ومدة الاختبار
+                                </div>
                             </div>
 
 
@@ -996,14 +1001,17 @@
         function coursesToggle() {
             console.log('course');
             let courseEndorsementInput = document.getElementById("course_endorsement");
+            let courseEndorsementInput2 = document.getElementById("course_endorsement2");
             let courseEndorsementSection = courseEndorsementInput.closest("div");
             var courseSelect = document.getElementById("mySelect2");
             if (courseSelect.selectedIndex != 0) {
                 courseEndorsementSection.classList.remove("d-none");
                 courseEndorsementInput.setAttribute("required", "required");
+                courseEndorsementInput2.setAttribute("required", "required");
             } else {
                 courseEndorsementSection.classList.add("d-none");
                 courseEndorsementInput.removeAttribute("required");
+                courseEndorsementInput2.removeAttribute("required");
             }
         }
     </script>
