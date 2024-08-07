@@ -160,6 +160,7 @@ class ServiceController extends Controller
             'user_id' => $user->id,
             'order_id' => $order->id,
             'bundle_id' => $bundleTransform->to_bundle_id,
+            'transform_bundle_id' => $bundleTransform->from_bundle_id,
             'amount' => $price,
             'total_amount' => $price,
             'tax_price' => 0,
