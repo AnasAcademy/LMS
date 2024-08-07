@@ -35,7 +35,7 @@
         <div class="section-body">
             @foreach ($services as $service)
                 <div class="d-flex justify-content-between align-items-center mt-30">
-                    <h2 class="section-title after-line">{{ trans('product.course') }}
+                    <h2 class="section-title after-line"> خدمة 
                         {{ $service->title }}</h2>
                 </div>
 
