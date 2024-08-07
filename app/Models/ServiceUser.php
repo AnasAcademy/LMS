@@ -11,6 +11,7 @@ use App\User;
 class ServiceUser extends Pivot{
     use HasFactory;
 
+    public $incrementing = true;
     protected $guarded = [];
 
     protected $table = 'service_user';
@@ -26,6 +27,10 @@ class ServiceUser extends Pivot{
     public function admin()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+    public function bundleTransform()
+    {
+        return $this->hasOne(bundleTransform::class, 'service_request_id','id');
     }
 
 }
