@@ -14,100 +14,118 @@
                     @csrf
                     @php
                         $user = auth()->user();
-                        $purchasedFormBundles = $user->purchasedFormBundle();
+                        $purchasedFormBundles = $user->bundleSales;
                     @endphp
-                    <label class="input-label">محول من برنامج :</label>
-                    <select class="form-control" name="from_bundle" id="diploma1">
-                        <option value="" class="placeholder" disabled selected>اختر التخصص الذي تود التحويل منه </option>
-                        @foreach ($purchasedFormBundles as $bundleSale)
-                            @php
-                                $bundle = optional($bundleSale->bundle);
-                            @endphp
-                            @if ($bundle)
-                                <option value="{{ $bundle->id }}">
-                                    {{ $bundle->title }}
-                                </option>
-                            @endif
-                        @endforeach
-                    </select><br>
-                    @error('from_bundle')
-                        <div class="invalid-feedback d-block">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                    <label class="input-label">تحويل الي برنامج :</label><br>
-                    <div class="container_form mt-25">
-                        {{-- diploma --}}
-                        <div class="form-group">
-                            <label for="application" class="form-label">{{ trans('application_form.application') }}*</label>
-                            <select id="mySelect" name="category" required class="form-control"
-                                onchange="toggleHiddenInput()">
-                                <option selected hidden value="">اختر
-                                    الدرجة العلمية التي تريد دراستها في اكاديمية انس
-                                    للفنون </option>
-                                @foreach ($category as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ old('category') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->title }} </option>
-                                @endforeach
-                            </select>
-                            @error('category')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
 
-                        {{-- specialization --}}
-                        <div class="form-group">
-                            <label class="hidden-element" id="hiddenLabel1" for="name">
-                                {{ trans('application_form.specialization') }}*
-                            </label>
-                            <input type="text" id="bundle_id" name="to_bundle" required
-                                class="hidden-element form-control"
-                                value="{{ old('to_bundle') }}">
-                            @error('to_bundle')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
+                    <div class="form-group">
+                        <label class="input-label">محول من برنامج :</label>
+                        <select class="form-control" name="from_bundle_id" id="from_bundle_id" onchange="displayPriceDiff()">
+                            <option value="" price="0" class="placeholder" disabled selected>اختر التخصص الذي تود التحويل منه
+                            </option>
+                            @foreach ($purchasedFormBundles as $bundleSale)
+                                @php
+                                    $bundle = optional($bundleSale->bundle);
+                                @endphp
+                                @if ($bundle)
+                                    <option value="{{ $bundle->id }}" price="{{ $bundle->price }}" @if(old('from_bundle_id')==$bundle->id) selected @endif>
+                                        {{ $bundle->title }}
+                                    </option>
+                                @endif
+                            @endforeach
+                        </select>
+                        @error('from_bundle_id')
+                            <div class="invalid-feedback d-block">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
 
-                        {{-- certificate --}}
-                        <div class="form-group col-12  d-none" id="certificate_section">
-                            <label style="width: auto">{{ trans('application_form.want_certificate') }} ؟
-                                *</label>
-                            <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
-                            @error('certificate')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                            <div class="row mr-5 mt-3">
-                                {{-- want certificate --}}
-                                <div class="col-sm-4 col">
-                                    <label for="want_certificate">
-                                        <input type="radio" id="want_certificate" name="certificate" value="1"
-                                            onchange="showCertificateMessage()"
-                                            class=" @error('certificate') is-invalid @enderror"
-                                            {{ old('certificate', $user->student->certificate ?? null) === '1' ? 'checked' : '' }}>
-                                        نعم
-                                    </label>
-                                </div>
+                    <div class="form-group">
+                        <label class="input-label">تحويل الي برنامج :</label><br>
+                        <select id="to_bundle_id" class="form-control @error('to_bundle_id')  is-invalid @enderror"
+                            name="to_bundle_id" required onchange="CertificateSectionToggle(); displayPriceDiff()">
+                            <option selected disabled price="0">اختر البرنامج المرام التحويل إليه
+                            </option>
 
-                                {{-- does not want certificate --}}
-                                <div class="col">
-                                    <label for="doesn't_want_certificate">
-                                        <input type="radio" id="doesn't_want_certificate" name="certificate"
-                                            onchange="showCertificateMessage()" value="0"
-                                            class="@error('certificate') is-invalid @enderror"
-                                            {{ old('certificate', $user->student->certificate ?? null) === '0' ? 'checked' : '' }}>
-                                        لا
-                                    </label>
-                                </div>
+                            {{-- Loop through top-level categories --}}
+                            @foreach ($categories as $category)
+                                <optgroup label="{{ $category->title }}">
+
+                                    {{-- Display bundles directly under the current category --}}
+                                    @foreach ($category->activeBundles as $bundleItem)
+                                        <option value="{{ $bundleItem->id }}" price="{{ $bundleItem->price }}"
+                                            has_certificate="{{ $bundleItem->has_certificate }}"
+                                            early_enroll="{{ $bundleItem->early_enroll }}"
+                                            @if (old('to_bundle_id') == $bundleItem->id) selected @endif>
+                                            {{ $bundleItem->title }}</option>
+                                    @endforeach
+
+                                    {{-- Display bundles under subcategories --}}
+                                    @foreach ($category->activeSubCategories as $subCategory)
+                                        @foreach ($subCategory->activeBundles as $bundleItem)
+                                            <option value="{{ $bundleItem->id }}" price="{{ $bundleItem->price }}"
+                                                has_certificate="{{ $bundleItem->has_certificate }}"
+                                                early_enroll="{{ $bundleItem->early_enroll }}"
+                                                @if (old('to_bundle_id') == $bundleItem->id) selected @endif>
+                                                {{ $bundleItem->title }}</option>
+                                        @endforeach
+                                    @endforeach
+
+                                </optgroup>
+                            @endforeach
+
+                        </select>
+
+                        @error('to_bundle_id')
+                            <div class="invalid-feedback d-block">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    {{-- certificate --}}
+                    <div class="form-group col-12  d-none" id="certificate_section">
+                        <label style="width: auto">{{ trans('application_form.want_certificate') }} ؟
+                            *</label>
+                        <span class="text-danger font-12 font-weight-bold" id="certificate_message"> </span>
+                        @error('certificate')
+                            <div class="invalid-feedback d-block">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                        <div class="row mr-5 mt-3">
+                            {{-- want certificate --}}
+                            <div class="col-sm-4 col">
+                                <label for="want_certificate">
+                                    <input type="radio" id="want_certificate" name="certificate" value="1"
+                                        onchange="showCertificateMessage()"
+                                        class=" @error('certificate') is-invalid @enderror"
+                                        {{ old('certificate', $user->student->certificate ?? null) === '1' ? 'checked' : '' }}>
+                                    نعم
+                                </label>
+                            </div>
+
+                            {{-- does not want certificate --}}
+                            <div class="col">
+                                <label for="doesn't_want_certificate">
+                                    <input type="radio" id="doesn't_want_certificate" name="certificate"
+                                        onchange="showCertificateMessage()" value="0"
+                                        class="@error('certificate') is-invalid @enderror"
+                                        {{ old('certificate', $user->student->certificate ?? null) === '0' ? 'checked' : '' }}>
+                                    لا
+                                </label>
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group text-secondary d-none">
+
+                        <p>*سوف تقوم بدفع
+                            <span id="price-diff" class="font-weight-bold text-primary"> 100 رس</span>
+                            كفرق بين البرنامج المحول منه وإليه
+                        </p>
+                    </div>
+
                     <div class="modal-footer">
 
                         <button type="submit" class="btn btn-danger" id="confirmAction">ارسال</button>
@@ -120,13 +138,13 @@
 
 @php
     $bundlesByCategory = [];
-    foreach ($category as $item) {
+    foreach ($categories as $item) {
         $bundlesByCategory[$item->id] = $item->bundles;
     }
 @endphp
 @push('scripts_bottom')
     {{-- bundle toggle and education section toggle --}}
-    <script>
+    {{-- <script>
         function toggleHiddenInput() {
             var bundles = @json($bundlesByCategory);
 
@@ -143,40 +161,66 @@
                 if (categoryBundles) {
                     console.log(selectInput);
                     var options = categoryBundles.map(function(bundle) {
-                        var isSelected = bundle.id == "{{ old('to_bundle', $student->bundle_id ?? null) }}" ?
+                        var isSelected = bundle.id == "{{ old('to_bundle_id', $student->bundle_id ?? null) }}" ?
                             'selected' : '';
                         return `<option value="${bundle.id}" ${isSelected} has_certificate="${bundle.has_certificate}">${bundle.title}</option>`;
                     }).join('');
 
                     hiddenInput.outerHTML =
-                        '<select id="bundle_id" name="to_bundle"  class="form-control" onchange="CertificateSectionToggle()" required>' +
+                        '<select id="bundle_id" name="to_bundle_id"  class="form-control" onchange="CertificateSectionToggle()" required>' +
                         '<option value="" class="placeholder" disabled="" selected="selected">اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option>' +
                         options +
                         '</select>';
 
 
-                        hiddenLabel.style.display = "block";
+                    hiddenLabel.style.display = "block";
                     hiddenLabel.closest('div').classList.remove('d-none');
                 }
             } else {
                 hiddenInput.outerHTML =
-                    '<select id="bundle_id" name="to_bundle"  class="form-control" onchange="CertificateSectionToggle()" >' +
+                    '<select id="bundle_id" name="to_bundle_id"  class="form-control" onchange="CertificateSectionToggle()" >' +
                     '<option value="" class="placeholder" selected hidden >اختر التخصص الذي تود دراسته في اكاديمية انس للفنون</option> </select>';
                 hiddenLabel.style.display = "none";
                 hiddenLabel.closest('div').classList.add('d-none');
             }
         }
         toggleHiddenInput();
-    </script>
+    </script> --}}
 
+    {{-- price Section Toggle --}}
+    <script>
+
+        function displayPriceDiff(){
+            let priceDiff = document.getElementById('price-diff');
+            let priceDiffSection = priceDiff.closest('div');
+            let fromBundle = document.getElementById('from_bundle_id');
+            let toBundle = document.getElementById('to_bundle_id');
+            var fromBundlePrice = parseInt(fromBundle.options[ fromBundle.selectedIndex].getAttribute('price'));
+            var toBundlePrice = parseInt(toBundle.options[ toBundle.selectedIndex].getAttribute('price'));
+            console.log(toBundlePrice);
+            console.log(fromBundlePrice);
+            console.log("diff: " + (toBundlePrice -fromBundlePrice));
+            if(toBundlePrice>fromBundlePrice){
+                console.log("more than");
+                priceDiffSection.classList.remove('d-none');
+                priceDiff.innerHTML = toBundlePrice - fromBundlePrice + "رس";
+            }else{
+                 console.log("less than");
+                priceDiffSection.classList.add('d-none');
+                priceDiff.innerHTML = "0 رس";
+            }
+        }
+
+        displayPriceDiff();
+    </script>
 
     {{-- Certificate Section Toggle --}}
     <script>
         function CertificateSectionToggle() {
 
-             let certificateSection = document.getElementById("certificate_section");
+            let certificateSection = document.getElementById("certificate_section");
 
-            let bundleSelect = document.getElementById("bundle_id");
+            let bundleSelect = document.getElementById("to_bundle_id");
             // let certificateInputs = document.querySelectorAll("input[name='certificate']");
 
             // let myForm = event.target.closest('form');
