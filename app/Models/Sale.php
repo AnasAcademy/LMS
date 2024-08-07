@@ -125,6 +125,8 @@ class Sale extends Model
             $orderType = Order::$formFee;
         } elseif (!empty($orderItem->installment_payment_id)) {
             $orderType = Order::$installmentPayment;
+        } elseif (!empty($orderItem->transform_bundle_id)) {
+            $orderType = 'transform_bundle';
         } elseif (!empty($orderItem->bundle_id)) {
             $orderType = Order::$bundle;
         } elseif (!empty($orderItem->certificate_template_id)) {
@@ -155,6 +157,8 @@ class Sale extends Model
                 'order_id' => $orderItem->order_id,
                 'webinar_id' => (empty($orderItem->gift_id) and !empty($orderItem->webinar_id)) ? $orderItem->webinar_id : null,
                 'bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->bundle_id)) ? $orderItem->bundle_id : null,
+                'transform_bundle_id' =>
+                (!empty($orderItem->transform_bundle_id)) ? $orderItem->transform_bundle_id : null,
                 'service_id' => (empty($orderItem->gift_id) and !empty($orderItem->service_id)) ? $orderItem->service_id : null,
                 'certificate_template_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_template_id)) ? $orderItem->certificate_template_id : null,
                 'certificate_bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_bundle_id)) ? $orderItem->certificate_bundle_id : null,
