@@ -1,6 +1,3 @@
-
-
-
 @extends(getTemplate() . '.panel.layouts.panel_layout')
 
 @push('styles_top')
@@ -25,7 +22,9 @@
 
     @if ($services->count() > 0)
         <section class="mt-40">
-             @include('web.default.panel.services.includes.progress', ['title' => 'طلبات الخدمات الإلكترونية'])
+            @include('web.default.panel.services.includes.progress', [
+                'title' => 'طلبات الخدمات الإلكترونية',
+            ])
 
             <div class="panel-section-card py-20 px-25 mt-20">
                 <div class="row">
@@ -40,6 +39,7 @@
                                         <th class="text-center">{{ 'حالة الطلب' }}</th>
                                         <th class="text-center">{{ 'محتوي الطلب' }}</th>
                                         <th class="text-center">{{ 'تاريخ الطلب ' }}</th>
+                                        <th class="text-center">{{ 'الإجراءات' }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -90,21 +90,28 @@
 
 
 
-                                             <td class="text-center">
-                                                    @include('admin.services.requestContentMessage', [
-                                                            'url' => '#',
-                                                            'btnClass' => 'd-flex align-items-center justify-content-center mt-1 text-primary',
-                                                            'btnText' =>
-                                                                '<span class="ml-2">' . ' محتوي الطلب</span>',
-                                                            'hideDefaultClass' => true,
-                                                            'deleteConfirmMsg' => 'test',
-                                                            'message' => $service->pivot->content,
-                                                            'id' => $service->pivot->id,
-                                                        ])
-                                                </td>
-                                                <td class="font-12">
-                                                    {{ Carbon\Carbon::parse($service->pivot->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
-                                                </td>
+                                            <td class="text-center">
+                                                @include('admin.services.requestContentMessage', [
+                                                    'url' => '#',
+                                                    'btnClass' =>
+                                                        'd-flex align-items-center justify-content-center mt-1 text-primary',
+                                                    'btnText' => '<span class="ml-2">' . ' محتوي الطلب</span>',
+                                                    'hideDefaultClass' => true,
+                                                    'deleteConfirmMsg' => 'test',
+                                                    'message' => $service->pivot->content,
+                                                    'id' => $service->pivot->id,
+                                                ])
+                                            </td>
+
+                                            <td class="font-12">
+                                                {{ Carbon\Carbon::parse($service->pivot->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                            </td>
+
+                                            <td>
+                                                @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="pay" && $service->pivot->status=="approved"))
+                                                <a href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/pay">دفع الفرق و إتمام التحويل</a>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
