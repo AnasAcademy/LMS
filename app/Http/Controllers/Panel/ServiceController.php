@@ -8,9 +8,11 @@ use Illuminate\Http\Request;
 
 use App\Models\Service;
 use App\Models\Bundle;
+use App\Models\BundleTransform;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ServiceUser;
 
 class ServiceController extends Controller
 {
@@ -51,11 +53,11 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Service $service, $content=null)
+    public function store(Request $request, Service $service, $content = null)
     {
         //
         $user = auth()->user();
-        if(empty($content)){
+        if (empty($content)) {
             $content = $service->title;
         }
 
@@ -73,45 +75,104 @@ class ServiceController extends Controller
 
     function bundleTransformRequest(Service $service)
     {
+        $categories = Category::whereNull('parent_id')->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereHas('activeBundles')
+                    ->orWhereHas('activeSubCategories', function ($query) {
+                        $query->whereHas('activeBundles');
+                    });
+            })->get();
 
-        $category = Category::where('parent_id', '!=', null)->get();
         $bundles = Bundle::get();
-        return view('web.default.panel.services.includes.bundleTransform', compact('category', 'bundles', 'service'));
+        return view('web.default.panel.services.includes.bundleTransform', compact('categories', 'bundles', 'service'));
     }
+
     function bundleTransform(Request $request, Service $service)
     {
-        try {
 
+        $user = auth()->user();
 
-            $to_bundle = Bundle::where('id', $request->to_bundle)->first();
-            $validatedData = $request->validate([
-                'from_bundle' => 'required|exists:bundles,id',
-                'to_bundle' => 'required|exists:bundles,id',
+        $to_bundle = Bundle::where('id', $request->to_bundle_id)->first();
+        $validatedData = $request->validate([
+            'from_bundle_id' => 'required|exists:bundles,id',
+            'to_bundle_id' => [
+                'required', 'exists:bundles,id',
                 function ($attribute, $value, $fail) {
                     $student = auth()->user()->student;
-                    // dd($student);
-                    // if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
-                        $fail('User has already applied for this bundle.');
-                    // }
-                },
-                'category' => 'required|exists:categories,id',
-                'certificate' => $to_bundle ? ($to_bundle->has_certificate ? 'required|boolean' : "") : '',
-            ]);
-        } catch (\Exception $e) {
-            // return back()->withErrors($e->validator)->withInput();
-            dd($e);
-        }
+                    if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                        $fail('انك مسجل بالفعل في هذا البرنامج');
+                    }
+                }
+            ],
+            'certificate' => $to_bundle ? ($to_bundle->has_certificate ? 'required|boolean' : "") : '',
+        ]);
 
-        $from_bundle = Bundle::where('id', $request->from_bundle)->first();
+
+
+
+        $from_bundle = Bundle::where('id', $request->from_bundle_id)->first();
 
         $content = " طلب تحويل من " . $from_bundle->title . " الي " . $to_bundle->title;
         if ($request->certificate) {
             $content .= " والرغبة في حجز الشهادة المهنيه الاحترافية ACP ";
         }
 
+        if ($service->price > 0) {
 
-       return $this->store($request, $service, $content);
+            Cookie::queue('service_content', json_encode($content));
+            $order = $this->createOrder($service);
+            return redirect('/payment/' . $order->id);
+        } else {
+            if ($to_bundle->price == $from_bundle->price) {
+                $type = null;
+            } else if ($to_bundle->price > $from_bundle->price) {
+                $type = "pay";
+            } else {
+                $type = "refund";
+            }
+
+            $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
+            BundleTransform::create([...$validatedData, 'student_id' => $user->student->id, 'service_request_id' => $serviceRequest->id, 'type' => $type]);
+            return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
+        }
     }
+
+    function bundleTransformPay(Request $request, bundleTransform $bundleTransform)
+    {
+
+        $user = auth()->user();
+        Cookie::queue('bundleTransformId', json_encode($bundleTransform->id));
+        // $order = $this->createOrder($bundleTransform);
+        $price = $bundleTransform->toBundle->price - $bundleTransform->fromBundle->price;
+
+        $order = Order::create([
+            'user_id' => $user->id,
+            'status' => Order::$pending,
+            'amount' => $price,
+            'tax' => 0,
+            'total_discount' => 0,
+            'total_amount' =>  $price,
+            'product_delivery_fee' => null,
+            'created_at' => time(),
+        ]);
+
+        OrderItem::create([
+            'user_id' => $user->id,
+            'order_id' => $order->id,
+            'bundle_id' => $bundleTransform->to_bundle_id,
+            'amount' => $price,
+            'total_amount' => $price,
+            'tax_price' => 0,
+            'commission' => 0,
+            'commission_price' => 0,
+            'product_delivery_fee' => 0,
+            'discount' => 0,
+            'created_at' => time(),
+        ]);
+        return redirect('/payment/' . $order->id);
+    }
+
+
     /**
      * Display the specified resource.
      *
