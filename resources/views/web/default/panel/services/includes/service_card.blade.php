@@ -26,8 +26,8 @@
 
                     @if ($service->price > 0)
                         {{ $service->price }} ريال سعودي
-                    @else
-                        <span class="text-danger">هذة الخدمه مجانيه</span>
+                    {{-- @else
+                        <span class="text-danger">هذة الخدمه مجانيه</span> --}}
                     @endif
                 </p>
 
