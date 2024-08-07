@@ -83,17 +83,21 @@
 
                 @if (!empty($item))
                     <section class="mt-80">
-                        @if (!empty($item))
-                            <div
-                                class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
-                                <h2 class="section-title">الدورات المسجلة </h2>
-                            </div>
+                        <div
+                            class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
+                            <h2 class="section-title">الدورات المسجلة </h2>
+                        </div>
 
-                            <div class="d-flex justify-content-between align-items-center mt-30">
-                                <h2 class="section-title after-line">{{ trans('product.course') }}
-                                    {{ $item->title }}</h2>
-                            </div>
+                        <div class="d-flex justify-content-between align-items-center mt-30">
+                            <h2 class="section-title after-line">{{ trans('product.course') }}
+                                {{ $item->title }}</h2>
+                        </div>
 
+                        @if (!$sale->webinar->isUserHasAccessToContent())
+                        <p class="text-center alert alert-warning" style="margin-top: 20px !important">
+                            ممنوع الوصول للمقرر الاّن
+                        </p>
+                        @else
                             <div class="row mt-10">
                                 <div class="col-12">
 
