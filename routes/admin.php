@@ -81,6 +81,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::put('/groups/{group}/update', 'UserController@groupUpdate');
             Route::post('/groups/{group}/change', 'UserController@changeGroup');
             Route::get('/groups/{id}/delete', 'GroupController@destroy');
+            Route::get('/groups/{group}/exportExcel', 'UserController@groupExportExcel');
 
         });
         Route::group(['prefix' => 'classes'], function () {
