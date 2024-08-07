@@ -7,6 +7,7 @@ use App\BundleStudent;
 use App\Exports\EnrollersExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
+use App\Exports\GroupStudentsExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ExcelImport;
 use App\Models\Accounting;
@@ -2086,5 +2087,12 @@ class UserController extends Controller
 
             return back()->with(['toast' => $toastData]);
         }
+    }
+
+
+    function groupExportExcel(Request $request, Group $group){
+        $enrollments = $group->enrollments;
+        $export = new GroupStudentsExport($enrollments);
+        return Excel::download($export, "group_$group->name _students.xlsx");
     }
 }
