@@ -1119,10 +1119,12 @@ class Webinar extends Model implements TranslatableContract
                         return true;
                     }
                 }
+                return false;
             } else {
-
                 return false;
             }
         }
+
+        return false;
     }
 }
