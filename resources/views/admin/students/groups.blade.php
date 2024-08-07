@@ -38,7 +38,7 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                <a href="{{ getAdminPanelUrl() }}/groups/excelGroup?{{ http_build_query(request()->all()) }}"
+                <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/exportExcel?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
             <div class="h-10"></div>
