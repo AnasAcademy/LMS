@@ -108,8 +108,11 @@
                                             </td>
 
                                             <td>
-                                                @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="pay" && $service->pivot->status=="approved"))
+                                                @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="pay" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
                                                 <a href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/pay">دفع الفرق و إتمام التحويل</a>
+                                                @endif
+                                                @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="refund" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
+                                                <a href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/refund">استيرداد الفرق و إتمام التحويل</a>
                                                 @endif
                                             </td>
                                         </tr>
