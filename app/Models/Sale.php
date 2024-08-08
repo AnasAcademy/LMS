@@ -146,19 +146,25 @@ class Sale extends Model
                 $class = StudyClass::create(['title' => "الدفعة الأولي"]);
             }
 
-            if(empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
-            && !empty($orderItem->installmentPayment->step)  ){
+            if (
+                empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
+                && !empty($orderItem->installmentPayment->step)
+            ) {
                 $class =
-                BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class ?? $class;
+                    BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class ?? $class;
             }
+            $price = 0;
+            if (!empty($orderItem->transform_bundle_id)) {
+                $price = $orderItem->Bundle->price - $orderItem->transformBundle->price;
+            }
+
             $sale = Sale::create([
                 'buyer_id' => $orderItem->user_id,
                 'seller_id' => $seller_id,
                 'order_id' => $orderItem->order_id,
                 'webinar_id' => (empty($orderItem->gift_id) and !empty($orderItem->webinar_id)) ? $orderItem->webinar_id : null,
                 'bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->bundle_id)) ? $orderItem->bundle_id : null,
-                'transform_bundle_id' =>
-                (!empty($orderItem->transform_bundle_id)) ? $orderItem->transform_bundle_id : null,
+                'transform_bundle_id' => (!empty($orderItem->transform_bundle_id)) ? $orderItem->transform_bundle_id : null,
                 'service_id' => (empty($orderItem->gift_id) and !empty($orderItem->service_id)) ? $orderItem->service_id : null,
                 'certificate_template_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_template_id)) ? $orderItem->certificate_template_id : null,
                 'certificate_bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_bundle_id)) ? $orderItem->certificate_bundle_id : null,
@@ -177,11 +183,27 @@ class Sale extends Model
                 'tax' => $orderItem->tax_price,
                 'commission' => $orderItem->commission_price,
                 'discount' => $orderItem->discount,
-                'total_amount' => $orderItem->total_amount,
+                'total_amount' => abs($orderItem->total_amount),
                 'product_delivery_fee' => $orderItem->product_delivery_fee,
                 'created_at' => time(),
+                "refund_at" => ($price<0) ? time() : null,
+                "message" => ($price < 0) ? 'تحويل من برنامج لبرنامج اخر' : null,
                 'class_id' => $class->id,
             ]);
+
+
+            if (!empty($orderItem->transform_bundle_id)) {
+                Sale::where(['buyer_id' => $orderItem->user_id, "bundle_id" => $orderItem->transform_bundle_id])->update(['transform_bundle_id' => $orderItem->transform_bundle_id, 'bundle_id' => $orderItem->bundle_id]);
+
+                $bundleTransform = BundleTransform::where(['user_id' => $orderItem->user_id, "to_bundle_id" => $orderItem->bundle_id, 'from_bundle_id' => $orderItem->transform_bundle_id])->orderBy('id', 'desc')->first();
+                if ($bundleTransform) {
+                    $bundleTransform->update(['status' => 'paid']);
+                }
+
+                BundleStudent::whereHas('student', function ($query) use ($orderItem) {
+                    $query->where('user_id', $orderItem->user_id);
+                })->where(['bundle_id' => $orderItem->transform_bundle_id])->update(['bundle_id' => $orderItem->bundle_id]);
+            }
         } catch (\Exception $e) {
             dd($e);
         }
