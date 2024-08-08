@@ -95,7 +95,7 @@
 
                         @if (!$sale->webinar->isUserHasAccessToContent())
                         <p class="text-center alert alert-warning" style="margin-top: 20px !important">
-                            ممنوع الوصول للمقرر الاّن
+                            الوصول إلى محتوى الدورة غير متاح حاليًا
                         </p>
                         @else
                             <div class="row mt-10">
