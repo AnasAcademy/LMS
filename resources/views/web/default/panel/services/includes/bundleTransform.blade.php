@@ -118,12 +118,9 @@
                         </div>
                     </div>
 
-                    <div class="form-group text-secondary d-none">
+                    <div class="form-group text-secondary d-none" id="price-diff">
 
-                        <p>*سوف تقوم بدفع
-                            <span id="price-diff" class="font-weight-bold text-primary"> 100 رس</span>
-                            كفرق بين البرنامج المحول منه وإليه
-                        </p>
+
                     </div>
 
                     <div class="modal-footer">
@@ -192,7 +189,6 @@
 
         function displayPriceDiff(){
             let priceDiff = document.getElementById('price-diff');
-            let priceDiffSection = priceDiff.closest('div');
             let fromBundle = document.getElementById('from_bundle_id');
             let toBundle = document.getElementById('to_bundle_id');
             var fromBundlePrice = parseInt(fromBundle.options[ fromBundle.selectedIndex].getAttribute('price'));
@@ -201,13 +197,20 @@
             console.log(fromBundlePrice);
             console.log("diff: " + (toBundlePrice -fromBundlePrice));
             if(toBundlePrice>fromBundlePrice){
-                console.log("more than");
-                priceDiffSection.classList.remove('d-none');
-                priceDiff.innerHTML = toBundlePrice - fromBundlePrice + "رس";
+                priceDiff.classList.remove('d-none');
+                priceDiff.innerHTML = `<p>*سوف تقوم بدفع
+                            <span  class="font-weight-bold text-primary"> ${toBundlePrice - fromBundlePrice} رس</span>
+                            كفرق بين البرنامج المحول منه وإليه
+                        </p>`;
+            }else if(toBundlePrice<fromBundlePrice){
+                priceDiff.classList.remove('d-none');
+                priceDiff.innerHTML = `<p>*سوف تقوم بإستيرداد مبلغ
+                            <span  class="font-weight-bold text-primary"> ${Math.abs(toBundlePrice - fromBundlePrice)} رس</span>
+                            كفرق بين البرنامج المحول منه وإليه
+                        </p>`;
             }else{
-                 console.log("less than");
-                priceDiffSection.classList.add('d-none');
-                priceDiff.innerHTML = "0 رس";
+                priceDiff.classList.add('d-none');
+
             }
         }
 
