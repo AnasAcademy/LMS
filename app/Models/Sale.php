@@ -38,6 +38,11 @@ class Sale extends Model
         return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
     }
 
+    public function transformBundle()
+    {
+        return $this->belongsTo('App\Models\Bundle', 'transform_bundle_id', 'id');
+    }
+
     public function service()
     {
         return $this->belongsTo('App\Models\service', 'service_id', 'id');
