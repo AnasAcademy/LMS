@@ -17,8 +17,8 @@ class BundleTransform extends Model
     function toBundle(){
         return $this->belongsTo('App\Models\Bundle','to_bundle_id','id');
     }
-    function student(){
-        return $this->belongsTo('App\Student','student_id','id');
+    function user(){
+        return $this->belongsTo('App\User','user_id','id');
     }
     function serviceRequest(){
         return $this->belongsTo('App\Models\ServiceUser','service_request','id');
