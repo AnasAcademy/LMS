@@ -12,6 +12,7 @@ use App\Models\BundleTransform;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Sale;
 use App\Models\ServiceUser;
 
 class ServiceController extends Controller
@@ -132,7 +133,7 @@ class ServiceController extends Controller
             }
 
             $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
-            BundleTransform::create([...$validatedData, 'student_id' => $user->student->id, 'service_request_id' => $serviceRequest->id, 'type' => $type]);
+            BundleTransform::create([...$validatedData, 'user_id' => $user->id, 'service_request_id' => $serviceRequest->id, 'type' => $type]);
             return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
         }
     }
@@ -143,7 +144,7 @@ class ServiceController extends Controller
         $user = auth()->user();
         Cookie::queue('bundleTransformId', json_encode($bundleTransform->id));
         // $order = $this->createOrder($bundleTransform);
-        $price = $bundleTransform->toBundle->price - $bundleTransform->fromBundle->price;
+        $price = abs($bundleTransform->toBundle->price - $bundleTransform->fromBundle->price);
 
         $order = Order::create([
             'user_id' => $user->id,
@@ -170,7 +171,52 @@ class ServiceController extends Controller
             'discount' => 0,
             'created_at' => time(),
         ]);
+
         return redirect('/payment/' . $order->id);
+    }
+
+    function bundleTransformRefund(Request $request, bundleTransform $bundleTransform)
+    {
+
+        $user = auth()->user();
+        Cookie::queue('bundleTransformId', json_encode($bundleTransform->id));
+        // $order = $this->createOrder($bundleTransform);
+        $price = abs($bundleTransform->toBundle->price - $bundleTransform->fromBundle->price);
+
+        $order = Order::create([
+            'user_id' => $user->id,
+            'status' => Order::$pending,
+            'amount' => $price,
+            'tax' => 0,
+            'total_discount' => 0,
+            'total_amount' =>  $price,
+            'product_delivery_fee' => null,
+            'created_at' => time(),
+        ]);
+
+        $orderItem = OrderItem::create([
+            'user_id' => $user->id,
+            'order_id' => $order->id,
+            'bundle_id' => $bundleTransform->to_bundle_id,
+            'transform_bundle_id' => $bundleTransform->from_bundle_id,
+            'amount' => $price,
+            'total_amount' => $price,
+            'tax_price' => 0,
+            'commission' => 0,
+            'commission_price' => 0,
+            'product_delivery_fee' => 0,
+            'discount' => 0,
+            'created_at' => time(),
+        ]);
+
+       Sale::createSales($orderItem, $order->payment_method);
+
+        $toastData = [
+            'title' => "اتمام التحويل",
+            'msg' => "تم اتمام التحويل واستيرداد المبلغ بنجاح",
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
 
