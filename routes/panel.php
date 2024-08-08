@@ -311,6 +311,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     });
 
     Route::get('/bundletransform/{bundleTransform}/pay', 'ServiceController@bundleTransformPay');
+    Route::get('/bundletransform/{bundleTransform}/refund', 'ServiceController@bundleTransformRefund');
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
         Route::get('/', 'SupportsController@index');
