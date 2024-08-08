@@ -458,6 +458,9 @@
                                             <td class="text-left">
                                                 <div class="media-body">
                                                     <div>{{ $sale->item_title }}</div>
+                                                    @if (!empty($sale->transform_bundle_id) && $sale->type != 'transform_bundle')
+                                                        <div class="text-center font-weight-500 text-success">محول</div>
+                                                    @endif
                                                     <div class="text-primary text-small font-600-bold">ID :
                                                         {{ $sale->item_id }}</div>
                                                 </div>
