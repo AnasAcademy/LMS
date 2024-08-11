@@ -559,6 +559,13 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/{id}/approved', 'OfflinePaymentController@approved');
             });
 
+            Route::group(['prefix' => 'bundle_transforms'], function () {
+                Route::get('/', 'BundleTransformController@index');
+                Route::get('/excel', 'OfflinePaymentController@exportExcel');
+                Route::get('/{offlinePayment}/reject', 'OfflinePaymentController@reject');
+                Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+            });
+
             Route::group(['prefix' => 'discounts'], function () {
                 Route::get('/', 'DiscountController@index');
                 Route::get('/new', 'DiscountController@create');
