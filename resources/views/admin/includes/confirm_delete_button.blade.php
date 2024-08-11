@@ -45,7 +45,7 @@
                 <textarea class="form-control" id="message" name="message" placeholder="اكتب بشكل مفصل سبب الرفض"></textarea>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary ml-3" data-dismiss="modal">{{ trans('admin/main.cancel') }}</button>
-                    <button type="submit" class="btn btn-danger id="confirmAction">{{ trans('admin/main.send')}}</button>
+                    <button type="submit" class="btn btn-danger" id="confirmAction">{{ trans('admin/main.send')}}</button>
                 </div>
             </form>
         </div>

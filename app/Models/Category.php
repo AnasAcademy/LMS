@@ -58,6 +58,10 @@ class Category extends Model implements TranslatableContract
     {
         return $this->hasMany($this, 'parent_id', 'id')->orderBy('order', 'asc');
     }
+    public function activeSubCategories()
+    {
+        return $this->hasMany($this, 'parent_id', 'id')->where('status', 'active')->orderBy('order', 'asc');
+    }
 
     public function filters()
     {
@@ -71,6 +75,10 @@ class Category extends Model implements TranslatableContract
     public function bundles()
     {
         return $this->hasMany(Bundle::class, 'category_id', 'id');
+    }
+    public function activeBundles()
+    {
+        return $this->hasMany(Bundle::class, 'category_id', 'id')->where('status', 'active');
     }
 
     public function userOccupations()

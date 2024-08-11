@@ -1,5 +1,10 @@
 @extends('admin.layouts.app')
 
+
+@php
+    $filters = request()->getQueryString();
+@endphp
+
 @section('content')
     <section class="section">
         <div class="section-header">
@@ -79,7 +84,7 @@
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
-                                <h4>{{ trans('admin/main.classes_sales') }}</h4>
+                                <h4>مبيعات الدورات</h4>
                             </div>
                             <div class="card-body">
                                 {{ $classesSales['count'] }}
@@ -91,14 +96,14 @@
                     </div>
                 </div>
 
-                {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-success">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
-                                <h4>{{'مبيعات الخدمات الإلكترونية'}}</h4>
+                                <h4>{{ 'مبيعات الخدمات الإلكترونية' }}</h4>
                             </div>
                             <div class="card-body">
                                 {{ $servicesSales['count'] }}
@@ -108,7 +113,7 @@
                             </div>
                         </div>
                     </div>
-                </div> --}}
+                </div>
 
                 {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
@@ -266,18 +271,24 @@
                     <form method="get" class="mb-0">
 
                         <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">كود الطالب</label>
+                                    <input name='user_code' type="text" class="form-control"
+                                        value="{{ request()->get('user_code') }}">
+                                </div>
+                            </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">اسم الطالب</label>
-                                    <input
-                                        name='user_name'
-                                        type="text" class="form-control"
+                                    <input name='user_name' type="text" class="form-control"
                                         value="{{ request()->get('user_name') }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">بريد الطالب</label>
                                     <input name="email" type="text" class="form-control"
@@ -285,7 +296,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">نوع المبيعة</label>
                                     <select name="type" data-plugin-selectTwo class="form-control populate">
@@ -294,21 +305,55 @@
                                             رسوم حجز مقعد
                                         </option>
                                         <option value="bundle" @if (request()->get('type') == 'bundle') selected @endif>
-                                            حزمة مقررات
+                                            دفع كامل الرسوم
                                         </option>
-                                        <option value="installment_payment" @if (request()->get('type') == 'installment_payment') selected @endif>
+                                        <option value="upfront" @if (request()->get('type') == 'upfront') selected @endif>
+                                            قسط التسجيل
+                                        </option>
+
+                                        <option value="installment_payment"
+                                            @if (request()->get('type') == 'installment_payment') selected @endif>
                                             اقساط
                                         </option>
                                         <option value="webinar" @if (request()->get('type') == 'webinar') selected @endif>
                                             دورة
                                         </option>
+                                        <option value="service" @if (request()->get('type') == 'service') selected @endif>
+                                            خدمات الكترونية
+                                        </option>
+                                        <option value="scholarship" @if (request()->get('type') == 'scholarship') selected @endif>
+                                            منح دراسية
+                                        </option>
                                     </select>
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">عنوان البرنامج</label>
+                                    <input name="bundle_title" class="form-control"  value="{{ request()->get('bundle_title') }}">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">{{ trans('admin/main.status') }}</label>
+                                    <select name="status" data-plugin-selectTwo class="form-control populate">
+                                        <option value="">{{ trans('admin/main.all_status') }}</option>
+                                        <option value="success" @if (request()->get('status') == 'success') selected @endif>
+                                            {{ trans('admin/main.success') }}</option>
+                                        <option value="refund" @if (request()->get('status') == 'refund') selected @endif>
+                                            {{ trans('admin/main.refund') }}</option>
+                                        {{--
+                                        <option value="blocked" @if (request()->get('status') == 'blocked') selected @endif>
+                                            {{ trans('update.access_blocked') }}</option>
+                                             --}}
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-12 row">
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="input-label">{{ trans('admin/main.start_date') }}</label>
                                         <div class="input-group">
@@ -319,17 +364,18 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="input-label">{{ trans('admin/main.end_date') }}</label>
                                         <div class="input-group">
                                             <input type="date" id="to" class="text-center form-control"
-                                                name="to" value="{{ request()->get('to') }}" placeholder="End Date">
+                                                name="to" value="{{ request()->get('to') }}"
+                                                placeholder="End Date">
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group mt-1">
                                         <label class="input-label mb-4"> </label>
                                         <input type="submit" class="text-center btn btn-primary w-100"
@@ -344,13 +390,12 @@
                 </div>
             </section>
 
-
             <div class="row">
                 <div class="col-12 col-md-12">
                     <div class="card">
                         <div class="card-header">
                             @can('admin_sales_export')
-                                <a href="{{ getAdminPanelUrl() }}/financial/sales/export"
+                                <a href="{{ getAdminPanelUrl() }}/financial/sales/export?{{ $filters }}"
                                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
                             @endcan
                         </div>
@@ -382,6 +427,8 @@
                                                     {{ !empty($sale->buyer) ? $sale->buyer->email : '' }}</div>
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ !empty($sale->buyer) ? $sale->buyer->id : '' }}</div>
+                                                <div class="text-primary text-small font-600-bold">Code :
+                                                    {{ !empty($sale->buyer) ? $sale->buyer->user_code : '' }}</div>
                                             </td>
 
                                             <td class="text-left">
@@ -411,6 +458,9 @@
                                             <td class="text-left">
                                                 <div class="media-body">
                                                     <div>{{ $sale->item_title }}</div>
+                                                    @if (!empty($sale->transform_bundle_id) && $sale->type != 'transform_bundle')
+                                                        <div class="text-center font-weight-500 text-success">محول</div>
+                                                    @endif
                                                     <div class="text-primary text-small font-600-bold">ID :
                                                         {{ $sale->item_id }}</div>
                                                 </div>
@@ -423,17 +473,23 @@
                                                     @elseif($sale->type == \App\Models\Sale::$product)
                                                         {{ trans('update.product') }}
                                                     @elseif($sale->type == \App\Models\Sale::$bundle)
-                                                        {{ trans('update.bundle') }}
+                                                        @if ($sale->payment_method == 'scholarship')
+                                                            منحة دراسية
+                                                        @else
+                                                            دفع كامل الرسوم
+                                                        @endif
                                                     @elseif($sale->type == \App\Models\Sale::$gift)
                                                         {{ trans('update.gift') }}
                                                     @elseif($sale->type == \App\Models\Sale::$installmentPayment)
-                                                        {{ trans('update.installment_payment') }}
+                                                        {{ $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل' }}
                                                     @elseif($sale->type == 'form_fee')
-                                                        رسوم نموذج القبول
+                                                        رسوم حجز مقعد
                                                     @elseif($sale->type == 'certificate')
                                                         شراء شهادة
                                                     @elseif($sale->type == 'webinar')
                                                         دورة
+                                                    @elseif($sale->type == 'service')
+                                                        خدمة الكترونية
                                                     @else
                                                         {{ $sale->type }}
                                                     @endif
@@ -445,6 +501,17 @@
                                             <td>
                                                 @if (!empty($sale->refund_at))
                                                     <span class="text-warning">{{ trans('admin/main.refund') }}</span>
+                                                    @include('admin.includes.message_button', [
+                                                                    'url' => '#',
+                                                                    'btnClass' => 'd-flex align-items-center mt-1',
+                                                                    'btnText' =>
+                                                                        '<span class="ml-2">' .
+                                                                        ' سبب الإستيرداد</span>',
+                                                                    'hideDefaultClass' => true,
+                                                                    'deleteConfirmMsg' => 'سبب  طلب الإستيرداد',
+                                                                    'message' => $sale->message,
+                                                                    'id' => $sale->id,
+                                                                ])
                                                 @elseif(!$sale->access_to_purchased_item)
                                                     <span class="text-danger">{{ trans('update.access_blocked') }}</span>
                                                 @else
@@ -463,7 +530,7 @@
 
                                                 @can('admin_sales_refund')
                                                     @if (empty($sale->refund_at) and $sale->payment_method != \App\Models\Sale::$subscribe)
-                                                        @include('admin.includes.delete_button', [
+                                                        @include('admin.includes.send_message', [
                                                             'url' =>
                                                                 getAdminPanelUrl() .
                                                                 '/financial/sales/' .
@@ -471,6 +538,9 @@
                                                                 '/refund',
                                                             'tooltip' => trans('admin/main.refund'),
                                                             'btnIcon' => 'fa-times-circle',
+                                                            'id' => $sale->id,
+                                                            'title' =>"تأكيد طلب الإسترداد",
+                                                            'subTitle' => "اذكر سبب الاستيرداد"
                                                         ])
                                                     @endif
                                                 @endcan

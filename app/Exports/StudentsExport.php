@@ -34,13 +34,14 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
 
         return [
 
-            'Name',
+            'Student code',
+            'Arabic Name',
+            'English Name',
             'diploma',
             'created at',
             'Status',
             'Mobile',
             'Email',
-            'Student code',
 
         ];
     }
@@ -62,23 +63,25 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
 
 
             return [
+                $user->user_code,
                 $user->student->ar_name,
+                $user->student->en_name,
                 $diploma,
                 dateTimeFormat($user->created_at, 'j M Y - H:i'),
                 $user->status,
                 $user->mobile,
                 $user->email,
-                $user->user_code,
             ];
         } else {
             return [
+                $user->user_code,
                 ($user->student ? $user->student->ar_name : $user->full_name),
+                ($user->student ? $user->student->en_name : $user->full_name),
                 'غير مسجل بعد',
                 dateTimeFormat($user->created_at, 'j M Y - H:i'),
                 $user->status,
                 $user->mobile,
                 $user->email,
-                $user->user_code,
             ];
         }
 

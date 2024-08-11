@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Bitwise\UserLevelOfTraining;
+use App\BundleStudent;
 use App\Exports\EnrollersExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
+use App\Exports\GroupStudentsExport;
 use App\Http\Controllers\Controller;
 use App\Imports\ExcelImport;
 use App\Models\Accounting;
@@ -97,9 +99,9 @@ class UserController extends Controller
                 ]);
             }
             $certificate = !empty($validatedData['certificate']) ? $validatedData['certificate'] : null;
-            $student->bundles()->detach($validatedData['fromDiploma']);
-            $student->bundles()->attach($validatedData['toDiploma'], ['certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
-
+            // $student->bundles()->detach($validatedData['fromDiploma']);
+            // $student->bundles()->attach($validatedData['toDiploma'], ['certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
+            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $validatedData['fromDiploma']])->update(['bundle_id' => $validatedData['toDiploma'], 'certificate' => (!empty($validatedData['certificate'])) ? $validatedData['certificate'] : null]);
 
 
             $toastData = [
@@ -344,7 +346,7 @@ class UserController extends Controller
         return view('admin.users.instructors', $data);
     }
 
-    private function addUsersExtraInfo($users)
+    public function addUsersExtraInfo($users)
     {
         foreach ($users as $user) {
             $salesQuery = Sale::where('seller_id', $user->id)
@@ -397,7 +399,7 @@ class UserController extends Controller
         return $users;
     }
 
-    private function filters($query, $request)
+    public function filters($query, $request)
     {
         $from = $request->input('from');
         $to = $request->input('to');
@@ -591,7 +593,7 @@ class UserController extends Controller
         return view('admin.users.create', $data);
     }
 
-    private function username($data)
+    public function username($data)
     {
         $email_regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
 
@@ -882,7 +884,7 @@ class UserController extends Controller
         return view('admin.users.edit', $data);
     }
 
-    private function getPurchasedClassesData($user)
+    public function getPurchasedClassesData($user)
     {
         $manualAddedClasses = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -926,7 +928,7 @@ class UserController extends Controller
         ];
     }
 
-    private function getPurchasedBundlesData($user)
+    public function getPurchasedBundlesData($user)
     {
         $manualAddedBundles = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -970,7 +972,7 @@ class UserController extends Controller
         ];
     }
 
-    private function getPurchasedProductsData($user)
+    public function getPurchasedProductsData($user)
     {
         $manualAddedProducts = Sale::whereNull('refund_at')
             ->where('buyer_id', $user->id)
@@ -1150,7 +1152,7 @@ class UserController extends Controller
         return redirect()->back()->with('msg', 'تم تعديل بيانات المستخدم بنجاح');
     }
 
-    private function handleUserCertificateAdditional($userId, $value)
+    public function handleUserCertificateAdditional($userId, $value)
     {
         $name = 'certificate_additional';
 
@@ -1477,6 +1479,47 @@ class UserController extends Controller
             return back()->with(['toast' => $toastData]);
         }
     }
+    public function importExcelScholarshipStudents(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $import = new StudentImport(true);
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => 'تم اضافه الطلبة بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            dd($toastData);
+            return back()->with(['toast' => $toastData]);
+        }
+    }
 
 
     public function exportBundles()
@@ -1732,7 +1775,7 @@ class UserController extends Controller
         //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
         //         $item->where('form_fee', true);
         //     });
-        $query = User::where(['role_name' => Role::$registered_user])->whereHas('student');
+        $query = User::whereHas('student')->whereHas('purchasedFormBundleUnique');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
@@ -1793,11 +1836,13 @@ class UserController extends Controller
     public function Enrollers(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
+        $query = User::where(['role_name' => Role::$user])->whereHas(
+            'purchasedBundles',
+            function ($query) {
+                $query->where("payment_method", "!=", 'scholarship');
+            }
+        );
 
-        //    $query= User::where(['role_name'=> Role::$registered_user])->where('user_code', "!=", null)->whereHas('orderItems', function($item){
-        //         $item->where('form_fee', true);
-        //     });
-        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles');
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
             ->count();
@@ -1855,6 +1900,64 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
+    public function ScholarshipStudent(Request $request, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+        $query = User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function ($query) {
+            $query->where("payment_method", 'scholarship');
+        });
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+            ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+            ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+                ->paginate(20);
+        }
+
+        $users = $this->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+        ];
+
+        return view('admin.students.enrollers', $data);
+    }
+
     public function Courses(Request $request, $id, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
@@ -1933,7 +2036,7 @@ class UserController extends Controller
             'status' => 'success',
         ];
         $group->update($validData);
-        return redirect('/admin/courses/'.$group->webinar_id)->with('toast', $toastData);
+        return redirect('/admin/courses/' . $group->webinar_id)->with('toast', $toastData);
     }
 
     public function sendEmail($user, $data)
@@ -1954,5 +2057,42 @@ class UserController extends Controller
             'type' => "single",
             'created_at' => time()
         ]);
+    }
+
+    function changeGroup(Request $request, Group $group)
+    {
+        try {
+            $request->validate([
+                'from' => 'required|exists:groups,id',
+                'to' => 'required|exists:groups,id',
+                'user_id' => 'required|exists:users,id'
+            ]);
+
+            $user =  auth()->user();
+            Enrollment::where(['user_id' => $request->user_id, 'group_id' => $request->from])->update(["group_id" => $request->to]);
+
+            $toastData = [
+                'title' => 'تحويل من جروب لأخر',
+                'msg' => 'تم التحويل بنجاح',
+                'status' => 'success',
+            ];
+            return back()->with('toast', $toastData);
+        } catch (\Throwable $th) {
+            // dd($th->getMessage());
+            $toastData = [
+                'title' => '',
+                'msg' => $th->getMessage(),
+                'status' => 'error',
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        }
+    }
+
+
+    function groupExportExcel(Request $request, Group $group){
+        $enrollments = $group->enrollments;
+        $export = new GroupStudentsExport($enrollments);
+        return Excel::download($export, "group_$group->name _students.xlsx");
     }
 }

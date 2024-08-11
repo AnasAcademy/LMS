@@ -1,56 +1,65 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
-<style>
-    .form-group .iti {
-        width: 100% !important;
-        border-radius: 20px !important;
-    }
-</style>
-<div class="row">
-    <!--<div class="col-5">-->
-    <!--    <div class="form-group">-->
-    <!--        <label class="input-label" for="mobile">{{ trans('auth.country') }}:</label>-->
-    <!--        <select name="country_code" class="form-control select2">-->
-    <!--            @foreach(getCountriesMobileCode() as $country => $code)-->
-    <!--                <option value="{{ $code }}" @if($code == old('country_code')) selected @endif>{{ $country }}</option>-->
-    <!--            @endforeach-->
-    <!--        </select>-->
+    <style>
+        .form-group .iti {
+            width: 100% !important;
+            border-radius: 20px !important;
+        }
+    </style>
+    <div class="row">
+        <!--<div class="col-5">-->
+        <!--    <div class="form-group">-->
+        <!--        <label class="input-label" for="mobile">{{ trans('auth.country') }}:</label>-->
+        <!--        <select name="country_code" class="form-control select2">-->
+        <!--            @foreach (getCountriesMobileCode() as $country => $code)
+-->
+        <!--                <option value="{{ $code }}" @if ($code == old('country_code')) selected @endif>{{ $country }}</option>-->
+        <!--
+@endforeach-->
+        <!--        </select>-->
 
-    <!--        @error('mobile')-->
-    <!--        <div class="invalid-feedback">-->
-    <!--            {{ $message }}-->
-    <!--        </div>-->
-    <!--        @enderror-->
-    <!--    </div>-->
-    <!--</div>-->
+        <!--        @error('mobile')
+    -->
+            <!--        <div class="invalid-feedback">-->
+            <!--            {{ $message }}-->
+            <!--        </div>-->
+            <!--
+@enderror-->
+        <!--    </div>-->
+        <!--</div>-->
 
-    <div class="col-12">
-        <div class="form-group">
-            <!--<input name="mobile" type="text" class="form-control @error('mobile') is-invalid @enderror"-->
-            <!--       value="{{ old('mobile') }}" id="mobile" aria-describedby="mobileHelp">-->
+        <div class="col-12">
+            <div class="form-group">
+                <!--<input name="mobile" type="text" class="form-control @error('mobile') is-invalid @enderror"-->
+                <!--       value="{{ old('mobile') }}" id="mobile" aria-describedby="mobileHelp">-->
 
 
 
-            <div class="mb-3">
-            <label class="input-label d-block" for="mobile">{{ trans('auth.mobile') }} {{ !empty($optional) ? "(". trans('public.optional') .")" : '' }}*</label>
-                        <!-- Phone number input field -->
-                        <input type="tel" id="phone" name="mobile" value="{{ old('mobile') }}" aria-describedby="mobileHelp" class="form-control @error('mobile') is-invalid @enderror" placeholder="5xxxxxxxxx">
+                <div class="mb-3">
+                    <label class="input-label d-block" for="mobile">{{ trans('auth.mobile') }}
+                        {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
+                    <!-- Phone number input field -->
+                    <input type="tel" id="phone" name="mobile" value="{{ old('mobile') }}"
+                        aria-describedby="mobileHelp" class="form-control @error('mobile') is-invalid @enderror"
+                        placeholder="5xxxxxxxxx">
+
+                        <input type="hidden" name="country_code" id="code">
+                </div>
+
+
+
+
+
+
+                @error('mobile')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
-
-
-
-
-
-
-            @error('mobile')
-            <div class="invalid-feedback d-block">
-                {{ $message }}
-            </div>
-            @enderror
         </div>
     </div>
-</div>
 
-<!-- Include Bootstrap JS -->
+    <!-- Include Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <!-- Include intlTelInput JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>

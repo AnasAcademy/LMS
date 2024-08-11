@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="col-12 col-lg-4">
+        {{-- <div class="col-12 col-lg-4">
             <div class="form-group">
                 <label class="input-label">{{ trans('auth.profile_cover') }}</label>
 
@@ -41,7 +41,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 </section>
 

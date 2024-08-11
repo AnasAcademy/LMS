@@ -30,6 +30,7 @@
                                         <th>{{ trans('admin/main.sub_category') }}</th>
                                         <th>{{ trans('panel.classes') }}</th>
                                         <th>{{ trans('home.teachers') }}</th>
+                                        <th>{{trans('admin/main.status')}}</th>
                                         <th>{{ trans('admin/main.action') }}</th>
                                     </tr>
                                     @foreach($categories as $category)
@@ -43,6 +44,8 @@
                                             <td>{{ $category->subCategories->count() }}</td>
                                             <td>{{ count($category->getCategoryCourses()) }}</td>
                                             <td>{{ count($category->getCategoryInstructorsIdsHasMeeting()) }}</td>
+                                            <td class="text-center">{{ $category->status }}</td>
+
                                             <td>
                                                 @can('admin_categories_edit')
                                                     <a href="{{ getAdminPanelUrl() }}/categories/{{ $category->id }}/edit"

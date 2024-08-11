@@ -38,7 +38,7 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                <a href="{{ getAdminPanelUrl() }}/groups/excelGroup?{{ http_build_query(request()->all()) }}"
+                <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/exportExcel?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
             <div class="h-10"></div>
@@ -103,7 +103,21 @@
                             </td>
 
                             <td class="text-center mb-2" width="120">
-
+                                @can('admin_users_transform')
+                                    @if (!empty($enrollment->user->student))
+                                        @include('admin.includes.transform_button', [
+                                            'url' => getAdminPanelUrl() . '/courses/groups/' .$group->id . '/change',
+                                            'btnClass' => 'btn-transparent  text-primary',
+                                            'btnText' => '<i class="fa fa-retweet"></i>',
+                                            'hideDefaultClass' => true,
+                                            'id' =>$enrollment->user->id,
+                                            'from' =>$group,
+                                            'items' => $group->webinar->groups,
+                                            'user' => $enrollment->user,
+                                            'title' => "تحويل الطالب من المجوعة " . $group->name . " إلي مجموعة اخري "
+                                        ])
+                                    @endif
+                                @endcan
 
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->user->id }}/impersonate"

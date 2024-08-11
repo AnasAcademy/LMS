@@ -546,38 +546,68 @@ class User extends Authenticatable
 
         return Sale::whereIn('webinar_id', $webinarIds)->sum('amount');
     }
-    public function purchasedFormBundle()
+    public function purchasedFormBundle($class_id = null)
     {
-        return Sale::where('type', 'form_fee')
+        $purchasedFormBundleQuery = Sale::where('type', 'form_fee')
             ->where('buyer_id', $this->id)
-            ->whereNotNull('bundle_id')
-            // ->orderBy('created_at', 'desc')
-            ->get()
+            ->whereNotNull('bundle_id');
+
+        if (!empty($class_id)) {
+            $purchasedFormBundleQuery = $purchasedFormBundleQuery->where('class_id', $class_id);
+        }
+
+        return $purchasedFormBundleQuery->get()
             ->unique('bundle_id');
     }
-    public function purchasedBundles()
+
+    public function purchasedFormBundleUnique($class_id = null)
     {
-        // return Sale::where(function ($query) {
-        //     $query->where('type', 'bundle')
-        //         ->orWhere('type', 'installment_payment');
-        // })
-        // ->where('buyer_id', $this->id)
-        // ->whereNotNull('bundle_id')
-        // ->orderBy('created_at', 'desc')
-        // ->get()
-        // ->unique('bundle_id');
+        $purchasedFormBundleQuery = $this->hasMany(Sale::class, 'buyer_id')
+            ->where('type', 'form_fee')
+            ->whereNotNull('bundle_id')
+            ->whereNotExists(function ($query) {
+                $query->selectRaw(1)
+                    ->from('sales as s2')
+                    ->whereRaw('s2.bundle_id = sales.bundle_id')
+                    ->where(function ($query) {
+                        $query->where('s2.type', 'bundle')
+                            ->orWhere('s2.type', 'installment_payment');
+                    })
+                    ->whereRaw('s2.buyer_id = sales.buyer_id');
+            });
+        if (!empty($class_id)) {
+            $purchasedFormBundleQuery = $purchasedFormBundleQuery->where('class_id', $class_id);
+        }
 
-        return $this->hasMany(Sale::class, 'buyer_id')
-        ->where(function ($query) {
-            $query->where('type', 'bundle')
-                  ->orWhere('type', 'installment_payment');
-        })
-        ->whereNotNull('bundle_id')
-        ->orderBy('created_at', 'desc')
-        ->distinct('bundle_id');
-
+        return $purchasedFormBundleQuery;
     }
 
+    public function purchasedBundles($class_id = null)
+    {
+        $purchasedBundlesQuery = $this->hasMany(Sale::class, 'buyer_id')
+            ->where(function ($query) {
+                $query->where('type', 'bundle')
+                    ->orWhere('type', 'installment_payment');
+            })
+            ->whereNotNull('bundle_id')
+            ->orderBy('created_at', 'desc');
+        if (!empty($class_id)) {
+            $purchasedBundlesQuery = $purchasedBundlesQuery->where('class_id', $class_id);
+        }
+
+        return $purchasedBundlesQuery->groupBy('bundle_id');
+    }
+
+
+    public function bundleSales($class_id = null){
+        $bundleSales= $this->hasMany(Sale::class, 'buyer_id')->whereNotNull('bundle_id');
+
+        if (!empty($class_id)) {
+            $bundleSales = $bundleSales->where('class_id', $class_id);
+        }
+
+        return $bundleSales->groupBy('bundle_id');
+    }
     public function salesCount()
     {
         return Sale::where('seller_id', $this->id)
@@ -1000,7 +1030,7 @@ class User extends Authenticatable
     public function services()
     {
         return $this->belongsToMany(Service::class)
-        ->using(ServiceUser::class)
+            ->using(ServiceUser::class)
             ->withPivot(['id', 'status', 'approved_by', 'message', 'content'])
             ->withTimestamps()
             ->orderBy('service_user.created_at', 'desc');
@@ -1019,10 +1049,9 @@ class User extends Authenticatable
     public function webinarOfflinePayments()
     {
         return $this->hasMany(OfflinePayment::class, "user_id")
-        ->where(function($query){
-            $query->where('pay_for', 'webinar')
-            ->whereIn('status', ['waiting', 'reject']);
-        });
-
+            ->where(function ($query) {
+                $query->where('pay_for', 'webinar')
+                    ->whereIn('status', ['waiting', 'reject']);
+            });
     }
 }

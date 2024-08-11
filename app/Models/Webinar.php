@@ -1078,8 +1078,10 @@ class Webinar extends Model implements TranslatableContract
 
         foreach ($gifts as $gift) {
             $user = User::query()->select('id', 'email')->where('email', $gift->email)->first();
-            $data=['email'=>$gift->email,
-                    'name'=>$gift->name ?? null];
+            $data = [
+                'email' => $gift->email,
+                'name' => $gift->name ?? null
+            ];
             if (empty($user)) {
                 sendNotificationToEmail("new_quiz", $notifyOptions, $data);
             }
@@ -1104,4 +1106,21 @@ class Webinar extends Model implements TranslatableContract
         }
     }
 
+    function isUserHasAccessToContent()
+    {
+        $user = auth()->user();
+        $now = \Carbon\Carbon::now();
+
+        foreach ($this->groups as $group) {
+            $startDate = \Carbon\Carbon::parse($group->start_date);
+            if ($group->status == 'active' && $startDate->month <= $now->month) {
+                foreach ($group->enrollments as $enrollment) {
+                    if ($enrollment->user_id == $user->id) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -1109,4 +1109,17 @@ return [
     'unlimited_time' => 'وقت غير محدود',
     'preview' => 'معاينة',
     'registration_form_options' => 'خيارات نموذج التسجيل',
+    'new_plan' => 'خطة جديدة',
+    'plans' => 'الخطط',
+    'purchases' => 'المشتريات',
+    'overdue' => 'الاقساط المتأخرة',
+    'overdue_history' => 'سجل الاقساط المتأخرة',
+    'verification_requests' => 'طلبات التحقق',
+    'verified_users' => 'المستخدمين المؤكدين',
+    'installment_plan' => 'خطة التقسيط',
+    'overdue_date'=> 'تاريخ الاستحقاق',
+    'paid_date'=>'تاريخ الدفع',
+    'late_days'=> 'مدة التأخير (الأيام)',
+    'days'=> 'أيام',
+    'show_details' => "عرض التفاصيل"
 ];

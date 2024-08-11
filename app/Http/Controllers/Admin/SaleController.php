@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\salesExport;
 use App\Http\Controllers\Controller;
 use App\Models\Accounting;
+use App\Models\Bundle;
 use App\Models\Order;
 use App\Models\ReserveMeeting;
 use App\Models\Sale;
@@ -23,13 +24,13 @@ class SaleController extends Controller
         $query = Sale::whereNull('product_order_id');
 
         $totalSales = [
-            'count' => deepClone($query)->count(),
-            'amount' => deepClone($query)->sum('total_amount'),
+            'count' => deepClone($query)->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $classesSales = [
-            'count' => deepClone($query)->whereNotNull('webinar_id')->count(),
-            'amount' => deepClone($query)->whereNotNull('webinar_id')->sum('total_amount'),
+            'count' => deepClone($query)->whereNotNull('webinar_id')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNotNull('webinar_id')->whereNull('refund_at')->sum('total_amount'),
         ];
 
         $formFeeSales = [
@@ -38,21 +39,22 @@ class SaleController extends Controller
         ];
 
         $bundlesSales = [
-            'count' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->count(),
-            'amount' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->sum('total_amount'),
+            'count' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNotNull('bundle_id')->whereNull('form_fee')->whereNull('refund_at')->sum('total_amount'),
         ];
 
-        // $servicesSales = [
-        //     // 'count' => deepClone($query)->whereNotNull('service_id')->count(),
-        //     // 'amount' => deepClone($query)->whereNotNull('service_id')->sum('total_amount'),
-        //     'count' => deepClone($query)->where('type', 'service')->count(),
-        //     'amount' => deepClone($query)->where('type', 'service')->sum('total_amount'),
-        // ];
+        $servicesSales = [
+            // 'count' => deepClone($query)->whereNotNull('service_id')->count(),
+            // 'amount' => deepClone($query)->whereNotNull('service_id')->sum('total_amount'),
+            'count' => deepClone($query)->where('type', 'service')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->where('type', 'service')->whereNull('refund_at')->sum('total_amount'),
+        ];
 
         $appointmentSales = [
-            'count' => deepClone($query)->whereNotNull('meeting_id')->count(),
-            'amount' => deepClone($query)->whereNotNull('meeting_id')->sum('total_amount'),
+            'count' => deepClone($query)->whereNotNull('meeting_id')->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->whereNotNull('meeting_id')->whereNull('refund_at')->sum('total_amount'),
         ];
+
         $failedSales = Order::where('status', Order::$fail)->count();
 
         $salesQuery = $this->getSalesFilters($query, $request);
@@ -87,7 +89,8 @@ class SaleController extends Controller
             'failedSales' => $failedSales,
             'formFeeSales' => $formFeeSales,
             'bundlesSales' => $bundlesSales,
-            // 'servicesSales' => $servicesSales,
+            'servicesSales' => $servicesSales,
+            'bundles' => Bundle::get()
         ];
 
         $teacher_ids = $request->get('teacher_ids');
@@ -122,6 +125,14 @@ class SaleController extends Controller
             $sale->item_seller = ($item and $item->creator) ? $item->creator->full_name : trans('update.deleted_item');
             $sale->seller_id = ($item and $item->creator) ? $item->creator->id : '';
             $sale->sale_type = ($item and $item->creator) ? $item->creator->id : '';
+        } else if (!empty($sale->service_id)) {
+            $item = !empty($sale->service_id) ? $sale->service : null;
+
+            $sale->item_title = $item ? $item->title : trans('update.deleted_item');
+            $sale->item_id = $item ? $item->id : '';
+            $sale->item_seller = '---';
+            $sale->seller_id = '';
+            $sale->sale_type = "";
         } elseif (!empty($sale->meeting_id)) {
             $sale->item_title = trans('panel.meeting');
             $sale->item_id = $sale->meeting_id;
@@ -185,6 +196,8 @@ class SaleController extends Controller
         $userName = $request->get('user_name');
         $type = $request->get('type');
         $email = $request->get('email');
+        $user_code = $request->get('user_code');
+        $bundle_title = $request->get('bundle_title');
 
         if (!empty($item_title)) {
             $ids = Webinar::whereTranslationLike('title', "%$item_title%")->pluck('id')->toArray();
@@ -208,25 +221,51 @@ class SaleController extends Controller
                 });
             });
         }
+        if (!empty($user_code)) {
+            $query->when($user_code, function ($query) use ($user_code) {
+                $query->whereHas('buyer', function ($q) use ($user_code) {
+                    $q->where('user_code', 'like', "%$user_code%");
+                });
+            });
+
+        }
+        if (!empty($bundle_title)) {
+            $query->when($bundle_title, function ($query) use ($bundle_title) {
+                $query->whereHas('bundle', function ($q) use ($bundle_title) {
+                    $q->where('slug', 'like', "%$bundle_title%");
+                });
+            });
+
+        }
 
         if (!empty($type)) {
-        $query->when($type, function ($query) use ($type) {
-            $query->whereHas('order.orderItems')->where('type', $type);
-                // $query->whereHas('order.orderItems', function ($q) use ($type) {
-                //     if($type=='form_fee'){
-                //         $q->where('type', 'form_fee');
-                //     }
-                //     else if($type=="webinar"){
-                //         $q->whereNotNull('webinar_id');
-                //     }
-                //     else if($type=="bundle"){
-                //         $q->whereNotNull('bundle_id')->whereNull('form_fee');
-                //     }
-                //     else if($type=="installment"){
-                //         $q->whereNotNull('installment_payment_id');
-                //     }
-                // });
-            });
+
+            if ($type == 'upfront') {
+
+                $query->when($type, function ($query) {
+                    $query->whereHas('order.orderItems', function ($item) {
+
+                        $item->whereHas('installmentPayment', function ($payment) {
+                            $payment->where("type", "upfront");
+                        });
+                    });
+                })->where('type', 'installment_payment');
+            } else if ($type == 'installment_payment') {
+                $query->when($type, function ($query) {
+                    $query->whereHas('order.orderItems', function ($item) {
+
+                        $item->whereHas('installmentPayment', function ($payment) {
+                            $payment->where("type", "step");
+                        });
+                    });
+                })->where('type', 'installment_payment');
+            } else if ($type == 'scholarship') {
+                $query->where('payment_method', 'scholarship');
+            } else {
+                $query->when($type, function ($query) use ($type) {
+                    $query->whereHas('order.orderItems')->where('type', $type)->where('payment_method', "!=",'scholarship');
+                });
+            }
         }
 
         if (!empty($status)) {
@@ -254,8 +293,14 @@ class SaleController extends Controller
         return $query;
     }
 
-    public function refund($id)
+    public function refund($id, Request $request)
     {
+
+        $request->validate([
+            'message' => 'required',
+        ]);
+
+
         $this->authorize('admin_sales_refund');
 
         $sale = Sale::findOrFail($id);
@@ -295,9 +340,13 @@ class SaleController extends Controller
             }
         }
 
-        $sale->update(['refund_at' => time()]);
-
-        return back();
+        $sale->update(['refund_at' => time(), 'total_amount' => 0, 'message' => $request->message ."<br>"]);
+        $toastData = [
+            'title' => 'طلب استيرداد مبلغ',
+            'msg' => 'تم الاستيرداد بنجاح',
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
     public function invoice($id)

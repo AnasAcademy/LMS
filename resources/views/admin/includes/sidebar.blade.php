@@ -107,6 +107,10 @@
                             <a class="nav-link @if (!empty($sidebarBeeps['enrollers']) and $sidebarBeeps['enrollers']) beep beep-sidebar @endif"
                                 href="{{ getAdminPanelUrl() }}/students/enrollers">{{ ' تسجيل الدبلومات' }}</a>
                         </li>
+                        <li class="{{ request()->is(getAdminPanelUrl('/students/scholarship', false)) ? 'active' : '' }}">
+                            <a class="nav-link @if (!empty($sidebarBeeps['scholarship']) and $sidebarBeeps['scholarship']) beep beep-sidebar @endif"
+                                href="{{ getAdminPanelUrl() }}/students/scholarship">{{ ' تسجيل المنح الدراسية' }}</a>
+                        </li>
                     </ul>
                 </li>
 
@@ -117,16 +121,13 @@
                     </a>
                     <ul class="dropdown-menu">
                         @php
-                            $webinars = App\Models\Webinar::where('hasGroup', 1)
-                                ->get();
+                            $webinars = App\Models\Webinar::where('hasGroup', 1)->get();
                         @endphp
                         @foreach ($webinars as $webinar)
-                            <li
-                            class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
-                            <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
-                                href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
-                        </li>
-
+                            <li class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
+                                <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
+                                    href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
+                            </li>
                         @endforeach
                     </ul>
                 </li>
@@ -163,7 +164,7 @@
             @endcan
 
             {{-- services --}}
-             {{-- <li
+             <li
                 class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                     <i class="fas fa-graduation-cap"></i>
@@ -187,7 +188,7 @@
                     </li>
 
                 </ul>
-            </li> --}}
+            </li>
 
             @can('admin_webinars')
                 <li
@@ -262,6 +263,23 @@
             @endcan()
 
 
+            {{-- study classes --}}
+            <li
+                class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/classes*', false))) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-cube"></i>
+                    <span>الدفعات الدراسية</span>
+                </a>
+                <ul class="dropdown-menu">
+
+                        <li
+                            class="{{ (request()->is(getAdminPanelUrl('/classes', false)) and request()->get('type') == 'course') ? 'active' : '' }}">
+                            <a href="{{ getAdminPanelUrl() }}/classes"
+                                class="nav-link @if (!empty($sidebarBeeps['classes']) and $sidebarBeeps['classes']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
+                        </li>
+
+                </ul>
+            </li>
 
             @can('admin_upcoming_courses')
                 <li

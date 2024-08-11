@@ -450,6 +450,22 @@
 
                                             </div>
 
+                                               <div class="form-group">
+                                            <label>{{ trans('/admin/main.status') }}</label>
+                                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
+                                                <option disabled selected>{{ trans('admin/main.select_status') }}</option>
+                                                @foreach (\App\User::$statuses as $status)
+                                                    <option
+                                                        value="{{ $status }}" {{ old('status', $bundle->status ?? null ) === $status ? 'selected' :''}}>{{  $status }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('status')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+
                                         </div>
                                     </div>
 

@@ -310,6 +310,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/{service}/apply', 'ServiceController@store');
     });
 
+    Route::get('/bundletransform/{bundleTransform}/pay', 'ServiceController@bundleTransformPay');
+    Route::get('/bundletransform/{bundleTransform}/refund', 'ServiceController@bundleTransformRefund');
+
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
         Route::get('/', 'SupportsController@index');
         Route::get('/new', 'SupportsController@create');
