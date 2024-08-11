@@ -425,10 +425,15 @@
                                                 {{ !empty($sale->buyer) ? $sale->buyer->full_name : '' }}
                                                 <div class="text-primary text-small font-600-bold">
                                                     {{ !empty($sale->buyer) ? $sale->buyer->email : '' }}</div>
+
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ !empty($sale->buyer) ? $sale->buyer->id : '' }}</div>
                                                 <div class="text-primary text-small font-600-bold">Code :
                                                     {{ !empty($sale->buyer) ? $sale->buyer->user_code : '' }}</div>
+
+                                                    <div class="text-primary text-small font-600-bold">
+                                                        ايميل الدفع: 
+                                                    {{ !empty($sale->buyer) ? ($sale->payment_email ?? '---') : '' }}</div>
                                             </td>
 
                                             <td class="text-left">
