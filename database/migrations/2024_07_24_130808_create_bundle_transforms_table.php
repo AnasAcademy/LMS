@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedInteger("user_id")->nullable();
             $table->unsignedInteger("from_bundle_id")->nullable();
             $table->unsignedInteger("to_bundle_id")->nullable();
+            $table->float('amount', 15, 3)->unsigned()->default(0);
             $table->unsignedBigInteger("service_request_id")->nullable();
             $table->boolean('certificate')->default(false);
 
