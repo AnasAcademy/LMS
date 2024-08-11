@@ -194,6 +194,7 @@ class Sale extends Model
                 "refund_at" => ($price<0) ? time() : null,
                 "message" => ($price < 0) ? 'تحويل من برنامج لبرنامج اخر' : null,
                 'class_id' => $class->id,
+                'payment_email' => $orderItem->order->payment_email,
             ]);
 
 
