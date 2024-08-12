@@ -829,7 +829,7 @@ class BundleController extends Controller
         $option = $request->get('option', null);
 
         $query = Bundle::select('id')
-            ->whereTranslationLike('title', "%$term%");
+            ->whereTranslationLike('title', "%$term%")->orWhere('slug', "%$term%");
 
         $bundles = $query->get();
 
