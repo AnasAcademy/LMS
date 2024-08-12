@@ -73,13 +73,13 @@
                                 هنا</a>
                         </div>
 
-                    @elseif ($bundleData['bundle']->bundle->early_enroll)
+                    {{-- @elseif ($bundleData['bundle']->bundle->early_enroll)
                         <div class="w-100 text-center">
                             <p class="alert alert-info text-center mx-30">
                                 يرجى ملاحظة أن التسجيل الرسمي سيبدأ يوم 30 يوليو.
                                 <br> بمجرد فتح التسجيل، ستتمكن من استكمال اجراءات التسجيل.
                             </p>
-                        </div>
+                        </div> --}}
                     @else
                         @include('web.default.panel.requirements.payment_card', [
                             'bundleData' => $bundleData,
