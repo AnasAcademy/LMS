@@ -72,9 +72,9 @@
 
                     </p> --}}
 
-                    <p style="text-decoration: line-through;">
+                    {{-- <p style="text-decoration: line-through;">
                         {{round($totalPayments/(1 - 0.3)) }} ر.س
-                    </p>
+                    </p> --}}
                     <span class="font-36 font-weight-bold text-primary">{{ handlePrice($totalPayments) }}</span>
                     {{-- <p class="font-12 font-weight-bold text-center text-danger mt-15 discount">
                         خصم {{ substr(explode('.', $bundleData['bundle']->bundle->discount_rate)[1], 0, 2) }}

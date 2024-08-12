@@ -47,11 +47,12 @@
                                             <p style="text-decoration: line-through;">
                                                 {{-- {{ handleCoursePagePrice($bundleData['bundle']->bundle->price / (1 - $bundleData['bundle']->bundle->discount_rate))['price'] }} --}}
 
-                                               {{ round($bundleData['bundle']->bundle->price /(1 - 0.3)) }} ر.س
+                                               {{-- {{ round($bundleData['bundle']->bundle->price /(1 - 0.3)) }} ر.س --}}
 
                                                 {{-- {{ handleCoursePagePrice(($bundleData['bundle']->bundle->price + ($bundleData['bundle']->bundle->price * 0.30)) )}} --}}
 
                                             </p>
+
                                             <span id="realPrice" data-value="{{ $bundleData['bundle']->bundle->price }}"
                                                 data-special-offer="{{ !empty($activeSpecialOffer) ? $activeSpecialOffer->percent : '' }}"
                                                 class="d-block @if (!empty($activeSpecialOffer)) font-16 text-gray text-decoration-line-through @else font-36 text-primary @endif">
@@ -88,7 +89,7 @@
                                             الدبلومة عن بعد 100%
                                         </p>
 
-                                        <p class="bundle-details text-gray mt-10">
+                                        {{-- <p class="bundle-details text-gray mt-10">
                                             مكونة من
                                             {{ $bundleData['bundle']->bundle->bundleWebinars->count() }}
                                             فصول دراسية
@@ -97,7 +98,7 @@
                                             مكونة من
                                             {{ convertMinutesToHourAndMinute($bundleData['bundle']->bundle->getBundleDuration()) }}
                                             ساعات دراسية
-                                        </p>
+                                        </p> --}}
                                     </section>
                                 @endif
                             </div>

@@ -34,11 +34,11 @@
                     <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}
 
-                        @if(!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()) && $bundleData['bundle']->bundle->early_enroll!=1)
+                        {{-- @if(!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()) && $bundleData['bundle']->bundle->early_enroll!=1)
                             <span class="font-14 font-weight-bold text-center text-danger mt-15 discount pr-2">
                                 خصم 30%
                             </span>
-                        @endif
+                        @endif --}}
                     </h2>
 
 
@@ -96,7 +96,7 @@
                     class="btn bg-secondary text-white p-5 mt-20">للتسجيل اضغط علي هذا اللينك</a>
             </section>
         @endif
-        
+
     </section>
 
 @endsection
