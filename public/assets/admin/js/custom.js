@@ -198,7 +198,7 @@
 
         handleSearchableSelect2('search-webinar-select2', adminPanelPrefix + '/webinars/search', 'title');
 
-        handleSearchableSelect2('search-bundle-select2', adminPanelPrefix + '/bundles/search', 'title');
+        handleSearchableSelect2('search-bundle-select2', adminPanelPrefix + '/bundles/search', 'slug');
 
         handleSearchableSelect2('search-forum-topic-select2', adminPanelPrefix + '/forums/topics/search', 'title');
 
