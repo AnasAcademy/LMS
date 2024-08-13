@@ -98,9 +98,13 @@
                         {{ $message }}
                     </div>
                 @enderror
-                <P class="text-primary">برجاء ارفاق المتطلبات من 2 الى نهاية المتطلبات في ملف واحد بصيغة PDF ولا يتعدي
+                {{-- <P class="text-primary">برجاء ارفاق المتطلبات من 2 الى نهاية المتطلبات في ملف واحد بصيغة PDF ولا يتعدي
                     حجم الملف 20
-                    ميجا</P>
+                    ميجا</P> --}}
+                    <p class="text-primary" > برجاء تنزيل نموزج طلب الالتحاق وملئ البيانات وحفظه كصيغه PDF ثم رفعه  
+                        <a href="{{ asset('files/_نموذج طلب التحاق.docx') }}" class="text-secondary font-weight-bold" download>انقر هنا لتحميل نموزج طلب الالتحاق
+                        </a></p>
+                   
             </div>
 
         </div>
