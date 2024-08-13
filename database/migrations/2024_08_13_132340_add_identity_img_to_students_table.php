@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('students', function (Blueprint $table) {
             //
             $table->string('identity_img')->nullable()->default(null);
         });
@@ -26,7 +26,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('students', function (Blueprint $table) {
             //
             $table->dropColumn('identity_img');
         });
