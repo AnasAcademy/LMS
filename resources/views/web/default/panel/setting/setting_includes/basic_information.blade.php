@@ -1,5 +1,5 @@
 <section>
-    <h2 class="section-title after-line">{{ trans('financial.account') }}</h2>
+    <h2 class="section-title after-line">معلومات اساسية </h2>
 
     <div class="row mt-20">
         <div class="col-12 col-lg-4">
