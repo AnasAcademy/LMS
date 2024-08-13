@@ -38,6 +38,10 @@
         a {
             color: #ED1088;
         }
+        #formSubmit{
+            background: #5F2B80 !important;
+        }
+
 
         .form-main-title {
             font-family: 'Inter';
@@ -311,7 +315,7 @@
                             </label>
                             <div class="col-12 mt-3">
                                 <input type="hidden" id="direct_register" name="direct_register" value="">
-                                <button type="button" id="form_button" class="btn btn-primary">تسجيل مباشر</button>
+                                <button type="button" id="form_button" class="btn btn-primary">تسجيل </button>
 
                                 <button type="submit" class="btn btn-gray mr-3" id="formSubmit">
                                     تسجيل
