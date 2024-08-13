@@ -70,7 +70,7 @@
             </div>
         @endif
 
-        <form method="post" action="/register" class="mt-35">
+        <form method="post" action="/register" class="mt-35" id="registerForm">
 
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
@@ -95,22 +95,22 @@
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.email_field', ['optional' => false])
                 @endif
-
             @else
                 @include('web.default.auth.register_includes.email_field')
 
                 <div class="form-group">
-                <label class="input-label" for="email">اعد كتابة الإيميل
-                    {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
-                <input name="email_confirmation" type="text" class="form-control @error('email_confirmation') is-invalid @enderror"
-                    value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
+                    <label class="input-label" for="email">اعد كتابة الإيميل
+                        {{ !empty($optional) ? '(' . trans('public.optional') . ')' : '' }}*</label>
+                    <input name="email_confirmation" type="text"
+                        class="form-control @error('email_confirmation') is-invalid @enderror"
+                        value="{{ old('email_confirmation') }}" id="email" aria-describedby="emailHelp">
 
-                @error('email_confirmation')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
+                    @error('email_confirmation')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
 
                 @if ($showOtherRegisterMethod)
                     @include('web.default.auth.register_includes.mobile_field', ['optional' => false])
@@ -122,7 +122,7 @@
 
             <div class="password-section">
 
-                <div class="form-group  col-12 p-0">
+                <div class="form-group col-12 p-0">
                     <label class="input-label" for="password">{{ trans('auth.password') }}:</label>
                     <input name="password" type="password" class="form-control @error('password') is-invalid @enderror"
                         id="password" aria-describedby="passwordHelp">
@@ -218,6 +218,103 @@
             @enderror --}}
             <!--end-->
 
+            {{-- application type --}}
+            <div class="form-group">
+                <label class="form-label">حدد نوع التقديم<span class="text-danger">*</span></label>
+                <select id="typeSelect" name="type" required class="form-control @error('type') is-invalid @enderror"
+                    onchange="toggleHiddenType()">
+                    <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
+                        اكاديمية انس للفنون </option>
+                    @if (count($categories) > 0)
+                        <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                            برامج </option>
+                    @endif
+                    <option value="courses" @if (old('type') == 'courses') selected @endif>دورات</option>
+                </select>
+
+                @error('type')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            {{-- course --}}
+            <div class="form-group">
+                <label for="application2" class="form-label" id="all_course">الدورات التدربيه<span
+                        class="text-danger">*</span></label>
+                <select id="mySelect2" name="webinar_id" class="form-control @error('webinar_id') is-invalid @enderror">
+                    <option selected hidden value="">اختر الدورة التدربيه التي تريد دراستها
+                        في
+                        اكاديمية انس للفنون </option>
+
+                    @foreach ($courses as $course)
+                        <option value="{{ $course->id }}" @if (old('webinar_id') == $course->id) selected @endif>
+                            {{ $course->title }} </option>
+                    @endforeach
+
+                </select>
+
+                @error('webinar_id')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
+            {{-- programs --}}
+            <section class="" id="diplomas_section">
+                <div class="form-group mt-15">
+                    <label class="input-label">البرنامج</label>
+
+                    <select id="bundle_id" class="custom-select @error('bundle_id')  is-invalid @enderror"
+                        name="bundle_id">
+                        <option selected hidden value="">اختر البرنامج التدربي الذي تريد دراسته
+                            في
+                            اكاديمية انس للفنون </option>
+
+                        {{-- Loop through top-level categories --}}
+                        @foreach ($categories as $category)
+                            <optgroup label="{{ $category->title }}">
+
+                                {{-- Display bundles directly under the current category --}}
+                                @foreach ($category->activeBundles as $bundleItem)
+                                    <option value="{{ $bundleItem->id }}"
+                                        has_certificate="{{ $bundleItem->has_certificate }}"
+                                        early_enroll="{{ $bundleItem->early_enroll }}"
+                                        @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                        {{ $bundleItem->title }}</option>
+                                @endforeach
+
+                                {{-- Display bundles under subcategories --}}
+                                @foreach ($category->activeSubCategories as $subCategory)
+                                    @foreach ($subCategory->activeBundles as $bundleItem)
+                                        <option value="{{ $bundleItem->id }}"
+                                            has_certificate="{{ $bundleItem->has_certificate }}"
+                                            early_enroll="{{ $bundleItem->early_enroll }}"
+                                            @if (old('bundle_id') == $bundleItem->id) selected @endif>
+                                            {{ $bundleItem->title }}</option>
+                                    @endforeach
+                                @endforeach
+
+                            </optgroup>
+                        @endforeach
+                        {{-- <optgroup label="دورات تدريبية">
+                        @foreach ($courses as $course)
+                            <option value="{{ $course->id }}">
+                                {{ $course->title }}</option>
+                        @endforeach
+                    </optgroup> --}}
+                    </select>
+
+                    @error('bundle_id')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+            </section>
+
             <button type="submit" class="btn btn-primary btn-block font-16 mt-20 py-10 cs-btn">
                 الخطوة التالية <i class="fas fa-arrow-left"></i>
             </button>
@@ -239,3 +336,69 @@
 @push('scripts_bottom')
     <script src="/assets/default/vendors/select2/select2.min.js"></script>
 @endpush
+<script>
+    window.onload = function() {
+        let form = document.getElementById('registerForm');
+        console.log(form);
+        console.log(registerForm);
+        form.onsubmit = function(event) {
+            event.preventDefault();
+            let code = document.getElementsByClassName('iti__selected-dial-code')[0].innerHTML;
+            console.log(code);
+
+            document.getElementById('code').value = code;
+
+            form.submit();
+
+        }
+
+        toggleHiddenType();
+
+    }
+</script>
+
+
+{{-- type toggle --}}
+<script>
+    function toggleHiddenType() {
+        console.log("toggleHiddenType");
+        var select = document.getElementById("typeSelect");
+        var hiddenDiplomaInput = document.getElementById("mySelect1");
+        var hiddenDiplomaLabel = document.getElementById("degree");
+        var hiddenBundleInput = document.getElementById("bundle_id");
+        var hiddenDiplomaLabel1 = document.getElementById("hiddenLabel1");
+        let diplomasSection = document.getElementById("diplomas_section");
+
+        var hiddenCourseInput = document.getElementById("mySelect2");
+        var hiddenCourseLabel = document.getElementById("all_course");
+
+        console.log(select);
+        if (select) {
+            var type = select.value;
+            if (type == 'programs') {
+                diplomasSection.classList.remove('d-none');
+                hiddenCourseInput.closest('div').classList.add('d-none');
+                resetSelect(hiddenCourseInput);
+
+            } else if (type == 'courses') {
+                hiddenCourseInput.closest('div').classList.remove('d-none');
+                diplomasSection.classList.add('d-none');
+                resetSelect(hiddenBundleInput);
+
+            } else {
+                diplomasSection.classList.add('d-none');
+                hiddenCourseInput.closest('div').classList.add('d-none');
+                resetSelect(hiddenBundleInput);
+                resetSelect(hiddenCourseInput);
+                // education.classList.add('d-none');
+            }
+        }
+    }
+
+
+    function resetSelect(selector) {
+
+        selector.selectedIndex = 0; // This sets the first option as selected
+        selector.removeAttribute('required');
+    }
+</script>

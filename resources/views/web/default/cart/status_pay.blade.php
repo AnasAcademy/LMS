@@ -15,7 +15,7 @@
                 @if(auth()->user()->isUser())
                 <a href="/panel" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
                 @else
-                <a href="/panel/requirements" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
+                <a href="/panel/requirements/applied" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
                 @endif
             </div>
         </div>
@@ -32,7 +32,7 @@
                 @if(auth()->user()->isUser())
                 <a href="/panel" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
                 @else
-                <a href="/panel/requirements" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
+                <a href="/panel/requirements/applied" class="btn btn-sm btn-primary mt-20">{{ trans('public.my_panel') }}</a>
                 @endif
             </div>
         </div>

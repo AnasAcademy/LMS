@@ -140,15 +140,30 @@ class OfflinePaymentController extends Controller
         $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title;
         if ($offlinePayment->pay_for == 'form_fee') {
             $purpuse = 'لحجز مقعد دراسي ';
+            $status = 'fee_rejected';
         } elseif ($offlinePayment->pay_for == 'bundle') {
             $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
+            $status = 'rejected';
         } elseif ($offlinePayment->pay_for == 'installment') {
             $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
+            if (!empty($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep)) {
+                $status = 'approved';
+            } else {
+                $status = 'rejected';
+            }
+        } elseif ($offlinePayment->pay_for == 'service') {
+            $purpuse = 'لدفع رسوم خدمة  ' . ($offlinePayment->order->orderItems->first()->service->title);
+            $offlinePayment->order->orderItems
+                ->first()
+                ->service->users()
+                ->where('user_id', $offlinePayment->user_id)
+                ->first()->pivot->update(['status' => 'paying_rejected']);
         } else {
             $purpuse = '';
+            $status = 'rejected';
         }
 
-        $data['body'] = "لقد تم رفض طلبك  " .$purpuse.' بسبب '. $request['reason'];
+        $data['body'] = "لقد تم رفض طلبك  " . $purpuse . ' بسبب ' . $request['reason'];
 
         $message =  $request['reason'] . "<br>";
         if (isset($request['message'])) {
@@ -156,7 +171,7 @@ class OfflinePaymentController extends Controller
             $message .= $request['message'];
         }
         $offlinePayment->update(['status' => OfflinePayment::$reject, 'message' => $message]);
-        BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'rejected']);
+        BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => $status]);
 
         $notifyOptions = [
             '[amount]' => handlePrice($offlinePayment->amount),
@@ -182,6 +197,35 @@ class OfflinePaymentController extends Controller
             $PaymentController->paymentOrderAfterVerify($offlinePayment->order);
             $request->merge(['order_id' => $offlinePayment->order_id]);
             $res = $PaymentController->payStatus($request);
+
+            BundleStudent::where(['student_id' => $offlinePayment->user->student->id, 'bundle_id' => $offlinePayment->order->orderItems->first()->bundle_id])->update(['status' => 'approved']);
+
+            $bundleTitle = $offlinePayment->order->orderItems->first()->bundle->title ?? '';
+            if ($offlinePayment->pay_for == 'form_fee') {
+                $purpuse = 'لحجز مقعد دراسي ';
+            } elseif ($offlinePayment->pay_for == 'bundle') {
+                $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
+            } elseif ($offlinePayment->pay_for == 'installment') {
+                $purpuse = 'لدفع ' . ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول') . ' من ' . $bundleTitle;
+            } elseif ($offlinePayment->pay_for == 'webinar') {
+                $purpuse = 'لدفع دورة ' . ($offlinePayment->order->orderItems->first()->webinar->title);
+            } elseif ($offlinePayment->pay_for == 'service') {
+                $purpuse = 'لدفع رسوم خدمة  ' . ($offlinePayment->order->orderItems->first()->service->title);
+                
+                $offlinePayment->order->orderItems
+                    ->first()
+                    ->service->users()
+                    ->where('user_id', $offlinePayment->user_id)
+                    ->first()->pivot->update(['status' => 'pending']);
+            } else {
+                $purpuse = '';
+            }
+
+            $notifyOptions = [
+                '[amount]' => handlePrice($offlinePayment->amount),
+                '[p.body]' => "لقد تم قبول طلبك  " . $purpuse
+            ];
+            sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
         } else {
             Accounting::create([
                 'creator_id' => auth()->user()->id,
@@ -200,25 +244,7 @@ class OfflinePaymentController extends Controller
             RewardAccounting::makeRewardAccounting($offlinePayment->user_id, $chargeWalletReward, Reward::CHARGE_WALLET);
         }
 
-
         $offlinePayment->update(['status' => OfflinePayment::$approved]);
-        $bundleTitle = $offlinePayment->order-> orderItems->first()->bundle->title;
-        if ($offlinePayment->pay_for == 'form_fee') {
-            $purpuse = 'لحجز مقعد دراسي ';
-        } elseif ($offlinePayment->pay_for == 'bundle') {
-            $purpuse = 'للدفع الكامل ل  ' . $bundleTitle;
-        } elseif ($offlinePayment->pay_for == 'installment') {
-            $purpuse = 'لدفع '. ($offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول').' من '. $bundleTitle;
-        } else {
-            $purpuse = '';
-        }
-
-        $notifyOptions = [
-            '[amount]' => handlePrice($offlinePayment->amount),
-            '[p.body]'=> "لقد تم قبول طلبك  " .$purpuse
-        ];
-        sendNotification('offline_payment_approved', $notifyOptions, $offlinePayment->user_id);
-
         return back();
     }
 

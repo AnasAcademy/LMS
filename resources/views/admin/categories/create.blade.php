@@ -78,6 +78,31 @@
                                     @enderror
                                 </div>
 
+                                {{-- status --}}
+                                <div class="form-group">
+                                    <label>{{ trans('/admin/main.status') }}</label>
+                                    <select class="form-control @error('status') is-invalid @enderror" required
+                                        id="status" name="status">
+                                        <option disabled selected>{{ trans('admin/main.select_status') }}
+                                        </option>
+                                        <option value="active"
+                                            {{ old('status', $category->status ?? null) === 'active' ? 'selected' : '' }}>
+                                            active
+                                        </option>
+
+                                        <option value="inactive"
+                                            {{ old('status', $category->status ?? null) === 'inactive' ? 'selected' : '' }}>
+                                            inactive
+                                        </option>
+
+                                    </select>
+                                    @error('status')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
                                 <div class="form-group">
                                     <label>{{ trans('update.order') }}</label>
                                     <input type="text" name="order"
@@ -122,8 +147,7 @@
                                 </div>
 
                                 {{-- requirements --}}
-                                <div id="requirements"
-                                    class="ml-0">
+                                <div id="requirements" class="ml-0">
                                     <div class="d-flex align-items-center justify-content-between mb-4">
                                         <strong class="d-block">{{ 'اضافه متطلبات القبول في البرنامج' }}</strong>
 

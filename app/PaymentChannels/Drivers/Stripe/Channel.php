@@ -96,7 +96,8 @@ class Channel extends BasePaymentChannel implements IChannel
             // dd($session);
             if (!empty($session) and $session->payment_status == 'paid') {
                 $order->update([
-                    'status' => Order::$paying
+                    'status' => Order::$paying,
+                    'payment_email' => $session->customer_details->email ?? $session->customer_email
                 ]);
 
                 return $order;

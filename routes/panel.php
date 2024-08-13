@@ -295,15 +295,23 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     // requirements Routes
     Route::group(['prefix' => 'requirements'], function () {
         Route::get('/', 'UserController@requirementIndex');
+        Route::get('/applied', 'UserController@requirementPaymentStep');
         Route::get('/step/1', 'UserController@requirementIndex');
         Route::get('/step/2', 'UserController@account');
     });
 
+    Route::get('/courses/applied', 'UserController@appliedCourses');
     // services Routes
     Route::group(['prefix' => 'services'], function () {
         Route::get('/', 'ServiceController@index');
-
+        Route::get('/requests', 'ServiceController@requests');
+        Route::get('/{service}/bundleTransform', 'ServiceController@bundleTransformRequest');
+        Route::post('/{service}/bundleTransform', 'ServiceController@bundleTransform');
+        Route::get('/{service}/apply', 'ServiceController@store');
     });
+
+    Route::get('/bundletransform/{bundleTransform}/pay', 'ServiceController@bundleTransformPay');
+    Route::get('/bundletransform/{bundleTransform}/refund', 'ServiceController@bundleTransformRefund');
 
     Route::group(['prefix' => 'support','middleware'=>'can:show_support'], function () {
         Route::get('/', 'SupportsController@index');
@@ -312,7 +320,6 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('{id}/conversations', 'SupportsController@index');
         Route::post('{id}/conversations', 'SupportsController@storeConversations');
         Route::get('{id}/close', 'SupportsController@close');
-
         Route::group(['prefix' => 'tickets'], function () {
             Route::get('/', 'SupportsController@tickets');
             Route::get('{id}/conversations', 'SupportsController@tickets');
@@ -443,6 +450,10 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
 
     Route::group(['prefix' => 'bundles'], function () {
         Route::post('/purchase/{id?}', 'BundlesController@purchase_bundle')->name('purchase_bundle');
+        Route::group(['prefix' => 'purchases'], function () {
+            Route::get('/', 'BundlesController@purchases');
+            Route::post('/getJoinInfo', 'BundlesController@getJoinInfo');
+        });
         Route::group(['middleware' => 'user.not.access'], function () {
             Route::get('/', 'BundlesController@index');
             Route::get('/new', 'BundlesController@create');

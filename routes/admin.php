@@ -57,17 +57,42 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/', 'UserController@staffs');
         });
 
+
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
             Route::get('/enrollers', 'UserController@Enrollers');
+            Route::get('/scholarship', 'UserController@ScholarshipStudent');
             Route::get('/users', 'UserController@Users');
             Route::get('/excel', 'UserController@exportExcelUsers');
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
             Route::post('/importStudent', 'UserController@importExcelStudents');
+            Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
+
+        });
+        Route::group(['prefix' => 'courses'], function () {
+            Route::get('/', 'UserController@Courses');
+            Route::get('/{id}', 'UserController@Courses');
+            Route::get('/groups/{id}/show', 'UserController@groupInfo');
+            Route::get('/groups/{group}/edit', 'UserController@groupEdit');
+            Route::put('/groups/{group}/update', 'UserController@groupUpdate');
+            Route::post('/groups/{group}/change', 'UserController@changeGroup');
+            Route::get('/groups/{id}/delete', 'GroupController@destroy');
+            Route::get('/groups/{group}/exportExcel', 'UserController@groupExportExcel');
+
+        });
+        Route::group(['prefix' => 'classes'], function () {
+            Route::get('/', 'StudyClassController@index');
+            Route::post('/', 'StudyClassController@store');
+            Route::get('/{class}/delete', 'StudyClassController@destroy');
+            Route::get('/{class}/students', 'StudyClassController@students');
+            Route::get('/{class}/enrollers', 'StudyClassController@Enrollers');
+            Route::get('/{class}/scholarship', 'StudyClassController@ScholarshipStudent');
+            Route::get('/{class}/users', 'StudyClassController@Users');
+            Route::get('/{class}/requirements', 'StudyClassController@requirements');
 
         });
 
@@ -286,6 +311,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/order-items', 'WebinarController@orderItems');
             Route::post('/{id}/getContentItemByLocale', 'WebinarController@getContentItemByLocale');
 
+
             Route::get('/{id}/statistics', 'WebinarStatisticController@index');
 
             Route::group(['prefix' => 'features'], function () {
@@ -326,6 +352,9 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // services routes
          Route::group(['prefix' => 'services'], function () {
+            Route::get('/requests', 'ServiceController@requests');
+            Route::get('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
+            Route::get('/requests/{serviceUser}/reject', 'ServiceController@rejectRequest');
             Route::resource('', 'ServiceController')->parameters(['' => 'service']);
             Route::get('/{service}/delete', 'ServiceController@destroy');
         });
@@ -525,6 +554,13 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
             Route::group(['prefix' => 'offline_payments'], function () {
                 Route::get('/', 'OfflinePaymentController@index');
+                Route::get('/excel', 'OfflinePaymentController@exportExcel');
+                Route::get('/{offlinePayment}/reject', 'OfflinePaymentController@reject');
+                Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+            });
+
+            Route::group(['prefix' => 'bundle_transforms'], function () {
+                Route::get('/', 'BundleTransformController@index');
                 Route::get('/excel', 'OfflinePaymentController@exportExcel');
                 Route::get('/{offlinePayment}/reject', 'OfflinePaymentController@reject');
                 Route::get('/{id}/approved', 'OfflinePaymentController@approved');

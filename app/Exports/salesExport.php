@@ -31,13 +31,15 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
     {
         return [
             trans('admin/main.id'),
+            'كود الطالب',
             trans('admin/main.student'),
-            trans('admin/main.student') . ' ' . trans('admin/main.id'),
+            'البريد الالكتروني',
+            // trans('admin/main.student') . ' ' . trans('admin/main.id'),
             trans('admin/main.instructor'),
-            trans('admin/main.instructor') . ' ' . trans('admin/main.id'),
+            // trans('admin/main.instructor') . ' ' . trans('admin/main.id'),
             trans('admin/main.paid_amount'),
             trans('admin/main.item'),
-            trans('admin/main.item') . ' ' . trans('admin/main.id'),
+            // trans('admin/main.item') . ' ' . trans('admin/main.id'),
             trans('admin/main.sale_type'),
             trans('admin/main.date'),
             trans('admin/main.status'),
@@ -54,7 +56,7 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
             $paidAmount = trans('admin/main.subscribe');
         } else {
             if (!empty($sale->total_amount)) {
-                $paidAmount = handlePrice($sale->total_amount);
+                $paidAmount = handlePrice($sale->total_amount, false);
             } else {
                 $paidAmount = trans('public.free');
             }
@@ -62,16 +64,34 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
 
         $status = (!empty($sale->refund_at)) ? trans('admin/main.refund') : trans('admin/main.success');
 
+        $type = $sale->type;
+
+
+        if ($sale->type == \App\Models\Sale::$bundle)
+            $type = ($sale->payment_method == 'scholarship') ?  "منحة دراسية" : "دفع كامل الرسوم";
+        else if ($sale->type == \App\Models\Sale::$installmentPayment)
+            $type =   $sale->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'قسط التسجيل';
+        else if ($sale->type == 'form_fee')
+            $type = "رسوم حجز مقعد";
+        else if ($sale->type == 'certificate')
+            $type = "شراء شهادة";
+        else if ($sale->type == 'webinar')
+            $type = "دورة";
+        else if ($sale->type == 'service')
+            $type =  "خدمة الكترونية";
+
         return [
             $sale->id,
+            !empty($sale->buyer) ? $sale->buyer->user_code : 'Deleted User',
             !empty($sale->buyer) ? $sale->buyer->full_name : 'Deleted User',
-            !empty($sale->buyer) ? $sale->buyer->id : 'Deleted User',
+            !empty($sale->buyer) ? $sale->buyer->email : 'Deleted User',
             $sale->item_seller,
-            $sale->seller_id,
-            $paidAmount,
+            // $sale->seller_id,
+            (string)$paidAmount,
             $sale->item_title,
-            $sale->item_id,
-            trans('admin/main.' . $sale->type),
+            // $sale->item_id,
+            $type,
+
             dateTimeFormat($sale->created_at, 'j M Y H:i'),
             $status
         ];

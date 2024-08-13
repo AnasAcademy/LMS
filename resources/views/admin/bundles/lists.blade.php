@@ -219,6 +219,7 @@
                                         <th>{{trans('admin/main.sales')}}</th>
                                         <th>{{trans('admin/main.income')}}</th>
                                         <th>{{trans('admin/main.course_count')}}</th>
+                                        <th>{{trans('admin/main.start_date')}}</th>
                                         <th>{{trans('admin/main.created_at')}}</th>
                                         <th>{{trans('admin/main.updated_at')}}</th>
                                         <th>{{trans('admin/main.status')}}</th>
@@ -263,6 +264,8 @@
                                             <td class="font-12">
                                                 {{ $bundle->bundle_webinars_count }}
                                             </td>
+
+                                            <td class="font-12">{{ dateTimeFormat($bundle->start_date, 'Y M j | H:i') }}</td>
 
                                             <td class="font-12">{{ dateTimeFormat($bundle->created_at, 'Y M j | H:i') }}</td>
 
@@ -311,7 +314,7 @@
                                                             </a>
                                                         @endcan
 
-                                                        @can('admin_webinars_edit')
+                                                        @can('admin_bundles_edit')
                                                             <a href="{{ getAdminPanelUrl() }}/bundles/{{ $bundle->id }}/edit" target="_blank" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 " title="{{ trans('admin/main.edit') }}">
                                                                 <i class="fa fa-edit"></i>
                                                                 <span class="ml-2">{{ trans('admin/main.edit') }}</span>

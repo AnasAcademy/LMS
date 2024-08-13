@@ -66,7 +66,7 @@ return [
     'add_time' => 'إضافة وقت',
     'clear_all' => 'امسح الكل',
     'additional_information' => 'معلومات إضافية',
-    'capacity' => 'الاهلية',
+    'capacity' => 'السعة التخزينية',
     'start_date' => 'تاريخ البدء',
     'time' => 'زمن',
     'date' => 'تاريخ',

@@ -328,6 +328,16 @@ class AccountingController extends Controller
 
             $date = convertTimeToUTCzone($request['date'], getTimezone());
 
+            if ($offline->pay_for == 'form_fee') {
+                $status = 'pending';
+            } else {
+                if(!empty($offline->order->orderItems->first()->installmentPayment->step->installmentStep)){
+                    $status = 'approved';
+                }else{
+                    $status = 'paying';
+                }
+            }
+
             $offline->update([
                 'status' => OfflinePayment::$waiting,
                 'attachment' => $attachment,
@@ -335,6 +345,7 @@ class AccountingController extends Controller
                 'iban' =>  $request->input('IBAN'),
             ]);
 
+            BundleStudent::where(['student_id' => $offline->user->student->id, 'bundle_id' => $offline->order->orderItems->first()->bundle_id])->update(['status' => $status]);
             $sweetAlertData = [
                 'msg' => 'تم اعادة ارسال طلبك بنجاح',
                 'status' => 'success'

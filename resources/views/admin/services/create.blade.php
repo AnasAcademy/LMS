@@ -68,7 +68,9 @@
                                         <div class="col-12 col-md-7">
                                             @if (!empty(getGeneralSettings('content_translate')))
                                                 <div class="form-group">
-                                                    <label class="input-label">{{ trans('auth.language') }}</label>
+                                                    <label class="input-label">
+                                                        {{ trans('auth.language') }}
+                                                    </label>
                                                     <select name="locale"
                                                         class="form-control {{ !empty($service) ? 'js-edit-content-locale' : '' }}">
                                                         @foreach ($userLanguages as $lang => $language)
@@ -89,7 +91,10 @@
 
                                             {{-- service title --}}
                                             <div class="form-group mt-15">
-                                                <label class="input-label">{{ trans('public.title') }}</label>
+                                                <label class="input-label">
+                                                    {{ trans('public.title') }}
+                                                    <span class="text-danger">*</span>
+                                                </label>
                                                 <input type="text" name="title"
                                                     value="{{ !empty($service) ? $service->title : old('title') }}"
                                                     class="form-control @error('title')  is-invalid @enderror"
@@ -103,7 +108,9 @@
 
                                             {{-- service description --}}
                                             <div class="form-group mt-15">
-                                                <label class="input-label">{{ trans('public.description') }}</label>
+                                                <label class="input-label">
+                                                    {{ trans('public.description') }}
+                                                </label>
 
                                                 <textarea rows="5" name="description" class="form-control @error('description')  is-invalid @enderror"
                                                     placeholder="ادخل وصف للخدمة وماذا هي تقدم">{{ !empty($service) ? $service->description : old('description') }}</textarea>
@@ -116,8 +123,11 @@
 
                                             {{-- service price --}}
                                             <div class="form-group mt-15">
-                                                <label class="input-label">{{ trans('public.price') }}
-                                                    ({{ $currency }})</label>
+                                                <label class="input-label">
+                                                    {{ trans('public.price') }}
+                                                    ({{ $currency }})
+                                                     <span class="text-danger">*</span>
+                                                </label>
                                                 <input type="text" name="price"
                                                     value="{{ !empty($service) ? $service->price : old('price') }}"
                                                     class="form-control @error('price')  is-invalid @enderror"
@@ -132,7 +142,9 @@
                                             {{-- application link --}}
 
                                             <div class="form-group mt-15">
-                                                <label class="input-label">رابط التقديم (URL)</label>
+                                                <label class="input-label">رابط التقديم (URL)
+                                                     <span class="text-danger">*</span>
+                                                </label>
                                                 <input type="url" name="apply_link"
                                                     value="{{ !empty($service) ? $service->apply_link : old('apply_link') }}"
                                                     class="form-control @error('apply_link')  is-invalid @enderror"
@@ -150,7 +162,9 @@
                                             {{-- review link --}}
 
                                             <div class="form-group mt-15">
-                                                <label class="input-label">رابط مراجعة طلب سابق (URL)</label>
+                                                <label class="input-label">رابط مراجعة طلب سابق (URL)
+                                                     <span class="text-danger">*</span>
+                                                </label>
                                                 <input type="url" name="review_link"
                                                     value="{{ !empty($service) ? $service->review_link : old('review_link') }}"
                                                     class="form-control @error('review_link')  is-invalid @enderror"
@@ -168,7 +182,9 @@
 
                                             {{-- status --}}
                                             <div class="form-group  mt-15">
-                                                <label>{{ trans('/admin/main.status') }}</label>
+                                                <label>{{ trans('/admin/main.status') }}
+                                                     <span class="text-danger">*</span>
+                                                </label>
                                                 <select class="form-control @error('status') is-invalid @enderror"
                                                     id="status" name="status">
                                                     <option disabled selected>{{ trans('admin/main.select_status') }}
@@ -194,7 +210,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <button
-                                                class="btn btn-success">{{ !empty($service) ? trans('admin/main.save_and_publish') : trans('admin/main.save_and_continue') }}</button>
+                                                class="btn btn-success">{{ !empty($service) ? trans('admin/main.save_and_publish') : trans('admin/main.save') }}</button>
 
                                             @if (!empty($service))
                                                 @include('admin.includes.delete_button', [

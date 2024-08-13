@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Mixins\RegistrationBonus\RegistrationBonusAccounting;
 use Illuminate\Database\Eloquent\Model;
 
+use App\BundleStudent;
+
 class Sale extends Model
 {
     public static $webinar = 'webinar';
@@ -14,8 +16,8 @@ class Sale extends Model
     public static $registrationPackage = 'registration_package';
     public static $product = 'product';
     public static $bundle = 'bundle';
-    public static $formFee='form_fee';
-    public static $certificate='certificate';
+    public static $formFee = 'form_fee';
+    public static $certificate = 'certificate';
     public static $gift = 'gift';
     public static $installmentPayment = 'installment_payment';
 
@@ -34,6 +36,16 @@ class Sale extends Model
     public function bundle()
     {
         return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
+    }
+
+    public function transformBundle()
+    {
+        return $this->belongsTo('App\Models\Bundle', 'transform_bundle_id', 'id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo('App\Models\service', 'service_id', 'id');
     }
 
     public function certificate_template()
@@ -114,14 +126,18 @@ class Sale extends Model
             $orderType = Order::$registrationPackage;
         } elseif (!empty($orderItem->product_id)) {
             $orderType = Order::$product;
-        }elseif (!empty($orderItem->form_fee)) {
+        } elseif (!empty($orderItem->form_fee)) {
             $orderType = Order::$formFee;
-        }elseif (!empty($orderItem->installment_payment_id)) {
+        } elseif (!empty($orderItem->installment_payment_id)) {
             $orderType = Order::$installmentPayment;
-        }elseif (!empty($orderItem->bundle_id)) {
+        } elseif (!empty($orderItem->transform_bundle_id)) {
+            $orderType = 'transform_bundle';
+        } elseif (!empty($orderItem->bundle_id)) {
             $orderType = Order::$bundle;
-        }elseif (!empty($orderItem->certificate_template_id)) {
+        } elseif (!empty($orderItem->certificate_template_id)) {
             $orderType = Order::$certificate;
+        } elseif (!empty($orderItem->service_id)) {
+            $orderType = "service";
         }
 
         if (!empty($orderItem->gift_id)) {
@@ -129,38 +145,74 @@ class Sale extends Model
         }
 
         $seller_id = OrderItem::getSeller($orderItem);
-try{
-        $sale = Sale::create([
-            'buyer_id' => $orderItem->user_id,
-            'seller_id' => $seller_id,
-            'order_id' => $orderItem->order_id,
-            'webinar_id' => (empty($orderItem->gift_id) and !empty($orderItem->webinar_id)) ? $orderItem->webinar_id : null,
-            'bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->bundle_id)) ? $orderItem->bundle_id : null,
-            'certificate_template_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_template_id)) ? $orderItem->certificate_template_id : null,
-            'certificate_bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_bundle_id)) ? $orderItem->certificate_bundle_id : null,
-            'form_fee' => (empty($orderItem->gift_id) and !empty($orderItem->form_fee)) ? $orderItem->form_fee : null,
-            'meeting_id' => !empty($orderItem->reserve_meeting_id) ? $orderItem->reserveMeeting->meeting_id : null,
-            'meeting_time_id' => !empty($orderItem->reserveMeeting) ? $orderItem->reserveMeeting->meeting_time_id : null,
-            'subscribe_id' => $orderItem->subscribe_id,
-            'promotion_id' => $orderItem->promotion_id,
-            'registration_package_id' => $orderItem->registration_package_id,
-            'product_order_id' => (!empty($orderItem->product_order_id)) ? $orderItem->product_order_id : null,
-            'installment_payment_id' => $orderItem->installment_payment_id ?? null,
-            'gift_id' => $orderItem->gift_id ?? null,
-            'type' => $orderType,
-            'payment_method' => $payment_method,
-            'amount' => (!empty($orderItem->installment_payment_id)) ? $orderItem->installmentPayment->amount : $orderItem->amount,
-            'tax' => $orderItem->tax_price,
-            'commission' => $orderItem->commission_price,
-            'discount' => $orderItem->discount,
-            'total_amount' => $orderItem->total_amount,
-            'product_delivery_fee' => $orderItem->product_delivery_fee,
-            'created_at' => time(),
-        ]);
-}catch(\Exception $e)
-{
-    dd($e);
-}
+        try {
+            $class =  StudyClass::get()->last();
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+            }
+
+            if (
+                empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
+                && !empty($orderItem->installmentPayment->step)
+            ) {
+                $class =
+                    BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class ?? $class;
+            }
+            $price = 0;
+            if (!empty($orderItem->transform_bundle_id)) {
+                $price = $orderItem->Bundle->price - $orderItem->transformBundle->price;
+            }
+
+            $sale = Sale::create([
+                'buyer_id' => $orderItem->user_id,
+                'seller_id' => $seller_id,
+                'order_id' => $orderItem->order_id,
+                'webinar_id' => (empty($orderItem->gift_id) and !empty($orderItem->webinar_id)) ? $orderItem->webinar_id : null,
+                'bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->bundle_id)) ? $orderItem->bundle_id : null,
+                'transform_bundle_id' => (!empty($orderItem->transform_bundle_id)) ? $orderItem->transform_bundle_id : null,
+                'service_id' => (empty($orderItem->gift_id) and !empty($orderItem->service_id)) ? $orderItem->service_id : null,
+                'certificate_template_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_template_id)) ? $orderItem->certificate_template_id : null,
+                'certificate_bundle_id' => (empty($orderItem->gift_id) and !empty($orderItem->certificate_bundle_id)) ? $orderItem->certificate_bundle_id : null,
+                'form_fee' => (empty($orderItem->gift_id) and !empty($orderItem->form_fee)) ? $orderItem->form_fee : null,
+                'meeting_id' => !empty($orderItem->reserve_meeting_id) ? $orderItem->reserveMeeting->meeting_id : null,
+                'meeting_time_id' => !empty($orderItem->reserveMeeting) ? $orderItem->reserveMeeting->meeting_time_id : null,
+                'subscribe_id' => $orderItem->subscribe_id,
+                'promotion_id' => $orderItem->promotion_id,
+                'registration_package_id' => $orderItem->registration_package_id,
+                'product_order_id' => (!empty($orderItem->product_order_id)) ? $orderItem->product_order_id : null,
+                'installment_payment_id' => $orderItem->installment_payment_id ?? null,
+                'gift_id' => $orderItem->gift_id ?? null,
+                'type' => $orderType,
+                'payment_method' => $payment_method,
+                'amount' => (!empty($orderItem->installment_payment_id)) ? $orderItem->installmentPayment->amount : $orderItem->amount,
+                'tax' => $orderItem->tax_price,
+                'commission' => $orderItem->commission_price,
+                'discount' => $orderItem->discount,
+                'total_amount' => abs($orderItem->total_amount),
+                'product_delivery_fee' => $orderItem->product_delivery_fee,
+                'created_at' => time(),
+                "refund_at" => ($price<0) ? time() : null,
+                "message" => ($price < 0) ? 'تحويل من برنامج لبرنامج اخر' : null,
+                'class_id' => $class->id,
+                'payment_email' => $orderItem->order->payment_email,
+            ]);
+
+
+            if (!empty($orderItem->transform_bundle_id)) {
+                Sale::where(['buyer_id' => $orderItem->user_id, "bundle_id" => $orderItem->transform_bundle_id])->update(['transform_bundle_id' => $orderItem->transform_bundle_id, 'bundle_id' => $orderItem->bundle_id]);
+
+                $bundleTransform = BundleTransform::where(['user_id' => $orderItem->user_id, "to_bundle_id" => $orderItem->bundle_id, 'from_bundle_id' => $orderItem->transform_bundle_id])->orderBy('id', 'desc')->first();
+                if ($bundleTransform) {
+                    $bundleTransform->update(['status' => 'paid']);
+                }
+
+                BundleStudent::whereHas('student', function ($query) use ($orderItem) {
+                    $query->where('user_id', $orderItem->user_id);
+                })->where(['bundle_id' => $orderItem->transform_bundle_id])->update(['bundle_id' => $orderItem->bundle_id]);
+            }
+        } catch (\Exception $e) {
+            dd($e);
+        }
 
         self::handleSaleNotifications($orderItem, $seller_id);
 
@@ -184,13 +236,15 @@ try{
         $title = '';
         if (!empty($orderItem->webinar_id)) {
             $title = $orderItem->webinar->title;
-        }elseif (!empty($orderItem->form_fee)) {
+        } elseif (!empty($orderItem->form_fee)) {
             $title = "رسوم حجز مقعد";
-        }elseif (!empty($orderItem->bundle_id)) {
+        } elseif (!empty($orderItem->service_id)) {
+            $title = "طلب خدمة " . $orderItem->service->title;
+        } elseif (!empty($orderItem->bundle_id)) {
             $title = $orderItem->bundle->title;
         } elseif (!empty($orderItem->certificate_template_id)) {
             $title = "certificate";
-        }else if (!empty($orderItem->meeting_id)) {
+        } else if (!empty($orderItem->meeting_id)) {
             $title = trans('meeting.reservation_appointment');
         } else if (!empty($orderItem->subscribe_id)) {
             $title = $orderItem->subscribe->title . ' ' . trans('financial.subscribe');
@@ -233,9 +287,11 @@ try{
         } else {
             // dd($orderItem->bundle->early_enroll);
             $notifyOptions = [
-                '[c.title]' => $title,
+                '[c.title]' => $title
             ];
-
+            if (!empty($orderItem->service_id)) {
+                $notifyOptions['[p.body]'] = 'لقد تم ارسال طلبك لخدمة ' . $orderItem->service->title . " ودفع رسوم الطلب بنجاح";
+            }
             sendNotification('new_sales', $notifyOptions, $seller_id);
             sendNotification('new_purchase', $notifyOptions, $orderItem->user_id);
         }
@@ -327,5 +383,10 @@ try{
         }
 
         return $result;
+    }
+
+    public function class()
+    {
+        return $this->belongsTo(StudyClass::class, "class_id");
     }
 }

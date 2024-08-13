@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
-    public $timestamps = false;
+    public $timestamps = true;
+    const UPDATED_AT = null;
 
     protected $guarded = ['id'];
 
@@ -23,6 +24,15 @@ class Group extends Model
     public function groupRegistrationPackage()
     {
         return $this->hasOne('App\Models\GroupRegistrationPackage', 'group_id', 'id');
+    }
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function webinar()
+    {
+        return $this->belongsTo(Webinar::class);
     }
 
 }

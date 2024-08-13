@@ -300,6 +300,7 @@ class BundleController extends Controller
             'created_at' => time(),
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
+            'content_table' => $data['content_table'] ?? null,
         ]);
 
         if ($bundle) {
@@ -444,7 +445,7 @@ class BundleController extends Controller
             $data['slug'] = Bundle::makeSlug($data['title']);
         }
 
-        $data['status'] = $publish ? Bundle::$active : ($reject ? Bundle::$inactive : ($isDraft ? Bundle::$isDraft : Bundle::$pending));
+        // $data['status'] = $publish ? Bundle::$active : ($reject ? Bundle::$inactive : ($isDraft ? Bundle::$isDraft : Bundle::$pending));
         $data['updated_at'] = time();
         $data['subscribe'] = !empty($data['subscribe']) ? true : false;
 
@@ -523,6 +524,7 @@ class BundleController extends Controller
             'status' => $data['status'],
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
+            'content_table' => $data['content_table'] ?? null,
         ]);
 
         if ($bundle) {
@@ -827,10 +829,9 @@ class BundleController extends Controller
         $option = $request->get('option', null);
 
         $query = Bundle::select('id')
-            ->whereTranslationLike('title', "%$term%");
+            ->whereTranslationLike('title', "%$term%")->orWhere('slug', 'like', "%$term%");
 
         $bundles = $query->get();
-
         return response()->json($bundles, 200);
     }
 }

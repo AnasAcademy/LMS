@@ -3,6 +3,10 @@
 @push('libraries_top')
 @endpush
 
+@php
+    $segments = explode('/', request()->path());
+    $lastSegment = end($segments);
+@endphp
 @section('content')
     <section class="section">
         <div class="section-header">
@@ -83,13 +87,13 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="input-label">كود الطالب</label>
-                                    <input name="user_code" type="text" class="form-control"
-                                        value="{{ request()->get('user_code') }}">
-                                </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">كود الطالب</label>
+                                <input name="user_code" type="text" class="form-control"
+                                    value="{{ request()->get('user_code') }}">
                             </div>
+                        </div>
 
                         <div class="col-md-3">
                             <div class="form-group">
@@ -225,6 +229,20 @@
             @can('admin_users_export_excel')
                 <a href="{{ getAdminPanelUrl() }}/students/excelEnroller?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
+
+                @if ($lastSegment == 'scholarship')
+                    @include('admin.students.includes.importStudents', [
+                        'url' => getAdminPanelUrl() . '/students/importScholarshipStudent',
+                        'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
+                        'btnText' => '<span class="ml-2">اضافه طلاب المنح الدراسية</span>',
+                        'hideDefaultClass' => true,
+                    ])
+
+                    <a href="{{ asset('files/import_student_template.xlsx') }}" class="btn btn-success" download>تحميل قالب
+                        النموذج</a>
+                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
+                    </a>
+                @endif
             @endcan
             <div class="h-10"></div>
         </div>
@@ -277,34 +295,12 @@
                                 </div>
                             </td>
 
-                            {{-- <td>
-                                <div class="media-body">
-                                    <div class="text-primary mt-0 mb-1 font-weight-bold">
-                                        {{ $user->classesPurchasedsCount }}</div>
-                                    <div class="text-small font-600-bold">{{ handlePrice($user->classesPurchasedsSum) }}
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="media-body">
-                                    <div class="text-primary mt-0 mb-1 font-weight-bold">
-                                        {{ $user->meetingsPurchasedsCount }}</div>
-                                    <div class="text-small font-600-bold">{{ handlePrice($user->meetingsPurchasedsSum) }}
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>{{ handlePrice($user->getAccountingBalance()) }}</td>
-
-                            <td>{{ handlePrice($user->getIncome()) }}</td>
-
-                            <td>
-                                {{ !empty($user->userGroup) ? $user->userGroup->group->name : '' }}
-                            </td> --}}
+                            @php
+                                $userPurchasedBundles = $user->purchasedBundles($class->id ?? null)->get();
+                            @endphp
                             <td>
 
-                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                @foreach ($userPurchasedBundles as $purchasedBundle)
                                     {{ $purchasedBundle->bundle->title }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;
@@ -312,15 +308,8 @@
                                 @endforeach
                             </td>
 
-                            {{-- <td>
-                                {{ !empty($user->student) ? 'تم حجز مقعد' : 'لم يتم حجز مقعد' }}
-                            </td> --}}
-                            {{-- <td>
-                                {{ $user->user_code }}
-                            </td> --}}
-
                             <td>
-                                @foreach ($user->purchasedBundles() as $purchasedBundle)
+                                @foreach ($userPurchasedBundles as $purchasedBundle)
                                     {{ dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;
@@ -342,17 +331,6 @@
                             </td>
 
                             <td class="text-center mb-2" width="120">
-                                {{-- @can('admin_users_transform')
-                                    @if (!empty($user->student))
-                                        @include('admin.includes.confirm_transform_button', [
-                                            'url' => getAdminPanelUrl() . '/users/' . $user->id . '/transform',
-                                            'btnClass' => 'btn-transparent  text-primary',
-                                            'btnText' => '<i class="fa fa-retweet"></i>',
-                                            'hideDefaultClass' => true,
-                                            'id' => $user->id,
-                                        ])
-                                    @endif
-                                @endcan --}}
 
                                 @can('admin_users_impersonate')
                                     <a href="{{ getAdminPanelUrl() }}/users/{{ $user->id }}/impersonate" target="_blank"

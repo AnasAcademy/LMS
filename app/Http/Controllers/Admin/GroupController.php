@@ -47,7 +47,7 @@ class GroupController extends Controller
         $this->authorize('admin_group_create');
 
         $this->validate($request, [
-            'users' => 'required|array',
+            'users' => 'array',
             'name' => 'required',
         ]);
 
@@ -110,7 +110,7 @@ class GroupController extends Controller
         $this->authorize('admin_group_edit');
 
         $this->validate($request, [
-            'users' => 'required|array',
+            'users' => 'array',
             'percent' => 'nullable',
             'name' => 'required',
         ]);
@@ -151,7 +151,13 @@ class GroupController extends Controller
 
         Group::find($id)->delete();
 
-        return redirect(getAdminPanelUrl() . '/users/groups');
+        $toastData = [
+            'title' => 'حذف مجموعة دورة',
+            'msg' => 'تم الحذف بنجاح',
+            'status' => 'success',
+        ];
+
+        return back()->with('toast', $toastData);
     }
 
     public function groupRegistrationPackage(Request $request, $id)

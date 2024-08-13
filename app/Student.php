@@ -27,5 +27,10 @@ class Student extends Model
         return $this->hasMany(BundleStudent::class,'student_id');
 
     }
+    public function classBundleStudent($class_id){
+
+        return $this->hasMany(BundleStudent::class,'student_id')->where("class_id",$class_id)->get();
+
+    }
 
 }

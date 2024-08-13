@@ -27,7 +27,7 @@
                                 </div>
                             </div> --}}
 
-                              <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
+                            <div class="@if ($pageType == 'requests') col-md-3 @else col-md-2 @endif">
                                 <div class="form-group">
                                     <label class="input-label">طالب</label>
                                     <select name="user_ids[]" multiple="multiple" class="form-control search-user-select2"
@@ -79,7 +79,7 @@
                                                 {{ trans('admin/main.rejected') }}
                                             </option>
                                             <option value="canceled" @if (request()->get('status') == 'canceled') selected @endif>
-                                              ملغي
+                                                ملغي
                                             </option>
                                         </select>
                                     </div>
@@ -173,13 +173,14 @@
                                         <th>{{ 'اي بان(IBAN)' }}</th>
                                         <th>{{ trans('update.attachment') }}</th>
                                         <th>{{ trans('admin/main.status') }}</th>
+                                        <th class="text-center">{{ 'تاريخ الطلب ' }}</th>
                                         <th width="150px">{{ trans('admin/main.actions') }}</th>
                                     </thead>
 
                                     <tbody>
                                         @if ($offlinePayments->count() > 0)
                                             @foreach ($offlinePayments as $offlinePayment)
-                                                <tr>
+                                                <tr @if ($offlinePayment->status == 'canceled') style="opacity: 0.5" @endif>
                                                     <td class="text-left">
                                                         {{ $offlinePayment->user->full_name }}
                                                     </td>
@@ -202,11 +203,42 @@
                                                             @elseif ($offlinePayment->pay_for == 'bundle')
                                                                 الدفع كامل ل
                                                                 {{ $offlinePayment->order->orderItems->first()->bundle->title }}
+                                                            @elseif ($offlinePayment->pay_for == 'webinar')
+                                                                الدفع كامل ل
+
+                                                                {{ $offlinePayment->order->orderItems->first()->webinar->title }}
                                                             @elseif ($offlinePayment->pay_for == 'installment')
                                                                 {{ $offlinePayment->order->orderItems->first()->installmentPayment->step->installmentStep->title ?? 'القسط الأول' }}
-
                                                                 ل
                                                                 {{ $offlinePayment->order->orderItems->first()->bundle->title }}
+                                                            @elseif ($offlinePayment->pay_for == 'service')
+                                                                @php
+                                                                    $user = $offlinePayment->order->orderItems
+                                                                        ->first()
+                                                                        ->service->users()
+                                                                        ->where('user_id', $offlinePayment->user_id)
+                                                                        ->first();
+                                                                @endphp
+
+                                                                @include(
+                                                                    'admin.services.requestContentMessage',
+                                                                    [
+                                                                        'url' => '#',
+                                                                        'btnClass' =>
+                                                                            'd-flex align-items-center justify-content-center mt-1 text-primary',
+                                                                        'btnText' =>
+                                                                            '<span class="ml-2">' .
+                                                                            ' رسوم طلب خدمة ' .
+                                                                            $offlinePayment->order->orderItems->first()->service->title .
+                                                                            ' </span>',
+                                                                        'hideDefaultClass' => true,
+                                                                        'deleteConfirmMsg' => 'test',
+                                                                        'message' => $user->pivot->content ?? '',
+                                                                        'id' => $user->pivot->id ?? 0,
+                                                                    ]
+                                                                )
+
+                                                                {{-- {{ ' رسوم طلب خدمة '. $offlinePayment->order->orderItems->first()->service->title }} --}}
                                                             @endif
                                                         </span>
                                                     </td>
@@ -271,6 +303,9 @@
                                                             @break
                                                         @endswitch
                                                     </td>
+                                                     <td class="font-12">
+                                                    {{ Carbon\Carbon::parse($offlinePayment->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                                </td>
 
                                                     <td class="py-2 text-center">
                                                         <div class="d-flex">

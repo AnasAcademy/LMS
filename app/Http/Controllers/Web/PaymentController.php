@@ -29,6 +29,13 @@ use App\Models\OfflinePayment;
 use App\BundleStudent;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use App\Models\Enrollment;
+use App\Models\Group;
+use Illuminate\Support\Facades\Cookie;
+
+use App\Models\ServiceUser;
+use App\Models\StudyClass;
+use Illuminate\Support\Facades\Date;
 
 class PaymentController extends Controller
 {
@@ -109,6 +116,8 @@ class PaymentController extends Controller
             'gateway' => 'required',
         ]);
 
+
+
         $user = auth()->user();
         $gateway = $request->input('gateway');
         $orderId = $request->input('order_id');
@@ -122,6 +131,7 @@ class PaymentController extends Controller
             $reserveMeeting = ReserveMeeting::where('id', $orderItem->reserve_meeting_id)->first();
             $reserveMeeting->update(['locked_at' => time()]);
         }
+
 
         if ($gateway == 'offline') {
             return $this->payOffline($request, $order);
@@ -153,6 +163,7 @@ class PaymentController extends Controller
 
         //     return redirect('/payments/status');
         // }
+
 
         $paymentChannel = PaymentChannel::where('id', $gateway)
             ->where('status', 'active')
@@ -378,8 +389,11 @@ class PaymentController extends Controller
         } else {
             $user = $authUser;
             $order = Order::where('id', $orderId)
-            ->where('user_id', auth()->id())
-            ->first();
+                ->where('user_id', $user->id)
+                ->first();
+            if ($order->user_id != $user->id) {
+                abort(403);
+            }
         }
 
 
@@ -396,69 +410,113 @@ class PaymentController extends Controller
                 ->first();
 
             $bundle_sale = Sale::where('order_id', $order->id)
-                ->where('type', 'bundle')
-                ->orWhere('type', 'installment_payment')
+                ->whereIn('type', ['bundle', 'installment_payment'])
                 ->where('buyer_id', $user->id)
                 ->first();
-            $pivotId = null;
-            if ($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') {
+
+            $webinar_sale = Sale::where('order_id', $order->id)
+                ->where('type', 'webinar')
+                ->where('buyer_id', $user->id)
+                ->first();
+
+            $service_sale = Sale::where('order_id', $order->id)
+                ->where('type', 'service')
+                ->where('buyer_id', $user->id)
+                ->first();
+
+            $pivot = null;
+
+            $class =  StudyClass::get()->last();
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+            }
+
+            if (($sale && $sale->order->user_id == $user->id && $sale->order->status == 'paid') || ($webinar_sale && $webinar_sale->order->user_id == $user->id && $webinar_sale->order->status == 'paid')) {
                 //add as student
                 try {
-                    $lastCode = Code::latest()->first();
-                    if (!empty($lastCode)) {
-                        if (empty($lastCode->lst_sd_code)) {
-                            $lastCode->lst_sd_code = $lastCode->student_code;
-                        }
-                        $lastCodeAsInt = intval(substr($lastCode->lst_sd_code, 2));
-                        do {
-                            $nextCodeAsInt = $lastCodeAsInt + 1;
-                            $nextCode = 'SD' . str_pad($nextCodeAsInt, 5, '0', STR_PAD_LEFT);
+                    $userData = $request->cookie('user_data');
+                    if (!$userData) {
+                        $userData = Cookie::get('user_data');
+                    }
+                    $userData = json_decode($userData, true);
+                    $keysToExclude = [
+                        'category_id',
+                        'bundle_id',
+                        'webinar_id',
+                        'type',
+                        'terms',
+                        'certificate',
+                        'timezone',
+                        'password',
+                        'password_confirmation',
+                        'email_confirmation',
+                        'requirement_endorsement'
+                    ];
+                    $studentData = collect($userData)->except($keysToExclude)->toArray();
+                    $studentData['email'] = $user->email;
+                    $student = $user->student;
 
-                            $codeExists = User::where('user_code', $nextCode)->exists();
 
-                            if ($codeExists) {
-                                $lastCodeAsInt = $nextCodeAsInt;
-                            } else {
-                                break;
-                            }
-                        } while (true);
+                    if (!$student) {
+                        $student = Student::create($studentData);
+                    }
+                    if (!$user->user_code) {
+                        $code = generateStudentCode();
+                        $user->update([
+                            'user_code' => $code,
+                            'access_content' => 1
+                        ]);
 
-                        $userData = $request->cookie('user_data');
-                        if ($userData) {
-                            $userData = json_decode($userData, true);
-                            $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
-                        }
-                        $student = $user->student;
-                        if (!$student) {
-                            $student = Student::create($studentData);
-                        }
-                        if (!$user->user_code) {
-                            $user = User::where('id', $user->id)->update([
-                                'user_code' => $nextCode,
-                                'access_content' => 1
-                            ]);
-                            $lastCode->update(['lst_sd_code' => $nextCode]);
-                        }
+                        // update code
+                        Code::latest()->first()->update(['lst_sd_code' => $code]);
+                    }
 
-                        $bundleId = $order->orderItems->first()->bundle_id;
+                    if (!empty($order->orderItems->first()->webinar_id)) {
+                        $user->update([
+                            'role_id' => 1,
+                            'role_name' => 'user',
+                        ]);
+                    }
+                    $bundleId = $order->orderItems->first()->bundle_id;
+
+                    if (!empty($bundleId)) {
 
                         // Check if the student already has the bundle ID attached
-                        if (!$student->bundles->contains($bundleId)) {
-                            $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null]);
-                            $pivotId = \DB::table('bundle_student')
+                        if ($student->bundles->contains($bundleId)) {
+                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved', 'class_id' => $sale->class_id]);
+                        } else {
+                            $student->bundles()->attach($bundleId, [
+                                'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null,
+                                'class_id' => $sale->class_id,
+                                'created_at' => Date::now(),  // Set current timestamp for created_at
+                                'updated_at' => Date::now()
+                            ]);
+
+                            $pivot = \DB::table('bundle_student')
                                 ->where('student_id', $student->id)
-                                ->where('bundle_id', $bundleId)
-                                ->value('id');
+                                ->where('bundle_id', $bundleId)->first();
+                        }
+                    }
+
+
+                    if (!empty($webinar_sale->webinar->hasGroup)) {
+                        $webinar = $webinar_sale->webinar;
+                        $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
+                        if (!$lastGroup) {
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
+                        }
+                        $enrollments = $lastGroup->enrollments->count();
+                        if ($enrollments >= $lastGroup->capacity) {
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
                         }
 
-                        else{
-                            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved']);
-                        }
-
-
+                        Enrollment::create([
+                            'user_id' => $user->id,
+                            'group_id' => $lastGroup->id,
+                        ]);
                     }
                 } catch (\Exception $exception) {
-                    dd($exception);
+                    dd(['cookie' => $userData, 'error' => $exception->getMessage()]);
                 }
             } elseif ($bundle_sale && $bundle_sale->order->user_id == $user->id && $bundle_sale->order->status == 'paid') {
                 $user = User::where('id', $user->id)->first();
@@ -467,9 +525,16 @@ class PaymentController extends Controller
                     'role_name' => 'user',
                 ]);
 
-                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved']);
-
-
+                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
+            } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
+                $serviceRequestContent = $request->cookie('service_content');
+                $service = $service_sale->order->orderItems->first()->service;
+                if ($serviceRequestContent) {
+                    $serviceRequestContent = json_decode($serviceRequestContent, true);
+                    $service->users()->attach($user, ['content' => $serviceRequestContent]);
+                } else {
+                    ServiceUser::where(['user_id' => $user->id, 'service_id' => $service->id])->update(['status' => 'pending']);
+                }
             }
 
             if (!empty($data['order']) && $data['order']->status === Order::$paid) {
@@ -478,12 +543,25 @@ class PaymentController extends Controller
                     'msg' => trans('cart.success_pay_msg'),
                     'status' => 'success'
                 ];
+
+                if (!empty($service_sale)) {
+                    return redirect('/panel/services')->with(['toast' => $toastData, 'success' => "تم ارسال الطلب بنجاح"]);
+                }
+
                 if (empty($sale)) {
                     return redirect('/panel')->with(['toast' => $toastData]);
                 }
-                if (!empty($sale) && isset($pivotId) && ($sale->bundle->early_enroll == 0)) {
-                    return redirect('/panel/bundles/' . $pivotId . '/requirements')->with(['toast' => $toastData]);
+                if (!empty($sale) && isset($pivot->id)) {
+                    if (count($sale->bundle->category->categoryRequirements) > 0) {
+                        return redirect("/panel/requirements")->with(['toast' => $toastData]);
+                    } else {
+                        return redirect("/panel/requirements/applied")->with(['toast' => $toastData]);
+                    }
                 }
+
+                // if (!empty($sale) && isset($pivot->id) && ($sale->bundle->early_enroll == 0)) {
+                //     return redirect('/panel/bundles/' . $pivot->id . '/requirements')->with(['toast' => $toastData]);
+                // }
                 return redirect('/')->with(['toast' => $toastData]);
             } else if (!empty($data['order']) && $data['order']->status === Order::$fail) {
                 $toastData = [
@@ -496,8 +574,12 @@ class PaymentController extends Controller
 
             // return view('web.default.cart.status_pay', $data);
         }
-
-        return redirect('/');
+        $toastData = [
+            'title' => trans('cart.failed_pay_title'),
+            'msg' => trans('cart.failed_pay_msg'),
+            'status' => 'error'
+        ];
+        return redirect('/')->with(['toast' => $toastData]);
     }
 
     private function handleMeetingReserveReward($user)
@@ -633,7 +715,7 @@ class PaymentController extends Controller
 
         $path = $path . '/' . $name;
 
-        $storage->put($path, (string)$img->encode());
+        $storage->put($path, (string) $img->encode());
 
         return $name;
     }
@@ -649,7 +731,7 @@ class PaymentController extends Controller
         ]);
 
         $account = $request->input('account');
-        $date = $request->input('date');
+
 
         $attachment = $request->file('attachment');
         if (!in_array(strtolower($attachment->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'])) {
@@ -657,38 +739,71 @@ class PaymentController extends Controller
         }
         $attachment = $this->handleUploadAttachment($user, $request->file('attachment'));
 
-        $date = convertTimeToUTCzone($date, getTimezone());
+
         $item = $order->orderItems->first();
         $bundleId = $order->orderItems->first()->bundle_id;
 
-        if ($item->form_fee) {
-            $orderType = 'form_fee';
+        if ($item->form_fee || $item->webinar_id) {
+            $orderType = $item->form_fee ? 'form_fee' : 'webinar';
+
+            $userData = $request->cookie('user_data');
+            $userData = json_decode($userData, true);
 
             $student = Student::where('user_id', auth()->user()->id)->first();
-            if (!$student) {
-                $userData = $request->cookie('user_data');
-                if ($userData) {
-                    $userData = json_decode($userData, true);
-                    $studentData = collect($userData)->except(['category_id', 'bundle_id', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation'])->toArray();
-                    $student = Student::create($studentData);
 
+            if (!$student) {
+                if ($userData) {
+                    $studentData =
+                        collect($userData)->except(['category_id', 'bundle_id', 'webinar_id', 'type', 'terms', 'certificate', 'timezone', 'password', 'password_confirmation', 'email_confirmation', 'requirement_endorsement'])->toArray();
+
+                    $studentData['email'] = $user->email;
+                    $studentData['mobile'] = $user->mobile;
+                    $studentData['phone'] = $user->mobile;
+                    $student = Student::create($studentData);
                 } else {
                     return redirect('/apply');
                 }
             }
+        }
 
+        if ($item->form_fee) {
+
+            $class =  StudyClass::get()->last();
+            if (!$class) {
+                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+            }
             // Check if the student already has the bundle ID attached
             if (!$student->bundles->contains($bundleId)) {
-                $student->bundles()->attach($bundleId,  ['certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending']);
-                $pivotId = \DB::table('bundle_student')
-                ->where('student_id', $student->id)
+                $student->bundles()->attach($bundleId, [
+                    'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null,
+                    'status' => 'pending',
+                    'class_id' => $class->id,
+                    'created_at' => Date::now(),  // Set current timestamp for created_at
+                    'updated_at' => Date::now()
+                ]);
+
+                $pivot = \DB::table('bundle_student')
+                    ->where('student_id', $student->id)
                     ->where('bundle_id', $bundleId)
                     ->value('id');
+            }
+        } else if ($item->webinar_id) {
+            $orderType = 'webinar';
+        } else if ($item->service_id) {
+            $orderType = 'service';
+            $serviceRequestContent = $request->cookie('service_content');
+            $service = $item->service;
+            if ($serviceRequestContent) {
+                $serviceRequestContent = json_decode($serviceRequestContent, true);
+                $service->users()->attach($user, ['content' => $serviceRequestContent, 'status' => 'paying']);
             }
         } else {
             $orderType = $item->installment_payment_id ? 'installment' : 'bundle';
             $student = Student::where('user_id', auth()->user()->id)->first();
-            BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundleId])->update(['status' => 'paying']);
+
+            if (empty($item->installmentPayment->step->installmentStep)) {
+                BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundleId])->update(['status' => 'paying']);
+            }
         }
 
 
@@ -696,7 +811,7 @@ class PaymentController extends Controller
             'user_id' => $user->id,
             'amount' => $order->total_amount,
             'offline_bank_id' => $account,
-            'iban' =>  $request->input('IBAN'),
+            'iban' => $request->input('IBAN'),
             'order_id' => $order->id,
             'pay_for' => $orderType,
             'status' => OfflinePayment::$waiting,

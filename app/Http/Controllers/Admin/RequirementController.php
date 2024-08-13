@@ -27,7 +27,7 @@ class RequirementController extends Controller
 
         return view('admin.requirements.index', ['requirements' => $requirements]);
     }
-    private function filters($query, $request)
+    public function filters($query, $request)
     {
 
         $user_code = $request->get('user_code');

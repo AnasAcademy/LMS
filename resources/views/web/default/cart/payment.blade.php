@@ -19,9 +19,15 @@
         } elseif (!empty($type) && $type == 1) {
             $subTitle .= 'رسوم حجز مقعد : ' . $total . ' ريال سعودي';
             // $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
-        } else {
-            $subTitle .=
-                'الرسوم الدراسية للبرنامج ' . $order->orderItems[0]->bundle->title . ': ' . $total . ' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->bundle)){
+             $subTitle .= 'الرسوم الدراسية للبرنامج '.($order->orderItems[0]->bundle->title).': '.($total).' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->webinar)){
+            $subTitle .= 'الرسوم الدراسية للدورة '.($order->orderItems[0]->webinar->title).': '.($total).' ريال سعودي';
+        }
+        else if(!empty($order->orderItems[0]->service)){
+            $subTitle .= 'الرسوم لطلب خدمة  '.($order->orderItems[0]->service->title).': '.($total).' ريال سعودي';
         }
         // close subtitle
         $subTitle .= '</span>';
@@ -73,7 +79,7 @@
                     @foreach ($paymentChannels as $paymentChannel)
                         @if (!$isMultiCurrency or !empty($paymentChannel->currencies) and in_array($userCurrency, $paymentChannel->currencies))
                             <div class="col-6 col-lg-4 mb-40 charge-account-radio ">
-                                <input type="radio" name="gateway" class="online-gateway"
+                                <input type="radio" name="gateway" class="online-gateway" checked
                                     id="{{ $paymentChannel->title }}" data-class="{{ $paymentChannel->class_name }}"
                                     value="{{ $paymentChannel->id }}">
                                 <label for="{{ $paymentChannel->title }}"
@@ -111,7 +117,7 @@
                 @endif
 
                 @error('gateway')
-                    <div class="invalid-feedback"> {{ $message }}</div>
+                    <div class="invalid-feedback d-block"> {{ $message }}</div>
                 @enderror
 
                 {{-- account discharge --}}
@@ -167,7 +173,7 @@
 
                 <div class="row mt-25">
                     @foreach ($offlineBanks as $offlineBank)
-                        <div class="col-12 col-lg-4 mb-30 mb-lg-0">
+                        <div class="col-12 col-lg-7 mb-30 mb-lg-0">
                             <div
                                 class="py-25 px-20 rounded-sm panel-shadow d-flex flex-column align-items-center justify-content-center">
                                 <img src="{{ $offlineBank->logo }}" width="120" height="60" alt="">

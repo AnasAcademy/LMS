@@ -72,7 +72,7 @@
                                 <div class="custom-upload-input"></div>
                             </label> --}}
 
-                            <input type="file" name="attachment" id="attachmentFile{{$id}}"
+                            <input type="file" name="attachment" id="attachmentFile{{$id}}" accept=".jpeg,.jpg,.png"
                                 class="form-control h-auto @error('attachment') is-invalid @enderror"
                                 value="" />
                             @error('attachment')

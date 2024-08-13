@@ -2,204 +2,254 @@
     <link rel="stylesheet" href="/assets/vendors/leaflet/leaflet.css">
 @endpush
 
-<section class="mt-30">
-    <h2 class="section-title after-line">{{ trans('update.settings') }}</h2>
+@php
+    $user = auth()->user();
+    $student = $user->student;
+@endphp
 
-    <div class="row mt-20">
-        <div class="col-12 col-lg-4">
+<h2 class="section-title after-line mt-30">معلومات اضافية</h2>
+<section class="container">
+    {{-- working --}}
+    <section class="mt-30">
+        <h2 class="form-main-title">بيانات المهنة </h2>
+        <section
+            class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0 workingSection">
+            {{-- work status --}}
+            <div class="form-group col-12 col-sm-6">
+                <label>{{ trans('application_form.status') }}<span class="text-danger">*</span></label>
 
-            <div class="form-group mb-30 mt-30">
-                <label class="input-label">{{ trans('update.gender') }}:</label>
+                @error('workStatus')
+                    <div class="invalid-feedback d-inline">
+                        {{ $message }}
+                    </div>
+                @enderror
 
-                <div class="d-flex align-items-center">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" name="gender" value="man" {{ (!empty($user->gender) and $user->gender == 'man') ? 'checked="checked"' : ''}} id="man" class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="man">{{ trans('update.man') }}</label>
+                <div class="row mr-5 mt-5">
+                    {{-- working status --}}
+                    <div class="col-sm-4 col">
+                        <label for="working">
+                            <input type="radio" id="working" name="workStatus"
+                                class="@error('workStatus') is-invalid @enderror" value="1" required
+                                {{ old('workStatus', $student->job ?? null) != false ? 'checked' : '' }}>
+                            {{ trans('application_form.working') }}
+                        </label>
                     </div>
 
-                    <div class="custom-control custom-radio ml-15">
-                        <input type="radio" name="gender" value="woman" id="woman" {{ (!empty($user->gender) and $user->gender == 'woman') ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="woman">{{ trans('update.woman') }}</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group mb-30">
-                <label class="input-label">{{ trans('update.age') }}:</label>
-                <input type="number" name="age" value="{{ !empty($user->age) ? $user->age : ''}}" class="form-control">
-            </div>
-
-            <div class="form-group mb-30">
-                <label class="input-label">{{ trans('update.meeting_type') }}:</label>
-
-                <div class="d-flex align-items-center">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" name="meeting_type" value="in_person" id="in_person" {{ (!empty($user->meeting_type) and $user->meeting_type == 'in_person') ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="in_person">{{ trans('update.in_person') }}</label>
-                    </div>
-
-                    <div class="custom-control custom-radio ml-10">
-                        <input type="radio" name="meeting_type" value="online" id="online" {{ (!empty($user->meeting_type) and $user->meeting_type == 'online') ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="online">{{ trans('update.online') }}</label>
-                    </div>
-
-                    <div class="custom-control custom-radio ml-10">
-                        <input type="radio" name="meeting_type" value="all" id="all" {{ (!empty($user->meeting_type) and $user->meeting_type == 'all') ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="all">{{ trans('public.all') }}</label>
+                    {{-- not working Status --}}
+                    <div class="col">
+                        <label for="not_working">
+                            <input type="radio" id="not_working" name="workStatus" required
+                                class="@error('workStatus') is-invalid @enderror" value="0"
+                                {{ old('workStatus', $student->job ?? null) == false ? 'checked' : '' }}>
+                            {{ trans('application_form.not_working') }}
+                        </label>
                     </div>
                 </div>
             </div>
 
-            <div class="form-group mb-30">
-                <label class="input-label">{{ trans('update.level_of_training') }}:</label>
+            {{-- job details --}}
+            <div class="col-12" id="job" style="display: none">
+                <div class="row">
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="job_title">الوظيفة<span class="text-danger">*</span></label>
+                        <input type="text" id="job_title" name="job"
+                            class="form-control @error('job') is-invalid @enderror" placeholder="أدخل الوظيفة"
+                            value="{{ old('job', $student ? $student->job : '') }}">
 
-                <div class="d-flex align-items-center">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" name="level_of_training[]" value="beginner" id="beginner" {{ (!empty($user->level_of_training) and is_array($user->level_of_training) and in_array('beginner',$user->level_of_training)) ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="beginner">{{ trans('update.beginner') }}</label>
+
+                        @error('job')
+                            <div class="invalid-feedback d-block">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
-                    <div class="custom-control custom-checkbox ml-10">
-                        <input type="checkbox" name="level_of_training[]" value="middle" id="middle" {{ (!empty($user->level_of_training) and is_array($user->level_of_training) and in_array('middle',$user->level_of_training)) ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="middle">{{ trans('update.middle') }}</label>
-                    </div>
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="employment_type">جهة العمل<span class="text-danger">*</span></label>
+                        <select id="employment_type" name="job_type"
+                            class="form-control @error('job_type') is-invalid @enderror">
+                            <option value="" selected disabled>اختر جهة العمل</option>
+                            <option value="governmental"
+                                {{ old('job_type', $student->job_type ?? null) == 'governmental' ? 'selected' : '' }}>
+                                حكومية</option>
+                            <option value="private"
+                                {{ old('job_type', $student->job_type ?? null) == 'private' ? 'selected' : '' }}>
+                                خاصة</option>
+                        </select>
 
-                    <div class="custom-control custom-checkbox ml-10">
-                        <input type="checkbox" name="level_of_training[]" value="expert" id="expert" {{ (!empty($user->level_of_training) and is_array($user->level_of_training) and in_array('expert',$user->level_of_training)) ? 'checked="checked"' : ''}} class="custom-control-input">
-                        <label class="custom-control-label font-14 cursor-pointer" for="expert">{{ trans('update.expert') }}</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <h2 class="section-title after-line">{{ trans('update.region') }}</h2>
-
-    <div class="row mt-30">
-        <div class="col-12 col-lg-4">
-            <div class="form-group ">
-                <label class="input-label">{{ trans('update.country') }}:</label>
-
-                <select name="country_id" class="form-control " {{ empty($countries) ? 'disabled' : '' }}>
-                    <option value="">{{ trans('update.select_country') }}</option>
-
-                    @if(!empty($countries))
-                        @foreach($countries as $country)
-                            @php
-                                $country->geo_center = \Geo::get_geo_array($country->geo_center);
-                            @endphp
-
-                            <option value="{{ $country->id }}" data-center="{{ implode(',', $country->geo_center) }}" {{ (($user->country_id == $country->id) or old('country_id') == $country->id) ? 'selected' : '' }}>{{ $country->title }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            <div class="form-group mt-30">
-                <label class="input-label">{{ trans('update.province') }}:</label>
-
-                <select name="province_id" class="form-control " {{ empty($provinces) ? 'disabled' : '' }}>
-                    <option value="">{{ trans('update.select_province') }}</option>
-
-                    @if(!empty($provinces))
-                        @foreach($provinces as $province)
-                            @php
-                                $province->geo_center = \Geo::get_geo_array($province->geo_center);
-                            @endphp
-
-                            <option value="{{ $province->id }}" data-center="{{ implode(',', $province->geo_center) }}" {{ (($user->province_id == $province->id) or old('province_id') == $province->id) ? 'selected' : '' }}>{{ $province->title }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            <div class="form-group mt-30">
-                <label class="input-label">{{ trans('update.city') }}:</label>
-
-                <select name="city_id" class="form-control " {{ empty($cities) ? 'disabled' : '' }}>
-                    <option value="">{{ trans('update.select_city') }}</option>
-
-                    @if(!empty($cities))
-                        @foreach($cities as $city)
-                            @php
-                                $city->geo_center = \Geo::get_geo_array($city->geo_center);
-                            @endphp
-
-                            <option value="{{ $city->id }}" data-center="{{ implode(',', $city->geo_center) }}" {{ (($user->city_id == $city->id) or old('city_id') == $city->id) ? 'selected' : '' }}>{{ $city->title }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            <div class="form-group mt-30">
-                <label class="input-label">{{ trans('update.district') }}:</label>
-
-                <select name="district_id" class="form-control " {{ empty($districts) ? 'disabled' : '' }}>
-                    <option value="">{{ trans('update.select_district') }}</option>
-
-                    @if(!empty($districts))
-                        @foreach($districts as $district)
-                            @php
-                                $district->geo_center = \Geo::get_geo_array($district->geo_center);
-                            @endphp
-
-                            <option value="{{ $district->id }}" data-center="{{ implode(',', $district->geo_center) }}" {{ (($user->district_id == $district->id) or old('district_id') == $district->id) ? 'selected' : '' }}>{{ $district->title }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            <div class="form-group mb-30">
-                <label class="input-label">{{ trans('update.address') }}:</label>
-                <input type="text" name="address" value="{{ !empty($user->address) ? $user->address : '' }}" class="form-control">
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-8">
-            <div class="form-group">
-                <input type="hidden" id="LocationLatitude" name="latitude" value="{{ (!empty($user->location)) ? $user->location[0] : '' }}">
-                <input type="hidden" id="LocationLongitude" name="longitude" value="{{ (!empty($user->location)) ? $user->location[1] : '' }}">
-
-                <div id="mapContainer" class="d-none">
-                    <label class="input-label">{{ trans('update.select_location') }}</label>
-                    <span class="d-block font-12 text-gray">{{ trans('update.select_location_hint') }}</span>
-
-                    <div class="region-map mt-10" id="mapBox"
-                         data-zoom="12"
-                    >
-                        <img src="/assets/default/img/location.png" class="marker">
+                        @error('job_type')
+                            <div class="invalid-feedback d-block">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </section>
 
-    @if(!$user->isUser() and !empty(getFeaturesSettings('show_live_chat_widget')))
-        <h2 class="section-title after-line">{{ trans('update.live_chat_widget') }}</h2>
+    {{-- healthy --}}
+    <section>
+        <h2 class="form-main-title">الحالة الصحية</h2>
+        <section class="main-container border border-2 border-secondary-subtle rounded p-3 mt-2 mb-25 row mx-0">
 
-        <div class="row mt-30">
-            <div class="col-12 col-lg-4">
+            {{-- deaf status --}}
+            <div class="col-12 row">
+                {{-- deaf --}}
+                <div class="form-group col-12 col-sm-6">
+                    <label for="deaf">{{ trans('application_form.deaf_patient') }}؟ <span
+                            class="text-danger">*</span></label>
 
-                <div class="form-group ">
-                    <label class="input-label">{{ trans('update.java_script_code') }}:</label>
-                    <textarea name="live_chat_js_code" class="form-control" rows="8">{{ $user->live_chat_js_code }}</textarea>
+                    @error('deaf')
+                        <div class="invalid-feedback d-inline">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    <div class="row mr-5 mt-5">
+                        {{-- deaf --}}
+                        <div class="col-sm-4 col">
+                            <label for="deaf">
+                                <input type="radio" id="deaf" name="deaf"
+                                    class="@error('deaf') is-invalid @enderror" value="1" required
+                                    {{ old('deaf', $student->deaf ?? null) == 1 ? 'checked' : '' }}>
+                                نعم
+                            </label>
+                        </div>
+
+                        {{-- not deaf --}}
+                        <div class="col">
+                            <label for="not_deaf">
+                                <input type="radio" id="not_deaf" name="deaf"
+                                    class="@error('deaf') is-invalid @enderror" value="0" required
+                                    {{ old('deaf', $student->deaf ?? null) == 0 ? 'checked' : '' }}>
+                                لا
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    @endif
 
-    {{--<h2 class="section-title after-line">{{ trans('panel.meeting_list') }}</h2>
+            {{-- disabled --}}
+            <div class="col-12 row">
 
-    <div class="row mt-30">
-        <div class="col-12">
-            <a href="/panel/meetings/settings" class="text-primary">{{ trans('update.manage_meetings') }}</a>
+                {{-- disabled --}}
+                <div class="form-group col-12 col-sm-6">
+                    <label>هل أنت من ذوي الإعاقة؟<span class="text-danger">*</span></label>
 
-            <div class="d-flex align-items-center mt-25">
-                <div class="available-meetings">11:30 AM</div>
-                <div class="available-meetings">11:30 AM</div>
+                    @error('disabled')
+                        <div class="invalid-feedback d-inline">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    <div class="row mr-5 mt-5">
+                        {{-- disabled --}}
+                        <div class="col-sm-4 col">
+                            <label for="disabled">
+                                <input type="radio" id="disabled" name="disabled"
+                                    class="@error('disabled') is-invalid @enderror" value="1" required
+                                    {{ old('disabled', $student->disabled_type ?? null) != false ? 'checked' : '' }}>
+                                نعم
+                            </label>
+                        </div>
+
+                        {{-- not disabled --}}
+                        <div class="col">
+                            <label for="not_disabled">
+                                <input type="radio" id="not_disabled" name="disabled"
+                                    class="@error('disabled') is-invalid @enderror" value="0" required
+                                    {{ old('disabled', $student->disabled_type ?? null) == false ? 'checked' : '' }}>
+                                لا
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- disabled type --}}
+                <div class="form-group col-12 col-sm-6" id="disabled_type_section" style="display: none">
+                    <label for="disabled_type">{{ 'حدد نوع الإعاقة' }} <span class="text-danger">*</span></label>
+                    <select id="disabled_type" name="disabled_type"
+                        class="form-control @error('disabled_type') is-invalid @enderror">
+                        <option value="" class="placeholder" disabled="" selected>أختر
+                            نوع
+                            الإعاقة
+                        </option>
+                        <option value="option1"
+                            {{ old('disabled_type', $student->disabled_type ?? null) == 'option1' ? 'selected' : '' }}>
+                            اعاقة ذهنية</option>
+                        <option value="option2"
+                            {{ old('disabled_type', $student->disabled_type ?? null) == 'option2' ? 'selected' : '' }}>
+                            اعاقة بدنية</option>
+                    </select>
+
+                    @error('disabled_type')
+                        <div class="invalid-feedback d-block">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
             </div>
-        </div>
-    </div>--}}
+
+            {{-- healthy problem --}}
+            <div class="col-12 row">
+                {{-- healthy status --}}
+                <div class="form-group col-12 col-sm-6">
+                    <label for="healthy">{{ trans('application_form.health_proplem') }}؟<span
+                            class="text-danger">*</span></label>
+
+
+                    @error('healthy')
+                        <div class="invalid-feedback d-inline">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    <div class="row mr-5 mt-5">
+                        {{-- healthy --}}
+                        <div class="col-sm-4 col">
+                            <label for="healthy">
+                                <input type="radio" id="healthy" name="healthy"
+                                    class=" @error('healthy') is-invalid @enderror" value="1" required
+                                    {{ old('healthy', $student->healthy_problem ?? null) != false ? 'checked' : '' }}>
+                                نعم
+                            </label>
+                        </div>
+
+                        {{-- not healthy --}}
+                        <div class="col">
+                            <label for="not_healthy">
+                                <input type="radio" id="not_healthy" name="healthy"
+                                    class=" @error('healthy') is-invalid @enderror" value="0" required
+                                    {{ old('healthy', $student->healthy_problem ?? null) == false ? 'checked' : '' }}>
+                                لا
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- healthy problem --}}
+                <div class="form-group col-12 col-sm-6" id="healthy_problem_section" style="display: none">
+                    <label for="healthy_problem">ادخل المشكلة الصحية<span class="text-danger">*</span></label>
+                    <input type="text" id="healthy_problem"
+                        class="form-control @error('healthy_problem') is-invalid @enderror" name="healthy_problem"
+                        placeholder="ادخل المشكلة الصحية"
+                        value="{{ old('healthy_problem', $student ? $student->healthy_problem : '') }}">
+
+                    @error('healthy_problem')
+                        <div class="invalid-feedback d-block">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+
+                </div>
+            </div>
+        </section>
+    </section>
 </section>
 
 @push('scripts_bottom')
@@ -213,4 +263,91 @@
     </script>
 
     <script src="/assets/default/js/panel/user_settings_tab.min.js"></script>
+
+    {{-- job script --}}
+    <script>
+        var working = document.getElementById("working");
+        var notWorking = document.getElementById("not_working");
+        var job = document.getElementById("job");
+
+        function toggleJobFields() {
+            if (working.checked) {
+                job.style.display = "block";
+                var inputs = document.querySelectorAll('#job input');
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
+
+            } else {
+                job.style.display = "none";
+                var inputs = document.querySelectorAll('#job input');
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
+            }
+        }
+
+        working.addEventListener("change", toggleJobFields);
+        notWorking.addEventListener("change", toggleJobFields);
+        toggleJobFields();
+    </script>
+
+
+    {{--  healthy section toggle --}}
+    <script>
+        // healthy section display
+        function toggleHealthyProblemSection() {
+            let healthyProblemSection = document.getElementById("healthy_problem_section");
+            let healthyStatus = document.getElementById("healthy");
+            if (healthyStatus.checked) {
+                healthyProblemSection.style.display = "block";
+                var inputs = document.querySelectorAll('#healthy_problem_section input');
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
+            } else {
+                healthyProblemSection.style.display = "none";
+                var inputs = document.querySelectorAll('#healthy_problem_section input');
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
+            }
+
+        }
+
+        let healthy = document.getElementById("healthy");
+        let notHealthy = document.getElementById("not_healthy");
+        healthy.addEventListener("change", toggleHealthyProblemSection);
+        notHealthy.addEventListener("change", toggleHealthyProblemSection);
+        toggleHealthyProblemSection();
+    </script>
+
+
+    {{-- disabled section toggle --}}
+    <script>
+        // disabled section display
+        function toggleDisabledSection() {
+            let disabledTypeSection = document.getElementById("disabled_type_section");
+            let disabledStatus = document.getElementById("disabled");
+            if (disabledStatus.checked) {
+                disabledTypeSection.style.display = "block";
+                var inputs = document.querySelectorAll('#disabled_type_section select');
+                inputs.forEach(function(input) {
+                    input.setAttribute('required', 'required');
+                });
+            } else {
+                disabledTypeSection.style.display = "none";
+                var inputs = document.querySelectorAll('#disabled_type_section select');
+                inputs.forEach(function(input) {
+                    input.removeAttribute('required');
+                });
+            }
+
+        }
+        let disabled = document.getElementById("disabled");
+        let notDisabled = document.getElementById("not_disabled");
+        disabled.addEventListener("change", toggleDisabledSection);
+        notDisabled.addEventListener("change", toggleDisabledSection);
+        toggleDisabledSection();
+    </script>
 @endpush
