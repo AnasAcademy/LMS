@@ -198,6 +198,29 @@
         </div>
 
 
+        <div class="form-group mt-15">
+            <label class="input-label">{{ trans('public.batch_number') }}</label>
+        
+            <select id="study_classes"
+                class="custom-select @error('class_id') is-invalid @enderror"
+                name="class_id" required>
+                <option {{ !empty($installment) ? '' : 'selected' }} disabled>
+                    {{ trans('public.choose_batch') }}</option>
+                @foreach ($study_classes as $studyClass)
+                    <option value="{{ $studyClass->id }}"
+                        {{ (!empty($installment) and $installment->class_id == $studyClass->id) ? 'selected' : '' }}>
+                        {{ $studyClass->title }}</option>
+                @endforeach
+            </select>
+        
+            @error('class_id')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+
+
         @php
             $selectedRegistrationPackagesIds = !empty($installment) ? $installment->registrationPackages->pluck('id')->toArray() : [];
         @endphp

@@ -40,6 +40,7 @@
                             @include('admin.financial.installments.create.includes.target_products')
                         </section>
 
+                     
                         {{-- verification --}}
                         <section class="mt-3">
                             <h2 class="section-title after-line">{{ trans('update.verification') }}</h2>

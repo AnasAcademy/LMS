@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Panel\WebinarStatisticController;
 use App\Mail\SendNotifications;
 use App\Models\CertificateTemplate;
+use App\Models\StudyClass;
 use App\Models\Bundle;
 use App\Models\BundleFilterOption;
 use App\Models\Category;
@@ -231,11 +232,13 @@ class BundleController extends Controller
         removeContentLocale();
 
         $categories = Category::where('parent_id', null)->get();
+        $study_classes=StudyClass::get();
         $certificates = CertificateTemplate::where('type', 'bundle')->get();
         $data = [
             'pageTitle' => trans('update.new_bundle'),
             'categories' => $categories,
             'certificates'=>$certificates,
+            'study_classes'=>$study_classes,
         ];
 
         return view('admin.bundles.create', $data);
@@ -254,6 +257,7 @@ class BundleController extends Controller
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
+            'class_id'=>'required',
         ]);
 
         $data = $request->all();
@@ -301,6 +305,7 @@ class BundleController extends Controller
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
+           'class_id'=>$data['class_id']?? null,
         ]);
 
         if ($bundle) {
@@ -370,6 +375,7 @@ class BundleController extends Controller
         $categories = Category::where('parent_id', null)
             ->with('subCategories')
             ->get();
+            $study_classes=StudyClass::get();
 
         $certificates = CertificateTemplate::where('type', 'bundle')->get();
 
@@ -398,6 +404,7 @@ class BundleController extends Controller
             'faqs' => $bundle->faqs,
             'bundleTags' => $tags,
             'bundleWebinars' => $bundle->bundleWebinars,
+            'study_classes'=>$study_classes,
         ];
 
         return view('admin.bundles.create', $data);
@@ -422,6 +429,7 @@ class BundleController extends Controller
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
+            'class_id'=>'required',
         ];
 
         $this->validate($request, $rules);
@@ -525,6 +533,7 @@ class BundleController extends Controller
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
+            'class_id'=>$data['class_id']?? $bundle->class_id,
         ]);
 
         if ($bundle) {
