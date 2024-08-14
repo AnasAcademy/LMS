@@ -409,18 +409,18 @@
                                                 <label class="input-label">{{ trans('public.batch_number') }}</label>
                                             
                                                 <select id="study_classes"
-                                                    class="custom-select @error('class_id') is-invalid @enderror"
-                                                    name="class_id" required>
+                                                    class="custom-select @error('batch_id') is-invalid @enderror"
+                                                    name="batch_id" required>
                                                     <option {{ !empty($bundle) ? '' : 'selected' }} disabled>
                                                         {{ trans('public.choose_batch') }}</option>
                                                     @foreach ($study_classes as $studyClass)
                                                         <option value="{{ $studyClass->id }}"
-                                                            {{ (!empty($bundle) and $bundle->class_id == $studyClass->id) ? 'selected' : '' }}>
+                                                            {{ (!empty($bundle) and $bundle->batch_id == $studyClass->id) ? 'selected' : '' }}>
                                                             {{ $studyClass->title }}</option>
                                                     @endforeach
                                                 </select>
                                             
-                                                @error('class_id')
+                                                @error('batch_id')
                                                     <div class="invalid-feedback">
                                                         {{ $message }}
                                                     </div>

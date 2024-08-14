@@ -257,7 +257,7 @@ class BundleController extends Controller
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
-            'class_id'=>'required',
+            'batch_id'=>'required',
         ]);
 
         $data = $request->all();
@@ -305,7 +305,7 @@ class BundleController extends Controller
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
-           'class_id'=>$data['class_id']?? null,
+           'batch_id'=>$data['class_id']?? null,
         ]);
 
         if ($bundle) {
@@ -429,7 +429,7 @@ class BundleController extends Controller
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
-            'class_id'=>'required',
+            'batch_id'=>'required',
         ];
 
         $this->validate($request, $rules);
@@ -533,7 +533,7 @@ class BundleController extends Controller
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
-            'class_id'=>$data['class_id']?? $bundle->class_id,
+            'batch_id'=>$data['batch_id']?? $bundle->batch_id,
         ]);
 
         if ($bundle) {

@@ -91,7 +91,7 @@ class InstallmentsController extends Controller
             'description' => 'required',
             'target_type' => 'required',
             'upfront' => 'nullable|numeric',
-            'class_id'=>'required',
+            'batch_id'=>'required',
         ]);
 
         $data = $request->all();
@@ -112,7 +112,7 @@ class InstallmentsController extends Controller
             'upfront_type' => !empty($data['upfront']) ? $data['upfront_type'] : null,
             'enable' => (!empty($data['enable']) and $data['enable'] == 'on'),
             'created_at' => time(),
-            'class_id'=>$data['class_id']?? null,
+            'batch_id'=>$data['batch_id']?? null,
         ]);
 
         if (!empty($installment)) {
@@ -317,7 +317,7 @@ class InstallmentsController extends Controller
             'description' => 'required',
             'target_type' => 'required',
             'upfront' => 'nullable|numeric',
-            'class_id'=>'required',
+            'batch_id'=>'required',
         ]);
 
         $installment = Installment::query()->findOrFail($id);
@@ -338,7 +338,7 @@ class InstallmentsController extends Controller
             'upfront' => $data['upfront'] ?? null,
             'upfront_type' => !empty($data['upfront']) ? $data['upfront_type'] : null,
             'enable' => (!empty($data['enable']) and $data['enable'] == 'on'),
-            'class_id'=>$data['class_id']?? $installment->class_id,
+            'batch_id'=>$data['batch_id']?? $installment->batch_id,
         ]);
 
         if (!empty($installment)) {

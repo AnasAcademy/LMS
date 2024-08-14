@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('installments', function (Blueprint $table) {
+        Schema::table('bundles', function (Blueprint $table) {
             //
-            $table->unsignedBigInteger('class_id')->nullable()->after('target_type');
-            $table->foreign('class_id')->references('id')->on('study_classes')->onDelete('set null');
+            $table->unsignedBigInteger('batch_id')->nullable()->after('category_id');
+            $table->foreign('batch_id')->references('id')->on('study_classes')->onDelete('set null');
         });
     }
 
@@ -27,10 +27,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('installments', function (Blueprint $table) {
+        Schema::table('bundles', function (Blueprint $table) {
             //
-            $table->dropForeign('installments_class_id_foreign');
-            $table->dropColumn('class_id');
+            $table->dropForeign('bundles_batch_id_foreign');
+            $table->dropColumn('batch_id');
+            
         });
     }
 };
