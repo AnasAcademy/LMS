@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Bitwise\UserLevelOfTraining;
 use App\BundleStudent;
 use App\Exports\EnrollersExport;
+use App\Exports\DirectRegisterExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
 use App\Exports\GroupStudentsExport;
@@ -1539,6 +1540,24 @@ class UserController extends Controller
 
         return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
     }
+    public function exportExcelDirectRegister(Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+
+        $query = User::whereHas('student.bundleStudent', function ($query) {
+                $query->whereNull('class_id');
+            });
+
+        $query = $this->filters($query, $request);
+
+        $users = $query->orderBy('created_at', 'desc')
+            ->get();
+
+        $usersExport = new DirectRegisterExport($users);
+
+        return Excel::download($usersExport, ' تسجيل مباشر.xlsx');
+    }
+
     public function exportExcelUsers(Request $request)
     {
         $this->authorize('admin_users_export_excel');

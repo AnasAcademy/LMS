@@ -122,7 +122,8 @@
                             </div>
                         </div>
 
-                        {{-- <div class="col-md-3">
+                        {{--
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.start_date') }}</label>
                                 <div class="input-group">
@@ -181,7 +182,8 @@
                                         {{ trans('admin/main.register_date_descending') }}</option>
                                 </select>
                             </div>
-                        </div> --}}
+                        </div>
+                         --}}
 
                         <div class="col-md-3">
                             <div class="form-group mt-1">
@@ -199,7 +201,7 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                <a href="{{ getAdminPanelUrl() }}/students/excelEnroller?{{ http_build_query(request()->all()) }}"
+                <a href="{{ getAdminPanelUrl() }}/students/excelDirectRegister?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
             <div class="h-10"></div>
