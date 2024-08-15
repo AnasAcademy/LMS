@@ -51,6 +51,7 @@ class Channel extends BasePaymentChannel implements IChannel
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
+            'customer_email' => auth()->user()->email, // Pass the email address here
             'success_url' => $this->makeCallbackUrl('success',$order->id),
             'cancel_url' => $this->makeCallbackUrl('cancel',$order->id),
         ]);
