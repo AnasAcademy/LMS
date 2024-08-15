@@ -63,6 +63,8 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
                         $created_at.= (dateTimeFormat(strtotime($userBundle->created_at), 'j M Y | H:i') . " و " );
 
                 }
+                $diploma = preg_replace('/و(?!.*و)/u', '', $diploma);
+                $created_at = preg_replace('/و(?!.*و)/u', '', $created_at);
 
             }
 
@@ -73,7 +75,7 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
                 $user->student->en_name,
                 $user->email,
                 $diploma,
-               $created_at, 'j M Y | H:i',
+               $created_at,
                 $user->status,
                 $user->mobile,
             ];
