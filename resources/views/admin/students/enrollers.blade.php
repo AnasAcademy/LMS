@@ -255,6 +255,8 @@
                         <th>كود الطالب</th>
 
                         <th>{{ trans('admin/main.name') }}</th>
+
+                        <th>الهوية الوطنية</th>
                         {{-- <th>{{ trans('admin/main.classes') }}</th>
                         <th>{{ trans('admin/main.appointments') }}</th>
                         <th>{{ trans('admin/main.wallet_charge') }}</th>
@@ -293,6 +295,17 @@
                                         @endif
                                     </div>
                                 </div>
+                            </td>
+
+                            <td class="text-left">
+                                @if (!empty($user->student->identity_img))
+                                    <a href="/store/{{ $user->student->identity_img }}" target="_blank">
+                                        <img src="/store/{{ $user->student->identity_img }}" alt="image"
+                                            width="100px" style="max-height:100px">
+                                    </a>
+                                @else
+                                <span class="text-warning">لم ترفع بعد</span>
+                                @endif
                             </td>
 
                             @php
