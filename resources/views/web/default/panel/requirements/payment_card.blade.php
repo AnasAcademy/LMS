@@ -47,7 +47,7 @@
                                             <p style="text-decoration: line-through;">
                                                 {{-- {{ handleCoursePagePrice($bundleData['bundle']->bundle->price / (1 - $bundleData['bundle']->bundle->discount_rate))['price'] }} --}}
 
-                                               {{-- {{ round($bundleData['bundle']->bundle->price /(1 - 0.3)) }} ر.س --}}
+                                                {{-- {{ round($bundleData['bundle']->bundle->price /(1 - 0.3)) }} ر.س --}}
 
                                                 {{-- {{ handleCoursePagePrice(($bundleData['bundle']->bundle->price + ($bundleData['bundle']->bundle->price * 0.30)) )}} --}}
 
@@ -152,6 +152,14 @@
                 'itemId' => $bundleData['bundle']->bundle->id,
                 'itemType' => 'bundles',
             ])
+        </div>
+    @endif
+
+    @if (empty($bundleData['bundle']->class_id))
+        <div class="text-center mx-auto mt-15">
+            <p class="text-danger font-weight-bold">أو</p>
+            <a href="/panel/{{ $bundleData['bundle']->bundle->id }}/book_seat"
+                class="btn btn-outline-light register-btn mx-auto mt-5">لحجز مقعد اضغط هنا </a>
         </div>
     @endif
 </section>

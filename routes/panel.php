@@ -15,6 +15,7 @@ Route::group(['namespace' => 'Web','prefix' => 'panel', 'middleware' => ['check_
         Route::get('/', 'ApplyController@newEnrollment');
         Route::post('/step', 'ApplyController@storeNewEnrollment');
     });
+    Route::get('/{bundle}/book_seat', 'ApplyController@bookSeat');
 });
 
 Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
