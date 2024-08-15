@@ -402,6 +402,33 @@
                                                     </div>
                                                 @enderror
                                             </div>
+
+
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">{{ trans('public.batch_number') }}</label>
+                                            
+                                                <select id="study_classes"
+                                                    class="custom-select @error('batch_id') is-invalid @enderror"
+                                                    name="batch_id" required>
+                                                    <option {{ !empty($bundle) ? '' : 'selected' }} disabled>
+                                                        {{ trans('public.choose_batch') }}</option>
+                                                    @foreach ($study_classes as $studyClass)
+                                                        <option value="{{ $studyClass->id }}"
+                                                            {{ (!empty($bundle) and $bundle->batch_id == $studyClass->id) ? 'selected' : '' }}>
+                                                            {{ $studyClass->title }}</option>
+                                                    @endforeach
+                                                </select>
+                                            
+                                                @error('batch_id')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+
+
+
                                             <!--certificates-->
                                             <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('public.certificate') }}</label>

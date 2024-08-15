@@ -61,6 +61,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
         Route::group(['prefix' => 'students'], function () {
             Route::get('/', 'UserController@students');
             Route::get('/registered_users', 'UserController@RegisteredUsers');
+            Route::get('/direct_register', 'UserController@directRegister');
             Route::get('/enrollers', 'UserController@Enrollers');
             Route::get('/scholarship', 'UserController@ScholarshipStudent');
             Route::get('/users', 'UserController@Users');

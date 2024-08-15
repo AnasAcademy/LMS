@@ -183,34 +183,6 @@
                             </div>
                         </div> --}}
 
-
-                        {{-- <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.organization') }}</label>
-                                <select name="organization_id" data-plugin-selectTwo class="form-control populate">
-                                    <option value="">{{ trans('admin/main.select_organization') }}</option>
-                                    @foreach ($organizations as $organization)
-                                        <option value="{{ $organization->id }}"
-                                            @if (request()->get('organization_id') == $organization->id) selected @endif>
-                                            {{ $organization->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> --}}
-
-                        {{-- <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.users_group') }}</label>
-                                <select name="group_id" data-plugin-selectTwo class="form-control populate">
-                                    <option value="">{{ trans('admin/main.select_users_group') }}</option>
-                                    @foreach ($userGroups as $userGroup)
-                                        <option value="{{ $userGroup->id }}"
-                                            @if (request()->get('group_id') == $userGroup->id) selected @endif>{{ $userGroup->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> --}}
                         <div class="col-md-3">
                             <div class="form-group mt-1">
                                 <label class="input-label mb-4"> </label>
@@ -229,20 +201,6 @@
             @can('admin_users_export_excel')
                 <a href="{{ getAdminPanelUrl() }}/students/excelEnroller?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
-
-                @if ($lastSegment == 'scholarship')
-                    @include('admin.students.includes.importStudents', [
-                        'url' => getAdminPanelUrl() . '/students/importScholarshipStudent',
-                        'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
-                        'btnText' => '<span class="ml-2">اضافه طلاب المنح الدراسية</span>',
-                        'hideDefaultClass' => true,
-                    ])
-
-                    <a href="{{ asset('files/import_student_template.xlsx') }}" class="btn btn-success" download>تحميل قالب
-                        النموذج</a>
-                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
-                    </a>
-                @endif
             @endcan
             <div class="h-10"></div>
         </div>
@@ -257,14 +215,7 @@
                         <th>{{ trans('admin/main.name') }}</th>
 
                         <th>الهوية الوطنية</th>
-                        {{-- <th>{{ trans('admin/main.classes') }}</th>
-                        <th>{{ trans('admin/main.appointments') }}</th>
-                        <th>{{ trans('admin/main.wallet_charge') }}</th>
-                        <th>{{ trans('admin/main.income') }}</th>
-                        <th>{{ trans('admin/main.user_group') }}</th> --}}
                         <th> الدبلومات المسجلة</th>
-                        {{-- <th>حاله الدفع</th> --}}
-                        {{-- <th>كود الطالب</th> --}}
                         <th>{{ trans('admin/main.register_date') }}</th>
                         <th>{{ trans('admin/main.status') }}</th>
                         <th width="120">{{ trans('admin/main.actions') }}</th>
@@ -309,12 +260,12 @@
                             </td>
 
                             @php
-                                $userPurchasedBundles = $user->purchasedBundles($class->id ?? null)->get();
+                                $userBundles = $user->student->bundleStudent()->whereNull('class_id')->get();
                             @endphp
                             <td>
 
-                                @foreach ($userPurchasedBundles as $purchasedBundle)
-                                    {{ $purchasedBundle->bundle->title }}
+                                @foreach ($userBundles as $userBundle)
+                                    {{ $userBundle->bundle->title }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;
                                     @endif
@@ -322,8 +273,8 @@
                             </td>
 
                             <td>
-                                @foreach ($userPurchasedBundles as $purchasedBundle)
-                                    {{ dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') }}
+                                @foreach ($userBundles as $userBundle)
+                                    {{ dateTimeFormat(strtotime($userBundle->created_at), 'j M Y | H:i') }}
                                     @if (!$loop->last)
                                         &nbsp;و&nbsp;
                                     @endif

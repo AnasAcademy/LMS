@@ -65,318 +65,372 @@
             ])
         @endif --}}
 
-            <div class="row mt-20">
-                <div class="col-12 ">
-                    <div
-                        class="education-card py-15 py-lg-30 px-10 px-lg-25 rounded-sm panel-shadow bg-white d-flex align-items-center justify-content-between">
+        <div class="row mt-20">
+            <div class="col-12 ">
+                <div
+                    class="education-card py-15 py-lg-30 px-10 px-lg-25 rounded-sm panel-shadow bg-white d-flex align-items-center justify-content-between">
 
 
-                        <div class="accordion col-12" id="accordionExample">
+                    <div class="accordion col-12" id="accordionExample">
 
-                            {{-- high education --}}
-                            <div class="card">
-                                <div class="card-header" id="headingOne">
-                                    <h2 class="mb-0">
-                                        <button class="btn btn-link btn-block text-left" type="button"
-                                            data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
-                                            aria-controls="collapseOne">
-                                            تعليم جامعي
-                                        </button>
-                                    </h2>
-                                </div>
-
-                                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
-                                    data-parent="#accordionExample">
-                                    <div class="card-body row">
-                                        {{-- المؤهل التعليمي --}}
-                                        <div class="form-group col-12 col-sm-6">
-
-                                            <label for="educational_qualification_country"
-                                                class="form-label high_education">بلد
-                                                مصدر
-                                                شهادة
-                                                البكالوريوس<span class="text-danger">*</span></label>
-
-                                            <select id="educational_qualification_country"
-                                                name="educational_qualification_country"
-                                                class="form-control @error('educational_qualification_country') is-invalid @enderror"
-                                                onchange="highEducationCountryToggle()">
-                                                <option value="" class="placeholder" disabled="">اختر دولتك
-                                                </option>
-                                                @foreach ($countries as $country)
-                                                    <option value="{{ $country }}"
-                                                        {{ old('educational_qualification_country', $student->educational_qualification_country ?? null) == $country ? 'selected' : '' }}>
-                                                        {{ $country }}</option>
-                                                @endforeach
-
-                                                <option value="اخرى"
-                                                    {{ !empty($student->educational_qualification_country) && !in_array($student->educational_qualification_country, $countries) ? 'selected' : '' }}
-                                                    id="anotherEducationCountryOption">اخرى</option>
-                                            </select>
-                                            @error('educational_qualification_country')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-
-                                        </div>
-
-                                        {{-- مصدر شهادة البكالوريوس --}}
-                                        <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection"
-                                            style="display: none">
-
-                                            <label for="university" class="form-label high_education">
-                                                ادخل مصدر شهادة البكالوريوس<span class="text-danger">*</span>
-                                            </label>
-
-                                            <input type="text" id="anotherEducationCountry"
-                                                class="form-control @error('anotherEducationCountry') is-invalid @enderror"
-                                                placeholder="ادخل مصدر الشهادة"
-                                                value="{{ old('anotherEducationCountry', $student && !in_array($student->educational_qualification_country, $countries) ? $student->educational_qualification_country : '') }}"
-                                                onkeyup="setHighEducationCountry()">
-
-                                            @error('anotherEducationCountry')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- الجامعه --}}
-                                        <div class="form-group col-12 col-sm-6 high_education">
-                                            <label for="university" class="form-label">
-                                                الجامعة<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="university"
-                                                class="form-control @error('university') is-invalid @enderror"
-                                                name="university" placeholder="أدخل الجامعة"
-                                                value="{{ old('university', $student ? $student->university : '') }}">
-
-                                            @error('university')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- الكليه --}}
-                                        <div class="form-group col-12 col-sm-6 high_education">
-                                            <label for="faculty" class="form-label">
-                                                الكلية<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="faculty"
-                                                class="form-control @error('faculty') is-invalid @enderror"
-                                                name="faculty" placeholder="أدخل الكلية"
-                                                value="{{ old('faculty', $student ? $student->faculty : '') }}">
-
-                                            @error('faculty')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- التخصص  --}}
-                                        <div class="form-group col-12 col-sm-6 high_education">
-                                            <label for="education_specialization" class="form-label">
-                                                التخصص<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="education_specialization"
-                                                class="form-control @error('education_specialization') is-invalid @enderror"
-                                                name="education_specialization" placeholder="أدخل التخصص"
-                                                value="{{ old('education_specialization', $student ? $student->education_specialization : '') }}">
-
-                                            @error('education_specialization')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- سنة التخرج --}}
-                                        <div class="form-group col-12 col-sm-6 high_education">
-                                            <label for="graduation_year" class="form-label">
-                                                سنة التخرج<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="graduation_year"
-                                                class="form-control @error('graduation_year') is-invalid @enderror"
-                                                name="graduation_year" placeholder="أدخل سنة التخرج"
-                                                value="{{ old('graduation_year', $student ? $student->graduation_year : '') }}">
-
-
-                                            @error('graduation_year')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- المعدل --}}
-                                        <div class="form-group col-12 col-sm-6 high_education">
-                                            <label for="gpa" class="form-label">
-                                                المعدل<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="gpa"
-                                                class="form-control @error('gpa') is-invalid @enderror" name="gpa"
-                                                placeholder="أدخل المعدل "
-                                                value="{{ old('gpa', $student ? $student->gpa : '') }}">
-
-                                            @error('gpa')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                    </div>
-                                </div>
+                        {{-- high education --}}
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button"
+                                        data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+                                        aria-controls="collapseOne">
+                                        تعليم جامعي
+                                    </button>
+                                </h2>
                             </div>
 
-                            {{-- secondary education --}}
-                            <div class="card">
-                                <div class="card-header" id="headingTwo">
-                                    <h2 class="mb-0">
-                                        <button class="btn btn-link btn-block text-left collapsed" type="button"
-                                            data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
-                                            aria-controls="collapseTwo">
-                                            تعليم متوسط
-                                        </button>
-                                    </h2>
-                                </div>
-                                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
-                                    data-parent="#accordionExample">
-                                    <div class="card-body row">
-                                        {{-- المؤهل التعليمي --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label for="educational_qualification_country"
-                                                class="form-label secondary_education">بلد
-                                                مصدر
-                                                شهادة
-                                                الثانوية<span class="text-danger">*</span></label>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                                data-parent="#accordionExample">
+                                <div class="card-body row">
+                                    {{-- المؤهل التعليمي --}}
+                                    <div class="form-group col-12 col-sm-6">
 
-                                            <select id="secondary_educational_qualification_country"
-                                                name="secondary_educational_qualification_country"
-                                                class="form-control @error('secondary_educational_qualification_country') is-invalid @enderror"
-                                                onchange="secondaryEducationCountryToggle()">
-                                                <option value="" class="placeholder" disabled="">اختر دولتك
-                                                </option>
-                                                @foreach ($countries as $country)
-                                                    <option value="{{ $country }}"
-                                                        {{ old('secondary_educational_qualification_country', $student->secondary_educational_qualification_country ?? null) == $country ? 'selected' : '' }}>
-                                                        {{ $country }}</option>
-                                                @endforeach
+                                        <label for="educational_qualification_country"
+                                            class="form-label high_education">بلد
+                                            مصدر
+                                            شهادة
+                                            البكالوريوس<span class="text-danger">*</span></label>
 
-                                                <option value="اخرى"
-                                                    {{ !empty($student->secondary_educational_qualification_country) && !in_array($student->secondary_educational_qualification_country, $countries) ? 'selected' : '' }}
-                                                    id="anotherEducationCountryOption2">اخرى</option>
-                                            </select>
-                                            @error('secondary_educational_qualification_country')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
+                                        <select id="educational_qualification_country"
+                                            name="educational_qualification_country"
+                                            class="form-control @error('educational_qualification_country') is-invalid @enderror"
+                                            onchange="highEducationCountryToggle()">
+                                            <option value="" class="placeholder" disabled="">اختر دولتك
+                                            </option>
+                                            @foreach ($countries as $country)
+                                                <option value="{{ $country }}"
+                                                    {{ old('educational_qualification_country', $student->educational_qualification_country ?? null) == $country ? 'selected' : '' }}>
+                                                    {{ $country }}</option>
+                                            @endforeach
 
-                                        </div>
-
-
-                                        {{-- مصدر شهادة الثانوية --}}
-                                        <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection2"
-                                            style="display: none">
-
-                                            <label for="university" class="form-label secondary_education">
-                                                ادخل مصدر شهادة الثانوية<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="anotherEducationCountry2"
-                                                class="form-control @error('secondary_educational_qualification_country') is-invalid @enderror"
-                                                 placeholder="ادخل مصدر الشهادة"
-                                                value="{{ old('secondary_educational_qualification_country', $student && !in_array($student->secondary_educational_qualification_country, $countries) ? $student->secondary_educational_qualification_country : '') }}"
-                                                onkeyup="setSecondaryEducationCountry()">
-
-                                            @error('secondary_educational_qualification_country')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                        {{-- المنطقة التعليمية --}}
-                                        <div class="form-group col-12 col-sm-6">
-                                            <label for="educational_area" class="form-label">
-                                                المنطقة التعليمية<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="educational_area"
-                                                class="form-control @error('educational_area') is-invalid @enderror"
-                                                name="educational_area" placeholder="أدخل المنطقة التعليمية"
-                                                value="{{ old('educational_area', $student ? $student->educational_area : '') }}">
-
-                                            @error('educational_area')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- المدرسة --}}
-                                        <div class="form-group col-12 col-sm-6 secondary_education">
-                                            <label for="school" class="form-label">
-                                                المدرسة<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="school"
-                                                class="form-control @error('school') is-invalid @enderror"
-                                                name="school" placeholder="أدخل المدرسة"
-                                                value="{{ old('school', $student ? $student->school : '') }}">
-
-                                            @error('school')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{--  سنة الحصول على الشهادة الثانوية --}}
-                                        <div class="form-group col-12 col-sm-6 secondary_education">
-                                            <label for="secondary_graduation_year" class="form-label">
-                                                سنة الحصول على الشهادة الثانوية<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="secondary_graduation_year"
-                                                class="form-control @error('secondary_graduation_year') is-invalid @enderror"
-                                                name="secondary_graduation_year"
-                                                placeholder="أدخل سنة الحصول على الشهادة الثانوية"
-                                                value="{{ old('secondary_graduation_year', $student ? $student->secondary_graduation_year : '') }}">
-
-                                            @error('secondary_graduation_year')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- معدل المرحلة الثانوية --}}
-                                        <div class="form-group col-12 col-sm-6 secondary_education">
-                                            <label for="secondary_school_gpa" class="form-label">
-                                                معدل المرحلة الثانوية<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" id="secondary_school_gpa"
-                                                class="form-control @error('secondary_school_gpa') is-invalid @enderror"
-                                                name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية"
-                                                value="{{ old('secondary_school_gpa', $student ? $student->secondary_school_gpa : '') }}">
-
-                                            @error('secondary_school_gpa')
-                                                <div class="invalid-feedback d-block">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
+                                            <option value="اخرى"
+                                                {{ !empty($student->educational_qualification_country) && !in_array($student->educational_qualification_country, $countries) ? 'selected' : '' }}
+                                                id="anotherEducationCountryOption">اخرى</option>
+                                        </select>
+                                        @error('educational_qualification_country')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
 
                                     </div>
+
+                                    {{-- مصدر شهادة البكالوريوس --}}
+                                    <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection"
+                                        style="display: none">
+
+                                        <label for="university" class="form-label high_education">
+                                            ادخل مصدر شهادة البكالوريوس<span class="text-danger">*</span>
+                                        </label>
+
+                                        <input type="text" id="anotherEducationCountry"
+                                            class="form-control @error('anotherEducationCountry') is-invalid @enderror"
+                                            placeholder="ادخل مصدر الشهادة"
+                                            value="{{ old('anotherEducationCountry', $student && !in_array($student->educational_qualification_country, $countries) ? $student->educational_qualification_country : '') }}"
+                                            onkeyup="setHighEducationCountry()">
+
+                                        @error('anotherEducationCountry')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- الجامعه --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="university" class="form-label">
+                                            الجامعة<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="university"
+                                            class="form-control @error('university') is-invalid @enderror"
+                                            name="university" placeholder="أدخل الجامعة"
+                                            value="{{ old('university', $student ? $student->university : '') }}">
+
+                                        @error('university')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- الكليه --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="faculty" class="form-label">
+                                            الكلية<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="faculty"
+                                            class="form-control @error('faculty') is-invalid @enderror" name="faculty"
+                                            placeholder="أدخل الكلية"
+                                            value="{{ old('faculty', $student ? $student->faculty : '') }}">
+
+                                        @error('faculty')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- التخصص  --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="education_specialization" class="form-label">
+                                            التخصص<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="education_specialization"
+                                            class="form-control @error('education_specialization') is-invalid @enderror"
+                                            name="education_specialization" placeholder="أدخل التخصص"
+                                            value="{{ old('education_specialization', $student ? $student->education_specialization : '') }}">
+
+                                        @error('education_specialization')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- سنة التخرج --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="graduation_year" class="form-label">
+                                            سنة التخرج<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="graduation_year"
+                                            class="form-control @error('graduation_year') is-invalid @enderror"
+                                            name="graduation_year" placeholder="أدخل سنة التخرج"
+                                            value="{{ old('graduation_year', $student ? $student->graduation_year : '') }}">
+
+
+                                        @error('graduation_year')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- المعدل --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <label for="gpa" class="form-label">
+                                            المعدل<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="gpa"
+                                            class="form-control @error('gpa') is-invalid @enderror" name="gpa"
+                                            placeholder="أدخل المعدل "
+                                            value="{{ old('gpa', $student ? $student->gpa : '') }}">
+
+                                        @error('gpa')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                     <div class="col-12 row high_education">
+                                    {{-- high_certificate_img input --}}
+                                    <div class="form-group col-12 col-sm-6 high_education">
+                                        <div>
+                                            <label for="high_certificate_img">صورة شهادة التخرج </label>
+                                            <input type="file" id="high_certificate_img"
+                                                name="high_certificate_img" accept=".jpeg,.jpg,.png"
+                                                value="{{ old('high_certificate_img', $student ? $student->high_certificate_img : '') }}"
+                                                class="form-control @error('high_certificate_img') is-invalid @enderror">
+                                        </div>
+                                        @error('high_certificate_img')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    {{-- high_certificate_img display --}}
+                                    <div>
+                                        @if ($student->high_certificate_img)
+                                            <a href="/store/{{ $student->high_certificate_img }}" target="_blank">
+                                                <img src="/store/{{ $student->high_certificate_img }}" alt="image"
+                                                    width="100px" style="max-height:100px; border-radius: 50%">
+                                            </a>
+                                        @endif
+                                    </div>
+                                     </div>
+
                                 </div>
                             </div>
+                        </div>
 
+                        {{-- secondary education --}}
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left collapsed" type="button"
+                                        data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
+                                        aria-controls="collapseTwo">
+                                        تعليم متوسط
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
+                                data-parent="#accordionExample">
+                                <div class="card-body row">
+                                    {{-- المؤهل التعليمي --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="educational_qualification_country"
+                                            class="form-label secondary_education">بلد
+                                            مصدر
+                                            شهادة
+                                            الثانوية<span class="text-danger">*</span></label>
+
+                                        <select id="secondary_educational_qualification_country"
+                                            name="secondary_educational_qualification_country"
+                                            class="form-control @error('secondary_educational_qualification_country') is-invalid @enderror"
+                                            onchange="secondaryEducationCountryToggle()">
+                                            <option value="" class="placeholder" disabled="">اختر دولتك
+                                            </option>
+                                            @foreach ($countries as $country)
+                                                <option value="{{ $country }}"
+                                                    {{ old('secondary_educational_qualification_country', $student->secondary_educational_qualification_country ?? null) == $country ? 'selected' : '' }}>
+                                                    {{ $country }}</option>
+                                            @endforeach
+
+                                            <option value="اخرى"
+                                                {{ !empty($student->secondary_educational_qualification_country) && !in_array($student->secondary_educational_qualification_country, $countries) ? 'selected' : '' }}
+                                                id="anotherEducationCountryOption2">اخرى</option>
+                                        </select>
+                                        @error('secondary_educational_qualification_country')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+
+                                    </div>
+
+
+                                    {{-- مصدر شهادة الثانوية --}}
+                                    <div class="form-group col-12 col-sm-6" id="anotherEducationCountrySection2"
+                                        style="display: none">
+
+                                        <label for="university" class="form-label secondary_education">
+                                            ادخل مصدر شهادة الثانوية<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="anotherEducationCountry2"
+                                            class="form-control @error('secondary_educational_qualification_country') is-invalid @enderror"
+                                            placeholder="ادخل مصدر الشهادة"
+                                            value="{{ old('secondary_educational_qualification_country', $student && !in_array($student->secondary_educational_qualification_country, $countries) ? $student->secondary_educational_qualification_country : '') }}"
+                                            onkeyup="setSecondaryEducationCountry()">
+
+                                        @error('secondary_educational_qualification_country')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    {{-- المنطقة التعليمية --}}
+                                    <div class="form-group col-12 col-sm-6">
+                                        <label for="educational_area" class="form-label">
+                                            المنطقة التعليمية<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="educational_area"
+                                            class="form-control @error('educational_area') is-invalid @enderror"
+                                            name="educational_area" placeholder="أدخل المنطقة التعليمية"
+                                            value="{{ old('educational_area', $student ? $student->educational_area : '') }}">
+
+                                        @error('educational_area')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- المدرسة --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <label for="school" class="form-label">
+                                            المدرسة<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="school"
+                                            class="form-control @error('school') is-invalid @enderror" name="school"
+                                            placeholder="أدخل المدرسة"
+                                            value="{{ old('school', $student ? $student->school : '') }}">
+
+                                        @error('school')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{--  سنة الحصول على الشهادة الثانوية --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <label for="secondary_graduation_year" class="form-label">
+                                            سنة الحصول على الشهادة الثانوية<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="secondary_graduation_year"
+                                            class="form-control @error('secondary_graduation_year') is-invalid @enderror"
+                                            name="secondary_graduation_year"
+                                            placeholder="أدخل سنة الحصول على الشهادة الثانوية"
+                                            value="{{ old('secondary_graduation_year', $student ? $student->secondary_graduation_year : '') }}">
+
+                                        @error('secondary_graduation_year')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- معدل المرحلة الثانوية --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <label for="secondary_school_gpa" class="form-label">
+                                            معدل المرحلة الثانوية<span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="secondary_school_gpa"
+                                            class="form-control @error('secondary_school_gpa') is-invalid @enderror"
+                                            name="secondary_school_gpa" placeholder="أدخل معدل المرحلة الثانوية"
+                                            value="{{ old('secondary_school_gpa', $student ? $student->secondary_school_gpa : '') }}">
+
+                                        @error('secondary_school_gpa')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-12 row secondary_education">
+                                    {{-- secondary_certificate_img input --}}
+                                    <div class="form-group col-12 col-sm-6 secondary_education">
+                                        <div>
+                                            <label for="secondary_certificate_img">صورة شهادة الثانوية  </label>
+                                            <input type="file" id="secondary_certificate_img"
+                                                name="secondary_certificate_img" accept=".jpeg,.jpg,.png"
+                                                value="{{ old('secondary_certificate_img', $student ? $student->secondary_certificate_img : '') }}"
+                                                class="form-control @error('secondary_certificate_img') is-invalid @enderror">
+                                        </div>
+                                        @error('secondary_certificate_img')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    {{-- secondary_certificate_img display --}}
+                                    <div>
+                                        @if ($student->secondary_certificate_img)
+                                            <a href="/store/{{ $student->secondary_certificate_img }}" target="_blank">
+                                                <img src="/store/{{ $student->secondary_certificate_img }}" alt="image"
+                                                    width="100px" style="max-height:100px; border-radius: 50%">
+                                            </a>
+                                        @endif
+                                    </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
                         </div>
 
                     </div>
+
                 </div>
             </div>
+        </div>
     </div>
 
 </section>
@@ -414,13 +468,13 @@
 
             anotherEducationCountryOption.value = anotherEducationCountry.value;
 
-           console.log('high toggle set another value');
+            console.log('high toggle set another value');
 
 
         } else {
             anotherEducationCountrySection.style.display = "none";
             anotherEducationCountryOption.value = "اخرى";
-             console.log('high toggle return another value');
+            console.log('high toggle return another value');
 
         }
 

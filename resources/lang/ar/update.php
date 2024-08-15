@@ -1121,5 +1121,7 @@ return [
     'paid_date'=>'تاريخ الدفع',
     'late_days'=> 'مدة التأخير (الأيام)',
     'days'=> 'أيام',
-    'show_details' => "عرض التفاصيل"
+    'show_details' => "عرض التفاصيل",
+    'batch_number'=>'رقم الدفعه',
+    'choose_batch'=>'اختر رقم الدفعه',
 ];
