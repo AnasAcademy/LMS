@@ -141,7 +141,7 @@
                 @enderror
             </div>
 
-             {{-- other nationality --}}
+            {{-- other nationality --}}
             <div class="form-group col-12 col-sm-6" id="other_nationality_section" style="display: none">
                 <label for="nationality">ادخل الجنسية <span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('nationality') is-invalid @enderror"
@@ -258,121 +258,144 @@
                 @enderror
             </div>
 
+            {{-- identity_img input --}}
+            <div class="form-group col-12 col-sm-6">
+                <div>
+                    <label for="identity_img">صورة الهوية الوطنية/جواز السفر</label>
+                    <input type="file" id="identity_img" name="identity_img"
+                    accept=".jpeg,.jpg,.png"
+                        value="{{ old('identity_img', $student ? $student->identity_img : '') }}"
+                        class="form-control @error('identity_img') is-invalid @enderror">
+                </div>
+                @error('identity_img')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            {{-- identity_img display --}}
+            <div>
+                @if ($student->identity_img)
+                    <a href="/store/{{$student->identity_img }}"  target="_blank">
+                        <img src="/store/{{$student->identity_img }}" alt="image" width="100px" style="max-height:100px; border-radius: 50%">
+                    </a>
+                    @endif
+            </div>
+
         </section>
     </section>
 
 </section>
 
- {{-- nationality toggle --}}
-    <script>
-        function toggleNationality() {
-            let other_nationality_section = document.getElementById("other_nationality_section");
-            let nationality = document.getElementById("nationality");
-            let other_nationality = document.getElementById("other_nationality");
-            let anotherNationalityOption = document.getElementById("anotherNationality");
-            if (nationality && nationality.value == "اخرى") {
-                other_nationality_section.style.display = "block";
+{{-- nationality toggle --}}
+<script>
+    function toggleNationality() {
+        let other_nationality_section = document.getElementById("other_nationality_section");
+        let nationality = document.getElementById("nationality");
+        let other_nationality = document.getElementById("other_nationality");
+        let anotherNationalityOption = document.getElementById("anotherNationality");
+        if (nationality && nationality.value == "اخرى") {
+            other_nationality_section.style.display = "block";
 
-                // nationality.value = other_nationality.value;
-                anotherNationalityOption.value = other_nationality.value;
+            // nationality.value = other_nationality.value;
+            anotherNationalityOption.value = other_nationality.value;
+        } else {
+            other_nationality_section.style.display = "none";
+            anotherNationalityOption.value = "اخرى";
+        }
+    }
+
+    function setNationality() {
+        let other_nationality_section = document.getElementById("other_nationality_section");
+        let nationality = document.getElementById("nationality");
+        let other_nationality = document.getElementById("other_nationality");
+        let anotherNationalityOption = document.getElementById("anotherNationality");
+        if (other_nationality_section.style.display != "none") {
+            // nationality.value = other_nationality.value;
+            anotherNationalityOption.value = other_nationality.value;
+
+        }
+    }
+</script>
+
+{{-- city and country toggle --}}
+<script>
+    function toggleHiddenInputs() {
+        var select = document.getElementById("mySelect");
+        var hiddenInput = document.getElementById("area");
+        var hiddenLabel = document.getElementById("hiddenLabel");
+        var hiddenInput2 = document.getElementById("city");
+        var hiddenLabel2 = document.getElementById("hiddenLabel2");
+        var cityLabel = document.getElementById("cityLabel");
+        var town = document.getElementById("town");
+        var anotherCountrySection = document.getElementById("anotherCountrySection");
+        var region = document.getElementById("region");
+        let anotherCountryOption = document.getElementById("anotherCountry");
+
+        if (select && select.value !== "السعودية") {
+            region.style.display = "block";
+        } else {
+            region.style.display = "none";
+        }
+
+        if (select.value === "اخرى") {
+            anotherCountrySection.style.display = "block";
+            anotherCountryOption.value = hiddenInput2.value;
+        } else {
+            anotherCountrySection.style.display = "none";
+            anotherCountryOption.value = "اخرى";
+
+        }
+        if (select && cityLabel && town) {
+            if (select.value === "السعودية") {
+                town.outerHTML = '<select id="town" name="town"  class="form-control" required>' +
+                    '<option value="الرياض" selected="selected">الرياض</option>' +
+                    '<option value="جده">جده </option>' +
+                    '<option value="مكة المكرمة">مكة المكرمة</option>' +
+                    '<option value="المدينة المنورة">المدينة المنورة</option>' +
+                    '<option value="الدمام">الدمام</option>' +
+                    '<option value="الطائف">الطائف</option>' +
+                    '<option value="تبوك">تبوك</option>' +
+                    '<option value="الخرج">الخرج</option>' +
+                    '<option value="بريدة">بريدة</option>' +
+                    '<option value="خميس مشيط">خميس مشيط</option>' +
+                    '<option value="الهفوف">الهفوف</option>' +
+                    '<option value="المبرز">المبرز</option>' +
+                    '<option value="حفر الباطن">حفر الباطن</option>' +
+                    '<option value="حائل">حائل</option>' +
+                    '<option value="نجران">نجران</option>' +
+                    '<option value="الجبيل">الجبيل</option>' +
+                    '<option value="أبها">أبها</option>' +
+                    '<option value="ينبع">ينبع</option>' +
+                    '<option value="الخبر">الخبر</option>' +
+                    '<option value="عنيزة">عنيزة</option>' +
+                    '<option value="عرعر">عرعر</option>' +
+                    '<option value="سكاكا">سكاكا</option>' +
+                    '<option value="جازان">جازان</option>' +
+                    '<option value="القريات">القريات</option>' +
+                    '<option value="الظهران">الظهران</option>' +
+                    '<option value="القطيف">القطيف</option>' +
+                    '<option value="الباحة">الباحة</option>' +
+                    '</select>';
             } else {
-                other_nationality_section.style.display = "none";
-                anotherNationalityOption.value = "اخرى";
+
+                town.outerHTML =
+                    `<input type="text" id="town" name="town" placeholder="اكتب مدينه السكن الحاليه" class="form-control" value="{{ old('town', $student ? $student->town : '') }}" >`;
             }
         }
+    }
 
-        function setNationality() {
-            let other_nationality_section = document.getElementById("other_nationality_section");
-            let nationality = document.getElementById("nationality");
-            let other_nationality = document.getElementById("other_nationality");
-            let anotherNationalityOption = document.getElementById("anotherNationality");
-            if (other_nationality_section.style.display != "none") {
-                // nationality.value = other_nationality.value;
-                anotherNationalityOption.value = other_nationality.value;
 
-            }
+    function setCountry() {
+        let anotherCountrySection = document.getElementById("anotherCountrySection");
+        let anotherCountryOption = document.getElementById("anotherCountry");
+        let another_country = document.getElementById("city");
+
+        if (anotherCountrySection.style.display != "none") {
+            // nationality.value = other_nationality.value;
+            anotherCountryOption.value = another_country.value;
+
         }
-    </script>
-
-    {{-- city and country toggle --}}
-    <script>
-        function toggleHiddenInputs() {
-            var select = document.getElementById("mySelect");
-            var hiddenInput = document.getElementById("area");
-            var hiddenLabel = document.getElementById("hiddenLabel");
-            var hiddenInput2 = document.getElementById("city");
-            var hiddenLabel2 = document.getElementById("hiddenLabel2");
-            var cityLabel = document.getElementById("cityLabel");
-            var town = document.getElementById("town");
-            var anotherCountrySection = document.getElementById("anotherCountrySection");
-            var region = document.getElementById("region");
-            let anotherCountryOption = document.getElementById("anotherCountry");
-
-            if (select && select.value !== "السعودية") {
-                region.style.display = "block";
-            } else {
-                region.style.display = "none";
-            }
-
-            if (select.value === "اخرى") {
-                anotherCountrySection.style.display = "block";
-                anotherCountryOption.value = hiddenInput2.value;
-            } else {
-                anotherCountrySection.style.display = "none";
-                anotherCountryOption.value = "اخرى";
-
-            }
-            if (select && cityLabel && town) {
-                if (select.value === "السعودية") {
-                    town.outerHTML = '<select id="town" name="town"  class="form-control" required>' +
-                        '<option value="الرياض" selected="selected">الرياض</option>' +
-                        '<option value="جده">جده </option>' +
-                        '<option value="مكة المكرمة">مكة المكرمة</option>' +
-                        '<option value="المدينة المنورة">المدينة المنورة</option>' +
-                        '<option value="الدمام">الدمام</option>' +
-                        '<option value="الطائف">الطائف</option>' +
-                        '<option value="تبوك">تبوك</option>' +
-                        '<option value="الخرج">الخرج</option>' +
-                        '<option value="بريدة">بريدة</option>' +
-                        '<option value="خميس مشيط">خميس مشيط</option>' +
-                        '<option value="الهفوف">الهفوف</option>' +
-                        '<option value="المبرز">المبرز</option>' +
-                        '<option value="حفر الباطن">حفر الباطن</option>' +
-                        '<option value="حائل">حائل</option>' +
-                        '<option value="نجران">نجران</option>' +
-                        '<option value="الجبيل">الجبيل</option>' +
-                        '<option value="أبها">أبها</option>' +
-                        '<option value="ينبع">ينبع</option>' +
-                        '<option value="الخبر">الخبر</option>' +
-                        '<option value="عنيزة">عنيزة</option>' +
-                        '<option value="عرعر">عرعر</option>' +
-                        '<option value="سكاكا">سكاكا</option>' +
-                        '<option value="جازان">جازان</option>' +
-                        '<option value="القريات">القريات</option>' +
-                        '<option value="الظهران">الظهران</option>' +
-                        '<option value="القطيف">القطيف</option>' +
-                        '<option value="الباحة">الباحة</option>' +
-                        '</select>';
-                } else {
-
-                    town.outerHTML =
-                        `<input type="text" id="town" name="town" placeholder="اكتب مدينه السكن الحاليه" class="form-control" value="{{ old('town', $student ? $student->town : '') }}" >`;
-                }
-            }
-        }
-
-
-        function setCountry() {
-            let anotherCountrySection = document.getElementById("anotherCountrySection");
-            let anotherCountryOption = document.getElementById("anotherCountry");
-            let another_country = document.getElementById("city");
-
-            if (anotherCountrySection.style.display != "none") {
-                // nationality.value = other_nationality.value;
-                anotherCountryOption.value = another_country.value;
-
-            }
-        }
-        toggleHiddenInputs();
-    </script>
-
+    }
+    toggleHiddenInputs();
+</script>

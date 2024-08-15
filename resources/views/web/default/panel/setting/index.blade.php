@@ -9,7 +9,7 @@
         @include('web.default.panel.setting.setting_includes.progress')
     @endif
 
-    <form method="post" id="userSettingForm" class="mt-30"
+    <form method="post" id="userSettingForm" class="mt-30" enctype="multipart/form-data"
         action="{{ !empty($new_user) ? '/panel/manage/' . $user_type . '/new' : '/panel/setting' }}">
         {{ csrf_field() }}
         <input type="hidden" name="step" value="{{ !empty($currentStep) ? $currentStep : 1 }}">

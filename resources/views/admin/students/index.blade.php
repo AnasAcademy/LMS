@@ -289,6 +289,7 @@
                         <th>{{ trans('admin/main.income') }}</th>
                         <th>{{ trans('admin/main.user_group') }}</th> --}}
                         @if ($lastSegment === 'users')
+                            <th>الهوية الوطنية</th>
                             <th> الدبلومات المسجلة</th>
                         @endif
 
@@ -360,6 +361,17 @@
                                         ->get();
                                 @endphp
 
+                                <td class="text-left">
+                                    @if (!empty($user->student->identity_img))
+                                        <a href="/store/{{ $user->student->identity_img }}" target="_blank">
+                                            <img src="/store/{{ $user->student->identity_img }}" alt="image"
+                                                width="100px" style="max-height:100px">
+                                        </a>
+                                    @else
+                                        <span class="text-warning">لم ترفع بعد</span>
+                                    @endif
+                                </td>
+                                
                                 <td>
 
                                     @if ($user->purchasedFormBundleUnique($class->id ?? null)->count() <= 0)
@@ -375,7 +387,7 @@
                                 </td>
 
                                 <td>
-                                    
+
                                     @foreach ($userPurchasedFormBundles as $purchasedFormBundle)
                                         {{ dateTimeFormat($purchasedFormBundle->created_at, 'j M Y | H:i') }}
                                         @if (!$loop->last)
