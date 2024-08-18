@@ -231,7 +231,7 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-                <a href="{{ getAdminPanelUrl() }}/students/{{ $exportPath }}?{{!empty($class->id) ? ('class_id='.$class->id ."&&") : ''. http_build_query(request()->all()) }}"
+                <a href="{{ getAdminPanelUrl() }}/students/{{ $exportPath }}?{{(!empty($class->id) ? ('class_id='.$class->id ."&&") : ''). http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
 
                 @if ($lastSegment == 'scholarship')
