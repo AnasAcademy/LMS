@@ -250,7 +250,7 @@
         <div class="card-header">
             @can('admin_users_export_excel')
                 @if ($lastSegment === 'users')
-                    <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{ http_build_query(request()->all()) }}"
+                    <a href="{{ getAdminPanelUrl() }}/students/excelStudent?{{!empty($class->id) ? ('class_id='.$class->id ."&&") : ''. http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
 
                     @include('admin.students.includes.importStudents', [
@@ -371,7 +371,7 @@
                                         <span class="text-warning">لم ترفع بعد</span>
                                     @endif
                                 </td>
-                                
+
                                 <td>
 
                                     @if ($user->purchasedFormBundleUnique($class->id ?? null)->count() <= 0)

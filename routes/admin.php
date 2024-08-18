@@ -70,6 +70,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
+            Route::get('/excelScholarship', 'UserController@exportExcelScholarship');
             Route::get('/excelDirectRegister', 'UserController@exportExcelDirectRegister');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
