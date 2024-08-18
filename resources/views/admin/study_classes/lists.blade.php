@@ -116,7 +116,15 @@
                                                             class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
                                                             title="{{ trans('admin/main.students') }}">
                                                             <i class="fa fa-users"></i>
-                                                            <span class="ml-2">تسجيل الدبلومات</span>
+                                                            <span class="ml-2">تسجيل البرامج</span>
+                                                        </a>
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/direct_register"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">تسجيل مباشر</span>
                                                         </a>
                                                         <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/scholarship"
                                                             target="_self"
