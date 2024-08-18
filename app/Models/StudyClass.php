@@ -20,6 +20,30 @@ class StudyClass extends Model
             }
         )->get();
     }
+
+    public function formFeeEnrollements(){
+
+        return  User::whereHas('student')->whereHas('purchasedFormBundleUnique', function ($query){
+            $query->where('class_id', $this->id);
+        })->get();
+    }
+    public function bundleEnrollements(){
+        return User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function ($query) {
+            $query->where('class_id', $this->id)->where("payment_method", "!=", 'scholarship');
+        })->get();
+    }
+    public function directRegisterEnrollements(){
+        return User::whereHas('student.bundleStudent', function ($query) {
+            $query->whereNull('class_id')->whereHas('bundle', function ($query) {
+                $query->where('batch_id', $this->id);
+            });
+        })->get();
+    }
+    public function scholarshipEnrollements(){
+        return User::where(['role_name' => Role::$user])->whereHas('purchasedBundles', function ($query)  {
+            $query->where("payment_method", 'scholarship')->where('class_id', $this->id);
+        })->get();
+    }
     // public function enrollments(){
     //     return $this->hasMany(BundleStudent::class, 'class_id')->groupBy('student_id');
     // }

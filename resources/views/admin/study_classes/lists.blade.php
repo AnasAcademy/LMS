@@ -31,7 +31,10 @@
                                     <tr>
                                         <th>{{ trans('admin/main.id') }}</th>
                                         <th class="text-left">{{ trans('admin/main.title') }}</th>
-                                        <th>عدد الطلبة</th>
+                                        <th>عدد طلبة حجز مقعد</th>
+                                        <th>عدد طلبة تسجيل برامج</th>
+                                        <th>عدد طلبة تسجيل مباشر</th>
+                                        <th>عدد طلبة منح دراسية</th>
 
                                         <th>{{ trans('admin/main.created_at') }}</th>
                                         <th>{{ trans('admin/main.updated_at') }}</th>
@@ -46,7 +49,10 @@
                                                     {{ $class->title }}
                                                 </p>
 
-                                            <td>{{ ($class->enrollments()->count()) }}</td>
+                                            <td>{{ ($class->formFeeEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->bundleEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->directRegisterEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->scholarshipEnrollements()->count()) }}</td>
                                             <td class="font-12">{{ $class->created_at }}
                                             </td>
 
