@@ -360,6 +360,7 @@ class StudyClassController extends Controller
             'users' => $users,
             'category' => $category,
             'totalStudents' => $totalStudents,
+            'class' => $class,
 
         ];
 
