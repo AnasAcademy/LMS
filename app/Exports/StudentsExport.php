@@ -53,12 +53,17 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
     {
         if ($user->student) {
             $diploma = '';
+            $created_at = '';
+
             $purchasedBundles = $user->purchasedFormBundle();
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {
-                    $diploma .= ($purchasedBundle->bundle->title.' , ') ;
+                    $diploma .= ($purchasedBundle->bundle->title .' , ') ;
+                    $created_at .= (dateTimeFormat(strtotime($purchasedBundle->created_at), 'j M Y | H:i') . " , ");
                 }
+                $diploma = preg_replace('/,(?!.*,)/u', '', $diploma);
+                $created_at = preg_replace('/,(?!.*,)/u', '', $created_at);
             }
 
 
@@ -67,7 +72,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
                 $user->student->ar_name,
                 $user->student->en_name,
                 $diploma,
-                dateTimeFormat($user->created_at, 'j M Y - H:i'),
+                $created_at,
                 $user->status,
                 $user->mobile,
                 $user->email,

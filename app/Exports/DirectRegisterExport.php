@@ -59,12 +59,12 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
 
             if ($userBundles) {
                 foreach ($userBundles as $userBundle) {
-                        $diploma .= ($userBundle->bundle->title . " و " );
-                        $created_at.= (dateTimeFormat(strtotime($userBundle->created_at), 'j M Y | H:i') . " و " );
+                        $diploma .= ($userBundle->bundle->title . " , " );
+                        $created_at.= (dateTimeFormat(strtotime($userBundle->created_at), 'j M Y | H:i') . " , " );
 
                 }
-                $diploma = preg_replace('/و(?!.*و)/u', '', $diploma);
-                $created_at = preg_replace('/و(?!.*و)/u', '', $created_at);
+                $diploma = preg_replace('/,(?!.*,)/u', '', $diploma);
+                $created_at = preg_replace('/,(?!.*,)/u', '', $created_at);
 
             }
 
