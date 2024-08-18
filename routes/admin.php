@@ -92,6 +92,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{class}/delete', 'StudyClassController@destroy');
             Route::get('/{class}/students', 'StudyClassController@students');
             Route::get('/{class}/enrollers', 'StudyClassController@Enrollers');
+            Route::get('/{class}/direct_register', 'StudyClassController@directRegister');
             Route::get('/{class}/scholarship', 'StudyClassController@ScholarshipStudent');
             Route::get('/{class}/users', 'StudyClassController@Users');
             Route::get('/{class}/requirements', 'StudyClassController@requirements');
