@@ -83,23 +83,25 @@
                                             </div>
 
                                             <div class="form-group mt-15">
-                                                <label class="input-label d-block">{{ trans('panel.course_type') }}</label>
+                                                <label class="input-label d-block">نوع الدوره</label>
                                             
-                                                <select name="attached" class="custom-select @error('attached') is-invalid @enderror">
-                                                    @foreach ($Webinar as $webinar)
-                                                        <option value="{{ $webinar->unattached }}" @if(old('attached') == $webinar->unattached) selected @endif>
-                                                            {{ $webinar->unattached }}
-                                                        </option>
-                                                    @endforeach
+                                                <select name="unattached" class="custom-select @error('unattached') is-invalid @enderror">
+                                                    <option value="0" @if((!empty($webinar) && $webinar->isWebinar()) || old('unattached') == 0) selected @endif>
+                                                        دوره خاصه ببرنامج
+                                                    </option>
+                                                    <option value="1" @if((!empty($webinar) && $webinar->isCourse()) || old('unattached') == 1) selected @endif>
+                                                       
+                                                       دوره مستقله
+                                                    </option>
                                                 </select>
                                             
-                                                @error('attached')
+                                                @error('unattached')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                                 @enderror
                                             </div>
-                                           
+                                            
 
 
                                             <div class="form-group mt-15">
