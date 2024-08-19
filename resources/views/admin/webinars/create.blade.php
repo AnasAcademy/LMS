@@ -83,6 +83,26 @@
                                             </div>
 
                                             <div class="form-group mt-15">
+                                                <label class="input-label d-block">{{ trans('panel.course_type') }}</label>
+                                            
+                                                <select name="attached" class="custom-select @error('attached') is-invalid @enderror">
+                                                    @foreach ($Webinar as $webinar)
+                                                        <option value="{{ $webinar->unattached }}" @if(old('attached') == $webinar->unattached) selected @endif>
+                                                            {{ $webinar->unattached }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            
+                                                @error('attached')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+                                            </div>
+                                           
+
+
+                                            <div class="form-group mt-15">
                                                 <label class="input-label">اسم المقرر</label>
                                                 <input type="text" name="title" value="{{ !empty($webinar) ? $webinar->title : old('title') }}" class="form-control @error('title')  is-invalid @enderror" placeholder=""/>
                                                 @error('title')

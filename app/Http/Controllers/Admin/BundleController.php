@@ -305,7 +305,7 @@ class BundleController extends Controller
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
-           'batch_id'=>$data['class_id']?? null,
+           'batch_id'=>$data['batch_id']?? null,
         ]);
 
         if ($bundle) {
