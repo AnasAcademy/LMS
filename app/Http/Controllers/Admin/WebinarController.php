@@ -318,12 +318,12 @@ class WebinarController extends Controller
 
         $teachers = User::where('role_name', Role::$teacher)->get();
         $categories = Category::where('parent_id', null)->get();
-        $Webinar= Webinar::get();
+       // $Webinar= Webinar::get();
         $data = [
             'pageTitle' => trans('admin/main.webinar_new_page_title'),
             'teachers' => $teachers,
             'categories' => $categories,
-            'Webinar'=> $Webinar,
+          //  'Webinar'=> $Webinar,
         ];
 
         return view('admin.webinars.create', $data);
@@ -345,7 +345,7 @@ class WebinarController extends Controller
             'duration' => 'required|numeric',
             'capacity' => 'required',
             'price' => 'required',
-            'attached'=>'required',
+            'unattached'=>'required',
         ]);
 
         $data = $request->all();
@@ -412,7 +412,7 @@ class WebinarController extends Controller
             'updated_at' => time(),
             'unattached' => ($category->parent_id==null)? 1 : 0,
             'hasGroup'   =>($category->parent_id==null)? 1 : 0,
-            'unattached'=>$data['attached'] ?? null,
+            'unattached'=>$data['unattached'] ?? null,
         ]);
 
         if ($webinar) {
@@ -517,7 +517,7 @@ class WebinarController extends Controller
             ])
             ->first();
 
-            $Webinar= Webinar::get();
+          
 
         if (empty($webinar)) {
             abort(404);
@@ -555,7 +555,7 @@ class WebinarController extends Controller
             'webinarPartnerTeacher' => $webinar->webinarPartnerTeacher,
             'webinarTags' => $tags,
             'defaultLocale' => getDefaultLocale(),
-            'Webinar'=> $Webinar,
+            
         ];
 
         return view('admin.webinars.create', $data);
@@ -730,7 +730,7 @@ class WebinarController extends Controller
             'message_for_reviewer' => $data['message_for_reviewer'] ?? null,
             'status' => $data['status'],
             'updated_at' => time(),
-            'unattached'=>$data['attached']?? null,
+            'unattached'=>$data['unattached']?? null,
         ]);
 
         if ($webinar) {
