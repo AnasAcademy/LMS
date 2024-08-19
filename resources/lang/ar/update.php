@@ -638,7 +638,7 @@ return [
     'assignment_history_status_pending' => 'قيد الانتظار',
     'assignment_history_status_passed' => 'تم الاجتياز بنجاح',
     'assignment_history_status_not_passed' => 'لم يمر',
-    'n_day' => ': يوم أيام',
+    'n_day' => ':day أيام',
     'assignment_deadline_error_title' => 'تم بلوغ الموعد النهائي!',
     'assignment_deadline_error_desc' => 'لا يمكنك ارسال ملفات ...',
     'assignment_submission_error_title' => 'وصلت أوقات التقديم!',
