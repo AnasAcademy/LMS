@@ -294,22 +294,26 @@
 
 
             {{-- study classes --}}
-            <li
-                class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/classes*', false))) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-cube"></i>
-                    <span>الدفعات الدراسية</span>
-                </a>
-                <ul class="dropdown-menu">
+            @can('admin_batches')
+                <li
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/classes*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-cube"></i>
+                        <span>الدفعات الدراسية</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                            @can('admin_batches_list')
 
-                        <li
-                            class="{{ (request()->is(getAdminPanelUrl('/classes', false)) and request()->get('type') == 'course') ? 'active' : '' }}">
-                            <a href="{{ getAdminPanelUrl() }}/classes"
-                                class="nav-link @if (!empty($sidebarBeeps['classes']) and $sidebarBeeps['classes']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
-                        </li>
+                            @endcan
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/classes', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/classes"
+                                    class="nav-link @if (!empty($sidebarBeeps['classes']) and $sidebarBeeps['classes']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
+                            </li>
 
-                </ul>
-            </li>
+                    </ul>
+                </li>
+            @endcan()
 
             @can('admin_upcoming_courses')
                 <li
