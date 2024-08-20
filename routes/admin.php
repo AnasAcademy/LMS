@@ -663,6 +663,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             });
         });
 
+        Route::group(['prefix' => 'programs/statistics'], function () {
+            Route::get('/bundles', 'BundleController@statistics');
+            Route::get('/webinars', 'WebinarController@statistics');
+
+        });
+
         Route::group(['prefix' => 'advertising'], function () {
             Route::group(['prefix' => 'banners'], function () {
                 Route::get('/', 'AdvertisingBannersController@index');
@@ -965,7 +971,6 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
             Route::get('/bundleCodeExcel', 'UserController@exportBundles');
-            Route::get('/statistics', 'BundleController@statistics');
 
             Route::get('/{id}/students', 'BundleController@studentsLists');
             Route::get('/{id}/sendNotification', 'BundleController@notificationToStudents');
