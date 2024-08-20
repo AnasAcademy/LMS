@@ -909,7 +909,7 @@ class BundleController extends Controller
 
 
         $data = [
-            'pageTitle' => 'إحصائيات التسجيل',
+            'pageTitle' => 'إحصائيات التسجيل في البرامج',
             'bundles' => $bundles,
             'totalBundles' => $totalBundles,
             'totalPendingBundles' => $totalPendingBundles,
