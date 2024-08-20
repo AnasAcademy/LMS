@@ -1259,7 +1259,7 @@ class WebinarController extends Controller
 
     public function statistics(Request $request)
     {
-        $this->authorize('admin_bundles_list');
+        $this->authorize('admin_programs_statistics_webinars_list');
 
         removeContentLocale();
 
