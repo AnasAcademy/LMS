@@ -14,7 +14,80 @@
                 <div class="breadcrumb-item">{{ $pageTitle }}</div>
             </div>
         </div>
+  {{-- search --}}
+            <section class="card">
+                <div class="card-body">
+                    <form method="get" class="mb-0">
 
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">كود الطالب</label>
+                                    <input name='user_code' type="text" class="form-control"
+                                        value="{{ request()->get('user_code') }}">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">اسم الطالب</label>
+                                    <input name='user_name' type="text" class="form-control"
+                                        value="{{ request()->get('user_name') }}">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">بريد الطالب</label>
+                                    <input name="email" type="text" class="form-control"
+                                        value="{{ request()->get('email') }}">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">عنوان الاشعار</label>
+                                    <input name="title" class="form-control"  value="{{ request()->get('title') }}">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">{{ trans('admin/main.start_date') }}</label>
+                                    <div class="input-group">
+                                        <input type="date" id="from" class="text-center form-control"
+                                            name="from" value="{{ request()->get('from') }}"
+                                            placeholder="Start Date">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">{{ trans('admin/main.end_date') }}</label>
+                                    <div class="input-group">
+                                        <input type="date" id="to" class="text-center form-control"
+                                            name="to" value="{{ request()->get('to') }}"
+                                            placeholder="End Date">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group mt-1">
+                                    <label class="input-label mb-4"> </label>
+                                    <input type="submit" class="text-center btn btn-primary w-100"
+                                        value="{{ trans('admin/main.show_results') }}">
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </section>
         <div class="section-body">
             <div class="card">
                 <div class="card-header">
@@ -43,12 +116,12 @@
                             @foreach($notifications as $notification)
                                 <tr>
                                     <td>{{ $notification->title }}</td>
-                                    <td class="text-center">{{ $notification->senderUser->full_name }}</td>
+                                    <td class="text-center">{{ $notification->senderUser->full_name ?? '---'}}</td>
 
                                     <td class="text-center">
                                         @if(!empty($notification->user))
-                                            <span class="d-block">{{ $notification->user->full_name }}</span>
-                                            <span class="font-12 d-block">ID: {{ $notification->user->id }}</span>
+                                            <span class="d-block">{{ $notification->user->full_name ?? '---' }}</span>
+                                            <span class="font-12 d-block">ID: {{ $notification->user->id ?? '---' }}</span>
                                         @else
                                             -
                                         @endif
