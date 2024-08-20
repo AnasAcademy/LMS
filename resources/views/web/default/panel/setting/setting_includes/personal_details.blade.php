@@ -277,7 +277,7 @@
             <div>
                 @if ($student->identity_img)
                     <a href="/store/{{$student->identity_img }}"  target="_blank">
-                        <img src="/store/{{$student->identity_img }}" alt="image" width="100px" style="max-height:100px; border-radius: 50%">
+                        <img src="/store/{{$student->identity_img }}" alt="image" width="100px" style="max-height:100px">
                     </a>
                     @endif
             </div>

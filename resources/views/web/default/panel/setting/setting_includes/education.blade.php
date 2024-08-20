@@ -249,7 +249,7 @@
                                         @if ($student->high_certificate_img)
                                             <a href="/store/{{ $student->high_certificate_img }}" target="_blank">
                                                 <img src="/store/{{ $student->high_certificate_img }}" alt="image"
-                                                    width="100px" style="max-height:100px; border-radius: 50%">
+                                                    width="100px" style="max-height:100px">
                                             </a>
                                         @endif
                                     </div>
@@ -415,7 +415,7 @@
                                         @if ($student->secondary_certificate_img)
                                             <a href="/store/{{ $student->secondary_certificate_img }}" target="_blank">
                                                 <img src="/store/{{ $student->secondary_certificate_img }}" alt="image"
-                                                    width="100px" style="max-height:100px; border-radius: 50%">
+                                                    width="100px" style="max-height:100px">
                                             </a>
                                         @endif
                                     </div>
