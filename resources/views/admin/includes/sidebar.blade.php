@@ -78,9 +78,6 @@
                             </li> --}}
                         @endcan
 
-
-
-
                     </ul>
                 </li>
             @endcan()
@@ -244,7 +241,7 @@
 
             @can('admin_bundles')
                 <li
-                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and !request()->is(getAdminPanelUrl('/bundles/comments*', false))) ? 'active' : '' }}">
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
                         <span>{{ trans('update.bundles') }}</span>
@@ -262,6 +259,25 @@
                             <li class="{{ request()->is(getAdminPanelUrl('/bundles/create', false)) ? 'active' : '' }}">
                                 <a class="nav-link"
                                     href="{{ getAdminPanelUrl() }}/bundles/create">{{ trans('admin/main.new') }}</a>
+                            </li>
+                        @endcan()
+                    </ul>
+                </li>
+            @endcan()
+
+            @can('admin_bundles')
+                <li
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-cube"></i>
+                        <span>إحصائيات التسجيل</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @can('admin_bundles_list')
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles/statistics', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/bundles/statistics"
+                                    class="nav-link @if (!empty($sidebarBeeps['statistics']) and $sidebarBeeps['statistics']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
                             </li>
                         @endcan()
                     </ul>
