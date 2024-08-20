@@ -265,19 +265,27 @@
                 </li>
             @endcan()
 
-            @can('admin_bundles')
+            @can('admin_programs_statistics')
                 <li
-                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/programs/statistics*', false))) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
                         <span>إحصائيات التسجيل</span>
                     </a>
                     <ul class="dropdown-menu">
-                        @can('admin_bundles_list')
+                        @can('admin_programs_statistics_bundles_list')
                             <li
-                                class="{{ (request()->is(getAdminPanelUrl('/bundles/statistics', false))) ? 'active' : '' }}">
-                                <a href="{{ getAdminPanelUrl() }}/bundles/statistics"
-                                    class="nav-link @if (!empty($sidebarBeeps['statistics']) and $sidebarBeeps['statistics']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
+                                class="{{ (request()->is(getAdminPanelUrl('/programs/statistics/bundles', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/programs/statistics/bundles"
+                                    class="nav-link @if (!empty($sidebarBeeps['statistics']) and $sidebarBeeps['statistics']) beep beep-sidebar @endif">البرامج</a>
+                            </li>
+                        @endcan()
+
+                        @can('admin_programs_statistics_webinars_list')
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/programs/statistics/webinars', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/programs/statistics/webinars"
+                                    class="nav-link @if (!empty($sidebarBeeps['statistics']) and $sidebarBeeps['statistics']) beep beep-sidebar @endif">الدورات</a>
                             </li>
                         @endcan()
                     </ul>
