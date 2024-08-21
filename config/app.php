@@ -187,6 +187,7 @@ return [
         Gathuku\Mpesa\MpesaServiceProvider::class,
         Ssheduardo\Redsys\RedsysServiceProvider::class,
         Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
+       
     ],
 
     /*
@@ -245,6 +246,7 @@ return [
         'Rave' => KingFlamez\Rave\Facades\Rave::class,
         'Mpesa' => Gathuku\Mpesa\Facades\Mpesa::class,
         'Redsys'    => Ssheduardo\Redsys\Facades\Redsys::class,
+       
     ],
 
 ];

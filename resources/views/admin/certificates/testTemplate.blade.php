@@ -18,7 +18,23 @@
         <div class="section-body">
             <div class="card">
                 <div class="card-body">
-                
+                    <div class="form-group row">
+                        <p class="col-6 col-lg-3">{{ trans('quiz.student') }} : [student] </p>
+
+                        <p class="col-6 col-lg-3">{{ trans('admin/main.course') }} : [course] </p>
+
+                        <p class="col-6 col-lg-3">{{ trans('quiz.grade') }} : [grade] </p>
+
+                        <p class="col-6 col-lg-3">{{ trans('admin/main.certificate_id') }} : [certificate_id] </p>
+
+                        <p class="col-6 col-lg-3">{{ trans('admin/main.date') }} : [date] </p>
+
+                        <p class="col-6 col-lg-3">{{ trans('admin/main.instructor') }} : [instructor_name] </p>
+
+                        <p class="col-6 col-lg-3">{{ trans('public.duration') }} : [duration] </p>
+
+                        <p class="col-6 col-lg-6">{{ trans('update.user_certificate_additional') }} : [user_certificate_additional] </p>
+                    </div>
 
                     <hr class="my-4">
 
@@ -77,86 +93,7 @@
                                     <input type="text" name="price" class="form-control" value="{{ !empty($template) ? $template->price : old('price') }}">
                                 </div>
 
-
                                 <div class="form-group">
-        <label class="control-label" for="studentName">اسم الطالب</label>
-        <input type="text" name="studentName" class="form-control" value="{{ old('studentName', !empty($template) ? $template->studentName : '') }}">
-
-        <label class="control-label" for="position_x_student">{!! trans('admin/main.position_x') !!}</label>
-        <input type="text" name="position_x_student" class="form-control @error('position_x_student') is-invalid @enderror" value="{{ old('position_x_student', !empty($template) ? $template->position_x_student : '835') }}">
-        <div class="invalid-feedback">@error('position_x_student') {{ $message }} @enderror</div>
-
-        <label class="control-label" for="position_y_student">{!! trans('admin/main.position_y') !!}</label>
-        <input type="text" name="position_y_student" class="form-control @error('position_y_student') is-invalid @enderror" value="{{ old('position_y_student', !empty($template) ? $template->position_y_student : '1250') }}">
-        <div class="invalid-feedback">@error('position_y_student') {{ $message }} @enderror</div>
-        <label class="control-label" for="font_size_student">{!! trans('admin/main.font_size') !!}</label>
-         <input type="text" name="font_size_student" class="form-control @error('font_size_student') is-invalid @enderror" value="{{ old('font_size_student', !empty($template) ? $template->font_size_student : '40') }}">
-         <div class="invalid-feedback">@error('font_size_student') {{ $message }} @enderror</div>
-
-
-    </div>
-
-
-    <div class="form-group">
-       <label class="control-label" for="text_1">النص</label>
-          <input type="text" name="text_1" class="form-control @error('text_1') is-invalid @enderror" value="{{ old('text_1', !empty($template) ? $template->text_1 : 'HAS BEEN AWARDED AN ONLINE DIPLOMA DEGREE OF') }}">
-             <div class="invalid-feedback">@error('text_1') {{ $message }} @enderror</div>
-             <label class="control-label" for="position_x_text_1">{!! trans('admin/main.position_x') !!}</label>
-        <input type="text" name="position_x_text_1" class="form-control @error('position_x_text_1') is-invalid @enderror" value="{{ old('position_x_text_1', !empty($template) ? $template->position_x_text_1 : '835') }}">
-        <div class="invalid-feedback">@error('position_x_text_1') {{ $message }} @enderror</div>
-
-        <label class="control-label" for="position_y_text_1">{!! trans('admin/main.position_y') !!}</label>
-        <input type="text" name="position_y_text_1" class="form-control @error('position_y_text_1') is-invalid @enderror" value="{{ old('position_y_text_1', !empty($template) ? $template->position_y_text_1 : '1400') }}">
-        <div class="invalid-feedback">@error('position_y_text_1') {{ $message }} @enderror</div>
-        <label class="control-label" for="font_size_text_1">{!! trans('admin/main.font_size') !!}</label>
-         <input type="text" name="font_size_text_1" class="form-control @error('font_size_text_1') is-invalid @enderror" value="{{ old('font_size_text_1', !empty($template) ? $template->font_size_text_1 : '30') }}">
-         <div class="invalid-feedback">@error('font_size_text_1') {{ $message }} @enderror</div>
-                 
-                  </div>
-
-
-
-    <div class="form-group">
-        <label class="control-label" for="courseName">اسم الكورس</label>
-        <input type="text" name="courseName" class="form-control" value="{{ old('courseName', !empty($template) ? $template->courseName : '') }}">
-
-        <label class="control-label" for="position_x_course">{!! trans('admin/main.position_x') !!}</label>
-        <input type="text" name="position_x_course" class="form-control @error('position_x_course') is-invalid @enderror" value="{{ old('position_x_course', !empty($template) ? $template->position_x_course : '835') }}">
-        <div class="invalid-feedback">@error('position_x_course') {{ $message }} @enderror</div>
-
-        <label class="control-label" for="position_y_course">{!! trans('admin/main.position_y') !!}</label>
-        <input type="text" name="position_y_course" class="form-control @error('position_y_course') is-invalid @enderror" value="{{ old('position_y_course', !empty($template) ? $template->position_y_course : ' 1450') }}">
-        <div class="invalid-feedback">@error('position_y_course') {{ $message }} @enderror</div>
-
-        <label class="control-label" for="font_size_course">{!! trans('admin/main.font_size') !!}</label>
-         <input type="text" name="font_size_course" class="form-control @error('font_size_course') is-invalid @enderror" value="{{ old('font_size_course', !empty($template) ? $template->font_size_course : '40') }}">
-         <div class="invalid-feedback">@error('font_size_course') {{ $message }} @enderror</div>
-
-    </div>
-
-
-    <div class="form-group">
-        <label class="control-label" for="date">تاريخ التخرج</label>
-        <input type="date" id="date" name="date" class="form-control" value="{{ old('date', !empty($template) ? $template->date : '') }}">
-
-        <label class="control-label" for="position_x_date">{!! trans('admin/main.position_x') !!}</label>
-        <input type="text" name="position_x_date" class="form-control @error('position_x_date') is-invalid @enderror" value="{{ old('position_x_date', !empty($template) ? $template->position_x_date : '835') }}">
-        <div class="invalid-feedback">@error('position_x_date') {{ $message }} @enderror</div>
-
-        <label class="control-label" for="position_y_date">{!! trans('admin/main.position_y') !!}</label>
-        <input type="text" name="position_y_date" class="form-control @error('position_y_date') is-invalid @enderror" value="{{ old('position_y_date', !empty($template) ? $template->position_y_date : '1510') }}">
-        <div class="invalid-feedback">@error('position_y_date') {{ $message }} @enderror</div>
-
-        <label class="control-label" for="font_size_date">{!! trans('admin/main.font_size') !!}</label>
-         <input type="text" name="font_size_date" class="form-control @error('font_size_date') is-invalid @enderror" value="{{ old('font_size_date', !empty($template) ? $template->font_size_date : '40') }}">
-         <div class="invalid-feedback">@error('font_size_date') {{ $message }} @enderror</div>
-    </div>
-
-    
-
-
-
-                               <div class="form-group">
                                     <label class="input-label">{{ trans('admin/main.template_image') }}</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -171,47 +108,65 @@
                                     <div class="text-muted text-small mt-1">{{ trans('update.certificate_image_hint') }}</div>
                                 </div>
 
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <dov class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label" for="inputDefault">{!! trans('admin/main.position_x') !!}</label>
+                                    <input type="text" name="position_x" class="form-control @error('position_x') is-invalid @enderror" value="{{ !empty($template) ? $template->position_x : old('position_x') }}">
+                                    <div class="invalid-feedback">@error('position_x') {{ $message }} @enderror</div>
+                                </div>
+                            </dov>
+                            <dov class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label" for="inputDefault">{!! trans('admin/main.position_y') !!}</label>
+                                    <input type="text" name="position_y" class="form-control @error('position_y') is-invalid @enderror" value="{{ !empty($template) ? $template->position_y : old('position_y') }}">
+                                    <div class="invalid-feedback">@error('position_y') {{ $message }} @enderror</div>
+                                </div>
+                            </dov>
+
+                            <dov class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label" for="inputDefault">{!! trans('admin/main.font_size') !!}</label>
+                                    <input type="text" name="font_size" class="form-control @error('font_size') is-invalid @enderror" value="{{ !empty($template) ? $template->font_size : old('font_size') }}">
+                                    <div class="invalid-feedback">@error('font_size') {{ $message }} @enderror</div>
+                                </div>
+                            </dov>
+                            <dov class="col-md-6">
                                 <div class="form-group">
                                     <label class="control-label" for="inputDefault">{!! trans('admin/main.text_color') !!}</label>
                                     <input type="text" name="text_color" class="form-control @error('text_color') is-invalid @enderror" value="{{ !empty($template) ? $template->text_color : old('text_color') }}">
                                     <div class="invalid-feedback">@error('text_color') {{ $message }} @enderror</div>
                                     <div>Example: #e1e1e1</div>
                                 </div>
-
-
-
-                                <div class="form-group custom-switches-stacked">
-                                    <label class="custom-switch pl-0">
-                                        <input type="hidden" name="rtl" value="0">
-                                        <input type="checkbox" id="rtl" name="rtl" value="1" {{ (!empty($template) and $template->rtl) ? 'checked="checked"' : '' }} class="custom-switch-input"/>
-                                        <span class="custom-switch-indicator"></span>
-                                        <label class="custom-switch-description mb-0 cursor-pointer" for="rtl">{{ trans('admin/main.rtl') }}</label>
-                                    </label>
-                                </div>
-        
-                                <div class="form-group custom-switches-stacked">
-                                    <label class="custom-switch pl-0">
-                                        <input type="hidden" name="status" value="draft">
-                                        <input type="checkbox" id="status" name="status" value="publish" {{ (!empty($template) and $template->status == 'publish') ? 'checked="checked"' : '' }} class="custom-switch-input"/>
-                                        <span class="custom-switch-indicator"></span>
-                                        <label class="custom-switch-description mb-0 cursor-pointer" for="status">{{ trans('admin/main.active') }}</label>
-                                    </label>
-                                </div>
-
-                            </div>
-                          </div>
-                                </div>
-
-                     
-
-                        <div class="row">
-                         
-                           
+                            </dov>
                         </div>
 
-                     
+                        <div class="form-group ">
+                            <label class="control-label" for="inputDefault">{{ trans('admin/main.message_body') }}</label>
+                            <textarea class="form-control @error('body') is-invalid @enderror" rows="9" name="body">{{ (!empty($template)) ? $template->body : old('body') }}</textarea>
+                            <div class="invalid-feedback">@error('body') {{ $message }} @enderror</div>
+                        </div>
 
-                       
+                        <div class="form-group custom-switches-stacked">
+                            <label class="custom-switch pl-0">
+                                <input type="hidden" name="rtl" value="0">
+                                <input type="checkbox" id="rtl" name="rtl" value="1" {{ (!empty($template) and $template->rtl) ? 'checked="checked"' : '' }} class="custom-switch-input"/>
+                                <span class="custom-switch-indicator"></span>
+                                <label class="custom-switch-description mb-0 cursor-pointer" for="rtl">{{ trans('admin/main.rtl') }}</label>
+                            </label>
+                        </div>
+
+                        <div class="form-group custom-switches-stacked">
+                            <label class="custom-switch pl-0">
+                                <input type="hidden" name="status" value="draft">
+                                <input type="checkbox" id="status" name="status" value="publish" {{ (!empty($template) and $template->status == 'publish') ? 'checked="checked"' : '' }} class="custom-switch-input"/>
+                                <span class="custom-switch-indicator"></span>
+                                <label class="custom-switch-description mb-0 cursor-pointer" for="status">{{ trans('admin/main.active') }}</label>
+                            </label>
+                        </div>
 
                         <div class="form-group">
                             <div class="col-md-12">

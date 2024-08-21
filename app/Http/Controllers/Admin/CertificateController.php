@@ -17,6 +17,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 class CertificateController extends Controller
 {
     public function index(Request $request)
@@ -108,7 +109,7 @@ class CertificateController extends Controller
             'templates' => $templates,
         ];
 
-        return view('admin.certificates.templates', $data);
+        return view('admin.certificates.new_templates', $data);
     }
 
     public function CertificatesNewTemplate()
@@ -196,49 +197,234 @@ class CertificateController extends Controller
         return redirect(getAdminPanelUrl().'/certificates/templates');
     }
 
-    public function CertificatesTemplatePreview(Request $request)
-    {
-        $this->authorize('admin_certificate_template_create');
+    // public function CertificatesTemplatePreview(Request $request)
+    // {
+        
+    //     $this->authorize('admin_certificate_template_create');
 
-        $data = [
-            'pageTitle' => trans('public.certificate'),
-            'image' => $request->get('image'),
-            'body' => $request->get('body'),
-            'position_x' => (int)$request->get('position_x', 120),
-            'position_y' => (int)$request->get('position_y', 100),
-            'font_size' => (int)$request->get('font_size', 26),
-            'text_color' => $request->get('text_color', '#e1e1e1'),
-        ];
+    //     $data = [
+    //         'pageTitle' => trans('public.certificate'),
+    //         'image' => $request->get('image'),
+    //         'body' => $request->get('body'),
+    //         'position_x' => (int)$request->get('position_x', 120),
+    //         'position_y' => (int)$request->get('position_y', 100),
+    //         'font_size' => (int)$request->get('font_size', 26),
+    //         'text_color' => $request->get('text_color', '#e1e1e1'),
+    //     ];
 
-        $isRtl = $request->get('rtl', false);
+    //   //  dd($request->all(), $data);
+    //     $isRtl = $request->get('rtl', false);
 
-        $body = str_replace('[student]', 'student name', $data['body']);
-        $body = str_replace('[course]', 'course name', $body);
-        $body = str_replace('[grade]', 'xx', $body);
-        $body = str_replace('[certificate_id]', 'xx', $body);
-        $body = str_replace('[user_certificate_additional]', 'xx', $body);
-        $body = str_replace('[date]', 'xx', $body);
-        $body = str_replace('[instructor_name]', 'xx', $body);
-        $body = str_replace('[duration]', 'xx', $body);
+    //     $body = str_replace('[student]', 'student name', $data['body']);
+    //     $body = str_replace('[course]', 'course name', $body);
+    //     $body = str_replace('[grade]', 'xx', $body);
+    //     $body = str_replace('[certificate_id]', 'xx', $body);
+    //     $body = str_replace('[user_certificate_additional]', 'xx', $body);
+    //     $body = str_replace('[date]', 'xx', $body);
+    //     $body = str_replace('[instructor_name]', 'xx', $body);
+    //     $body = str_replace('[duration]', 'xx', $body);
 
-        //$data['body'] = $body;//mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8');;
+    //     //$data['body'] = $body;//mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8');;
 
-        if ($isRtl) {
-            $Arabic = new \I18N_Arabic('Glyphs');
-            $body = $Arabic->utf8Glyphs($body);
+    //     if ($isRtl) {
+    //         $Arabic = new \I18N_Arabic('Glyphs');
+    //         $body = $Arabic->utf8Glyphs($body);
+    //     }
+
+    //     $imgPath = public_path($data['image']);
+    //  //   dd($imgPath, file_exists($imgPath));
+    //     $img = Image::make($imgPath);
+       
+
+    //     $img->text($body, $data['position_x'], $data['position_y'], function ($font) use ($data, $isRtl) {
+    //         $fontPath = $isRtl ? public_path('assets/default/fonts/vazir/Vazir-Medium.ttf') : public_path('assets/default/fonts/Montserrat-Medium.ttf');
+    //        // dd($fontPath);
+
+    //         if (!file_exists($fontPath)) {
+    //             throw new \Exception('Font file does not exist: ' . $fontPath);
+    //         }
+    //         $font->file(public_path('assets/default/fonts/vazir/Vazir-Medium.ttf'));
+           
+    //         $font->size($data['font_size']);
+    //         $font->color($data['text_color']);
+    //         $font->align($isRtl ? 'right' : 'left');
+    //     });
+    //     return $img->response('png');
+    // }
+
+    // public function CertificatesTemplatePreview(Request $request)
+    // {
+    //     // Load the background image
+    //     $imgPath = public_path($request->get('image'));
+    //     $img = Image::make($imgPath);
+    
+    //     // Define the dynamic data
+    //     $studentName = "Wejdan Hamad Alnuami";
+    //     $courseName = "Graphic Design and UI/UX";
+    //     $text = "HAS BEEN AWARDED AN ONLINE DIPLOMA DEGREE OF";
+    //     $text2 = "/WITH ABOVE EXCELLENT FIRST CLASS HONORS GRADE AND A";
+    //     $issueDate = " ON THE 26th of February 2024";
+    //     $gpa = "GPA of (5/5)";
+    //     $fullText = $text2 . " " . $gpa;
+    
+    //     // Define font path
+    //     $fontPath = public_path('assets/default/fonts/vazir/Vazir-Medium.ttf'); // Make sure this font file exists
+    
+    //     // Add Student Name
+    //     $img->text($studentName, 800, 1250, function($font) use ($fontPath) {
+    //         $font->file($fontPath);
+    //         $font->size(50); // Adjust as needed
+    //         $font->color('#000000');
+    //         $font->align('center');
+    //         $font->valign('top');
+    //     });
+ 
+ 
+ 
+    //     $img->text($text, 800, 1400, function($font) use ($fontPath) {
+    //         $font->file($fontPath);
+    //         $font->size(30); // Adjust as needed
+    //         $font->color('#000000');
+    //         $font->align('center');
+    //         $font->valign('top');
+    //     });
+    
+    //     // Add Course/Diploma Name
+    //     $img->text($courseName, 800, 1450, function($font) use ($fontPath) {
+    //         $font->file($fontPath);
+    //         $font->size(40); // Adjust as needed
+    //         $font->color('#000000');
+    //         $font->align('center');
+    //         $font->valign('top');
+    //     });
+ 
+ 
+    //             // Add Date of Issue
+    //             $img->text($fullText, 800, 1510, function($font) use ($fontPath) {
+    //                 $font->file($fontPath);
+    //                 $font->size(30); // Adjust as needed
+    //                 $font->color('#000000');
+    //                 $font->align('center');
+    //                 $font->valign('top');
+    //             });
+            
+    
+    //     // Add Date of Issue
+    //     $img->text($issueDate, 800, 1570, function($font) use ($fontPath) {
+    //         $font->file($fontPath);
+    //         $font->size(35); // Adjust as needed
+    //         $font->color('#000000');
+    //         $font->align('center');
+    //         $font->valign('top');
+    //     });
+    
+   
+    //     // Save the modified image
+    //     //$img->save(public_path('path_to_save_the_certificate.jpg'));
+    
+    //     // Optionally, return the image directly
+    //     return $img->response('jpg');
+    // }
+
+
+
+public function CertificatesTemplatePreview(Request $request)
+{
+    // Load the background image
+    $imgPath = public_path($request->get('image'));
+    $img = Image::make($imgPath);
+    $textColor = $request->get('text_color', '#000000');
+
+    $studentName = $request->get('studentName');
+    $position_x_student = (int)$request->get('position_x_student', 835); // Default to 800 if not provided
+    $position_y_student = (int)$request->get('position_y_student', 1250);
+    $font_size_student = (int)$request->get('font_size_student', 40);
+
+    $courseName = $request->get('courseName');
+    $position_x_course = (int)$request->get('position_x_course', 835); // Default to 800 if not provided
+    $position_y_course = (int)$request->get('position_y_course', 1450);
+    $font_size_course = (int)$request->get('font_size_course', 40);
+
+    $text1 = $request->get('text_1');
+    $position_x_text_1 = (int)$request->get('position_x_text_1', 835); // Default to 800 if not provided
+    $position_y_text_1 = (int)$request->get('position_y_text_1', 1400);
+    $font_size_text_1 = (int)$request->get('font_size_text_1', 40);
+
+    $issueDate = $request->get('date');
+    $position_x_date = (int)$request->get('position_x_date', 835); // Default to 800 if not provided
+    $position_y_date = (int)$request->get('position_y_date', 1510);
+    $font_size_date = (int)$request->get('font_size_date', 40);
+
+    // Define font path
+    $fontPath = public_path('assets/default/fonts/Trajan-Regular.ttf'); // Make sure this font file exists
+
+    // Helper function to get ordinal suffix
+    function getOrdinal($number) {
+        $suffix = [' th', ' st', ' nd', ' rd'];
+        $lastDigit = $number % 10;
+        $lastTwoDigits = $number % 100;
+
+        if ($lastTwoDigits >= 11 && $lastTwoDigits <= 13) {
+            return $number . $suffix[0];
         }
 
-        $imgPath = public_path($data['image']);
-        $img = Image::make($imgPath);
-
-        $img->text($body, $data['position_x'], $data['position_y'], function ($font) use ($data, $isRtl) {
-            $font->file($isRtl ? public_path('assets/default/fonts/vazir/Vazir-Medium.ttf') : public_path('assets/default/fonts/Montserrat-Medium.ttf'));
-            $font->size($data['font_size']);
-            $font->color($data['text_color']);
-            $font->align($isRtl ? 'right' : 'left');
-        });
-        return $img->response('png');
+        return $number . ($suffix[$lastDigit] ?? $suffix[0]);
     }
+
+    // Format the issue date
+    $date = new \DateTime($issueDate);
+    $day = $date->format('j');
+    $month = $date->format('F');
+    $year = $date->format('Y');
+    $formattedDate = "ON THE " . getOrdinal($day) . " of " . $month . " " . $year;
+
+    // Add Student Name
+    $img->text($studentName, $position_x_student, $position_y_student, function($font) use ($fontPath, $textColor, $font_size_student) {
+        $font->file($fontPath);
+        $font->size($font_size_student); // Adjust as needed
+        $font->color($textColor);
+        $font->align('center');
+        $font->valign('top');
+    });
+
+    // Add Text
+    $img->text($text1, $position_x_text_1, $position_y_text_1, function($font) use ($fontPath, $textColor, $font_size_text_1) {
+        $font->file($fontPath);
+        $font->size($font_size_text_1); // Adjust as needed
+        $font->color($textColor);
+        $font->align('center');
+        $font->valign('top');
+    });
+
+    // Add Course/Diploma Name
+    $img->text($courseName, $position_x_course, $position_y_course, function($font) use ($fontPath, $textColor, $font_size_course) {
+        $font->file($fontPath);
+        $font->size($font_size_course); // Adjust as needed
+        $font->color($textColor);
+        $font->align('center');
+        $font->valign('top');
+    });
+
+    // Add Date of Issue
+    $img->text($formattedDate, $position_x_date, $position_y_date, function($font) use ($fontPath, $textColor, $font_size_date) {
+        $font->file($fontPath);
+        $font->size($font_size_date); // Adjust as needed
+        $font->color($textColor);
+        $font->align('center');
+        $font->valign('top');
+    });
+
+    // Save the modified image
+    //$img->save(public_path('path_to_save_the_certificate.jpg'));
+
+    // Optionally, return the image directly
+    return $img->response('jpg');
+}
+
+
+
+
+
 
     public function CertificatesTemplatesEdit(Request $request, $template_id)
     {
