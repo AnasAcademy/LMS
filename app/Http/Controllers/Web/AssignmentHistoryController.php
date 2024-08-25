@@ -225,6 +225,8 @@ class AssignmentHistoryController extends Controller
                         );
 
                         return response()->download($filePath, $fileName, $headers);
+                    }else{
+                        abort(404);
                     }
                 }
             }
