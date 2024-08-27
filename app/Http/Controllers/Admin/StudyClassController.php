@@ -139,6 +139,65 @@ class StudyClassController extends Controller
         return view('admin.study_classes.student', compact('enrollments', "class", 'pageTitle'));
     }
 
+    public function RegisteredUsers(Request $request, StudyClass $class, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+
+        $query = User::where(['role_name' => Role::$registered_user])->whereDoesntHave('student')->whereBetween('created_at', [strtotime($class->start_date), strtotime($class->end_date)]);
+
+        $totalStudents = deepClone($query)->count();
+        $inactiveStudents = deepClone($query)->where('status', 'inactive')
+        ->count();
+        $banStudents = deepClone($query)->where('ban', true)
+            ->whereNotNull('ban_end_at')
+            ->where('ban_end_at', '>', time())
+            ->count();
+
+        $totalOrganizationsStudents = User::where('role_name', Role::$user)
+            ->whereNotNull('organ_id')
+            ->count();
+        $userGroups = Group::where('status', 'active')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $organizations = User::select('id', 'full_name', 'created_at')
+        ->where('role_name', Role::$organization)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $query = (new UserController())->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+            ->paginate(20);
+        }
+
+        $users = (new UserController())->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+            'inactiveStudents' => $inactiveStudents,
+            'banStudents' => $banStudents,
+            'totalOrganizationsStudents' => $totalOrganizationsStudents,
+            'userGroups' => $userGroups,
+            'organizations' => $organizations,
+            'class' => $class
+        ];
+
+        return view('admin.students.index', $data);
+    }
     public function Users(Request $request, StudyClass $class, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');

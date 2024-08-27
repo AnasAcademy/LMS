@@ -21,6 +21,11 @@ class StudyClass extends Model
         )->get();
     }
 
+    public function registerEnrollements(){
+
+        return User::where(['role_name' => Role::$registered_user])->whereDoesntHave('student')->whereBetween('created_at', [strtotime($this->start_date), strtotime($this->end_date)])->get();
+    }
+    
     public function formFeeEnrollements(){
 
         return  User::whereHas('student')->whereHas('purchasedFormBundleUnique', function ($query){

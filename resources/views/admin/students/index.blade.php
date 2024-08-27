@@ -265,7 +265,7 @@
                     <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
                     </a>
                 @else
-                    <a href="{{ getAdminPanelUrl() }}/students/excel?{{ http_build_query(request()->all()) }}"
+                    <a href="{{ getAdminPanelUrl() }}/students/excel?{{ (!empty($class->id) ? ('class_id='.$class->id ."&&") : ''). http_build_query(request()->all()) }}"
                         class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
                 @endif
             @endcan

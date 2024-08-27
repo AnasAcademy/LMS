@@ -1594,6 +1594,14 @@ class UserController extends Controller
         $this->authorize('admin_users_export_excel');
 
         $users = $this->RegisteredUsers($request, true);
+
+         if (!empty($request->class_id)) {
+            $studyClass = StudyClass::find($request->class_id);
+            if (!empty($studyClass)) {
+                $users = (new StudyClassController())->RegisteredUsers($request, $studyClass, true);
+            }
+        }
+
         $usersExport = new StudentsExport($users);
 
         return Excel::download($usersExport, 'نموذج انشاء حساب.xlsx');

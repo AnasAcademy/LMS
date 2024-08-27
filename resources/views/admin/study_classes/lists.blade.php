@@ -31,6 +31,7 @@
                                     <tr>
                                         <th>{{ trans('admin/main.id') }}</th>
                                         <th class="text-left">{{ trans('admin/main.title') }}</th>
+                                        <th>عدد طلبةإنشاء حساب</th>
                                         <th>عدد طلبة حجز مقعد</th>
                                         <th>عدد طلبة تسجيل برامج</th>
                                         <th>عدد طلبة تسجيل مباشر</th>
@@ -49,6 +50,7 @@
                                                     {{ $class->title }}
                                                 </p>
 
+                                            <td>{{ ($class->registerEnrollements()->count()) }}</td>
                                             <td>{{ ($class->formFeeEnrollements()->count()) }}</td>
                                             <td>{{ ($class->bundleEnrollements()->count()) }}</td>
                                             <td>{{ ($class->directRegisterEnrollements()->count()) }}</td>
@@ -107,6 +109,14 @@
                                                             title="{{ trans('admin/main.students') }}">
                                                             <i class="fa fa-users"></i>
                                                             <span class="ml-2">{{ trans('admin/main.students') }}</span>
+                                                        </a>
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/registered_users"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">نموذج إنشاء حساب </span>
                                                         </a>
 
                                                         <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/users"
