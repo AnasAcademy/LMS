@@ -58,25 +58,35 @@
                     @include('web.default.panel.setting.setting_includes.experiences')
                 @break
 
+
                 @case(8)
+                    @include('web.default.panel.setting.setting_includes.links')
+                @break
+{{-- 
+                @case(9)
+                    @include('web.default.panel.setting.setting_includes.experiences')
+                @break --}}
+
+                @case(10)
                     @include('web.default.panel.setting.setting_includes.occupations')
                 @break
 
-                @case(9)
+                @case(11)
                     @include('web.default.panel.setting.setting_includes.identity_and_financial')
                 @break
-
-                {{-- @case(10)
+                {{-- @case(12)
                     @if (!$user->isUser())
                         @include('web.default.panel.setting.setting_includes.zoom_api')
                     @endif
                 @break --}}
 
-                {{-- @case(11)
+                {{-- @case(13)
                     @if ($user->student)
                         @include('web.default.panel.setting.setting_includes.about')
                     @endif
                 @break --}}
+
+
             @endswitch
         @endif
     </form>
