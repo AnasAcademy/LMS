@@ -6,13 +6,30 @@
 
     <div id="userListExperiences">
 
+        @php
+            $pattern = '/title:\s*(.*?),\s*year:\s*(\d+)/';
+        @endphp
         @if(!empty($experiences) and !$experiences->isEmpty())
             @foreach($experiences as $experience)
 
                 <div class="row mt-20">
                     <div class="col-12">
                         <div class="experience-card py-15 py-lg-30 px-10 px-lg-25 rounded-sm panel-shadow bg-white d-flex align-items-center justify-content-between">
-                            <div class="col-8 text-secondary font-weight-500 text-left experience-value">{{ $experience->value }}</div>
+                            <div class="col-10 text-secondary font-weight-500 text-left experience-value" experience-value="{{ $experience->value }}" >
+                                @if (preg_match($pattern, $experience->value, $matches))
+                                <div class="row">
+                                    <p class="col-12 col-sm-6">
+                                        مجال الخبرة: {{ $matches[1] }}
+                                    </p>
+                                    <p class="col-12 col-sm-6">
+                                        عدد سنوات الخبرة: {{ $matches[2] }} سنوات
+                                    </p>
+                                </div>
+
+                                @else
+                                {{ $experience->value }}
+                                @endif
+                            </div>
                             <div class="col-2 text-right">
                                 <div class="btn-group dropdown table-actions">
                                     <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -47,8 +64,13 @@
         <h4 class="font-16 mt-20 text-dark-blue font-weight-bold">{{ trans('site.new_experience_hint') }}</h4>
         <span class="d-block mt-10 text-gray font-14">{{ trans('site.new_experience_exam') }}</span>
         <div class="form-group mt-15 px-50">
-            <input type="text" id="new_experience_val" class="form-control">
-            <div class="invalid-feedback">{{ trans('validation.required',['attribute' => 'value']) }}</div>
+            <input type="text" id="new_experience_val" required class="form-control" placeholder="اذكر مجال الخبرة">
+            <div class="invalid-feedback">{{ trans('validation.required',['attribute' => 'مجال الخبرة']) }}</div>
+        </div>
+
+        <div class="form-group mt-15 px-50">
+            <input type="number" id="new_experience_val2" required class="form-control" placeholder="أذكر عدد سنوات الخبرة ">
+            <div class="invalid-feedback">{{ trans('validation.required',['attribute' => 'عدد سنوت الخبرة']) }}</div>
         </div>
     </div>
 
