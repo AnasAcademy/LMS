@@ -37,18 +37,26 @@
         'lang' => 'public.experiences',
         'icon' => 'experiences',
     ];
+    $progressSteps[8] = [
+        'lang' => 'روابط الأعمال',
+        'icon' => 'links',
+    ];
+    $progressSteps[9] = [
+        'lang' => 'المعرفون',
+        'icon' => 'experiences',
+    ];
 
-    // $progressSteps[8] = [
+    // $progressSteps[10] = [
     //     'lang' => 'public.occupations',
     //     'icon' => 'skills',
     // ];
 
-    // $progressSteps[9] = [
+    // $progressSteps[11] = [
     //     'lang' => 'public.identity_and_financial',
     //     'icon' => 'financial',
     // ];
 
-    // $progressSteps[10] = [
+    // $progressSteps[12] = [
     //     'lang' => 'public.zoom_api',
     //     'icon' => 'zoom'
     // ];
