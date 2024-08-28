@@ -24,7 +24,6 @@
         <i data-feather="menu" width="16" height="16"></i>
     </button>
 </div>
-
 <div class="panel-sidebar pt-50 pb-25 px-25" id="panelSidebar" style="overflow: auto">
     <button class="btn-transparent panel-sidebar-close sidebarNavToggle">
         <i data-feather="x" width="24" height="24"></i>
@@ -518,23 +517,24 @@
                             <li class="mt-5 {{ request()->is('panel/financial/sales') ? 'active' : '' }}">
                                 <a href="/panel/financial/sales">{{ trans('financial.sales_report') }}</a>
                             </li>
-                        @endif
 
-                        <li class="mt-5 {{ request()->is('panel/financial/summary') ? 'active' : '' }}">
-                            <a href="/panel/financial/summary">{{ trans('financial.financial_summary') }}</a>
-                        </li>
+                            @endif
 
-                        <li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
+                            {{-- <li class="mt-5 {{ request()->is('panel/financial/summary') ? 'active' : '' }}">
+                                <a href="/panel/financial/summary">{{ trans('financial.financial_summary') }}</a>
+                            </li> --}}
+
+                        {{-- <li class="mt-5 {{ request()->is('panel/financial/payout') ? 'active' : '' }}">
                             <a href="/panel/financial/payout">استرداد</a>
-                        </li>
+                        </li> --}}
 
-                        <li class="mt-5 {{ request()->is('panel/financial/account') ? 'active' : '' }}">
+                        {{-- <li class="mt-5 {{ request()->is('panel/financial/account') ? 'active' : '' }}">
                             <a href="/panel/financial/account">{{ trans('financial.charge_account') }}</a>
-                        </li>
+                        </li> --}}
 
-                        <li class="mt-5 {{ request()->is('panel/financial/subscribes') ? 'active' : '' }}">
+                        {{-- <li class="mt-5 {{ request()->is('panel/financial/subscribes') ? 'active' : '' }}">
                             <a href="/panel/financial/subscribes">{{ trans('financial.subscribes') }}</a>
-                        </li>
+                        </li> --}}
 
                         @if ($authUser->isOrganization() || $authUser->isTeacher() and getRegistrationPackagesGeneralSettings('status'))
                             <li
