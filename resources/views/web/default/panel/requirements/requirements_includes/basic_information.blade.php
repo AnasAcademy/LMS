@@ -86,34 +86,48 @@
                 @enderror
                 <p class="text-primary">.PDF JPEG JPG PNG امتداد الملف المسموح به</p>
             </div>
+            {{--
+                <div class="form-group p-5 ">
 
+                    <label for="admission_attachment">ارفق متطلبات القبول *</label>
+                    <input type="file" name="admission_attachment" id="admission_attachment"
+                        class="form-control @error('admission_attachment')  is-invalid @enderror" placeholder="" required
+                        value="{{ old('admission_attachment') }}" accept="application/pdf" />
+                    @error('admission_attachment')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                     <p class="text-primary">برجاء ارفاق المتطلبات من 2 الى نهاية المتطلبات في ملف واحد بصيغة PDF ولا يتعدي
+                        حجم الملف 20
+                        ميجا</p>
+                    <p class="text-primary"> برجاء تنزيل نموزج طلب الالتحاق وملئ البيانات وحفظه كصيغه PDF ثم رفعه
+                        <a href="{{ asset('files/_نموذج طلب التحاق.docx') }}" class="text-secondary font-weight-bold"
+                            download>انقر هنا لتحميل نموزج طلب الالتحاق
+                        </a>
+                    </p>
+
+                </div>
+            --}}
             <div class="form-group p-5 ">
-
-                <label for="admission_attachment">ارفق متطلبات القبول *</label>
-                <input type="file" name="admission_attachment" id="admission_attachment"
-                    class="form-control @error('admission_attachment')  is-invalid @enderror" placeholder="" required
-                    value="{{ old('admission_attachment') }}" accept="application/pdf" />
-                @error('admission_attachment')
+                <label for="study_purpose">الغرض من الدراسة*</label>
+                <p class="text-gray font-italic">
+                    أكتب فقرة لا تقل عن 250 كلمة تشرح فيها أسباب رغبتك في الالتحاق بالبرنامج المقدم إليه (Statement of Purpose)
+                </p>
+                <textarea name="study_purpose" id=""  rows="15" minlength="250" class="form-control mt-5" required></textarea>
+                @error('study_purpose')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
                 @enderror
-                {{-- <P class="text-primary">برجاء ارفاق المتطلبات من 2 الى نهاية المتطلبات في ملف واحد بصيغة PDF ولا يتعدي
-                    حجم الملف 20
-                    ميجا</P> --}}
-                    <p class="text-primary" > برجاء تنزيل نموزج طلب الالتحاق وملئ البيانات وحفظه كصيغه PDF ثم رفعه  
-                        <a href="{{ asset('files/_نموذج طلب التحاق.docx') }}" class="text-secondary font-weight-bold" download>انقر هنا لتحميل نموزج طلب الالتحاق
-                        </a></p>
-                   
             </div>
+    </div>
 
-        </div>
 
-
-        {{-- addmission requirements --}}
-        <div class="col-12 col-lg-5 ml-20">
-            @include('web.default.panel.requirements.requirements_includes.program_requirements')
-        </div>
+    {{-- addmission requirements --}}
+    <div class="col-12 col-lg-5 ml-20">
+        @include('web.default.panel.requirements.requirements_includes.program_requirements')
+    </div>
     </div>
 
 
