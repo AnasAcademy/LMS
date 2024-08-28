@@ -15,6 +15,12 @@ use App\Student;
 use App\Models\Category;
 use Illuminate\Support\Facades\Cookie;
 use App\Http\Controllers\web\PaymentController;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\CourseResource;
+use App\Models\Bundle;
+use App\Models\Code;
+use App\Models\Webinar;
+use Illuminate\Support\Facades\Date;
 
 class ApplyController extends Controller
 {
@@ -26,9 +32,26 @@ class ApplyController extends Controller
     public function index()
     {
         $user = auth("api")->user();
-        $student = Student::where('user_id', $user->id)->first();
-        $category = Category::where('parent_id', '!=', null)->get();
-        return apiResponse2(1, 'apply_page', "successfully retrive data needed to apply to diploma", ['user' => $user, "student" => $student, "category" => $category]);
+        $student = $user->student;
+
+        $categories = Category::whereNull('parent_id')->where('status', 'active')
+        ->where(function ($query) {
+            $query->whereHas('activeBundles')
+            ->orWhereHas('activeSubCategories', function ($query) {
+                $query->whereHas('activeBundles')->with('activeBundles');
+            });
+        })->with(['activeBundles', 'activeSubCategories'])
+        ->get();
+
+        $courses = Webinar::where('unattached', 1)->get();
+        $data = [
+            'categories' => CategoryResource::collection($categories),
+            'courses'  => CourseResource::collection($courses),
+            'types' => ['programs', 'courses'],
+
+        ];
+
+        return apiResponse2(1, 'apply_page', "successfully retrive data needed to apply to diploma", $data);
     }
 
 
@@ -38,17 +61,232 @@ class ApplyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function checkout(Request $request, $carts = null)
     {
-        // dd($request->all());
+        app()->setLocale('ar');
 
-        $student = Student::where('user_id', auth("api")->user()->id)->first();
+        $user = auth("api")->user();
+        $student = $user->student;
+
+        $bundle = Bundle::where('id', $request->bundle_id)->first();
+        $webinar = Webinar::where('id', $request->webinar_id)->first();
+        $type = $request->input('type');
+
+        // return [$type, $bundle, $webinar];
+        try {
+            if ($student) {
+                $rules = [
+                    'type' => 'required|in:courses,programs',
+
+                    'bundle_id' => array_merge(
+                        $type && $type == 'programs' ? ['required', 'exists:bundles,id'] : [''],
+                        [function ($attribute, $value, $fail) use ($request, $student, $type) {
+
+                            if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                                $fail('User has already applied for this bundle.');
+                            }
+                        },
+                    ]),
+
+                    'webinar_id' => array_merge(
+                        $type && $type == 'courses' ? ['required', 'exists:webinars,id'] : [],
+                        [
+                        function ($attribute, $value, $fail)  use ($request, $user, $type) {
+
+                            $purchasedWebinarsIds = $user->getAllPurchasedWebinarsIds();
+
+                            if ($user && in_array($value, $purchasedWebinarsIds)) {
+                                $fail('User has already applied for this webinar.');
+                            }
+                        },
+                    ]),
+                    'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
+                    'direct_register' => $bundle ? "required|boolean"  : '',
+                ];
+            } else {
+                $rules = [
+                    'bundle_id' => array_merge(
+                        $type && $type == 'programs' ? ['required', 'exists:bundles,id'] : [''],
+                        [
+                            function ($attribute, $value, $fail) use ($request, $student, $type) {
+
+                                if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
+                                    $fail('User has already applied for this bundle.');
+                                }
+                            },
+                        ]
+                    ),
+
+                    'webinar_id' => array_merge(
+                        $type && $type == 'courses' ? ['required', 'exists:webinars,id'] : [],
+                        [
+                            function ($attribute, $value, $fail)  use ($request, $user, $type) {
+
+                                $purchasedWebinarsIds = $user->getAllPurchasedWebinarsIds();
+
+                                if ($user && in_array($value, $purchasedWebinarsIds)) {
+                                    $fail('User has already applied for this webinar.');
+                                }
+                            },
+                        ]
+                    ),
+                    'certificate' => $bundle ? ($bundle->has_certificate ? 'required|boolean' : "") : '',
+                    'direct_register' => $bundle ? "required|boolean"  : ''
+                    ,
+                    'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
+                    'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
+                    'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
+                    'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'town' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
+                    'birthdate' => 'required|date',
+                    'gender' => 'required|in:male,female',
+                    'about_us' => 'required|string|min:3|max:255'
+                ];
+
+                if (!empty($request->direct_register) and !empty($request->bundle_id)) {
+
+                    $studentData = [
+                        'ar_name' => $request->ar_name,
+                        'en_name' => $request->en_name,
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'phone' => $user->mobile,
+                        'mobile' => $user->mobile,
+                        'gender' => $request->gender,
+                        'birthdate' => $request->birthdate,
+                        'identifier_num' => $request->identifier_num,
+                        'country' => $request->country,
+                        'area' => $request->area,
+                        'city' => $request->city,
+                        'town' => $request->town,
+                        'about_us' => $request->about_us,
+
+                    ];
+
+                    $student = Student::create($studentData);
+                    $code = generateStudentCode();
+                    $user->update([
+                        'user_code' => $code,
+                        'access_content' => 1
+                    ]);
+
+                    // update code
+                    Code::latest()->first()->update(['lst_sd_code' => $code]);
+                }
+            }
+
+        } catch (\Exception $e) {
+            return apiResponse2(0, '500', 'internal server error', null, $e->getMessage());
+        }
+
+        validateParam($request->all(), $rules);
+
+        $data = [
+            "type" => $type,
+            "bundle" => $bundle->title ?? null,
+            "course" => $webinar->title ?? null
+        ];
+        if($type=="programs"){
+            $data["apply_type"] = $request->direct_register ? "direct_register" : "book_seat";
+
+        }
+
+        if (!empty($request->direct_register) and !empty($request->bundle_id)) {
+            $student->bundles()->attach($request->bundle_id, [
+                'certificate' => (!empty($request['certificate'])) ? $request['certificate'] : null,
+                'created_at' => Date::now(),  // Set current timestamp for created_at
+                'updated_at' => Date::now()
+            ]);
+
+
+            if (count($bundle->category->categoryRequirements) > 0) {
+                $data["has_requirements"] = true;
+                $data['redirect_route'] = "/panel/requirements";
+
+            }
+             else {
+                $data["has_requirements"] = false;
+                $data['redirect_route'] = "/panel/requirements/applied";
+            }
+
+            return apiResponse2('1', 'applied', "تم التسجيل بنجاح", $data);
+        }
+
+        // $paymentChannels = PaymentChannel::where('status', 'active')->get();
+        $order = Order::create([
+            'user_id' => $user->id,
+            'status' => Order::$pending,
+            'amount' =>  $request->type == 'programs' ? 230 : $webinar->price ?? 0,
+            'tax' => 0,
+            'total_discount' => 0,
+            'total_amount' =>  $request->type == 'programs' ? 230 : $webinar->price ?? 0,
+            'product_delivery_fee' => null,
+            'created_at' => time(),
+        ]);
+        $orderItem = OrderItem::create([
+            'user_id' => $user->id,
+            'order_id' => $order->id,
+            'webinar_id' => $request->webinar_id ?? null,
+            'bundle_id' => $request->bundle_id ?? null,
+            'certificate_template_id' => null,
+            'certificate_bundle_id' => null,
+            'form_fee' => $request->type == 'programs' ? 1 : null,
+            'product_id' => null,
+            'product_order_id' => null,
+            'reserve_meeting_id' => null,
+            'subscribe_id' => null,
+            'promotion_id' => null,
+            'gift_id' => null,
+            'installment_payment_id' => null,
+            'ticket_id' => null,
+            'discount_id' => null,
+            // 'amount' =>  230,
+            // 'total_amount' => 230,
+            'amount' => $request->type == 'programs' ? 230 : $webinar->price ?? 0,
+            'total_amount' => $request->type == 'programs' ? 230 : $webinar->price ?? 0,
+            'tax' => null,
+            'tax_price' => 0,
+            'commission' => 0,
+            'commission_price' => 0,
+            'product_delivery_fee' => 0,
+            'discount' => 0,
+            'created_at' => time(),
+        ]);
+
+        $paymentChannels = PaymentChannel::where('status', 'active')->get();
+
+        if (!empty($order) and $order->total_amount > 0) {
+            Cookie::queue('user_data', json_encode($request->all()));
+             $data['redirect_route'] = "/payment/$order->id";
+             $order->order_item = $order->orderItems()->with('bundle', 'webinar')->first();
+            $data['order'] = $order;
+            $data['paymentChannels'] = $paymentChannels;
+
+
+            return apiResponse2(1, 'applied', "application for programs is successfully, pay to continue", $data);
+            // return apiResponse2('1', 'stored', "تم التسجيل بنجاح", $data);
+        }
+        else{
+            return $this->handlePaymentOrderWithZeroTotalAmount($order);
+        }
+
+        // return apiResponse2(1, 'applied', "application for diploma is successfully");
+
+    }
+
+    public function checkout2(Request $request, $carts = null)
+    {
+        // dd($request->all());
+        $user = auth("api")->user();
+        $student = $user->student;
 
         // $categoryTitle = $category->title;
 
         if ($student) {
             $rules = [
-                'user_id' => 'required',
                 'category_id' => 'required|exists:id,categories',
                 'bundle_id' =>  [
                     'required',
@@ -219,7 +457,7 @@ class ApplyController extends Controller
         $order->update([
             'status' => Order::$paid
         ]);
-        return apiResponse2(1, 'paid', "diploma is bought successfully");
+        return apiResponse2(1, 'paid', "program is bought successfully");
         // return redirect('/payments/status?order_id=' . $order->id);
     }
 
