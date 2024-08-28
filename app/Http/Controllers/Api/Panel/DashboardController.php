@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\Panel;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\Controller;
+use App\Http\Resources\SaleResource;
+use App\Http\Resources\UserResource;
 use App\Mixins\RegistrationPackage\UserPackage;
 use App\Models\Comment;
 use App\Models\Gift;
@@ -11,6 +13,7 @@ use App\Models\ReserveMeeting;
 use App\Models\Sale;
 use App\Models\Support;
 use App\Models\Webinar;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -18,15 +21,18 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
-        $user = auth("api")->user();
+        $user = auth('api')->user();
 
+        if($user->role_name == Role::$registered_user){
+            return $this->forbidden();
+        }
 
         $nextBadge = $user->getBadges(true, true);
 
         $data = [
             'pageTitle' => trans('panel.dashboard'),
             'nextBadge' => $nextBadge,
-            'user' => $user
+            'authUser' => UserResource::make($user)
         ];
 
         if (!$user->isUser()) {
@@ -83,19 +89,31 @@ class DashboardController extends Controller
                 ->get();
 
 
-            $bundleSales = Sale::where(['buyer_id' => $user->id, "type" => "bundle"])->whereNotNull(["bundle_id", "order_id"])->get();
+            $bundleSales = Sale::where('buyer_id', $user->id)
+                ->where(function ($query) {
+                    $query->whereIn('type', ['bundle', 'installment_payment'])
+                    ->whereNotNull(['bundle_id', 'order_id']);
+                })->get()->unique('bundle_id');
 
-            $data['webinarsCount'] = count($webinars);
-            $data['supportsCount'] = count($supports);
-            $data['commentsCount'] = count($comments);
-            $data['reserveMeetingsCount'] = count($reserveMeetings);
+            $webinarSales = Sale::where('buyer_id', $user->id)
+                ->Where(function ($query) use ($user) {
+                    $query->where('buyer_id', $user->id)
+                        ->where('type', 'webinar')
+                        ->whereNull('bundle_id')
+                        ->whereNotNull('order_id');
+                })
+                ->get()
+                ->unique('webinar_id');
+
+            // Merge both collections
+            // $bundleSales = $bundleSales->merge($webinarSales);
+          
             $data['monthlyChart'] = $this->getMonthlySalesOrPurchase($user);
             $data['webinars'] = $webinars;
-            $data['bundleSales'] = $bundleSales;
+            $data['bundleSales'] = SaleResource::collection($bundleSales);
+            $data['webinarSales'] = SaleResource::collection($webinarSales);
         }
-        foreach ($webinars as $webinar) {
-            // dd($webinar->bundle->title);
-        }
+        
         $data['giftModal'] = $this->showGiftModal($user);
 
         return apiResponse2(1, 'retrived_all', "dashboard", $data);
