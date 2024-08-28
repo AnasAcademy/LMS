@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Panel;
 use App\Bitwise\UserLevelOfTraining;
 use App\Http\Controllers\Api\Controller;
 use App\Http\Controllers\Api\Objects\UserObj;
+use App\Http\Resources\InstallmentResource;
 use App\Models\Category;
 use App\Models\Newsletter;
 
@@ -42,6 +43,7 @@ use App\Models\OfflineBank;
 use App\Models\OfflinePayment;
 use App\Models\PaymentChannel;
 use App\Http\Controllers\Web\traits\InstallmentsTrait;
+use App\Http\Resources\ActiveBundleResource;
 use App\Models\Bundle;
 
 
@@ -350,28 +352,43 @@ class UsersController extends Controller
 
         foreach ($studentBundles as $studentBundle) {
             $hasBought = $studentBundle->bundle->checkUserHasBought($user);
+            $boughtInstallment = $studentBundle->bundle->getInstallmentOrder();
             $canSale = ($studentBundle->bundle->canSale() && !$hasBought);
+            $studentBundle->bundle->title = $studentBundle->bundle->title;
+            $studentBundle->requirement = [
+                "status" => !empty($studentBundle->studentRequirement) ? $studentBundle->studentRequirement->status : null,
+                "upload_link" => "/panel/bundles/$studentBundle->id/requirements"
+            ];
 
+           
             // Check if the bundle meets the conditions
             if ($canSale && !empty($studentBundle->bundle->price) && $studentBundle->bundle->price > 0 && getInstallmentsSettings('status') && (empty($user) || $user->enable_installments)) {
                 $installmentPlans = new InstallmentPlans($user);
-                $installments = $installmentPlans->getPlans('bundles', $studentBundle->bundle->id, $studentBundle->bundle->type, $studentBundle->bundle->category_id, $studentBundle->bundle->teacher_id);
-
-                $bundleInstallments[$studentBundle->id] = [
-                    'bundle' => $studentBundle,
-                    'installments' => $installments,
+                $installment = $installmentPlans->getPlans('bundles', $studentBundle->bundle->id, $studentBundle->bundle->type, $studentBundle->bundle->category_id, $studentBundle->bundle->teacher_id)->last() ?? null;
+        
+                $bundleInstallments[] = [
+                    'studentBundle' => $studentBundle,
+                    'installment' => InstallmentResource::make($installment),
+                    'hasBought' => $hasBought,
+                    'boughtInstallment' => $boughtInstallment,
+                    "cache_payment_url" => "/panel/bundles/purchase",
+                    "installment_payment_url" => "/panel/bundles/purchase/$installment->id"
                 ];
             } else {
 
-                $bundleInstallments[$studentBundle->id] = [
-                    'bundle' => $studentBundle,
-                    'installments' => null,
+                $bundleInstallments[] = [
+                    'studentBundle' => $studentBundle,
+                    'installment' => null,
+                    'hasBought' => $hasBought,
+                    'boughtInstallment' => $boughtInstallment,
+                    "cache_payment_url" => "/panel/bundles/purchase",
+                    "installment_payment_url" => null
                 ];
             }
         }
-        return apiResponse2(1, 'requirements_details', "all data retireved successfully", ['studentBundles' => $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+        return apiResponse2(1, 'requirements_details', "all data retireved successfully", $bundleInstallments ?? null);
 
-        // return view(getTemplate() . '.panel.requirements.index', ['studentBundles' => $studentBundles, 'bundleInstallments' => $bundleInstallments ?? null]);
+    
     }
 
      // create requirement function
@@ -383,18 +400,21 @@ class UsersController extends Controller
 
          $studentBundle = BundleStudent::find($studentBundleId);
 
-         if (!$student || !$studentBundle ) {
+         if (!$student) {
             return apiResponse2(0, 'not_student', "you need to apply to diploma first");
+         }
+
+         if (!$studentBundle ) {
+            return apiResponse2(0, "doesn't match", "this is not your bundle url");
          }
 
          $data = [
              "user_code" => $user->user_code,
-             "program" => $studentBundle->bundle->category,
-             'currentStep' => 1,
              'requirementUploaded' => false,
              'requirementStatus' => StudentRequirement::pending,
-             'bundle' => $studentBundle->bundle,
-             'studentBundleId' =>$studentBundleId
+             'bundle' => ActiveBundleResource::make($studentBundle->bundle),
+             'studentBundleId' =>$studentBundleId,
+             "requirmentsFile" => "https://anasacademy.uk/wp-content/uploads/2023/12/نموذج-عقد-اتفاقية-التحاق-متدربـ-النسخة-الاخيرة.pdf"
          ];
 
         $studentRequirments = $studentBundle->studentRequirement;
@@ -427,8 +447,12 @@ class UsersController extends Controller
 
         $studentBundle = BundleStudent::find($studentBundleId);
 
-        if (!$student || !$studentBundle) {
-            return apiResponse2(0, 'not_applied', "you didn't apply to this diploma");
+        if (!$student) {
+            return apiResponse2(0, 'not_student', "you need to apply to diploma first");
+        }
+
+        if (!$studentBundle) {
+            return apiResponse2(0, "doesn't match", "this is not your bundle url");
         }
 
 
@@ -462,8 +486,6 @@ class UsersController extends Controller
             StudentRequirement::create($data);
         }
         return apiResponse2(1, 'success', "requirements uploaded successfully, wait to be reviewed");
-
-        //  return redirect('/panel/requirements')->with('success', 'تم رفع متطلبات القبول بنجاح يرجي الانتظار حتي يتم مراجعتها');
     }
 
 
