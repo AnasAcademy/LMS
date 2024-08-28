@@ -119,6 +119,7 @@ class UserController extends Controller
             'categories' => $categories,
             'educations' => $userMetas->where('name', 'education'),
             'experiences' => $userMetas->where('name', 'experience'),
+            'links' => $userMetas->where('name', 'link'),
             'occupations' => $occupations,
             'userLanguages' => $userLanguages,
             'currentStep' => $step,
@@ -260,7 +261,7 @@ class UserController extends Controller
                 $user->student->update($data);
             } elseif ($step == 6) {
                 $user->student->update($request->except(['step', '_token', 'next_step']));
-            } elseif ($step == 8) {
+            } elseif ($step == 10) {
                 UserOccupation::where('user_id', $user->id)->delete();
                 if (!empty($data['occupations'])) {
 
@@ -271,7 +272,7 @@ class UserController extends Controller
                         ]);
                     }
                 }
-            } elseif ($step == 9) {
+            } elseif ($step == 11) {
                 $updateData = [
                     'identity_scan' => $data['identity_scan'] ?? '',
                     'certificate' => $data['certificate'] ?? '',
@@ -302,7 +303,7 @@ class UserController extends Controller
                         UserSelectedBankSpecification::query()->insert($specificationInsert);
                     }
                 }
-            } elseif ($step == 10) {
+            } elseif ($step == 12) {
                 if (!$user->isUser()) {
                     if (!empty($data['zoom_api_key']) and !empty($data['zoom_api_secret'])) {
                         UserZoomApi::updateOrCreate(
@@ -319,7 +320,7 @@ class UserController extends Controller
                         UserZoomApi::where('user_id', $user->id)->delete();
                     }
                 }
-            } elseif ($step == 10) {
+            } elseif ($step == 13) {
                 $updateData = [
                     'about' => $data['about'],
                     'bio' => $data['bio'],
@@ -1027,7 +1028,8 @@ class UserController extends Controller
             'specialization' => 'required|string',
             'identity_type' => 'required|string',
             'identity_attachment' => 'required|file|mimes:jpeg,jpg,png,pdf',
-            'admission_attachment' => 'required|file|mimes:pdf|max:20480',
+            // 'admission_attachment' => 'required|file|mimes:pdf|max:20480',
+            'study_purpose' => 'required|string',
         ]);
 
         $user = auth()->user();
@@ -1051,9 +1053,9 @@ class UserController extends Controller
         $identity_attachmentName =  $user->user_code . '_' . $request['identity_type'] . '.' . $identity_attachment->getClientOriginalExtension();
         $identity_attachmentPath = $identity_attachment->storeAs('studentRequirements', $identity_attachmentName);
 
-        $admission_attachment = $request->file('admission_attachment');
-        $admission_attachmentName =  $user->user_code . '_addmission.' . $admission_attachment->getClientOriginalExtension();
-        $admission_attachmentPath = $admission_attachment->storeAs('studentRequirements', $admission_attachmentName);
+        // $admission_attachment = $request->file('admission_attachment');
+        // $admission_attachmentName =  $user->user_code . '_addmission.' . $admission_attachment->getClientOriginalExtension();
+        // $admission_attachmentPath = $admission_attachment->storeAs('studentRequirements', $admission_attachmentName);
 
 
 
@@ -1061,7 +1063,8 @@ class UserController extends Controller
             'bundle_student_id' => $studentBundle->id,
             'identity_type' => $request['identity_type'],
             'identity_attachment' => $identity_attachmentPath,
-            'admission_attachment' => $admission_attachmentPath,
+            // 'admission_attachment' => $admission_attachmentPath,
+            'study_purpose' => $request['study_purpose']
         ];
 
         if ($studentRequirments) {
