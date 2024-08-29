@@ -1058,6 +1058,6 @@ class User extends Authenticatable
 
 
     function references(){
-        $this->hasMany(UserReference::class,'user_id', 'id');
+        return $this->hasMany(UserReference::class,'user_id', 'id');
     }
 }
