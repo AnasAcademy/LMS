@@ -363,7 +363,7 @@ return [
     'apply_only_for_the_first_purchase' => 'تقدم بطلب للشراء الأول فقط',
     'apply_only_for_the_first_purchase_hint' => 'بتفعيل هذا الخيار ، سيكون الرمز صالحًا لأول عملية شراء للمستخدم',
     'discount_code_has_expired' => 'انتهت صلاحية القسيمة.',
-    'discount_code_minimum_order_error' => 'الحد الأدنى لمبلغ قسيمة الخصم هو: min_order',
+    'discount_code_minimum_order_error' => 'الحد الأدنى لمبلغ قسيمة الخصم هو:min_order',
     'discount_code_group_error' => 'هذه القسيمة غير صالحة لمجموعة المستخدمين الخاصة بك.',
     'discount_code_for_first_purchase_error' => 'هذه القسيمة للشراء الأول فقط.',
     'discount_code_used_count_error' => 'وصلت القسيمة إلى أوقات الاستخدام.',
