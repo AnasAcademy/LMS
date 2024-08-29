@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
 use App\Models\OrderItem;
 use App\Models\Service;
 use App\Models\ServiceUser;
+use App\Models\UserReference;
 
 class User extends Authenticatable
 {
@@ -1053,5 +1054,10 @@ class User extends Authenticatable
                 $query->where('pay_for', 'webinar')
                     ->whereIn('status', ['waiting', 'reject']);
             });
+    }
+
+
+    function references(){
+        $this->hasMany(UserReference::class,'user_id', 'id');
     }
 }
