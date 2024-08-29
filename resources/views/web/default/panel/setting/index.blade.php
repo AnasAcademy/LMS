@@ -62,10 +62,10 @@
                 @case(8)
                     @include('web.default.panel.setting.setting_includes.links')
                 @break
-{{-- 
+
                 @case(9)
-                    @include('web.default.panel.setting.setting_includes.experiences')
-                @break --}}
+                    @include('web.default.panel.setting.setting_includes.references')
+                @break
 
                 @case(10)
                     @include('web.default.panel.setting.setting_includes.occupations')
