@@ -327,4 +327,6 @@ return [
     'zoom_jwt_token' => 'زوم JWT',
     'how_zoom_jwt_token' => 'كيفية إنشاء Zoom JWT token',
     'instructor_is_not_available' => 'المعلم غير متاح مؤقتًا.',
+    'batch_number'=>'رقم الدفعه',
+    'choose_batch'=>'اختر رقم الدفعه',
 ];

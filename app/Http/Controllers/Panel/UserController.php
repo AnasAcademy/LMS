@@ -205,9 +205,50 @@ class UserController extends Controller
                     $updateData['avatar'] = $profileImage;
                 }
             } elseif ($step == 3) {
-                $user->student->update($request->except(['step', '_token', 'next_step']));
+                $data = $request->except(['step', '_token', 'next_step']);
+                if (!empty($request['identity_img'])) {
+                    $request->validate([
+                        'identity_img' => 'file|mimes:jpeg,jpg,png'
+                    ]);
+                    $identityImg = $request->file('identity_img');
+                    if (!in_array(strtolower($identityImg->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'])) {
+                        return back()->withInput($request->all())->withErrors(['identity_img' => "يجب أن تكون صورة الهوية الوطنية/جواز السفر صورة بإمتداد : jpeg, jpg, png والصورة المرفعة بامتداد " . $identityImg->getClientOriginalExtension()]);
+                    }
+                    $identityImgName =  $user->user_code . '_identity.' . $identityImg->getClientOriginalExtension();
+                    $identityImgPath = $identityImg->storeAs('userIdentityImages', $identityImgName);
+                    $data['identity_img'] = $identityImgPath;
+                }
+                $user->student->update($data);
+
             } elseif ($step == 4) {
-                $user->student->update($request->except(['step', '_token', 'next_step']));
+                $data = $request->except(['step', '_token', 'next_step']);
+                if (!empty($request['high_certificate_img'])) {
+                    $request->validate([
+                        'high_certificate_img' => 'file|mimes:jpeg,jpg,png'
+                    ]);
+                    $highCertificateImg = $request->file('high_certificate_img');
+                    if (!in_array(strtolower($highCertificateImg->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'])) {
+                        return back()->withInput($request->all())->withErrors(['high_certificate_img' => "يجب أن تكون صورة شهادة التخرج  بإمتداد : jpeg, jpg, png والصورة المرفعة بامتداد " . $highCertificateImg->getClientOriginalExtension()]);
+                    }
+                    $highCertificateImgName =  $user->user_code . '_highCertificate.' . $highCertificateImg->getClientOriginalExtension();
+                    $highCertificateImgPath = $highCertificateImg->storeAs('userCertificateImages', $highCertificateImgName);
+                    $data['high_certificate_img'] = $highCertificateImgPath;
+                }
+
+                if (!empty($request['secondary_certificate_img'])) {
+                    $request->validate([
+                        'secondary_certificate_img' => 'file|mimes:jpeg,jpg,png'
+                    ]);
+                    $secondaryCertificateImg = $request->file('secondary_certificate_img');
+                    if (!in_array(strtolower($secondaryCertificateImg->getClientOriginalExtension()), ['jpg', 'jpeg', 'png'])) {
+                        return back()->withInput($request->all())->withErrors(['secondary_certificate_img' => "يجب أن تكون صورة شهادة الثانوية العامة بإمتداد : jpeg, jpg, png والصورة المرفعة بامتداد " . $secondaryCertificateImg->getClientOriginalExtension()]);
+                    }
+                    $secondaryCertificateImgName =  $user->user_code . '_secondaryCertificate.' . $secondaryCertificateImg->getClientOriginalExtension();
+                    $secondaryCertificateImgPath = $secondaryCertificateImg->storeAs('userCertificateImages', $secondaryCertificateImgName);
+                    $data['secondary_certificate_img'] = $secondaryCertificateImgPath;
+                }
+
+                $user->student->update($data);
             } elseif ($step == 5) {
                 $data = [
                     "job" => $request->workStatus == 1 ? $request->job : null,

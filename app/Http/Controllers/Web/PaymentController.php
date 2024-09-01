@@ -486,7 +486,8 @@ class PaymentController extends Controller
                             BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $sale->bundle_id])->update(['status' => 'approved', 'class_id' => $sale->class_id]);
                         } else {
                             $student->bundles()->attach($bundleId, [
-                                'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'class_id' => $sale->class_id,
+                                'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null,
+                                'class_id' => $sale->class_id,
                                 'created_at' => Date::now(),  // Set current timestamp for created_at
                                 'updated_at' => Date::now()
                             ]);
@@ -525,7 +526,6 @@ class PaymentController extends Controller
                 ]);
 
                 BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
-
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
                 $service = $service_sale->order->orderItems->first()->service;
@@ -574,8 +574,12 @@ class PaymentController extends Controller
 
             // return view('web.default.cart.status_pay', $data);
         }
-
-        return redirect('/');
+        $toastData = [
+            'title' => trans('cart.failed_pay_title'),
+            'msg' => trans('cart.failed_pay_msg'),
+            'status' => 'error'
+        ];
+        return redirect('/')->with(['toast' => $toastData]);
     }
 
     private function handleMeetingReserveReward($user)
@@ -771,7 +775,9 @@ class PaymentController extends Controller
             // Check if the student already has the bundle ID attached
             if (!$student->bundles->contains($bundleId)) {
                 $student->bundles()->attach($bundleId, [
-                    'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null, 'status' => 'pending', 'class_id' => $class->id,
+                    'certificate' => (!empty($userData['certificate'])) ? $userData['certificate'] : null,
+                    'status' => 'pending',
+                    'class_id' => $class->id,
                     'created_at' => Date::now(),  // Set current timestamp for created_at
                     'updated_at' => Date::now()
                 ]);

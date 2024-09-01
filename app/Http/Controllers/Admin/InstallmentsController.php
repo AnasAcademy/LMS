@@ -20,6 +20,7 @@ use App\Models\Subscribe;
 use App\Models\Translation\InstallmentStepTranslation;
 use App\Models\Translation\InstallmentTranslation;
 use Illuminate\Http\Request;
+use App\Models\StudyClass;
 
 class InstallmentsController extends Controller
 {
@@ -66,6 +67,7 @@ class InstallmentsController extends Controller
             ->get();
         $subscriptionPackages = Subscribe::all();
         $registrationPackages = RegistrationPackage::all();
+        $study_classes=StudyClass::get();
 
         $data = [
             'pageTitle' => trans('update.new_installment_plan'),
@@ -73,6 +75,7 @@ class InstallmentsController extends Controller
             'categories' => $categories,
             'subscriptionPackages' => $subscriptionPackages,
             'registrationPackages' => $registrationPackages,
+            'study_classes'=>$study_classes,
         ];
 
         return view('admin.financial.installments.create.index', $data);
@@ -88,6 +91,7 @@ class InstallmentsController extends Controller
             'description' => 'required',
             'target_type' => 'required',
             'upfront' => 'nullable|numeric',
+            'batch_id'=>'required',
         ]);
 
         $data = $request->all();
@@ -108,6 +112,7 @@ class InstallmentsController extends Controller
             'upfront_type' => !empty($data['upfront']) ? $data['upfront_type'] : null,
             'enable' => (!empty($data['enable']) and $data['enable'] == 'on'),
             'created_at' => time(),
+            'batch_id'=>$data['batch_id']?? null,
         ]);
 
         if (!empty($installment)) {
@@ -282,6 +287,8 @@ class InstallmentsController extends Controller
         $subscriptionPackages = Subscribe::all();
         $registrationPackages = RegistrationPackage::all();
 
+        $study_classes=StudyClass::get();
+
         $defaultLocal = getDefaultLocale();
         $locale = $request->get('locale', mb_strtolower($defaultLocal));
         storeContentLocale($locale, $installment->getTable(), $installment->id);
@@ -293,7 +300,8 @@ class InstallmentsController extends Controller
             'subscriptionPackages' => $subscriptionPackages,
             'registrationPackages' => $registrationPackages,
             'installment' => $installment,
-            'selectedLocale' => mb_strtolower($locale)
+            'selectedLocale' => mb_strtolower($locale),
+            'study_classes'=>$study_classes,
         ];
 
         return view('admin.financial.installments.create.index', $data);
@@ -309,6 +317,7 @@ class InstallmentsController extends Controller
             'description' => 'required',
             'target_type' => 'required',
             'upfront' => 'nullable|numeric',
+            'batch_id'=>'required',
         ]);
 
         $installment = Installment::query()->findOrFail($id);
@@ -329,6 +338,7 @@ class InstallmentsController extends Controller
             'upfront' => $data['upfront'] ?? null,
             'upfront_type' => !empty($data['upfront']) ? $data['upfront_type'] : null,
             'enable' => (!empty($data['enable']) and $data['enable'] == 'on'),
+            'batch_id'=>$data['batch_id']?? $installment->batch_id,
         ]);
 
         if (!empty($installment)) {

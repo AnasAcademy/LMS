@@ -14,7 +14,7 @@
     if ($user->student) {
 
         $progressSteps[3] = [
-            'lang' => 'public.about',
+            'lang' => 'بيانات شخصية',
             'icon' => 'about',
         ];
 

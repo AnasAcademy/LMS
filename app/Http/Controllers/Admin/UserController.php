@@ -1900,6 +1900,49 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
+    public function directRegister(Request $request, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+        $query = User::whereHas('student.bundleStudent', function ($query){
+            $query->whereNull('class_id');
+        });
+
+        $totalStudents = deepClone($query)->count();
+
+
+        $query = $this->filters($query, $request);
+
+        if ($is_export_excel) {
+            $users = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $users = $query->orderBy('created_at', 'desc')
+                ->paginate(20);
+        }
+
+        $users = $this->addUsersExtraInfo($users);
+
+        if ($is_export_excel) {
+            return $users;
+        }
+
+        // $purchasedFormBundle=null;
+        // $purchasedUserFormBundle=Sale::where('type', 'form_fee')
+        //         ->where('buyer_id', $user->id)
+        //         ->first();
+
+        $category = Category::where('parent_id', '!=', null)->get();
+        // $requirement=$users[3]->student;
+        // dd($requirement);
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'users' => $users,
+            'category' => $category,
+            'totalStudents' => $totalStudents,
+
+        ];
+
+        return view('admin.students.direct_register', $data);
+    }
     public function ScholarshipStudent(Request $request, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');

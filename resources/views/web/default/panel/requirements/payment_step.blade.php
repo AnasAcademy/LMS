@@ -34,11 +34,11 @@
                     <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}
 
-                        @if(!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()) && $bundleData['bundle']->bundle->early_enroll!=1)
+                        {{-- @if(!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()) && $bundleData['bundle']->bundle->early_enroll!=1)
                             <span class="font-14 font-weight-bold text-center text-danger mt-15 discount pr-2">
                                 خصم 30%
                             </span>
-                        @endif
+                        @endif --}}
                     </h2>
 
 
@@ -73,13 +73,13 @@
                                 هنا</a>
                         </div>
 
-                    @elseif ($bundleData['bundle']->bundle->early_enroll)
+                    {{-- @elseif ($bundleData['bundle']->bundle->early_enroll)
                         <div class="w-100 text-center">
                             <p class="alert alert-info text-center mx-30">
                                 يرجى ملاحظة أن التسجيل الرسمي سيبدأ يوم 30 يوليو.
                                 <br> بمجرد فتح التسجيل، ستتمكن من استكمال اجراءات التسجيل.
                             </p>
-                        </div>
+                        </div> --}}
                     @else
                         @include('web.default.panel.requirements.payment_card', [
                             'bundleData' => $bundleData,
@@ -96,7 +96,7 @@
                     class="btn bg-secondary text-white p-5 mt-20">للتسجيل اضغط علي هذا اللينك</a>
             </section>
         @endif
-        
+
     </section>
 
 @endsection

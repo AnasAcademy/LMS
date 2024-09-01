@@ -758,7 +758,7 @@
 
         {{-- services --}}
 
-        <li class="sidenav-item {{ request()->is('panel/service*') ? 'sidenav-item-active' : '' }}">
+        {{-- <li class="sidenav-item {{ request()->is('panel/service*') ? 'sidenav-item-active' : '' }}">
             <a class="d-flex align-items-center" data-toggle="collapse" href="#servicesCollapse" role="button"
                 aria-expanded="false" aria-controls="servicesCollapse">
                 <span class="sidenav-setting-icon sidenav-item-icon mr-10">
@@ -780,7 +780,7 @@
                     @endif
                 </ul>
             </div>
-        </li>
+        </li> --}}
 
         {{-- Setting --}}
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">

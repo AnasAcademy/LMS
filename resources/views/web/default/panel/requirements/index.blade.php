@@ -48,13 +48,13 @@
                                 class="btn btn-success p-5 mt-20 bg-secondary">للذهاب لمتابعة طلبك اضغط
                                 هنا</a>
                         </div>
-                        @elseif ($studentBundle->bundle->early_enroll)
+                        {{-- @elseif ($studentBundle->bundle->early_enroll)
                             <div class="w-100 text-center">
                                 <p class="alert alert-info text-center mx-30">
                                     يرجى ملاحظة أن التسجيل الرسمي سيبدأ يوم 30 يوليو.
                                     <br> بمجرد فتح التسجيل، ستتمكن من استكمال رفع المتطلبات اللازمة وإتمام إجراءات التسجيل.
                                 </p>
-                            </div>
+                            </div> --}}
                         @else
                             <div class="w-100 text-center">
                                 <p class="alert alert-info text-center mx-30">

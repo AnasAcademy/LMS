@@ -106,6 +106,8 @@
 
                         <th>{{ trans('admin/main.name') }}</th>
 
+                        <th>الهوية الوطنية</th>
+
                         <th> الدبلومات المسجلة</th>
 
                         <th>{{ trans('admin/main.register_date') }}</th>
@@ -126,7 +128,8 @@
                                     </figure>
                                     <div class="media-body ml-1">
                                         <div class="mt-0 mb-1 font-weight-bold">
-                                            {{ $enrollment->student ? $enrollment->student->ar_name :$enrollment->full_name }}</div>
+                                            {{ $enrollment->student ? $enrollment->student->ar_name : $enrollment->full_name }}
+                                        </div>
 
                                         @if ($enrollment->mobile)
                                             <div class="text-primary text-left font-600-bold" style="font-size:12px;">
@@ -141,7 +144,16 @@
                                 </div>
                             </td>
 
-
+                            <td class="text-left">
+                                @if (!empty($enrollment->student->identity_img))
+                                    <a href="/store/{{ $enrollment->student->identity_img }}" target="_blank">
+                                        <img src="/store/{{ $enrollment->student->identity_img }}" alt="image"
+                                            width="100px" style="max-height:100px">
+                                    </a>
+                                @else
+                                <span class="text-warning">لم ترفع بعد</span>
+                                @endif
+                            </td>
                             <td>
                                 @foreach ($enrollment->bundleSales($class->id)->get() as $record)
                                     {{ $record->bundle->title }}
@@ -152,21 +164,15 @@
                             </td>
                             <td>
                                 @foreach ($enrollment->bundleSales($class->id)->get() as $record)
-                                    {{ dateTimeFormat($enrollment->created_at, 'j M Y | H:i') }}
+                                    {{ dateTimeFormat($record->created_at, 'j M Y | H:i') }}
                                     @if (!$loop->last)
                                         و
                                     @endif
                                 @endforeach
                             </td>
 
-
-
-
                             <td>
-                                @if (
-                                    $enrollment->ban and
-                                        !empty($enrollment->ban_end_at) and
-                                        $enrollment->ban_end_at > time())
+                                @if ($enrollment->ban and !empty($enrollment->ban_end_at) and $enrollment->ban_end_at > time())
                                     <div class="mt-0 mb-1 font-weight-bold text-danger">{{ trans('admin/main.ban') }}
                                     </div>
                                     <div class="text-small font-600-bold">Until
@@ -182,9 +188,9 @@
                             <td class="text-center mb-2" width="120">
 
                                 @can('admin_users_impersonate')
-                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->id }}/impersonate"
-                                        target="_blank" class="btn-transparent  text-primary" data-toggle="tooltip"
-                                        data-placement="top" title="{{ trans('admin/main.login') }}">
+                                    <a href="{{ getAdminPanelUrl() }}/users/{{ $enrollment->id }}/impersonate" target="_blank"
+                                        class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
+                                        title="{{ trans('admin/main.login') }}">
                                         <i class="fa fa-user-shield"></i>
                                     </a>
                                 @endcan
@@ -199,11 +205,7 @@
 
                                 @can('admin_users_delete')
                                     @include('admin.includes.delete_button', [
-                                        'url' =>
-                                            getAdminPanelUrl() .
-                                            '/users/' .
-                                            $enrollment->id .
-                                            '/delete',
+                                        'url' => getAdminPanelUrl() . '/users/' . $enrollment->id . '/delete',
                                         'btnClass' => '',
                                         'deleteConfirmMsg' => trans('update.user_delete_confirm_msg'),
                                     ])

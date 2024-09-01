@@ -178,6 +178,10 @@ return [
         'IBAN'=>'اي بان (IBAN)',
         'reference_number'=>'سويفت كود (Swift Code)',
         'date'=>'تاريخ الدفع',
+        'identity_img'=>'صورة الهوية الوطنية/جواز السفر',
+        'high_certificate_img'=>'شهادة التخرج',
+        'secondary_certificate_img'=>'شهادة الثانوية',
+
     ],
 
 ];
