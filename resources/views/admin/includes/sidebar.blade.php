@@ -129,7 +129,7 @@
                         @foreach ($webinars as $webinar)
                             <li class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
                                 <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
-                                    href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
+                                    href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}" style="height: auto">{{ $webinar->title }}</a>
                             </li>
                         @endforeach
                     </ul>
