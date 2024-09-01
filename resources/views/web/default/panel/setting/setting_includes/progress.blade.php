@@ -31,20 +31,21 @@
             'lang' => 'معلومات الأقرباء',
             'icon' => 'basic-info',
         ];
-    }
 
-    $progressSteps[7] = [
-        'lang' => 'public.experiences',
-        'icon' => 'experiences',
-    ];
-    $progressSteps[8] = [
-        'lang' => 'روابط الأعمال',
-        'icon' => 'links',
-    ];
-    $progressSteps[9] = [
-        'lang' => 'المعرفون',
-        'icon' => 'experiences',
-    ];
+
+        $progressSteps[7] = [
+            'lang' => 'public.experiences',
+            'icon' => 'experiences',
+        ];
+        $progressSteps[8] = [
+            'lang' => 'روابط الأعمال',
+            'icon' => 'links',
+        ];
+        $progressSteps[9] = [
+            'lang' => 'المعرفون',
+            'icon' => 'experiences',
+        ];
+    }
 
     // $progressSteps[10] = [
     //     'lang' => 'public.occupations',
