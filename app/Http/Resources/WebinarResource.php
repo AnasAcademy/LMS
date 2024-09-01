@@ -24,6 +24,7 @@ class WebinarResource extends JsonResource
             'image_cover' => $this->image_cover ? url($this->image_cover) : null,
             'status' => $this->status,
             'title' => $this->title,
+            'hasAccessToContent' => $this->isUserHasAccessToContent(),
             'can' => [
                 'view' => !$this->can_view_error(),
             ],

@@ -31,7 +31,11 @@
                                     <tr>
                                         <th>{{ trans('admin/main.id') }}</th>
                                         <th class="text-left">{{ trans('admin/main.title') }}</th>
-                                        <th>عدد الطلبة</th>
+                                        <th>عدد طلبةإنشاء حساب</th>
+                                        <th>عدد طلبة حجز مقعد</th>
+                                        <th>عدد طلبة تسجيل برامج</th>
+                                        <th>عدد طلبة تسجيل مباشر</th>
+                                        <th>عدد طلبة منح دراسية</th>
 
                                         <th>{{ trans('admin/main.created_at') }}</th>
                                         <th>{{ trans('admin/main.updated_at') }}</th>
@@ -46,7 +50,11 @@
                                                     {{ $class->title }}
                                                 </p>
 
-                                            <td>{{ ($class->enrollments()->count()) }}</td>
+                                            <td>{{ ($class->registerEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->formFeeEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->bundleEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->directRegisterEnrollements()->count()) }}</td>
+                                            <td>{{ ($class->scholarshipEnrollements()->count()) }}</td>
                                             <td class="font-12">{{ $class->created_at }}
                                             </td>
 
@@ -103,6 +111,14 @@
                                                             <span class="ml-2">{{ trans('admin/main.students') }}</span>
                                                         </a>
 
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/registered_users"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">نموذج إنشاء حساب </span>
+                                                        </a>
+
                                                         <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/users"
                                                             target="_self"
                                                             class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
@@ -116,7 +132,15 @@
                                                             class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
                                                             title="{{ trans('admin/main.students') }}">
                                                             <i class="fa fa-users"></i>
-                                                            <span class="ml-2">تسجيل الدبلومات</span>
+                                                            <span class="ml-2">تسجيل البرامج</span>
+                                                        </a>
+
+                                                        <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/direct_register"
+                                                            target="_self"
+                                                            class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 "
+                                                            title="{{ trans('admin/main.students') }}">
+                                                            <i class="fa fa-users"></i>
+                                                            <span class="ml-2">تسجيل مباشر</span>
                                                         </a>
                                                         <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/scholarship"
                                                             target="_self"

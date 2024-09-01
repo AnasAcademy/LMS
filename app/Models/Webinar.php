@@ -1108,7 +1108,7 @@ class Webinar extends Model implements TranslatableContract
 
     function isUserHasAccessToContent()
     {
-        $user = auth()->user();
+        $user = auth()->user() ?? auth('api')->user();
         $now = \Carbon\Carbon::now();
 
         foreach ($this->groups as $group) {

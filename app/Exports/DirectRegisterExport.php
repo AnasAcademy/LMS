@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class EnrollersExport implements FromCollection, WithHeadings, WithMapping
+class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $users;
     protected $currency;
@@ -55,18 +55,18 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
         if ($user->student) {
             $diploma = '';
             $created_at='';
-            $purchasedBundles = $user->purchasedBundles;
+            $userBundles = $user->student->bundleStudent()->whereNull('class_id')->get();
 
-            if ($purchasedBundles) {
-                foreach ($purchasedBundles as $purchasedBundle) {
-                        $diploma .= ($purchasedBundle->bundle->title . " , ") ;
-                        $created_at .=(dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') . " , ");;
+            if ($userBundles) {
+                foreach ($userBundles as $userBundle) {
+                        $diploma .= ($userBundle->bundle->title . " , " );
+                        $created_at.= (dateTimeFormat(strtotime($userBundle->created_at), 'j M Y | H:i') . " , " );
 
                 }
                 $diploma = preg_replace('/,(?!.*,)/u', '', $diploma);
                 $created_at = preg_replace('/,(?!.*,)/u', '', $created_at);
-            }
 
+            }
 
 
             return [
@@ -75,7 +75,7 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
                 $user->student->en_name,
                 $user->email,
                 $diploma,
-                $created_at,
+               $created_at,
                 $user->status,
                 $user->mobile,
             ];

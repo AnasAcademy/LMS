@@ -279,6 +279,36 @@
             </div>
         </form>
 
+        {{--
+        <div class="row mt-30">
+                <div class="col-12 col-lg-6">
+                    <section class="mt-45">
+                        <h3 class="section-title">{{ trans('cart.coupon_code') }}</h3>
+                        <div class="rounded-sm shadow mt-20 py-25 px-20">
+                            <p class="text-gray font-14">{{ trans('cart.coupon_code_hint') }}</p>
+
+                           @if(!empty($userGroup) and !empty($userGroup->discount))
+                                <p class="text-gray mt-25">{{ trans('cart.in_user_group',['group_name' => $userGroup->name , 'percent' => $userGroup->discount]) }}</p>
+                            @endif
+
+
+                            <form action="/cart/coupon/validate" method="Post">
+                                {{ csrf_field() }}
+                                <div class="form-group">
+                                    <input type="text" name="coupon" id="coupon_input" class="form-control mt-25"
+                                           placeholder="{{ trans('cart.enter_your_code_here') }}">
+                                    <span class="invalid-feedback">{{ trans('cart.coupon_invalid') }}</span>
+                                    <span class="valid-feedback">{{ trans('cart.coupon_valid') }}</span>
+                                </div>
+
+                                <button type="submit" id="checkCoupon"
+                                        class="btn btn-sm btn-primary mt-50">{{ trans('cart.validate') }}</button>
+                            </form>
+                        </div>
+                    </section>
+                </div>
+        </div>
+        --}}
         @if (!empty($razorpay) and $razorpay)
             <form action="/payments/verify/Razorpay" method="get">
                 <input type="hidden" name="order_id" value="{{ $order->id }}">
@@ -310,4 +340,12 @@
 
     <script src="/assets/default/js//parts/main.min.js"></script>
     <script src="/assets/default/js/panel/public.min.js"></script>
+    <script>
+        var couponInvalidLng = '{{ trans('cart.coupon_invalid') }}';
+        var selectProvinceLang = '{{ trans('update.select_province') }}';
+        var selectCityLang = '{{ trans('update.select_city') }}';
+        var selectDistrictLang = '{{ trans('update.select_district') }}';
+    </script>
+     <script src="/assets/default/js/parts/cart.min.js"></script>
+
 @endpush

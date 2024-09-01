@@ -112,6 +112,7 @@ class BundleController extends Controller
         $category_id = $request->get('category_id', null);
         $status = $request->get('status', null);
         $sort = $request->get('sort', null);
+        $batch = $request->get('batch', null);
 
         $query = fromAndToDateFilter($from, $to, $query, 'created_at');
 
@@ -129,6 +130,9 @@ class BundleController extends Controller
 
         if (!empty($status)) {
             $query->where('bundles.status', $status);
+        }
+        if (!empty($batch)) {
+            $query->where('batch_id', $batch);
         }
 
         if (!empty($sort)) {
@@ -842,5 +846,83 @@ class BundleController extends Controller
 
         $bundles = $query->get();
         return response()->json($bundles, 200);
+    }
+
+    public function statistics(Request $request)
+    {
+        $this->authorize('admin_programs_statistics_bundles_list');
+
+        removeContentLocale();
+
+        $query = Bundle::query();
+
+        $totalBundles = $query->count();
+        $totalPendingBundles = deepClone($query)->where('bundles.status', Bundle::$pending)->count();
+        $totalSales = deepClone($query)->join('sales', 'bundles.id', '=', 'sales.bundle_id')
+        ->select(DB::raw('count(sales.bundle_id) as sales_count, sum(total_amount) as total_amount'))
+        ->whereNotNull('sales.bundle_id')
+        ->whereNull('sales.refund_at')
+        ->first();
+
+        $categories = Category::where('parent_id', null)
+            ->with('subCategories')
+            ->get();
+
+        $batches = StudyClass::get();
+        $query = $this->handleFilters($query, $request)
+            ->with([
+                'category',
+                'teacher' => function ($qu) {
+                    $qu->select('id', 'full_name');
+                },
+                'sales' => function ($query) {
+                    $query->whereNull('refund_at');
+                }
+            ])
+            ->withCount([
+                'bundleWebinars'
+            ]);
+
+        $bundles = $query->paginate(10);
+
+        foreach ($bundles as $bundle) {
+            $giftsIds = Gift::query()->where('bundle_id', $bundle->id)
+                ->where('status', 'active')
+                ->where(function ($query) {
+                    $query->whereNull('date');
+                    $query->orWhere('date', '<', time());
+                })
+                ->whereHas('sale')
+                ->pluck('id')
+                ->toArray();
+
+            $sales = Sale::query()
+                ->where(function ($query) use ($bundle, $giftsIds) {
+                    $query->where('bundle_id', $bundle->id);
+                    $query->orWhereIn('gift_id', $giftsIds);
+                })
+                ->whereNull('refund_at')
+                ->get();
+
+            $bundle->sales = $sales;
+        }
+
+
+        $data = [
+            'pageTitle' => 'إحصائيات التسجيل في البرامج',
+            'bundles' => $bundles,
+            'totalBundles' => $totalBundles,
+            'totalPendingBundles' => $totalPendingBundles,
+            'totalSales' => $totalSales,
+            'categories' => $categories,
+            'batches' => $batches
+        ];
+
+        $teacher_ids = $request->get('teacher_ids', null);
+        if (!empty($teacher_ids)) {
+            $data['teachers'] = User::select('id', 'full_name')->whereIn('id', $teacher_ids)->get();
+        }
+
+        return view('admin.bundles.statistics', $data);
     }
 }

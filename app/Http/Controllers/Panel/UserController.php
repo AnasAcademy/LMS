@@ -24,6 +24,7 @@ use App\User;
 use App\Student;
 use App\StudentRequirement;
 use App\BundleStudent;
+use App\Models\UserReference;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -119,6 +120,8 @@ class UserController extends Controller
             'categories' => $categories,
             'educations' => $userMetas->where('name', 'education'),
             'experiences' => $userMetas->where('name', 'experience'),
+            'links' => $userMetas->where('name', 'link'),
+            'references' => $user->references,
             'occupations' => $occupations,
             'userLanguages' => $userLanguages,
             'currentStep' => $step,
@@ -219,7 +222,6 @@ class UserController extends Controller
                     $data['identity_img'] = $identityImgPath;
                 }
                 $user->student->update($data);
-
             } elseif ($step == 4) {
                 $data = $request->except(['step', '_token', 'next_step']);
                 if (!empty($request['high_certificate_img'])) {
@@ -260,7 +262,7 @@ class UserController extends Controller
                 $user->student->update($data);
             } elseif ($step == 6) {
                 $user->student->update($request->except(['step', '_token', 'next_step']));
-            } elseif ($step == 8) {
+            } elseif ($step == 10) {
                 UserOccupation::where('user_id', $user->id)->delete();
                 if (!empty($data['occupations'])) {
 
@@ -271,7 +273,7 @@ class UserController extends Controller
                         ]);
                     }
                 }
-            } elseif ($step == 9) {
+            } elseif ($step == 11) {
                 $updateData = [
                     'identity_scan' => $data['identity_scan'] ?? '',
                     'certificate' => $data['certificate'] ?? '',
@@ -302,7 +304,7 @@ class UserController extends Controller
                         UserSelectedBankSpecification::query()->insert($specificationInsert);
                     }
                 }
-            } elseif ($step == 10) {
+            } elseif ($step == 12) {
                 if (!$user->isUser()) {
                     if (!empty($data['zoom_api_key']) and !empty($data['zoom_api_secret'])) {
                         UserZoomApi::updateOrCreate(
@@ -319,7 +321,7 @@ class UserController extends Controller
                         UserZoomApi::where('user_id', $user->id)->delete();
                     }
                 }
-            } elseif ($step == 10) {
+            } elseif ($step == 13) {
                 $updateData = [
                     'about' => $data['about'],
                     'bio' => $data['bio'],
@@ -479,6 +481,82 @@ class UserController extends Controller
                     ->first();
 
                 $meta->delete();
+
+                return response()->json([
+                    'code' => 200
+                ], 200);
+            }
+        }
+
+        return response()->json([], 422);
+    }
+
+
+    public function storeReference(Request $request)
+    {
+        $data = $request->all();
+
+        if (!empty($data['name']) and !empty($data['email']) and !empty($data['workplace']) and !empty($data['relationship']) and !empty($data['job_title'])) {
+
+            if (!empty($data['user_id'])) {
+                $organization = auth()->user();
+                $user = User::where('id', $data['user_id'])
+                    ->where('organ_id', $organization->id)
+                    ->first();
+            } else {
+                $user = auth()->user();
+            }
+            $data['user_id'] = $user->id;
+            UserReference::create($data);
+
+            return response()->json([
+                'code' => 200
+            ], 200);
+        }
+
+        return response()->json([], 422);
+    }
+
+    public function updateReference(Request $request, $reference_id)
+    {
+        $data = $request->all();
+        $user = auth()->user();
+
+        $data['user_id'] = $data['user_id'] ?? $user->id;
+
+        $reference = UserReference::where('id', $reference_id)
+            ->where('user_id', $data['user_id'])
+            ->first();
+
+
+        if (!empty($reference)) {
+            $reference->update($data);
+
+            return response()->json([
+                'code' => 200
+            ], 200);
+        }
+
+        return response()->json([
+            'code' => 403
+        ], 200);
+        // return response()->json([], 422);
+    }
+
+    public function deleteReference(Request $request, $reference_id)
+    {
+        $data = $request->all();
+        $user = auth()->user();
+
+        if (!empty($data['user_id'])) {
+            $checkUser = User::find($data['user_id']);
+
+            if (!empty($checkUser) and ($data['user_id'] == $user->id or $checkUser->organ_id == $user->id)) {
+                $reference = UserReference::where('id', $reference_id)
+                    ->where('user_id', $data['user_id'])
+                    ->first();
+
+                $reference->delete();
 
                 return response()->json([
                     'code' => 200
@@ -1027,7 +1105,8 @@ class UserController extends Controller
             'specialization' => 'required|string',
             'identity_type' => 'required|string',
             'identity_attachment' => 'required|file|mimes:jpeg,jpg,png,pdf',
-            'admission_attachment' => 'required|file|mimes:pdf|max:20480',
+            // 'admission_attachment' => 'required|file|mimes:pdf|max:20480',
+            'study_purpose' => 'required|string',
         ]);
 
         $user = auth()->user();
@@ -1051,9 +1130,9 @@ class UserController extends Controller
         $identity_attachmentName =  $user->user_code . '_' . $request['identity_type'] . '.' . $identity_attachment->getClientOriginalExtension();
         $identity_attachmentPath = $identity_attachment->storeAs('studentRequirements', $identity_attachmentName);
 
-        $admission_attachment = $request->file('admission_attachment');
-        $admission_attachmentName =  $user->user_code . '_addmission.' . $admission_attachment->getClientOriginalExtension();
-        $admission_attachmentPath = $admission_attachment->storeAs('studentRequirements', $admission_attachmentName);
+        // $admission_attachment = $request->file('admission_attachment');
+        // $admission_attachmentName =  $user->user_code . '_addmission.' . $admission_attachment->getClientOriginalExtension();
+        // $admission_attachmentPath = $admission_attachment->storeAs('studentRequirements', $admission_attachmentName);
 
 
 
@@ -1061,7 +1140,8 @@ class UserController extends Controller
             'bundle_student_id' => $studentBundle->id,
             'identity_type' => $request['identity_type'],
             'identity_attachment' => $identity_attachmentPath,
-            'admission_attachment' => $admission_attachmentPath,
+            // 'admission_attachment' => $admission_attachmentPath,
+            'study_purpose' => $request['study_purpose']
         ];
 
         if ($studentRequirments) {

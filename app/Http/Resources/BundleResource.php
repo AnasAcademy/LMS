@@ -43,7 +43,10 @@ class BundleResource extends JsonResource
             }),
             //  'ex' => $this->checkHasExpiredAccessDays($sale->created_at),
             'duration' => $this->getBundleDuration(),
-            'webinar_count' => $this->bundleWebinars->where('webinar.status', 'active')->count(),
+            'webinar_count' => $this->bundleWebinars->count(),
+            'webinars' => $this->bundleWebinars->map(function($bundleWebinar){
+                return $bundleWebinar->webinar;
+            }),
             'teacher' => $this->teacher->brief,
             'sale_amount' => ($this->sales) ? $this->sales->sum('amount') : 0,
             'sales_count' => $this->sales->count(),

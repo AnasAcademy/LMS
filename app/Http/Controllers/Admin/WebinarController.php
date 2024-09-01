@@ -1256,4 +1256,21 @@ class WebinarController extends Controller
 
         abort(403);
     }
+
+    public function statistics(Request $request)
+    {
+        $this->authorize('admin_programs_statistics_webinars_list');
+
+        removeContentLocale();
+
+        $webinars = Webinar::where('unattached', 1)->paginate(10);
+
+
+        $data = [
+            'pageTitle' => 'إحصائيات التسجيل في الدورات',
+            'webinars' => $webinars,
+        ];
+
+        return view('admin.webinars.statistics', $data);
+    }
 }

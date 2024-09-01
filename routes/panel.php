@@ -15,6 +15,7 @@ Route::group(['namespace' => 'Web','prefix' => 'panel', 'middleware' => ['check_
         Route::get('/', 'ApplyController@newEnrollment');
         Route::post('/step', 'ApplyController@storeNewEnrollment');
     });
+    Route::get('/{bundle}/book_seat', 'ApplyController@bookSeat');
 });
 
 Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
@@ -289,6 +290,9 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::post('/metas', 'UserController@storeMetas');
         Route::post('metas/{meta_id}/update', 'UserController@updateMeta');
         Route::get('metas/{meta_id}/delete', 'UserController@deleteMeta');
+        Route::post('/references', 'UserController@storeReference');
+        Route::post('references/{reference_id}/update', 'UserController@updateReference');
+        Route::get('references/{reference_id}/delete', 'UserController@deleteReference');
         Route::get('/deleteAccount', 'UserController@deleteAccount');
     });
 

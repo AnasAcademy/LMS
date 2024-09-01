@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Bitwise\UserLevelOfTraining;
 use App\BundleStudent;
 use App\Exports\EnrollersExport;
+use App\Exports\DirectRegisterExport;
 use App\Exports\OrganizationsExport;
 use App\Exports\StudentsExport;
 use App\Exports\GroupStudentsExport;
@@ -34,6 +35,7 @@ use App\Models\UserRegistrationPackage;
 use App\Models\UserSelectedBank;
 use App\Models\UserSelectedBankSpecification;
 use App\Models\Webinar;
+use App\Models\StudyClass;
 use App\Student;
 use App\User;
 use Illuminate\Http\Request;
@@ -1431,8 +1433,14 @@ class UserController extends Controller
     public function exportExcelStudents(Request $request)
     {
         $this->authorize('admin_users_export_excel');
-
-        $users = User::where(['role_name' => Role::$registered_user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+        // $users = User::where(['role_name' => Role::$registered_user])->whereHas('student')->orderBy('created_at', 'desc')->get();
+        $users = $this->Users($request, true);
+        if(!empty($request->class_id)){
+            $studyClass = StudyClass::find($request->class_id);
+            if(!empty($studyClass)){
+                $users = (new StudyClassController())->Users($request, $studyClass, true);
+            }
+        }
 
         $usersExport = new StudentsExport($users);
 
@@ -1533,17 +1541,66 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::where(['role_name' => Role::$user])->whereHas('student')->whereHas('purchasedBundles')->orderBy('created_at', 'desc')->get();
+        // $users = User::where(['role_name' => Role::$user])->whereHas('student')->whereHas('purchasedBundles')->orderBy('created_at', 'desc')->get();
 
+
+        $users = $this->Enrollers($request, true);
+        if (!empty($request->class_id)) {
+            $studyClass = StudyClass::find($request->class_id);
+            if (!empty($studyClass)) {
+                $users = (new StudyClassController())->Enrollers($request, $studyClass, true);
+            }
+        }
         $usersExport = new EnrollersExport($users);
 
         return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
     }
+    public function exportExcelScholarship(Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+
+        // $users = User::where(['role_name' => Role::$user])->whereHas('student')->whereHas('purchasedBundles')->orderBy('created_at', 'desc')->get();
+
+
+        $users = $this->ScholarshipStudent($request, true);
+        if (!empty($request->class_id)) {
+            $studyClass = StudyClass::find($request->class_id);
+            if (!empty($studyClass)) {
+                $users = (new StudyClassController())->ScholarshipStudent($request, $studyClass, true);
+            }
+        }
+        $usersExport = new EnrollersExport($users);
+
+        return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
+    }
+    public function exportExcelDirectRegister(Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+
+        $users = $this->directRegister($request, true);
+        if (!empty($request->class_id)) {
+            $studyClass = StudyClass::find($request->class_id);
+            if (!empty($studyClass)) {
+                $users = (new StudyClassController())->directRegister($request, $studyClass, true);
+            }
+        }
+        $usersExport = new DirectRegisterExport($users);
+
+        return Excel::download($usersExport, ' تسجيل مباشر.xlsx');
+    }
+
     public function exportExcelUsers(Request $request)
     {
         $this->authorize('admin_users_export_excel');
 
-        $users = User::where(['role_name' => Role::$registered_user])->whereDoesntHave('student')->orderBy('created_at', 'desc')->get();
+        $users = $this->RegisteredUsers($request, true);
+
+         if (!empty($request->class_id)) {
+            $studyClass = StudyClass::find($request->class_id);
+            if (!empty($studyClass)) {
+                $users = (new StudyClassController())->RegisteredUsers($request, $studyClass, true);
+            }
+        }
 
         $usersExport = new StudentsExport($users);
 
