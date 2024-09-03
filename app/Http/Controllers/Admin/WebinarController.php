@@ -336,6 +336,7 @@ class WebinarController extends Controller
         $this->validate($request, [
             'type' => 'required|in:webinar,course,text_lesson',
             'title' => 'required|max:255',
+            'course_name_certificate' => 'required',
             'slug' => 'max:255|unique:webinars,slug',
             'thumbnail' => 'required',
             'image_cover' => 'required',
@@ -383,6 +384,7 @@ class WebinarController extends Controller
         $webinar = Webinar::create([
             'type' => $data['type'],
             'slug' => $data['slug'],
+            'course_name_certificate' => $data['course_name_certificate'],
             'teacher_id' => $data['teacher_id'],
             'creator_id' => $data['teacher_id'],
             'thumbnail' => $data['thumbnail'],
@@ -574,6 +576,7 @@ class WebinarController extends Controller
         $rules = [
             'type' => 'required|in:webinar,course,text_lesson',
             'title' => 'required|max:255',
+            'course_name_certificate'=>'required',
             'slug' => 'max:255|unique:webinars,slug,' . $webinar->id,
             'thumbnail' => 'required',
             'image_cover' => 'required',
@@ -706,6 +709,7 @@ class WebinarController extends Controller
             'creator_id' => $newCreatorId,
             'teacher_id' => $data['teacher_id'],
             'type' => $data['type'],
+            'course_name_certificate'=> $data['course_name_certificate'],
             'thumbnail' => $data['thumbnail'],
             'image_cover' => $data['image_cover'],
             'video_demo' => $data['video_demo'],
