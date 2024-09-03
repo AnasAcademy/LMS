@@ -29,7 +29,19 @@ class Certificate extends Model
     {
         return $this->belongsTo('App\Models\Webinar', 'webinar_id', 'id');
     }
+
+
+    public function bundle()
+    {
+        return $this->belongsTo(Bundle::class, 'bundle_id'); // Adjust the foreign key if necessary
+    }
     
+    protected static function boot()
+    {
+        parent::boot();
+
+     
+    }
     
     
 }
