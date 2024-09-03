@@ -19,6 +19,25 @@
         <div class="section-body">
 
             <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="card card-statistic-1">
+                        <div class="card-icon bg-primary">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                            <div class="card-header">
+                                <h4>{{ 'اجمالي المبيعات بدون خصومات' }}</h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $totalSales2['count'] }}
+                            </div>
+                            <div class="text-primary font-weight-bold">
+                                {{ handlePrice($totalSales2['amount']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-primary">
@@ -33,6 +52,25 @@
                             </div>
                             <div class="text-primary font-weight-bold">
                                 {{ handlePrice($totalSales['amount']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    <div class="card card-statistic-1">
+                        <div class="card-icon bg-primary">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-wrap">
+                            <div class="card-header">
+                                <h4>{{ 'اجمالي الخصومات' }}</h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $totalDiscounts['count'] }}
+                            </div>
+                            <div class="text-primary font-weight-bold">
+                                {{ handlePrice($totalDiscounts['amount']) }}
                             </div>
                         </div>
                     </div>
@@ -57,6 +95,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
@@ -406,7 +445,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th class="text-left">{{ trans('admin/main.student') }}</th>
-                                        <th class="text-left">{{ trans('admin/main.instructor') }}</th>
+                                        {{-- <th class="text-left">{{ trans('admin/main.instructor') }}</th>  --}}
                                         <th>{{ trans('admin/main.paid_amount') }}</th>
                                         <th>{{ trans('admin/main.discount') }}</th>
                                         <th>{{ trans('admin/main.tax') }}</th>
@@ -432,15 +471,17 @@
                                                     {{ !empty($sale->buyer) ? $sale->buyer->user_code : '' }}</div>
 
                                                     <div class="text-primary text-small font-600-bold">
-                                                        ايميل الدفع: 
+                                                        ايميل الدفع:
                                                     {{ !empty($sale->buyer) ? ($sale->payment_email ?? '---') : '' }}</div>
                                             </td>
 
+                                           {{--
                                             <td class="text-left">
                                                 {{ $sale->item_seller }}
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ $sale->seller_id }}</div>
                                             </td>
+                                           --}}
 
                                             <td>
                                                 @if ($sale->payment_method == \App\Models\Sale::$subscribe)
@@ -455,7 +496,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <span class="">{{ handlePrice($sale->discount ?? 0) }}</span>
+                                                <span class="">{{ handlePrice($sale->discount ?? 0)  }} {{ $sale->discount>0 ? '('.$sale->order->orderItems[0]->getDiscount->percent . '%)' ?? ''  : '' }} </span>
                                             </td>
                                             <td>
                                                 <span class="">{{ handlePrice($sale->tax ?? 0) }}</span>
