@@ -274,7 +274,11 @@
 
             {{-- discount section --}}
             @if(empty($type))
-                <div class="row mt-30">
+                <div >
+                    <input type="checkbox" id='discount-checkbox'>
+                    <label for="discount-checkbox">لدي كوبون خصم</label>
+                </div>
+                <div class="row mt-30 d-none"  id='discountSection'>
                     <div class="col-12 col-lg-6">
                         <section class="">
                             <h3 class="section-title">{{ trans('cart.coupon_code') }}</h3>
@@ -380,4 +384,16 @@
         var selectDistrictLang = '{{ trans('update.select_district') }}';
     </script>
     <script src="/assets/default/js/parts/cart.min.js"></script>
+
+    <script>
+        window.onload = function(){
+
+            let discountCheckbox= document.getElementById('discount-checkbox');
+            let discountSection= document.getElementById('discountSection');
+
+            discountCheckbox.onchange = function(e){
+                discountSection.classList.toggle('d-none');
+            }
+        }
+    </script>
 @endpush
