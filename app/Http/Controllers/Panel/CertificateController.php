@@ -171,9 +171,8 @@ class CertificateController extends Controller
             $group=$webinar->groups()->whereHas('enrollments',function($query) use($user){
                 $query->where('user_id', $user->id);
             })->first();
-            $startDate = \Carbon\Carbon::parse($group->start_date);
-            $now = \Carbon\Carbon::now();
-            if ($startDate->month < $now->month){$this->makeCourseCertificate($webinar->id);}
+           
+            if ($group->end_date < now()){$this->makeCourseCertificate($webinar->id);}
            
         }
 
