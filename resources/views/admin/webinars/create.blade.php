@@ -114,6 +114,18 @@
                                                 @enderror
                                             </div>
 
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">اسم المقرر فى الشهاده</label>
+                                                <input type="text" name="course_name_certificate" value="{{ !empty($webinar) ? $webinar->course_name_certificate : old('course_name_certificate') }}" class="form-control @error('course_name_certificate')  is-invalid @enderror" placeholder=""/>
+                                                @error('course_name_certificate')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+                                            </div>
+
+
                                             {{-- <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('update.points') }}</label>
                                                 <input type="number" name="points" value="{{ !empty($webinar) ? $webinar->points : old('points') }}" class="form-control @error('points')  is-invalid @enderror" placeholder="Empty means inactive this mode"/>
@@ -317,7 +329,7 @@
 
                                                 <div class="col-12 col-md-6">
                                                     <div class="form-group">
-                                                        <label class="input-label">{{ trans('public.duration') }} ({{ trans('public.minutes') }})</label>
+                                                        <label class="input-label">{{ trans('public.duration') }} (الساعات)</label>
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" id="timeInputGroupPrepend">
