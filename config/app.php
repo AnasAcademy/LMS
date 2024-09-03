@@ -188,6 +188,7 @@ return [
         Ssheduardo\Redsys\RedsysServiceProvider::class,
         Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
        
+        Barryvdh\DomPDF\ServiceProvider::class,
     ],
 
     /*
@@ -246,7 +247,7 @@ return [
         'Rave' => KingFlamez\Rave\Facades\Rave::class,
         'Mpesa' => Gathuku\Mpesa\Facades\Mpesa::class,
         'Redsys'    => Ssheduardo\Redsys\Facades\Redsys::class,
-       
+         'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
     ],
 
 ];
