@@ -85,6 +85,25 @@
                                                 @enderror
                                             </div>
 
+
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">اسم البرنامج فى الشهاده</label>
+                                                <input type="text" name="bundle_name_certificate"
+                                                    value="{{ !empty($bundle) ? $bundle->bundle_name_certificate : old('bundle_name_certificate') }}"
+                                                    class="form-control @error('bundle_name_certificate')  is-invalid @enderror"
+                                                    placeholder="" />
+                                                @error('bundle_name_certificate')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+
+
+
+
+
                                             <div class="form-group mt-15" style="display: none">
                                                 <label class="input-label">{{ trans('update.required_points') }}</label>
                                                 <input type="text" name="points"
@@ -122,6 +141,37 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+
+
+
+                                            <div class="form-group mt-15 js-start_date">
+                                                <div class="form-group">
+                                                    <label class="input-label">{{ trans('public.end_date') }}</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" id="dateInputGroupPrepend">
+                                                                <i class="fa fa-calendar-alt "></i>
+                                                            </span>
+                                                        </div>
+
+                                                        <input type="text" name="end_date"
+                                                            value="{{ (!empty($bundle) and $bundle->end_date) ? dateTimeFormat($bundle->end_date, 'Y-m-d H:i', false, false, getTimezone()) : old('end_date') }}"
+                                                            class="form-control @error('end_date')  is-invalid @enderror datetimepicker"
+                                                            aria-describedby="dateInputGroupPrepend" />
+                                                        @error('end_date')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+                                             
 
                                             <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('update.bundle_url') }}</label>
