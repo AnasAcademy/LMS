@@ -28,6 +28,16 @@ class SaleController extends Controller
             'amount' => deepClone($query)->whereNull('refund_at')->sum('total_amount'),
         ];
 
+
+        $totalDiscounts = [
+            'count' => deepClone($query)->where('discount', '>', 0)->whereNull('refund_at')->count(),
+            'amount' => deepClone($query)->where('discount', '>', 0)->whereNull('refund_at')->sum('discount'),
+        ];
+
+        $totalSales2 = [
+            'count' => deepClone($query)->whereNull('refund_at')->count(),
+            'amount' =>  $totalSales['amount'] + $totalDiscounts['amount'] ,
+        ];
         $classesSales = [
             'count' => deepClone($query)->whereNotNull('webinar_id')->whereNull('refund_at')->count(),
             'amount' => deepClone($query)->whereNotNull('webinar_id')->whereNull('refund_at')->sum('total_amount'),
@@ -84,6 +94,8 @@ class SaleController extends Controller
             'pageTitle' => trans('admin/pages/financial.sales_page_title'),
             'sales' => $sales,
             'totalSales' => $totalSales,
+            'totalSales2' => $totalSales2,
+            'totalDiscounts' => $totalDiscounts,
             'classesSales' => $classesSales,
             'appointmentSales' => $appointmentSales,
             'failedSales' => $failedSales,
