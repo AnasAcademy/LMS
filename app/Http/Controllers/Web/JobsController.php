@@ -248,7 +248,7 @@ class JobsController extends Controller
                 $reminderType = null;
                 $template = null;
                 $notifyOptions = [
-                    '[installment_title]' => $installment->installment->title,
+                    '[installment_title]' => $step->installmentStep->title .' ل '.$order->bundle->title ,
                     '[time.date]' => dateTimeFormat($dueAt, 'j M Y - H:i'),
                     '[amount]' => handlePrice($step->getPrice($itemPrice)),
                 ];

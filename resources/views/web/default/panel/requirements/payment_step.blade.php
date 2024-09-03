@@ -13,17 +13,25 @@
     .discount {
         min-height: 17px;
     }
+
+    .register-btn {
+        background: #5e0a83 !important;
+    }
+
+    .register-btn:hover {
+        background: #f70387 !important;
+    }
 </style>
 
 @section('content')
 
     @include('web.default.panel.requirements.requirements_includes.progress')
-
     <section class="row mt-80 mx-0 justify-content-center">
         @if (count($bundleInstallments) > 0)
             @php
                 $count = 0;
             @endphp
+
             @foreach ($bundleInstallments as $bundleId => $bundleData)
                 @php
                     $count++;
@@ -34,7 +42,7 @@
                     <h2 class="mb-25 col-12">
                         {{ clean($bundleData['bundle']->bundle->title, 't') }}
 
-                        {{-- @if(!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()) && $bundleData['bundle']->bundle->early_enroll!=1)
+                        {{-- @if (!$bundleData['bundle']->bundle->checkUserHasBought(auth()->user()) && $bundleData['bundle']->bundle->early_enroll != 1)
                             <span class="font-14 font-weight-bold text-center text-danger mt-15 discount pr-2">
                                 خصم 30%
                             </span>
@@ -73,7 +81,7 @@
                                 هنا</a>
                         </div>
 
-                    {{-- @elseif ($bundleData['bundle']->bundle->early_enroll)
+                        {{-- @elseif ($bundleData['bundle']->bundle->early_enroll)
                         <div class="w-100 text-center">
                             <p class="alert alert-info text-center mx-30">
                                 يرجى ملاحظة أن التسجيل الرسمي سيبدأ يوم 30 يوليو.

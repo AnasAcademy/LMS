@@ -1069,9 +1069,7 @@ class WebinarController extends Controller
             ->where(function ($query) {
                 $query->whereNotNull('sales.webinar_id')
                     ->where('sales.type', 'webinar')
-                    ->whereHas('webinar', function ($query) {
-                        $query->where('status', 'active');
-                    });
+                    ->whereHas('webinar');
             })
             ->distinct()
             ->select('sales.webinar_id');

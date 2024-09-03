@@ -70,6 +70,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
+            Route::get('/excelScholarship', 'UserController@exportExcelScholarship');
+            Route::get('/excelDirectRegister', 'UserController@exportExcelDirectRegister');
             Route::get('/excelAll', 'UserController@exportExcelAll');
 
 
@@ -91,8 +93,10 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{class}/delete', 'StudyClassController@destroy');
             Route::get('/{class}/students', 'StudyClassController@students');
             Route::get('/{class}/enrollers', 'StudyClassController@Enrollers');
+            Route::get('/{class}/direct_register', 'StudyClassController@directRegister');
             Route::get('/{class}/scholarship', 'StudyClassController@ScholarshipStudent');
             Route::get('/{class}/users', 'StudyClassController@Users');
+            Route::get('/{class}/registered_users', 'StudyClassController@RegisteredUsers');
             Route::get('/{class}/requirements', 'StudyClassController@requirements');
 
         });
@@ -658,6 +662,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/verified_users', 'InstallmentsController@verifiedUsers');
                 Route::get('/verified_users/export', 'InstallmentsController@verifiedUsersExportExcel');
             });
+        });
+
+        Route::group(['prefix' => 'programs/statistics'], function () {
+            Route::get('/bundles', 'BundleController@statistics');
+            Route::get('/webinars', 'WebinarController@statistics');
+
         });
 
         Route::group(['prefix' => 'advertising'], function () {

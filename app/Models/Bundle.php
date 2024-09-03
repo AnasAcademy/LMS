@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\BundleStudent;
 use App\User;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
@@ -117,6 +118,27 @@ class Bundle extends Model implements TranslatableContract
             ->where('type', 'bundle');
     }
 
+    function formFeeSales(){
+        return $this->hasMany('App\Models\Sale', 'bundle_id', 'id')
+        ->whereNull('refund_at')
+        ->where('type', 'form_fee');
+    }
+
+    function bundleSales(){
+        return $this->hasMany('App\Models\Sale', 'bundle_id', 'id')
+            ->whereNull('refund_at')
+        ->whereIn('type', ['bundle', 'installment_payment'])->where('payment_method', '!=', 'scholarship')->groupBy('buyer_id');
+    }
+
+    function scholarshipSales(){
+        return $this->hasMany('App\Models\Sale', 'bundle_id', 'id')
+            ->whereNull('refund_at')
+            ->where('type', 'bundle')->where('payment_method','scholarship');
+    }
+
+    function directRegister(){
+        return $this->hasMany(BundleStudent::class, 'bundle_id', 'id')->whereNull('class_id');
+    }
     /**
      * Return the sluggable configuration array for this model.
      *
@@ -556,5 +578,10 @@ class Bundle extends Model implements TranslatableContract
     public function students()
     {
         return $this->belongsToMany(Student::class);
+    }
+
+
+    public function batch(){
+        return $this->belongsTo(StudyClass::class, 'batch_id');
     }
 }

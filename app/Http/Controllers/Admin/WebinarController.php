@@ -380,7 +380,7 @@ class WebinarController extends Controller
         // $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
         $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
 
-       // dd($data);
+
         $webinar = Webinar::create([
             'type' => $data['type'],
             'slug' => $data['slug'],
@@ -1267,5 +1267,22 @@ class WebinarController extends Controller
         }
 
         abort(403);
+    }
+
+    public function statistics(Request $request)
+    {
+        $this->authorize('admin_programs_statistics_webinars_list');
+
+        removeContentLocale();
+
+        $webinars = Webinar::where('unattached', 1)->paginate(10);
+
+
+        $data = [
+            'pageTitle' => 'إحصائيات التسجيل في الدورات',
+            'webinars' => $webinars,
+        ];
+
+        return view('admin.webinars.statistics', $data);
     }
 }

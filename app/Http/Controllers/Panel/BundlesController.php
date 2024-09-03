@@ -113,9 +113,7 @@ class BundlesController extends Controller
             ->where(function ($query) {
                 $query->whereNotNull('sales.bundle_id')
                       ->whereIn('sales.type', ['bundle', 'installment_payment'])
-                      ->whereHas('bundle', function ($query) {
-                          $query->where('status', 'active');
-                      });
+                      ->whereHas('bundle');
             })
             ->distinct()
             ->select('sales.bundle_id');

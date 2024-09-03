@@ -65,7 +65,7 @@ class Discount extends Model
         return ($count > 0) ? $count : 0;
     }
 
-    public function checkValidDiscount()
+    public function checkValidDiscount1()
     {
         if ($this->expired_at < time()) {
             return trans('update.discount_code_has_expired'); // expired
@@ -200,6 +200,142 @@ class Discount extends Model
         foreach ($orderItems as $orderItem) {
             if (!empty($orderItem) and !empty($orderItem->order) and $orderItem->order->status == 'paid') {
                 $usedCount += 1;
+            }
+        }
+
+        if ($usedCount >= $this->count) {
+            return trans('update.discount_code_used_count_error'); // The number of uses of this code has expired.
+        }
+
+        return 'ok';
+    }
+
+
+    public function checkValidDiscount(OrderItem $orderItem)
+    {
+        if ($this->expired_at < time()) {
+            return trans('update.discount_code_has_expired'); // expired
+        }
+
+        $user = auth()->user();
+
+        if ($this->source == self::$discountSourceCourse or $this->source == self::$discountSourceCategory) {
+            if (empty($orderItem->webinar) ) {
+                return trans('update.discount_code_is_for_courses_error');
+            }
+        } elseif ($this->source == self::$discountSourceMeeting) {
+
+            if (empty($orderItem->reserve_meeting_id)) {
+                return trans('update.discount_code_is_for_meetings_error');
+            }
+        }
+
+        if ($this->source == self::$discountSourceCourse) {
+            $discountWebinarsIds = $this->discountCourses()->pluck('course_id')->toArray();
+            $hasSpecialWebinars = false;
+
+            $webinar = $orderItem->webinar;
+            if (!empty($webinar) and in_array($webinar->id, $discountWebinarsIds)) {
+                $hasSpecialWebinars = true;
+            }
+
+            if (!$hasSpecialWebinars) {
+                return trans('update.your_coupon_is_valid_for_another_course');
+            }
+        }
+
+        if ($this->source == self::$discountSourceBundle) {
+            $discountBundlesIds = $this->discountBundles()->pluck('bundle_id')->toArray();
+            $hasSpecialBundles = false;
+
+            $bundle = $orderItem->bundle;
+            // return "bundle: $bundle->title , $bundle->id";
+            if (!empty($bundle) and in_array($bundle->id, $discountBundlesIds)) {
+                $hasSpecialBundles = true;
+            }
+
+            if (!$hasSpecialBundles) {
+                return trans('update.your_coupon_is_valid_for_another_bundle');
+            }
+        }
+
+        if ($this->source == self::$discountSourceProduct) {
+            $hasSpecialProducts = false;
+
+            if (!empty($orderItem->productOrder)) {
+                $product = $orderItem->productOrder->product;
+
+                if (!empty($product) and ($this->product_type == 'all' or $this->product_type == $product->type)) {
+                    $hasSpecialProducts = true;
+                }
+            }
+
+            if (!$hasSpecialProducts) {
+                return trans('update.your_coupon_is_valid_for_another_products_type');
+            }
+        }
+
+        if ($this->source == self::$discountSourceCategory) {
+            $categoriesIds = ($this->discountCategories) ? $this->discountCategories()->pluck('category_id')->toArray() : [];
+            $hasSpecialCategories = false;
+
+            $item = $orderItem->webinar ?? $orderItem->bundle;
+            if (!empty($item) and in_array($item->category_id, $categoriesIds)) {
+                $hasSpecialCategories = true;
+            }
+
+            if (!$hasSpecialCategories) {
+                return trans('update.your_coupon_is_valid_for_another_category');
+            }
+        }
+
+        if ($this->type == 'special_users') {
+            $userDiscount = DiscountUser::where('user_id', $user->id)
+                ->where('discount_id', $this->id)
+                ->first();
+
+            if (empty($userDiscount)) {
+                return trans('cart.coupon_invalid'); // not for this user
+            }
+        }
+
+
+        if (!empty($this->minimum_order)) { // check user orders minimum amounts
+
+            if ($this->minimum_order > $$orderItem->total_amount) {
+                return trans('update.discount_code_minimum_order_error', ['min_order' => $this->minimum_order]); // the minimum order is less than the discount amount
+            }
+        }
+
+        if (!empty($this->discountGroups) and count($this->discountGroups)) {
+            $groupsIds = $this->discountGroups()->pluck('group_id')->toArray();
+
+            if (empty($user->userGroup) or !in_array($user->userGroup->group_id, $groupsIds)) {
+                return trans('update.discount_code_group_error'); // this user is not in specific group
+            }
+        }
+
+        if ($this->for_first_purchase) {
+            $checkIsFirstPurchase = Sale::where('buyer_id', $user->id)
+                ->whereNull('refund_at')
+                ->count();
+
+            if ($checkIsFirstPurchase > 0) {
+                return trans('update.discount_code_for_first_purchase_error'); // This discount code for first purchase.
+            }
+        }
+
+        $usedCount = 0;
+        $orderItems = OrderItem::where('discount_id', $this->id)
+            ->groupBy('order_id')
+            ->get();
+
+        foreach ($orderItems as $orderItemRecord){
+            if (!empty($orderItemRecord) and !empty($orderItemRecord->order) and $orderItemRecord->order->status == 'paid') {
+                $usedCount += 1;
+                // if($orderItemRecord->user_id == $orderItem->user_id){
+                //     return trans('update.discount_code_used_before');
+                // }
             }
         }
 

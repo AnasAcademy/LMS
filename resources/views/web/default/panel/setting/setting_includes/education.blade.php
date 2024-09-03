@@ -80,7 +80,7 @@
                                     <button class="btn btn-link btn-block text-left" type="button"
                                         data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
                                         aria-controls="collapseOne">
-                                        تعليم جامعي
+                                        التعليم الجامعي
                                     </button>
                                 </h2>
                             </div>
@@ -88,14 +88,77 @@
                             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
                                 data-parent="#accordionExample">
                                 <div class="card-body row">
+
+                                    {{-- certificate_type --}}
+                                    <div class="form-group col-12">
+
+                                        <label for="certificate_type" class="form-label high_education">
+                                            أخر شهادة جامعية حصلت عليها
+                                            <span class="text-danger">*</span></label>
+
+                                        <div class="row mr-5 mt-5 col-12 col-md-10">
+                                            {{-- diploma type --}}
+                                            <div class="col-12 col-sm-3">
+                                                <label for="diploma">
+                                                    <input type="radio" id="diploma" name="certificate_type"
+                                                        class="@error('certificate_type') is-invalid @enderror"
+                                                        value="diploma" required
+                                                        {{ old('certificate_type', $student->certificate_type ?? null) == 'diploma' ? 'checked' : '' }}>
+                                                    {{ trans('application_form.diploma') }}
+                                                </label>
+                                            </div>
+
+                                            {{-- Bachelor type --}}
+                                            <div class="col-12 col-sm-3">
+                                                <label for="bachelor">
+                                                    <input type="radio" id="bachelor" name="certificate_type" required
+                                                        class="@error('certificate_type') is-invalid @enderror"
+                                                        value="bachelor"
+                                                        {{ old('certificate_type', $student->certificate_type ?? null) == 'bachelor' ? 'checked' : '' }}>
+                                                    {{ trans('application_form.bachelor') }}
+                                                </label>
+                                            </div>
+
+                                            {{-- Master type --}}
+                                            <div class="col-12 col-sm-3">
+                                                <label for="master">
+                                                    <input type="radio" id="master" name="certificate_type"
+                                                        class="@error('certificate_type') is-invalid @enderror"
+                                                        value="master" required
+                                                        {{ old('certificate_type', $student->certificate_type ?? null) == 'master' ? 'checked' : '' }}>
+                                                    {{ trans('application_form.master') }}
+                                                </label>
+                                            </div>
+
+                                            {{-- PhD type --}}
+                                            <div class="col-12 col-sm-3">
+                                                <label for="PhD">
+                                                    <input type="radio" id="PhD" name="certificate_type" required
+                                                        class="@error('certificate_type') is-invalid @enderror"
+                                                        value="PhD"
+                                                        {{ old('certificate_type', $student->certificate_type ?? null) == 'PhD' ? 'checked' : '' }}>
+                                                    {{ trans('application_form.PhD') }}
+                                                </label>
+                                            </div>
+
+                                        </div>
+
+                                        @error('certificate_type')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+
+                                    </div>
+
                                     {{-- المؤهل التعليمي --}}
                                     <div class="form-group col-12 col-sm-6">
 
                                         <label for="educational_qualification_country"
                                             class="form-label high_education">بلد
                                             مصدر
-                                            شهادة
-                                            البكالوريوس<span class="text-danger">*</span></label>
+                                            الشهادة
+                                            <span class="text-danger">*</span></label>
 
                                         <select id="educational_qualification_country"
                                             name="educational_qualification_country"
@@ -228,32 +291,33 @@
                                         @enderror
                                     </div>
 
-                                     <div class="col-12 row high_education">
-                                    {{-- high_certificate_img input --}}
-                                    <div class="form-group col-12 col-sm-6 high_education">
-                                        <div>
-                                            <label for="high_certificate_img">صورة شهادة التخرج </label>
-                                            <input type="file" id="high_certificate_img"
-                                                name="high_certificate_img" accept=".jpeg,.jpg,.png"
-                                                value="{{ old('high_certificate_img', $student ? $student->high_certificate_img : '') }}"
-                                                class="form-control @error('high_certificate_img') is-invalid @enderror">
-                                        </div>
-                                        @error('high_certificate_img')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
+                                    <div class="col-12 row high_education">
+                                        {{-- high_certificate_img input --}}
+                                        <div class="form-group col-12 col-sm-6 high_education">
+                                            <div>
+                                                <label for="high_certificate_img">صورة شهادة التخرج </label>
+                                                <input type="file" id="high_certificate_img"
+                                                    name="high_certificate_img" accept=".jpeg,.jpg,.png"
+                                                    value="{{ old('high_certificate_img', $student ? $student->high_certificate_img : '') }}"
+                                                    class="form-control @error('high_certificate_img') is-invalid @enderror">
                                             </div>
-                                        @enderror
+                                            @error('high_certificate_img')
+                                                <div class="invalid-feedback d-block">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                        {{-- high_certificate_img display --}}
+                                        <div>
+                                            @if ($student->high_certificate_img)
+                                                <a href="/store/{{ $student->high_certificate_img }}"
+                                                    target="_blank">
+                                                    <img src="/store/{{ $student->high_certificate_img }}"
+                                                        alt="image" width="100px" style="max-height:100px">
+                                                </a>
+                                            @endif
+                                        </div>
                                     </div>
-                                    {{-- high_certificate_img display --}}
-                                    <div>
-                                        @if ($student->high_certificate_img)
-                                            <a href="/store/{{ $student->high_certificate_img }}" target="_blank">
-                                                <img src="/store/{{ $student->high_certificate_img }}" alt="image"
-                                                    width="100px" style="max-height:100px; border-radius: 50%">
-                                            </a>
-                                        @endif
-                                    </div>
-                                     </div>
 
                                 </div>
                             </div>
@@ -266,7 +330,7 @@
                                     <button class="btn btn-link btn-block text-left collapsed" type="button"
                                         data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
                                         aria-controls="collapseTwo">
-                                        تعليم متوسط
+                                        التعليم الثانوي
                                     </button>
                                 </h2>
                             </div>
@@ -328,7 +392,8 @@
                                     {{-- المنطقة التعليمية --}}
                                     <div class="form-group col-12 col-sm-6">
                                         <label for="educational_area" class="form-label">
-                                            المنطقة التعليمية<span class="text-danger">*</span>
+                                            المنطقة التعليمية
+                                            {{-- <span class="text-danger">*</span> --}}
                                         </label>
                                         <input type="text" id="educational_area"
                                             class="form-control @error('educational_area') is-invalid @enderror"
@@ -395,30 +460,31 @@
                                     </div>
 
                                     <div class="col-12 row secondary_education">
-                                    {{-- secondary_certificate_img input --}}
-                                    <div class="form-group col-12 col-sm-6 secondary_education">
-                                        <div>
-                                            <label for="secondary_certificate_img">صورة شهادة الثانوية  </label>
-                                            <input type="file" id="secondary_certificate_img"
-                                                name="secondary_certificate_img" accept=".jpeg,.jpg,.png"
-                                                value="{{ old('secondary_certificate_img', $student ? $student->secondary_certificate_img : '') }}"
-                                                class="form-control @error('secondary_certificate_img') is-invalid @enderror">
-                                        </div>
-                                        @error('secondary_certificate_img')
-                                            <div class="invalid-feedback d-block">
-                                                {{ $message }}
+                                        {{-- secondary_certificate_img input --}}
+                                        <div class="form-group col-12 col-sm-6 secondary_education">
+                                            <div>
+                                                <label for="secondary_certificate_img">صورة شهادة الثانوية </label>
+                                                <input type="file" id="secondary_certificate_img"
+                                                    name="secondary_certificate_img" accept=".jpeg,.jpg,.png"
+                                                    value="{{ old('secondary_certificate_img', $student ? $student->secondary_certificate_img : '') }}"
+                                                    class="form-control @error('secondary_certificate_img') is-invalid @enderror">
                                             </div>
-                                        @enderror
-                                    </div>
-                                    {{-- secondary_certificate_img display --}}
-                                    <div>
-                                        @if ($student->secondary_certificate_img)
-                                            <a href="/store/{{ $student->secondary_certificate_img }}" target="_blank">
-                                                <img src="/store/{{ $student->secondary_certificate_img }}" alt="image"
-                                                    width="100px" style="max-height:100px; border-radius: 50%">
-                                            </a>
-                                        @endif
-                                    </div>
+                                            @error('secondary_certificate_img')
+                                                <div class="invalid-feedback d-block">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                        {{-- secondary_certificate_img display --}}
+                                        <div>
+                                            @if ($student->secondary_certificate_img)
+                                                <a href="/store/{{ $student->secondary_certificate_img }}"
+                                                    target="_blank">
+                                                    <img src="/store/{{ $student->secondary_certificate_img }}"
+                                                        alt="image" width="100px" style="max-height:100px">
+                                                </a>
+                                            @endif
+                                        </div>
                                     </div>
 
 

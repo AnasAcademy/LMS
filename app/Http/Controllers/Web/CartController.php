@@ -111,12 +111,14 @@ class CartController extends Controller
     {
         $user = auth()->user();
         $coupon = $request->get('coupon');
+        $order = Order::find($request->get('order_id'));
 
         $discountCoupon = Discount::where('code', $coupon)
             ->first();
 
         if (!empty($discountCoupon)) {
-            $checkDiscount = $discountCoupon->checkValidDiscount();
+
+            $checkDiscount = $discountCoupon->checkValidDiscount($order->orderItems[0]);
             if ($checkDiscount != 'ok') {
                 return response()->json([
                     'status' => 422,
@@ -124,19 +126,23 @@ class CartController extends Controller
                 ]);
             }
 
-            $carts = Cart::where('creator_id', $user->id)
-                ->get();
+            if (!empty($order)) {
+                // $calculate = $this->calculatePrice($order, $user, $discountCoupon);
 
-            if (!empty($carts) and !$carts->isEmpty()) {
-                $calculate = $this->calculatePrice($carts, $user, $discountCoupon);
-
+                $calculate = [
+                    'total_discount' =>  $order->total_amount * $discountCoupon->percent / 100,
+                    'tax_price' => (float)$order->tax_price,
+                    'total_amount' => (float)$order->total_amount,
+                ];
                 if (!empty($calculate)) {
                     return response()->json([
                         'status' => 200,
                         'discount_id' => $discountCoupon->id,
+                        'discount_percent' => $discountCoupon->percent,
                         'total_discount' => handlePrice($calculate["total_discount"]),
                         'total_tax' => handlePrice($calculate["tax_price"]),
-                        'total_amount' => handlePrice($calculate["total"]),
+                        'amount' => $calculate["total_amount"],
+                        'total_amount' => handlePrice($calculate["total_amount"] - $calculate["total_discount"]),
                     ], 200);
                 }
             }

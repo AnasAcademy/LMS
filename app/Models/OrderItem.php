@@ -101,4 +101,8 @@ class OrderItem extends Model
         return $seller;
     }
 
+    public function getDiscount(){
+        return $this->belongsTo(Discount::class, 'discount_id', 'id');
+    }
+
 }

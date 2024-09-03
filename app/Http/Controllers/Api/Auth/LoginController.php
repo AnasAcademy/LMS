@@ -22,13 +22,10 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $rules = [
-            'username' => 'required|string|numeric',
+            'email' => 'required|string|email',
             'password' => 'required|string|min:6',
         ];
 
-        if ($this->username() == 'email') {
-            $rules['username'] = 'required|string|email';
-        }
         validateParam($request->all(), $rules);
 
         return $this->attemptLogin($request);
@@ -51,7 +48,7 @@ class LoginController extends Controller
     protected function attemptLogin(Request $request)
     {
         $credentials = [
-            $this->username() => $request->get('username'),
+            'email' => $request->get('email'),
             'password' => $request->get('password')
         ];
 
@@ -85,19 +82,20 @@ class LoginController extends Controller
         if ($user->status != User::$active and !$verify) {
             // auth('api')->logout();
             auth('api')->logout();
+            return apiResponse2(0, 'inactive_account', trans('auth.inactive_account'));
             //  dd(apiAuth());
-            $verificationController = new VerificationController();
-            $checkConfirmed = $verificationController->checkConfirmed($user, $this->username(), $request->input('username'));
+            // $verificationController = new VerificationController();
+            // $checkConfirmed = $verificationController->checkConfirmed($user, 'email', $request->input('email'));
 
-            if ($checkConfirmed['status'] == 'send') {
+            // if ($checkConfirmed['status'] == 'send') {
 
-                return apiResponse2(0, 'not_verified', "can't login before verify your acount");
+            //     return apiResponse2(0, 'not_verified', "can't login before verify your acount");
 
-            } elseif ($checkConfirmed['status'] == 'verified') {
-                $user->update([
-                    'status' => User::$active,
-                ]);
-            }
+            // } elseif ($checkConfirmed['status'] == 'verified') {
+            //     $user->update([
+            //         'status' => User::$active,
+            //     ]);
+            // }
         } elseif ($verify) {
             $user->update([
                 'status' => User::$active,
@@ -112,7 +110,16 @@ class LoginController extends Controller
 
         $profile_completion = [];
         $data  ['token'] = $token;
-        $data['user_id'] = $user->id;
+        $data['user'] = [
+            "id" => $user->id,
+            "full_name" => $user->full_name,
+            "role_name" => $user->role_name,
+            "user_code" => $user->user_code,
+            "mobile" => $user->mobile,
+            "email" => $user->email,
+            "status" => $user->status,
+            "as_student" => $user->student
+        ];
         if (!$user->full_name) {
             $profile_completion[] = 'full_name';
             $data['profile_completion'] = $profile_completion;

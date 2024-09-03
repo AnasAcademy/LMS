@@ -33,6 +33,7 @@ use Illuminate\Support\Carbon;
 use App\Models\OrderItem;
 use App\Models\Service;
 use App\Models\ServiceUser;
+use App\Models\UserReference;
 
 class User extends Authenticatable
 {
@@ -124,14 +125,14 @@ class User extends Authenticatable
 
     public function hasPermission($section_name)
     {
-        if (self::isAdmin() || self::isUser()) {
+        // if (self::isAdmin() || self::isUser()) {
             if (!isset($this->permissions)) {
                 $sections_id = Permission::where('role_id', '=', $this->role_id)->where('allow', true)->pluck('section_id')->toArray();
                 $this->permissions = Section::whereIn('id', $sections_id)->pluck('name')->toArray();
             }
             return in_array($section_name, $this->permissions);
-        }
-        return false;
+        // }
+        // return false;
     }
 
     public function role()
@@ -1053,5 +1054,10 @@ class User extends Authenticatable
                 $query->where('pay_for', 'webinar')
                     ->whereIn('status', ['waiting', 'reject']);
             });
+    }
+
+
+    function references(){
+        return $this->hasMany(UserReference::class,'user_id', 'id');
     }
 }
