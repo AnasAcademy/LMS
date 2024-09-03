@@ -18,8 +18,12 @@ Route::group(['namespace' => 'Web','prefix' => 'panel', 'middleware' => ['check_
     Route::get('/{bundle}/book_seat', 'ApplyController@bookSeat');
 });
 
-Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
 
+Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
+    Route::get('/course/{WebinarId}/showCertificate/{format?}', 'CertificateController@makeCourseCertificate');
+   
+     Route::get('/bundle/{bundleId}/showCertificate/{format?}', 'CertificateController@makeBundleCertificate');
+  //  Route::get('/bundle/{bundleId}/showCertificate', 'CertificateController@makeBundleCertificate');
     Route::get('/', 'DashboardController@dashboard')->middleware('can:show_panel');
 
     Route::group(['prefix' => 'users'], function () {
@@ -208,7 +212,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
     });
 
 
-    Route::group(['prefix' => 'certificates','middleware'=>'can:student_showCertificate'], function () {
+    Route::group(['prefix' => 'certificates'], function () {
         Route::get('/', 'CertificateController@lists');
         Route::get('/certificates_template', 'CertificateController@certificateLists');
         Route::get('/achievements', 'CertificateController@achievements');

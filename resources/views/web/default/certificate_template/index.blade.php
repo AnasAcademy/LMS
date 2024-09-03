@@ -1,42 +1,44 @@
-<html lang="fa">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{{ $pageTitle ?? '' }}</title>
-
+    <title>{{ $pageTitle }}</title>
     <style>
-
-        @font-face {
-            font-family: 'fontFamily';
-            src: url({{ public_path('/store/pdf_fonts/DejaVuSans.ttf') }}) format("truetype");
-            font-weight: 400;
-            font-style: normal;
-        }
-
-        html, body {
-            background-image: url("{{ $image }}");
-            background-repeat: no-repeat;
-            background-size: cover;
+        body {
             margin: 0;
-            border: initial;
-            border-radius: initial;
-            page-break-after: always;
-            font-size: 14px;
-            font-weight: 400;
-            font-family: 'fontFamily'
-        }
-
-        @page {
-            size: A4;
-            margin: 0;
-        }
-
-        * {
+            padding: 0;
+            font-family: Arial, sans-serif;
+            width: 100% ;
+            height: 100%;
             box-sizing: border-box;
-            font-family: 'fontFamily' !important;
+            object-fit: cover;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        img {
+            max-width: 100%;
+            width: 100%;
+            height:100%;
+            max-height: 100%; /* Adjust this if needed */
+            /* object-fit: cover; */
+            
         }
     </style>
 </head>
-
-<body id="app">
-{!! $body !!}
+<body>
+    <div class="container">
+        <div>
+            
+            <img src="{{ $dynamicImage }}" alt="Dynamic Certificate Image">
+            <!-- Other content using $body variables -->
+          
+        </div>
+    </div>
 </body>
+</html>

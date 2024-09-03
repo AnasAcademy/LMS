@@ -22,6 +22,8 @@ use App\Models\OrderItem;
 use App\Models\BundleWebinar;
 use App\Models\TextLesson;
 use App\Models\CourseLearning;
+use App\Models\Enrollment;
+use App\Models\Group;
 use App\Models\WebinarChapter;
 use App\Models\WebinarReport;
 use App\Models\Webinar;
@@ -265,6 +267,14 @@ class WebinarController extends Controller
             $cashbackRulesMixin = new CashbackRules($user);
             $cashbackRules = $cashbackRulesMixin->getRules('courses', $course->id, $course->type, $course->category_id, $course->teacher_id);
         }
+        
+        $checkAllContentPass = $course->chapters()->where('user_id',$user->id)->get();
+        $bundleId = BundleWebinar::where('webinar_id', $course->id)->value('bundle_id');
+        $bundle=Bundle::find($bundleId);
+  
+    $group=$course->groups()->whereHas('enrollments',function($query) use($user){
+        $query->where('user_id', $user->id);
+    })->first();
 
         $data = [
             'pageTitle' => $course->title,
@@ -284,6 +294,11 @@ class WebinarController extends Controller
             'quizzes' => $quizzes,
             'installments' => $installments ?? null,
             'cashbackRules' => $cashbackRules ?? null,
+            'checkAllContentPass' => $checkAllContentPass,
+            'bundle'=>$bundle,
+            'group'=>$group,
+            
+            
         ];
 
         // check for certificate
@@ -294,7 +309,7 @@ class WebinarController extends Controller
         if ($justReturnData) {
             return $data;
         }
-        $bundleId = BundleWebinar::where('webinar_id', $course->id)->value('bundle_id');
+       
 // dd($bundleId);
         $order_id = OrderItem::where('bundle_id', $bundleId)
         ->where('user_id', auth()->user()->id)

@@ -83,6 +83,28 @@
                                             </div>
 
                                             <div class="form-group mt-15">
+                                                <label class="input-label d-block">نوع الدوره</label>
+                                            
+                                                <select name="unattached" class="custom-select @error('unattached') is-invalid @enderror">
+                                                    <option value="0" @if((!empty($webinar) && $webinar->isWebinar()) || old('unattached') == 0) selected @endif>
+                                                        دوره خاصه ببرنامج
+                                                    </option>
+                                                    <option value="1" @if((!empty($webinar) && $webinar->isCourse()) || old('unattached') == 1) selected @endif>
+                                                       
+                                                       دوره مستقله
+                                                    </option>
+                                                </select>
+                                            
+                                                @error('unattached')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+                                            </div>
+                                            
+
+
+                                            <div class="form-group mt-15">
                                                 <label class="input-label">اسم المقرر</label>
                                                 <input type="text" name="title" value="{{ !empty($webinar) ? $webinar->title : old('title') }}" class="form-control @error('title')  is-invalid @enderror" placeholder=""/>
                                                 @error('title')
@@ -91,6 +113,18 @@
                                                 </div>
                                                 @enderror
                                             </div>
+
+
+                                            <div class="form-group mt-15">
+                                                <label class="input-label">اسم المقرر فى الشهاده</label>
+                                                <input type="text" name="course_name_certificate" value="{{ !empty($webinar) ? $webinar->course_name_certificate : old('course_name_certificate') }}" class="form-control @error('course_name_certificate')  is-invalid @enderror" placeholder=""/>
+                                                @error('course_name_certificate')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+                                            </div>
+
 
                                             {{-- <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('update.points') }}</label>
@@ -295,7 +329,7 @@
 
                                                 <div class="col-12 col-md-6">
                                                     <div class="form-group">
-                                                        <label class="input-label">{{ trans('public.duration') }} ({{ trans('public.minutes') }})</label>
+                                                        <label class="input-label">{{ trans('public.duration') }} (الساعات)</label>
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" id="timeInputGroupPrepend">

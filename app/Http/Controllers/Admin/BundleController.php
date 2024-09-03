@@ -254,7 +254,9 @@ class BundleController extends Controller
 
         $this->validate($request, [
             'title' => 'required|max:255',
+            'bundle_name_certificate' => 'required',
             'start_date'=>'required|date',
+            'end_date'=>'required|date',
             'slug' => 'max:255|unique:bundles,slug',
             'thumbnail' => 'required',
             'image_cover' => 'required',
@@ -287,9 +289,19 @@ class BundleController extends Controller
             $data['start_date'] = $startDate->getTimestamp();
         }
 
+        if (!empty($data['end_date'])) {
+            if (empty($data['timezone']) || !getFeaturesSettings('timezone_in_create_webinar')) {
+                $data['timezone'] = getTimezone();
+            }
+    
+            $endDate = convertTimeToUTCzone($data['end_date'], $data['timezone']);
+            $data['end_date'] = $endDate->getTimestamp();
+        }
+
 
         $bundle = Bundle::create([
             'slug' => $data['slug'],
+            'bundle_name_certificate'=> $data['bundle_name_certificate'],
             'teacher_id' => $data['teacher_id'],
             'creator_id' => $data['teacher_id'],
             'thumbnail' => $data['thumbnail'],
@@ -299,6 +311,7 @@ class BundleController extends Controller
             'subscribe' => !empty($data['subscribe']) ? true : false,
             'points' => $data['points'] ?? null,
             'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
             'price' => $data['price'],
             'access_days' => $data['access_days'] ?? null,
             'category_id' => $data['category_id'],
@@ -309,7 +322,7 @@ class BundleController extends Controller
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
-           'batch_id'=>$data['class_id']?? null,
+           'batch_id'=>$data['batch_id']?? null,
         ]);
 
         if ($bundle) {
@@ -426,7 +439,9 @@ class BundleController extends Controller
 
         $rules = [
             'title' => 'required|max:255',
+            'bundle_name_certificate'=>'required',
             'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'slug' => 'max:255|unique:bundles,slug,' . $bundle->id,
             'thumbnail' => 'required',
             'image_cover' => 'required',
@@ -518,8 +533,21 @@ class BundleController extends Controller
             $data['start_date'] = null;
         }
 
+        if (!empty($data['end_date'])) {
+            if (empty($data['timezone']) or !getFeaturesSettings('timezone_in_create_webinar')) {
+                $data['timezone'] = getTimezone();
+            }
+
+            $startDate = convertTimeToUTCzone($data['end_date'], $data['timezone']);
+
+            $data['end_date'] = $startDate->getTimestamp();
+        } else {
+            $data['end_date'] = null;
+        }
+
         $bundle->update([
             'slug' => $data['slug'],
+            'bundle_name_certificate'=> $data['bundle_name_certificate'],
             'teacher_id' => $data['teacher_id'],
             'thumbnail' => $data['thumbnail'],
             'image_cover' => $data['image_cover'],
@@ -528,6 +556,7 @@ class BundleController extends Controller
             'subscribe' => $data['subscribe'],
             'points' => $data['points'] ?? null,
             'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
             'price' => $data['price'],
             'access_days' => $data['access_days'] ?? null,
             'category_id' => $data['category_id'],

@@ -424,21 +424,22 @@
                             <a href="/panel/certificates/achievements">{{ trans('quiz.achievements') }}</a>
                         </li>
 
-                        <li class="mt-5">
-                            <a href="/certificate_validation">{{ trans('site.certificate_validation') }}</a>
-                        </li>
+                    <li class="mt-5">
+                        <a href="/certificate">{{ trans('site.certificate_validation') }}</a>
+                    </li>
 
-                        <li class="mt-5 {{ request()->is('panel/certificates/webinars') ? 'active' : '' }}">
-                            <a href="/panel/certificates/webinars">{{ trans('update.course_certificates') }}</a>
-                        </li>
+                    {{-- <li class="mt-5 {{ request()->is('panel/certificates/webinars') ? 'active' : '' }}">
+                        <a href="/panel/certificates/webinars">{{ trans('update.course_certificates') }}</a>
+                    </li> --}}
 
-                        <li class="mt-5 {{ request()->is('panel/certificates/certificates_template') ? 'active' : '' }}">
-                            <a href="/panel/certificates/certificates_template">الشهادات المعتمدة</a>
-                        </li>
+                    {{-- <li class="mt-5 {{ request()->is('panel/certificates/certificates_template') ? 'active' : '' }}">
+                        <a href="/panel/certificates/certificates_template">الشهادات المعتمدة</a>
+                    </li> --}}
 
-                    </ul>
-                </div>
-            </li>
+                </ul>
+            </div>
+        </li>
+        
         @endcan
 
         @if ($authUser->checkCanAccessToStore())

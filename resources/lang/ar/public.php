@@ -68,6 +68,7 @@ return [
     'additional_information' => 'معلومات إضافية',
     'capacity' => 'السعة التخزينية',
     'start_date' => 'تاريخ البدء',
+    'end_date' => 'تاريخ الانتهاء',
     'time' => 'زمن',
     'date' => 'تاريخ',
     'date_created' => 'تاريخ الإنشاء',

@@ -318,11 +318,12 @@ class WebinarController extends Controller
 
         $teachers = User::where('role_name', Role::$teacher)->get();
         $categories = Category::where('parent_id', null)->get();
-
+       // $Webinar= Webinar::get();
         $data = [
             'pageTitle' => trans('admin/main.webinar_new_page_title'),
             'teachers' => $teachers,
-            'categories' => $categories
+            'categories' => $categories,
+          //  'Webinar'=> $Webinar,
         ];
 
         return view('admin.webinars.create', $data);
@@ -335,6 +336,7 @@ class WebinarController extends Controller
         $this->validate($request, [
             'type' => 'required|in:webinar,course,text_lesson',
             'title' => 'required|max:255',
+            'course_name_certificate' => 'required',
             'slug' => 'max:255|unique:webinars,slug',
             'thumbnail' => 'required',
             'image_cover' => 'required',
@@ -343,7 +345,8 @@ class WebinarController extends Controller
             'category_id' => 'required',
             'duration' => 'required|numeric',
             'capacity' => 'required',
-            'price' => 'required'
+            'price' => 'required',
+            'unattached'=>'required',
         ]);
 
         $data = $request->all();
@@ -377,9 +380,11 @@ class WebinarController extends Controller
         // $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
         $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
 
+
         $webinar = Webinar::create([
             'type' => $data['type'],
             'slug' => $data['slug'],
+            'course_name_certificate' => $data['course_name_certificate'],
             'teacher_id' => $data['teacher_id'],
             'creator_id' => $data['teacher_id'],
             'thumbnail' => $data['thumbnail'],
@@ -408,7 +413,8 @@ class WebinarController extends Controller
             'created_at' => time(),
             'updated_at' => time(),
             'unattached' => ($category->parent_id==null)? 1 : 0,
-            'hasGroup'   =>($category->parent_id==null)? 1 : 0
+            'hasGroup'   =>($category->parent_id==null)? 1 : 0,
+            'unattached'=>$data['unattached'] ?? null,
         ]);
 
         if ($webinar) {
@@ -513,6 +519,8 @@ class WebinarController extends Controller
             ])
             ->first();
 
+          
+
         if (empty($webinar)) {
             abort(404);
         }
@@ -549,6 +557,7 @@ class WebinarController extends Controller
             'webinarPartnerTeacher' => $webinar->webinarPartnerTeacher,
             'webinarTags' => $tags,
             'defaultLocale' => getDefaultLocale(),
+            
         ];
 
         return view('admin.webinars.create', $data);
@@ -567,12 +576,14 @@ class WebinarController extends Controller
         $rules = [
             'type' => 'required|in:webinar,course,text_lesson',
             'title' => 'required|max:255',
+            'course_name_certificate'=>'required',
             'slug' => 'max:255|unique:webinars,slug,' . $webinar->id,
             'thumbnail' => 'required',
             'image_cover' => 'required',
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
+            'unattached'=>'required',
         ];
 
         if ($webinar) {
@@ -698,6 +709,7 @@ class WebinarController extends Controller
             'creator_id' => $newCreatorId,
             'teacher_id' => $data['teacher_id'],
             'type' => $data['type'],
+            'course_name_certificate'=> $data['course_name_certificate'],
             'thumbnail' => $data['thumbnail'],
             'image_cover' => $data['image_cover'],
             'video_demo' => $data['video_demo'],
@@ -722,6 +734,7 @@ class WebinarController extends Controller
             'message_for_reviewer' => $data['message_for_reviewer'] ?? null,
             'status' => $data['status'],
             'updated_at' => time(),
+            'unattached'=>$data['unattached']?? null,
         ]);
 
         if ($webinar) {
