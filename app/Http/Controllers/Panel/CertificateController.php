@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
 use App\Mixins\Certificate\MakeCertificate;
+use App\Models\Bundle;
 use App\Models\Certificate;
 use App\Models\CertificateTemplate;
 use App\Models\Quiz;
@@ -21,6 +22,7 @@ class CertificateController extends Controller
 
     public function lists(Request $request)
     {
+        //dd($request);
         $user = auth()->user();
 
         if (!$user->isUser()) {
@@ -159,11 +161,40 @@ class CertificateController extends Controller
             $quiz->can_download_certificate = $canDownloadCertificate;
         }
 
-        $webinarsIds = $user->getPurchasedCoursesIds();
+    
+        $webinarsIds =  $user->getAllPurchasedWebinarsIds();
         $userWebinars = Webinar::select('id')
             ->whereIn('id', $webinarsIds)
-            ->where('status', 'active')
             ->get();
+
+        foreach($userWebinars as $webinar){
+            $group=$webinar->groups()->whereHas('enrollments',function($query) use($user){
+                $query->where('user_id', $user->id);
+            })->first();
+            $startDate = \Carbon\Carbon::parse($group->start_date);
+            $now = \Carbon\Carbon::now();
+            if ($startDate->month < $now->month){$this->makeCourseCertificate($webinar->id);}
+           
+        }
+
+
+       
+        $bundlesIds =$user->purchasedBundles->pluck('bundle_id');
+        $userbundles = Bundle::select('id')
+        ->whereIn('id', $bundlesIds)
+        ->get();
+        //  dd($userbundles);  
+
+        foreach($userbundles as $bundle){
+            //dd($bundle); 
+            if ($bundle->end_date < time()){$this->makeBundleCertificate($bundle->id);}
+           
+        }
+        $certificates = Certificate::where('student_id', $user->id)
+        ->with(['webinar', 'bundle'])->get(); // Eager load webinars and bundles
+        
+        $courseCertificates = $certificates->whereNotNull('webinar_id');
+        $bundleCertificates = $certificates->whereNotNull('bundle_id');
 
         $data = [
             'pageTitle' => trans('quiz.my_achievements_lists'),
@@ -173,6 +204,8 @@ class CertificateController extends Controller
             'certificatesCount' => $certificatesCount,
             'userWebinars' => $userWebinars,
             'userAllQuizzes' => $userAllQuizzes,
+            'courseCertificates' => $courseCertificates,
+            'bundleCertificates' => $bundleCertificates,
         ];
 
         return view(getTemplate() . '.panel.certificates.achievements', $data);
@@ -220,4 +253,51 @@ class CertificateController extends Controller
 
         abort(404);
     }
+
+
+    public function makeCourseCertificate($WebinarId,$format ='png')
+
+    {
+
+       // dd($WebinarId);
+        $user = auth()->user();
+
+        $makeCertificate = new MakeCertificate();
+        $course=Webinar::where('id', $WebinarId)->first();
+      //  dd($course);
+        if (!empty($course)) {
+            return $makeCertificate->makeCourseCertificate($course,$format);
+        }
+
+
+       
+
+        abort(404);
+    }
+
+
+    public function makeBundleCertificate($bundleId,$format ='png')
+
+    {
+
+      //dd($bundleId);
+        $user = auth()->user();
+
+        $makeCertificate = new MakeCertificate();
+        $bunble=Bundle::where('id', $bundleId)->first();
+      //  dd($course);
+        if (!empty($bunble)) {
+            return $makeCertificate->makebundleCertificate($bunble,$format);
+        }
+
+
+       
+
+        abort(404);
+    }
+
+
+
+
+
 }
