@@ -30,6 +30,12 @@ return [
         'agree_terms_conditions'=>'اقرار',
         'submit'=>'تسجيل',
         'personal data'=>'البيانات الشخصية',
-
+        "diploma" => 'دبلوم',
+        "master" => 'ماجستير',
+        "bachelor" => 'بكالوريوس',
+        "PhD" => 'دكتوراه',
+        "less_than_5" => "أقل من 5 سنوات" ,
+        "more_than_10" => "أكثر من 10 سنوات",
+        "5-10" => '5-10 سنوات'
 
     ];

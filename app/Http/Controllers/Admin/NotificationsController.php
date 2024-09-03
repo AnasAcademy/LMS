@@ -28,11 +28,12 @@ class NotificationsController extends Controller
         return view('admin.notifications.lists', $data);
     }
 
-    public function posted()
+    public function posted(Request $request)
     {
         $this->authorize('admin_notifications_posted_list');
-
-        $notifications = Notification::where('sender', Notification::$AdminSender)
+        $query = Notification::where('sender', Notification::$AdminSender);
+        $notificationsQuery = $this->getNotificationFilters($query, $request);
+        $notifications = $notificationsQuery
             ->orderBy('created_at', 'desc')
             ->with([
                 'senderUser' => function ($query) {
@@ -218,5 +219,48 @@ class NotificationsController extends Controller
 
 
         return response()->json([], 200);
+    }
+
+
+    private function getNotificationFilters($query, $request)
+    {
+        $from = $request->get('from');
+        $to = $request->get('to');
+        $userName = $request->get('user_name');
+        $email = $request->get('email');
+        $user_code = $request->get('user_code');
+        $title = $request->get('title');
+
+        $query = fromAndToDateFilter($from, $to, $query, 'created_at');
+
+        if (!empty($userName)) {
+            $query->when($userName, function ($query) use ($userName) {
+                $query->whereHas('user', function ($q) use ($userName) {
+                    $q->where('full_name', 'like', "%$userName%");
+                });
+            });
+        }
+
+        if (!empty($email)) {
+            $query->when($email, function ($query) use ($email) {
+                $query->whereHas('user', function ($q) use ($email) {
+                    $q->where('email', 'like', "%$email%");
+                });
+            });
+        }
+        if (!empty($user_code)) {
+            $query->when($user_code, function ($query) use ($user_code) {
+                $query->whereHas('user', function ($q) use ($user_code) {
+                    $q->where('user_code', 'like', "%$user_code%");
+                });
+            });
+        }
+
+
+        if (!empty($title)) {
+                $query->where('title', 'like', "%$title%");
+        }
+
+        return $query;
     }
 }

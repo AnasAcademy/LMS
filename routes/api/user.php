@@ -197,6 +197,8 @@ Route::group([], function () {
 
         Route::post('{id}/buyWithPoint', ['uses' => 'BundleController@buyWithPoint']);
         Route::post('{id}/free', ['uses' => 'BundleController@free']);
+        Route::post('/purchase/{installmentId?}', ['uses' => 'BundleController@purchase_bundle']);
+        Route::get('/purchases', ['uses' => 'BundleController@purchases']);
     });
     /***** Reviews  *****/
     Route::group(['prefix' => '/reviews3'], function () {
@@ -212,7 +214,7 @@ Route::group([], function () {
 
         Route::get('/{webinar}/noticeboards', ['uses' => 'CourseNoticeboardController@index']);
 
-        Route::get('/{webinar}/', ['uses' => 'WebinarsController@show']);
+        Route::get('/{webinar}/{id}', ['uses' => 'WebinarsController@show']);
         Route::get('/{webinar}/chapters/', ['uses' => 'WebinarChapterController@index']);
         Route::get('/{webinar}/chapters/{chapter}', ['uses' => 'WebinarChapterController@show']);
 
@@ -250,7 +252,7 @@ Route::group([], function () {
 
 
     // webinars
-    Route::get('/webinars/purchases/v2', 'WebinarsController@purchases2');
+    // Route::get('/webinars/purchases/v2', 'WebinarsController@purchases2');
 
     // installments
     Route::group(['prefix' => 'financial/installments'], function () {

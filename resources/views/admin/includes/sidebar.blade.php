@@ -78,9 +78,6 @@
                             </li> --}}
                         @endcan
 
-
-
-
                     </ul>
                 </li>
             @endcan()
@@ -105,7 +102,7 @@
 
                         <li class="{{ request()->is(getAdminPanelUrl('/students/enrollers', false)) ? 'active' : '' }}">
                             <a class="nav-link @if (!empty($sidebarBeeps['enrollers']) and $sidebarBeeps['enrollers']) beep beep-sidebar @endif"
-                                href="{{ getAdminPanelUrl() }}/students/enrollers">{{ ' تسجيل الدبلومات' }}</a>
+                                href="{{ getAdminPanelUrl() }}/students/enrollers">{{ ' تسجيل البرامج' }}</a>
                         </li>
 
                         <li class="{{ request()->is(getAdminPanelUrl('/students/direct_register', false)) ? 'active' : '' }}">
@@ -132,7 +129,7 @@
                         @foreach ($webinars as $webinar)
                             <li class="{{ request()->is(getAdminPanelUrl('/courses/*', false)) ? 'active' : '' }}">
                                 <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
-                                    href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}">{{ $webinar->title }}</a>
+                                    href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}" style="height: auto">{{ $webinar->title }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -244,7 +241,7 @@
 
             @can('admin_bundles')
                 <li
-                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and !request()->is(getAdminPanelUrl('/bundles/comments*', false))) ? 'active' : '' }}">
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
                         <span>{{ trans('update.bundles') }}</span>
@@ -268,24 +265,55 @@
                 </li>
             @endcan()
 
+            @can('admin_programs_statistics')
+                <li
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/programs/statistics*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-cube"></i>
+                        <span>إحصائيات التسجيل</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @can('admin_programs_statistics_bundles_list')
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/programs/statistics/bundles', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/programs/statistics/bundles"
+                                    class="nav-link @if (!empty($sidebarBeeps['statistics']) and $sidebarBeeps['statistics']) beep beep-sidebar @endif">البرامج</a>
+                            </li>
+                        @endcan()
+
+                        @can('admin_programs_statistics_webinars_list')
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/programs/statistics/webinars', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/programs/statistics/webinars"
+                                    class="nav-link @if (!empty($sidebarBeeps['statistics']) and $sidebarBeeps['statistics']) beep beep-sidebar @endif">الدورات</a>
+                            </li>
+                        @endcan()
+                    </ul>
+                </li>
+            @endcan()
+
 
             {{-- study classes --}}
-            <li
-                class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/classes*', false))) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-cube"></i>
-                    <span>الدفعات الدراسية</span>
-                </a>
-                <ul class="dropdown-menu">
+            @can('admin_batches')
+                <li
+                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/classes*', false))) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-cube"></i>
+                        <span>الدفعات الدراسية</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                            @can('admin_batches_list')
 
-                        <li
-                            class="{{ (request()->is(getAdminPanelUrl('/classes', false)) and request()->get('type') == 'course') ? 'active' : '' }}">
-                            <a href="{{ getAdminPanelUrl() }}/classes"
-                                class="nav-link @if (!empty($sidebarBeeps['classes']) and $sidebarBeeps['classes']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
-                        </li>
+                            @endcan
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/classes', false))) ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/classes"
+                                    class="nav-link @if (!empty($sidebarBeeps['classes']) and $sidebarBeeps['classes']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
+                            </li>
 
-                </ul>
-            </li>
+                    </ul>
+                </li>
+            @endcan()
 
             @can('admin_upcoming_courses')
                 <li

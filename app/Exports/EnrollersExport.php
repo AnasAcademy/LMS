@@ -59,11 +59,14 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {
-                        $diploma = $purchasedBundle->bundle->title;
-                        $created_at=$purchasedBundle->created_at;
+                        $diploma .= ($purchasedBundle->bundle->title . " , ") ;
+                        $created_at .=(dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') . " , ");;
 
                 }
+                $diploma = preg_replace('/,(?!.*,)/u', '', $diploma);
+                $created_at = preg_replace('/,(?!.*,)/u', '', $created_at);
             }
+
 
 
             return [
@@ -72,7 +75,7 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
                 $user->student->en_name,
                 $user->email,
                 $diploma,
-                dateTimeFormat($created_at, 'j M Y | H:i'),
+                $created_at,
                 $user->status,
                 $user->mobile,
             ];

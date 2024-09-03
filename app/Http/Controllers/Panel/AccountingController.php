@@ -423,7 +423,7 @@ class AccountingController extends Controller
 
             Notification::create([
                 'user_id' => $offline->user_id,
-                'sender_id' => auth()->id(),
+                'sender_id' => 1,
                 'title' => $data['title'],
                 'message' => $data['body'],
                 'sender' => Notification::$AdminSender,

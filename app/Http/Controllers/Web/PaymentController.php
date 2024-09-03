@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\OfflineBank;
 use App\Models\OfflinePayment;
 use App\BundleStudent;
+use App\Models\Discount;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use App\Models\Enrollment;
@@ -81,6 +82,14 @@ class PaymentController extends Controller
                 ->first();
 
             $registrationBonusAmount = (empty($registrationBonusAccounting) and !empty($registrationBonusSettings['status']) and !empty($registrationBonusSettings['registration_bonus_amount'])) ? $registrationBonusSettings['registration_bonus_amount'] : null;
+
+        }
+
+        if($order->total_discount>0){
+            $order->total_discount = 0;
+            $order->total_amount =  $order->amount;
+            $order->orderItems[0]->update(['discount_id' => null, 'discount' => 0, 'total' => $order->orderItems[0]->amount]);
+            $order->save();
         }
         $data = [
             'pageTitle' => trans('public.checkout_page_title'),
@@ -121,6 +130,7 @@ class PaymentController extends Controller
         $user = auth()->user();
         $gateway = $request->input('gateway');
         $orderId = $request->input('order_id');
+        $coupon = $request->input('coupon');
 
         $order = Order::where('id', $orderId)
             ->where('user_id', $user->id)
@@ -179,6 +189,23 @@ class PaymentController extends Controller
         }
 
         $order->payment_method = Order::$paymentChannel;
+        if(!empty($coupon)){
+            $response = (new CartController())->couponValidate($request);
+            $response = json_decode($response->getContent());
+            if ($response->status !=200) {
+                return back()->with(['toast' => ['status' => 'error', 'msg' => $response->msg]]);
+            }else{
+                $order->total_discount = (double)$response->total_discount;
+                $order->total_amount =  (double)$response->total_amount;
+                $order->orderItems[0]->update(['discount_id' => $response->discount_id, 'discount' => (double)$response->total_discount, 'total' => (double)$response->total_amount]);
+
+                if($response->discount_percent == 100){
+                    $order->payment_method = 'scholarship';
+                }
+            }
+
+        }
+
         $order->save();
 
 

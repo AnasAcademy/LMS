@@ -511,7 +511,7 @@
             let courseEndorsementInput2 = document.getElementById("course_endorsement2");
             let courseEndorsementSection = courseEndorsementInput.closest("div");
             var courseSelect = document.getElementById("mySelect2");
-            if (courseSelect.selectedIndex != 0) {
+            if (courseSelect.selectedIndex == 1) {
                 courseEndorsementSection.classList.remove("d-none");
                 courseEndorsementInput.setAttribute("required", "required");
                 courseEndorsementInput2.setAttribute("required", "required");

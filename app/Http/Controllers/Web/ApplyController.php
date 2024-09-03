@@ -316,6 +316,58 @@ class ApplyController extends Controller
 
         return redirect('/panel');
     }
+
+
+    function bookSeat(Request $request, Bundle $bundle)
+    {
+        $user = auth()->user();
+        $student = $user->student;
+        $order = Order::create([
+            'user_id' => $user->id,
+            'status' => Order::$pending,
+            'amount' =>  230,
+            'tax' => 0,
+            'total_discount' => 0,
+            'total_amount' => 230,
+            'product_delivery_fee' => null,
+            'created_at' => time(),
+        ]);
+        OrderItem::create([
+            'user_id' => $user->id,
+            'order_id' => $order->id,
+            'webinar_id' => null,
+            'bundle_id' => $bundle->id ,
+            'certificate_template_id' => null,
+            'certificate_bundle_id' => null,
+            'form_fee' => 1,
+            'product_id' => null,
+            'product_order_id' => null,
+            'reserve_meeting_id' => null,
+            'subscribe_id' => null,
+            'promotion_id' => null,
+            'gift_id' => null,
+            'installment_payment_id' => null,
+            'ticket_id' => null,
+            'discount_id' => null,
+            'amount' =>  230,
+            'total_amount' => 230,
+            'tax' => null,
+            'tax_price' => 0,
+            'commission' => 0,
+            'commission_price' => 0,
+            'product_delivery_fee' => 0,
+            'discount' => 0,
+            'created_at' => time(),
+        ]);
+
+
+        if (!empty($order) and $order->total_amount > 0) {
+
+            return redirect('/payment/' . $order->id);
+        }
+        
+        return back();
+    }
     private function handlePaymentOrderWithZeroTotalAmount($order)
     {
         $order->update([
