@@ -17,23 +17,23 @@
         if ($count > 0) {
             $subTitle .= $total . ' ريال سعودي ' . trans('cart.for_items', ['count' => $count]);
         } elseif (!empty($type) && $type == 1) {
-            $subTitle .= 'رسوم حجز مقعد : ' . $total . ' ريال سعودي';
+            $subTitle .= 'رسوم حجز مقعد  ';
             // $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
-        }
-        else if(!empty($order->orderItems[0]->bundle)){
-             $subTitle .= 'الرسوم الدراسية للبرنامج '.($order->orderItems[0]->bundle->title).': '.($total).' ريال سعودي';
-        }
-        else if(!empty($order->orderItems[0]->webinar)){
-            $subTitle .= 'الرسوم الدراسية للدورة '.($order->orderItems[0]->webinar->title).': '.($total).' ريال سعودي';
-        }
-        else if(!empty($order->orderItems[0]->service)){
-            $subTitle .= 'الرسوم لطلب خدمة  '.($order->orderItems[0]->service->title).': '.($total).' ريال سعودي';
+        } elseif (!empty($order->orderItems[0]->bundle)) {
+            $subTitle .= 'الرسوم الدراسية للبرنامج ' . $order->orderItems[0]->bundle->title;
+        } elseif (!empty($order->orderItems[0]->webinar)) {
+            $subTitle .= 'الرسوم الدراسية للدورة ' . $order->orderItems[0]->webinar->title;
+        } elseif (!empty($order->orderItems[0]->service)) {
+            $subTitle .= 'الرسوم لطلب خدمة  ' . $order->orderItems[0]->service->title;
         }
         // close subtitle
-        $subTitle .= '</span>';
+        $subTitle .=
+            ': <span class="price"> ' .
+            handlePrice($total) .
+            '</span>    <span class="price-with-discount"></span> </span>';
     @endphp
 
-    @include('web.default.includes.hero_section', ['inner' => $title . $subTitle]);
+    @include('web.default.includes.hero_section', ['inner' => $title . $subTitle])
 
     <section class="container mt-45">
 
@@ -55,10 +55,7 @@
         @php
 
             $showOfflineFields = false;
-            if (
-                $errors->any() or
-                !empty($editOfflinePayment)
-            ) {
+            if ($errors->any() or !empty($editOfflinePayment)) {
                 $showOfflineFields = true;
             }
 
@@ -69,9 +66,11 @@
 
         <h2 class="section-title">{{ trans('financial.select_a_payment_gateway') }}</h2>
 
-        <form action="/payments/payment-request" method="post" class=" mt-25" enctype="multipart/form-data">
+        <form action="/payments/payment-request" method="post" class=" mt-25" enctype="multipart/form-data" id="cartForm">
             {{ csrf_field() }}
             <input type="hidden" name="order_id" value="{{ $order->id }}">
+            <input type="hidden" name="discount_id" id="discount_id" value="{{ $order->orderItems[0]->discount_id }}">
+
 
             <div class="row">
                 {{-- online  --}}
@@ -85,7 +84,7 @@
                                 <label for="{{ $paymentChannel->title }}"
                                     class="rounded-sm p-20 p-lg-45 d-flex flex-column align-items-center justify-content-center">
                                     {{-- <img src="{{ $paymentChannel->image }}" width="120" height="60" alt=""> --}}
-                                    @include("web.default.cart.includes.online_payment_icon")
+                                    @include('web.default.cart.includes.online_payment_icon')
                                     <p class="mt-30 mt-lg-50 font-weight-500 text-dark-blue">
                                         {{ trans('financial.pay_via') }}
                                         <span class="font-weight-bold font-14">{{ $paymentChannel->title }}</span>
@@ -108,7 +107,7 @@
                         <label for="offline"
                             class="rounded-sm p-20 p-lg-45 d-flex flex-column align-items-center justify-content-center">
                             {{-- <img src="/assets/default/img/activity/pay.svg" width="120" height="60" alt=""> --}}
-                            @include("web.default.cart.includes.offline_payment_icon")
+                            @include('web.default.cart.includes.offline_payment_icon')
                             <p class="mt-30 mt-lg-50 font-weight-500 text-dark-blue">{{ trans('financial.pay_via') }}
                                 <span class="font-weight-bold">{{ trans('financial.offline') }}</span>
                             </p>
@@ -166,149 +165,183 @@
                 </div>
             @endif
 
-             {{-- offline banks --}}
-        @if (!empty(getOfflineBankSettings('offline_banks_status')))
-            <section class="mt-40 js-offline-payment-input mb-3" style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                <h2 class="section-title">{{ trans('financial.bank_accounts_information') }}</h2>
+            {{-- offline banks --}}
+            @if (!empty(getOfflineBankSettings('offline_banks_status')))
+                <section class="mt-40 js-offline-payment-input mb-3"
+                    style="{{ !$showOfflineFields ? 'display:none' : '' }}">
+                    <h2 class="section-title">{{ trans('financial.bank_accounts_information') }}</h2>
 
-                <div class="row mt-25">
-                    @foreach ($offlineBanks as $offlineBank)
-                        <div class="col-12 col-lg-7 mb-30 mb-lg-0">
-                            <div
-                                class="py-25 px-20 rounded-sm panel-shadow d-flex flex-column align-items-center justify-content-center">
-                                <img src="{{ $offlineBank->logo }}" width="120" height="60" alt="">
+                    <div class="row mt-25">
+                        @foreach ($offlineBanks as $offlineBank)
+                            <div class="col-12 col-lg-7 mb-30 mb-lg-0">
+                                <div
+                                    class="py-25 px-20 rounded-sm panel-shadow d-flex flex-column align-items-center justify-content-center">
+                                    <img src="{{ $offlineBank->logo }}" width="120" height="60" alt="">
 
-                                <div class="mt-15 mt-30 w-100">
+                                    <div class="mt-15 mt-30 w-100">
 
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span
-                                            class="font-14 font-weight-500 text-secondary">{{ trans('public.name') }}:</span>
-                                        <span class="font-14 font-weight-500 text-gray">{{ $offlineBank->title }}</span>
-                                    </div>
-
-                                    @foreach ($offlineBank->specifications as $specification)
-                                        <div class="d-flex align-items-center justify-content-between mt-10">
+                                        <div class="d-flex align-items-center justify-content-between">
                                             <span
-                                                class="font-14 font-weight-500 text-secondary">{{ $specification->name }}:</span>
+                                                class="font-14 font-weight-500 text-secondary">{{ trans('public.name') }}:</span>
                                             <span
-                                                class="font-14 font-weight-500 text-gray">{{ $specification->value }}</span>
+                                                class="font-14 font-weight-500 text-gray">{{ $offlineBank->title }}</span>
                                         </div>
-                                    @endforeach
+
+                                        @foreach ($offlineBank->specifications as $specification)
+                                            <div class="d-flex align-items-center justify-content-between mt-10">
+                                                <span
+                                                    class="font-14 font-weight-500 text-secondary">{{ $specification->name }}:</span>
+                                                <span
+                                                    class="font-14 font-weight-500 text-gray">{{ $specification->value }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                {{-- offline inputs --}}
+                <div class="">
+                    <h3 class="section-title mb-20 js-offline-payment-input"
+                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">{{ trans('financial.finalize_payment') }}
+                    </h3>
+
+                    <div class="row">
+
+                        <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
+                            style="{{ !$showOfflineFields ? 'display:none' : '' }}">
+                            <div class="form-group">
+                                <label class="input-label">{{ trans('financial.account') }}</label>
+                                <select name="account" class="form-control @error('account') is-invalid @enderror">
+                                    <option selected disabled>{{ trans('financial.select_the_account') }}</option>
+
+                                    @foreach ($offlineBanks as $offlineBank)
+                                        <option value="{{ $offlineBank->id }}"
+                                            @if (old('account') == $offlineBank->id) selected @endif>{{ $offlineBank->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('account')
+                                    <div class="invalid-feedback"> {{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
-                    @endforeach
+
+
+                        <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
+                            style="{{ !$showOfflineFields ? 'display:none' : '' }}">
+                            <div class="form-group">
+                                <label for="IBAN" class="input-label"> اي بان (IBAN)</label>
+                                <input type="text" name="IBAN" id="IBAN" value="{{ old('IBAN') }}"
+                                    class="form-control @error('IBAN') is-invalid @enderror" />
+                                @error('IBAN')
+                                    <div class="invalid-feedback"> {{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
+                            style="{{ !$showOfflineFields ? 'display:none' : '' }}">
+                            <div class="form-group">
+                                <label class="input-label">{{ trans('update.attach_the_payment_photo') }}</label>
+
+                                <label for="attachmentFile" id="attachmentFileLabel"
+                                    class="custom-upload-input-group flex-row-reverse ">
+                                    <span class="custom-upload-icon text-white">
+                                        <i data-feather="upload" width="18" height="18" class="text-white"></i>
+                                    </span>
+                                    <div class="custom-upload-input"></div>
+                                </label>
+
+                                <input type="file" name="attachment" id="attachmentFile" accept=".jpeg,.jpg,.png"
+                                    class="form-control h-auto invisible-file-input @error('attachment') is-invalid @enderror"
+                                    value="" />
+                                @error('attachment')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
-            </section>
-        @endif
+            @endif
 
-            {{-- offline inputs --}}
-            <div class="">
-                <h3 class="section-title mb-20 js-offline-payment-input"
-                    style="{{ !$showOfflineFields ? 'display:none' : '' }}">{{ trans('financial.finalize_payment') }}
-                </h3>
+            {{-- discount section --}}
+            @if(empty($type))
+                <div class="row mt-30">
+                    <div class="col-12 col-lg-6">
+                        <section class="">
+                            <h3 class="section-title">{{ trans('cart.coupon_code') }}</h3>
+                            <div class="rounded-sm shadow mt-20 py-25 px-20">
+                                <p class="text-gray font-14">{{ trans('cart.coupon_code_hint') }}</p>
 
-                <div class="row">
+                                @if (!empty($userGroup) and !empty($userGroup->discount))
+                                    <p class="text-gray mt-25">
+                                        {{ trans('cart.in_user_group', ['group_name' => $userGroup->name, 'percent' => $userGroup->discount]) }}
+                                    </p>
+                                @endif
 
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
-                            <label class="input-label">{{ trans('financial.account') }}</label>
-                            <select name="account" class="form-control @error('account') is-invalid @enderror">
-                                <option selected disabled>{{ trans('financial.select_the_account') }}</option>
+                                    <div class="form-group">
+                                        <input type="hidden" id="order_input" value={{ $order->id }}>
+                                        <input type="text" name="coupon" id="coupon_input" class="form-control mt-25"
+                                            placeholder="{{ trans('cart.enter_your_code_here') }}">
+                                        <span class="invalid-feedback">{{ trans('cart.coupon_invalid') }}</span>
+                                        <span class="valid-feedback">{{ trans('cart.coupon_valid') }}</span>
+                                    </div>
 
-                                @foreach ($offlineBanks as $offlineBank)
-                                    <option value="{{ $offlineBank->id }}"
-                                        @if (old('account')== $offlineBank->id) selected @endif>{{ $offlineBank->title }}
-                                    </option>
-                                @endforeach
-                            </select>
+                                    <p  id="checkCoupon"
+                                        class="btn btn-sm btn-primary">{{ trans('cart.validate') }}</p>
 
-                            @error('account')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
+                            </div>
+                        </section>
                     </div>
 
-
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
-                            <label for="IBAN" class="input-label"> اي بان (IBAN)</label>
-                            <input type="text" name="IBAN" id="IBAN"
-                                value="{{ old('IBAN') }}"
-                                class="form-control @error('IBAN') is-invalid @enderror" />
-                            @error('IBAN')
-                                <div class="invalid-feedback"> {{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-lg-3 mb-25 mb-lg-0 js-offline-payment-input "
-                        style="{{ !$showOfflineFields ? 'display:none' : '' }}">
-                        <div class="form-group">
-                            <label class="input-label">{{ trans('update.attach_the_payment_photo') }}</label>
-
-                            <label for="attachmentFile" id="attachmentFileLabel" class="custom-upload-input-group flex-row-reverse ">
-                                <span class="custom-upload-icon text-white">
-                                    <i data-feather="upload" width="18" height="18" class="text-white"></i>
-                                </span>
-                                <div class="custom-upload-input"></div>
-                            </label>
-
-                            <input type="file" name="attachment" id="attachmentFile" accept=".jpeg,.jpg,.png"
-                                class="form-control h-auto invisible-file-input @error('attachment') is-invalid @enderror"
-                                value="" />
-                            @error('attachment')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                    <div class="col-12 col-lg-6">
+                        <section class="mt-45">
+                            {{-- <h3 class="section-title">{{ trans('cart.cart_totals') }}</h3>  --}}
+                            <div class="rounded-sm shadow mt-20 pb-20 px-20">
+                                <div class="cart-checkout-item">
+                                    <h4 class="text-secondary font-14 font-weight-500">{{ trans('cart.sub_total') }}</h4>
+                                    <span
+                                        class="font-14 text-gray font-weight-bold">{{ handlePrice($order->total_amount) }}</span>
                                 </div>
-                            @enderror
-                        </div>
+
+                                <div class="cart-checkout-item">
+                                    <h4 class="text-secondary font-14 font-weight-500">{{ trans('public.discount') }} <span id="discount_percent">(0%)</span> </h4>
+                                    <span class="font-14 text-gray font-weight-bold">
+                                        <span id="totalDiscount">0</span>
+                                    </span>
+                                </div>
+
+                                <div class="cart-checkout-item border-0">
+                                    <h4 class="text-secondary font-14 font-weight-500">{{ trans('cart.total') }}</h4>
+                                    <span class="font-14 text-gray font-weight-bold"><span
+                                            id="totalAmount">{{ handlePrice($order->total_amount) }}</span></span>
+                                </div>
+
+                                {{--  <button type="submit" class="btn btn-sm btn-primary mt-15">{{ trans('cart.checkout') }}</button> --}}
+                            </div>
+                        </section>
                     </div>
-
-
                 </div>
-            </div>
+            @endif
 
             <div class="d-flex align-items-center justify-content-between mt-45">
                 <span class="font-16 font-weight-500 text-gray">{{ trans('financial.total_amount') }}
-                    {{ handlePrice($total) }}</span>
-                <button type="button" id="paymentSubmit"
+                    <span class="price"> {{ handlePrice($total) }}</span> <span class="price-with-discount"></span>
+                </span>
+                <button type="submit" id="paymentSubmit"
                     class="btn btn-sm btn-primary">{{ trans('public.start_payment') }}</button>
             </div>
         </form>
 
-        {{--
-        <div class="row mt-30">
-                <div class="col-12 col-lg-6">
-                    <section class="mt-45">
-                        <h3 class="section-title">{{ trans('cart.coupon_code') }}</h3>
-                        <div class="rounded-sm shadow mt-20 py-25 px-20">
-                            <p class="text-gray font-14">{{ trans('cart.coupon_code_hint') }}</p>
 
-                           @if(!empty($userGroup) and !empty($userGroup->discount))
-                                <p class="text-gray mt-25">{{ trans('cart.in_user_group',['group_name' => $userGroup->name , 'percent' => $userGroup->discount]) }}</p>
-                            @endif
-
-
-                            <form action="/cart/coupon/validate" method="Post">
-                                {{ csrf_field() }}
-                                <div class="form-group">
-                                    <input type="text" name="coupon" id="coupon_input" class="form-control mt-25"
-                                           placeholder="{{ trans('cart.enter_your_code_here') }}">
-                                    <span class="invalid-feedback">{{ trans('cart.coupon_invalid') }}</span>
-                                    <span class="valid-feedback">{{ trans('cart.coupon_valid') }}</span>
-                                </div>
-
-                                <button type="submit" id="checkCoupon"
-                                        class="btn btn-sm btn-primary mt-50">{{ trans('cart.validate') }}</button>
-                            </form>
-                        </div>
-                    </section>
-                </div>
-        </div>
-        --}}
         @if (!empty($razorpay) and $razorpay)
             <form action="/payments/verify/Razorpay" method="get">
                 <input type="hidden" name="order_id" value="{{ $order->id }}">
@@ -346,6 +379,5 @@
         var selectCityLang = '{{ trans('update.select_city') }}';
         var selectDistrictLang = '{{ trans('update.select_district') }}';
     </script>
-     <script src="/assets/default/js/parts/cart.min.js"></script>
-
+    <script src="/assets/default/js/parts/cart.min.js"></script>
 @endpush

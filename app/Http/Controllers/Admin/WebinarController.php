@@ -377,7 +377,6 @@ class WebinarController extends Controller
         // $data['price'] = !empty($data['price']) ? convertPriceToDefaultCurrency($data['price']) : null;
         $data['organization_price'] = !empty($data['organization_price']) ? convertPriceToDefaultCurrency($data['organization_price']) : null;
 
-        dd($data);
         $webinar = Webinar::create([
             'type' => $data['type'],
             'slug' => $data['slug'],
