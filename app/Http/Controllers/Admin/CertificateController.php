@@ -115,17 +115,18 @@ class CertificateController extends Controller
     public function CertificatesNewTemplate()
     {
         $this->authorize('admin_certificate_template_create');
-
+    
         removeContentLocale();
-        $bundles=Bundle::get();
+        $bundles = Bundle::get();
         $data = [
             'pageTitle' => trans('admin/main.certificate_new_template_page_title'),
-            'bundles'=>$bundles,
+            'bundles' => $bundles,
         ];
-
+     
+      //  dd($bundles); // Debug the data array
         return view('admin.certificates.new_templates', $data);
     }
-
+    
     public function CertificatesTemplateStore(Request $request, $template_id = null)
     {
         $this->authorize('admin_certificate_template_create');
