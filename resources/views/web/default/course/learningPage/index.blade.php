@@ -58,13 +58,9 @@
             @endif
         @else
             <!-- Button for when $bundleId is not present -->
-            @php
-            // Import the Carbon class
-            $startDate = \Carbon\Carbon::parse($group->start_date);
-            $now = \Carbon\Carbon::now();
-        @endphp
-        {{-- @dump($startDate->month) --}}
-        @if ($startDate->month < $now->month)
+          
+        {{-- @dump($group->end_date) --}}
+        @if ($group->end_date < now())
         <a class="position-relative font-14 d-flex align-items-center"
         href="{{ url('/panel/certificates/achievements') }}" 
           >

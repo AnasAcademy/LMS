@@ -2128,6 +2128,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer|min:0',
             'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
             'status' => 'required|in:inactive,active'
         ]);
         $toastData = [

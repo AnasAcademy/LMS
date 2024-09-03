@@ -280,7 +280,9 @@ class MakeCertificate
 
             $userCertificate = $this->saveCourseCertificate($user, $course,$template);
 
-            
+            $group=$course->groups()->whereHas('enrollments',function($query) use($user){
+                $query->where('user_id', $user->id);
+            })->first();
 
             $data = $template;
 
@@ -288,7 +290,7 @@ class MakeCertificate
             $body['certificate_code']= "AC".str_pad($userCertificate->id, 6, "0", STR_PAD_LEFT);
        // dd( $data);
 
-            
+            $body['graduation_date'] = $group->end_date;
             $body['student_name']=$user->student->en_name ?? '';
             $body['course_name']=$course->course_name_certificate;
             $body['course_hours']=$course->duration;
