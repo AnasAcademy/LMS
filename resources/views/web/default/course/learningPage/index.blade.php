@@ -40,16 +40,43 @@
                         </a>
                     </li>
 
-                    {{-- <li class="nav-item">
-                        <a class="position-relative font-14 d-flex align-items-center" id="certificates-tab" data-toggle="tab"
-                           href="#certificates" role="tab" aria-controls="certificates"
-                           aria-selected="false">
-                            <i class="learning-page-tabs-icons mr-5">
-                                @include('web.default.panel.includes.sidebar_icons.certificate')
-                            </i>
-                            <span class="learning-page-tabs-link-text">{{ trans('panel.certificates') }}</span>
-                        </a>
-                    </li> --}}
+                    <li class="nav-item">
+                     
+
+                      
+            @if ($bundle)
+            <!-- Button for when $bundleId is present -->
+            @if ($bundle->end_date < strtotime(now()))
+            <a class="position-relative font-14 d-flex align-items-center" 
+            href="{{ url('/panel/certificates/achievements') }}"  
+              >
+                <i class="learning-page-tabs-icons mr-5">
+                    @include('web.default.panel.includes.sidebar_icons.certificate')
+                </i>
+                <span class="learning-page-tabs-link-text">الشهاده</span>
+            </a>
+            @endif
+        @else
+            <!-- Button for when $bundleId is not present -->
+            @php
+            // Import the Carbon class
+            $startDate = \Carbon\Carbon::parse($group->start_date);
+            $now = \Carbon\Carbon::now();
+        @endphp
+        {{-- @dump($startDate->month) --}}
+        @if ($startDate->month < $now->month)
+        <a class="position-relative font-14 d-flex align-items-center"
+        href="{{ url('/panel/certificates/achievements') }}" 
+          >
+            <i class="learning-page-tabs-icons mr-5">
+                @include('web.default.panel.includes.sidebar_icons.certificate')
+            </i>
+            <span class="learning-page-tabs-link-text">الشهاده</span>
+        </a>
+           
+        @endif
+        @endif
+                    </li>
                 </ul>
 
                 <div class="tab-content h-100" id="nav-tabContent">
@@ -69,6 +96,31 @@
                     </div>
                 </div>
             </div>
+            {{-- @dump($group->start_date) --}}
+{{-- 
+            @if ($bundle)
+            <!-- Button for when $bundleId is present -->
+            @if ($bundle->end_date <= strtotime(now()))
+            <a href="{{ url('/panel/bundle/' . $bundle->id . '/showCertificate') }}" class="btn btn-sm btn-primary">
+                تحميل الشهاده
+            </a>
+            @endif
+        @else
+            <!-- Button for when $bundleId is not present -->
+            @php
+            // Import the Carbon class
+            $startDate = \Carbon\Carbon::parse($group->start_date);
+            $now = \Carbon\Carbon::now();
+        @endphp --}}
+        {{-- @dump($startDate->month) --}}
+        {{-- @if ($startDate->month < $now->month)
+            <a href="{{ url('/panel/course/' . $course->id . '/showCertificate') }}" class="btn btn-sm btn-primary">
+                {{ trans('quiz.download_certificate') }}
+            </a>
+        @endif
+        @endif --}}
+       
+           
         </div>
     </div>
 @endsection

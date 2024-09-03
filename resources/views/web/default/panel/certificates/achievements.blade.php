@@ -5,7 +5,7 @@
 @endpush
 
 @section('content')
-    <section>
+    {{-- <section>
         <h2 class="section-title">{{ trans('quiz.my_certificates_statistics') }}</h2>
 
         <div class="activities-container mt-25 p-20 p-lg-35">
@@ -36,9 +36,9 @@
 
             </div>
         </div>
-    </section>
+    </section> --}}
 
-    <section class="mt-25">
+    {{-- <section class="mt-25">
         <h2 class="section-title">{{ trans('quiz.filter_certificates') }}</h2>
 
         <div class="panel-section-card py-20 px-25 mt-20">
@@ -117,9 +117,9 @@
                 </div>
             </form>
         </div>
-    </section>
+    </section> --}}
 
-    <section class="mt-35">
+    {{-- <section class="mt-35">
         <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
             <h2 class="section-title">{{ trans('quiz.my_certificates') }}</h2>
         </div>
@@ -200,7 +200,167 @@
                 'hint' => nl2br(trans('quiz.my_certificates_no_result_hint')),
             ])
         @endif
+    </section> --}}
+
+
+
+
+    <section class="mt-35">
+        <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
+            <h2 class="section-title">الكورسات </h2>
+        </div>
+
+        @if(!empty($courseCertificates) and count($courseCertificates))
+            <div class="panel-section-card py-20 px-25 mt-20">
+                <div class="row">
+                    <div class="col-12 ">
+                        <div class="table-responsive">
+                            <table class="table text-center custom-table">
+                                <thead>
+                                <tr>
+                                    <th>{{ trans('public.certificate') }}</th>
+                                    <th class="text-center">{{ trans('public.certificate_id') }}</th>
+                                  
+                                    
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                          
+                                @foreach($courseCertificates as $courseCertificate)
+                                    <tr>
+                                        <td class="text-left">
+                                            <span class="d-block text-dark-blue font-weight-500">{{ $courseCertificate->title }}</span>
+                                            <span class="d-block font-12 text-gray mt-5">{{ $courseCertificate->webinar->title }}</span>
+                                          
+                                        </td>
+                                        <td class="align-middle">
+                                            {{-- @if($courseCertificate->can_download_certificate) --}}
+                                                {{-- @php
+                                                    $getUserCertificate = $courseCertificate->getUserCertificate($authUser,$courseCertificate);
+                                                @endphp --}}
+                                                {{"AC".str_pad($courseCertificate->id, 6, "0", STR_PAD_LEFT);}}
+
+                                              
+                                            {{-- @else
+                                                -
+                                            @endif --}}
+                                        </td>
+                                      
+                                       
+                                        
+                                        <td class="align-middle font-weight-normal">
+                                            {{-- @if($courseCertificate->can_download_certificate) --}}
+                                                {{-- <div class="btn-group dropdown table-actions"> --}}
+                                                    {{-- <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i data-feather="more-vertical" height="20"></i>
+                                                    </button> --}}
+                                                    {{-- <div class="dropdown-menu"> --}}
+                                                        
+                                                        <a href="/panel/course/{{$courseCertificate->webinar->id}}/showCertificate" target="_blank" class="btn btn-sm btn-primary">تنزيل الشهاده كصوره</a>
+                                                        <a href="/panel/course/{{$courseCertificate->webinar->id}}/showCertificate/pdf" target="_blank" class="btn btn-sm btn-primary">تحميل الشهاده ك pdf</a>
+                                                        
+                                                    {{-- </div>
+                                                </div> --}}
+                                            {{-- @endif --}}
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            @include(getTemplate() . '.includes.no-result',[
+                'file_name' => 'cert.png',
+                'title' => trans('quiz.my_certificates_no_result'),
+                'hint' => nl2br(trans('quiz.my_certificates_no_result_hint')),
+            ])
+        @endif
     </section>
+
+
+    <section class="mt-35">
+        <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
+            <h2 class="section-title">الحزم</h2>
+        </div>
+
+        @if(!empty($bundleCertificates) and count($bundleCertificates))
+            <div class="panel-section-card py-20 px-25 mt-20">
+                <div class="row">
+                    <div class="col-12 ">
+                        <div class="table-responsive">
+                            <table class="table text-center custom-table">
+                                <thead>
+                                <tr>
+                                    <th>{{ trans('public.certificate') }}</th>
+                                    <th class="text-center">{{ trans('public.certificate_id') }}</th>
+                                  
+                                   
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                          {{-- @dump($bundleCertificates) --}}
+                                @foreach($bundleCertificates as $bundleCertificate)
+                                    <tr>
+                                        <td class="text-left">
+                                            <span class="d-block text-dark-blue font-weight-500">{{ $bundleCertificate->title }}</span>
+                                            <span class="d-block font-12 text-gray mt-5">{{ $bundleCertificate->bundle->title }}</span>
+                                        </td>
+                                        <td class="align-middle">
+                                            {{-- @if($courseCertificate->can_download_certificate) --}}
+                                                {{-- @php
+                                                    $getUserCertificate = $courseCertificate->getUserCertificate($authUser,$courseCertificate);
+                                                @endphp --}}
+                                                {{"AC".str_pad($bundleCertificate->id, 6, "0", STR_PAD_LEFT);}}
+
+                                              
+                                            {{-- @else
+                                                -
+                                            @endif --}}
+                                        </td>
+                                      
+                                       
+                                        
+                                        <td class="align-middle font-weight-normal">
+                                            {{-- @if($courseCertificate->can_download_certificate) --}}
+                                                {{-- <div class="btn-group dropdown table-actions"> --}}
+                                                    {{-- <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i data-feather="more-vertical" height="20"></i>
+                                                    </button> --}}
+                                                    {{-- <div class="dropdown-menu"> --}}
+                                                        
+                                                        <a href="/panel/bundle/{{$bundleCertificate->bundle->id}}/showCertificate" target="_blank" class="btn btn-sm btn-primary">تحميل الشهاده كصوره</a>
+                                                        <a href="/panel/bundle/{{$bundleCertificate->bundle->id}}/showCertificate/pdf" target="_blank" class="btn btn-sm btn-primary">تحميل الشهاده ك PDF</a>
+                                                        
+                                                    {{-- </div> --}}
+                                                {{-- </div> --}}
+                                            {{-- @endif --}}
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            @include(getTemplate() . '.includes.no-result',[
+                'file_name' => 'cert.png',
+                'title' => trans('quiz.my_certificates_no_result'),
+                'hint' => nl2br(trans('quiz.my_certificates_no_result_hint')),
+            ])
+        @endif
+    </section>
+
+
+
 
     <div class="my-30">
         {{ $quizzes->appends(request()->input())->links('vendor.pagination.panel') }}

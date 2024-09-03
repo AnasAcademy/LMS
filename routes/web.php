@@ -157,7 +157,7 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
         });
     });
 
-    Route::group(['prefix' => 'certificate_validation'], function () {
+    Route::group(['prefix' => 'certificate'], function () {
         Route::get('/', 'CertificateValidationController@index');
         Route::post('/validate', 'CertificateValidationController@checkValidate');
     });
