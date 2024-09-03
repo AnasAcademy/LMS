@@ -22,11 +22,12 @@ class CertificateValidationController extends Controller
             'pageRobot' => $pageRobot,
         ];
 
-        return view(getTemplate() . '.auth.certificate_validation', $data);
+        return view(getTemplate() . '.auth.certificate', $data);
     }
 
     public function checkValidate(Request $request)
     {
+        
         $data = $request->all();
 
         $validator = Validator::make($data, [

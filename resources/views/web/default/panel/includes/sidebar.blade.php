@@ -396,7 +396,7 @@
             </div>
         </li>
         @endcan --}}
-        {{-- @can('student_showCertificate')
+        @can('student_showCertificate')
         <li
             class="sidenav-item {{ (request()->is('panel/certificates') or request()->is('panel/certificates/*')) ? 'sidenav-item-active' : '' }}">
             <a class="d-flex align-items-center" data-toggle="collapse" href="#certificatesCollapse" role="button"
@@ -421,21 +421,21 @@
                     </li>
 
                     <li class="mt-5">
-                        <a href="/certificate_validation">{{ trans('site.certificate_validation') }}</a>
+                        <a href="/certificate">{{ trans('site.certificate_validation') }}</a>
                     </li>
 
-                    <li class="mt-5 {{ request()->is('panel/certificates/webinars') ? 'active' : '' }}">
+                    {{-- <li class="mt-5 {{ request()->is('panel/certificates/webinars') ? 'active' : '' }}">
                         <a href="/panel/certificates/webinars">{{ trans('update.course_certificates') }}</a>
-                    </li>
+                    </li> --}}
 
-                    <li class="mt-5 {{ request()->is('panel/certificates/certificates_template') ? 'active' : '' }}">
+                    {{-- <li class="mt-5 {{ request()->is('panel/certificates/certificates_template') ? 'active' : '' }}">
                         <a href="/panel/certificates/certificates_template">الشهادات المعتمدة</a>
-                    </li>
+                    </li> --}}
 
                 </ul>
             </div>
         </li>
-        @endcan --}}
+        @endcan
 
         @if ($authUser->checkCanAccessToStore())
             {{-- @can('student_showStore')
