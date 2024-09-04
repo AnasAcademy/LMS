@@ -187,7 +187,9 @@ class RegisterController extends Controller
             'affiliate' => $usersAffiliateStatus,
             'timezone' => $data['timezone'] ?? null,
             'created_at' => time(),
-            'verified' => 1
+            'verified' => 1,
+            'application_type' => $data['type'],
+            'program_id' => $data['type']== 'programs' ? $data['bundle_id'] : $data['webinar_id']
         ]);
         // }
 
