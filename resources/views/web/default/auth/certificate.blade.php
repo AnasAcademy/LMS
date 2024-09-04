@@ -20,7 +20,7 @@
 
                         <div class="form-group">
                             <label class="input-label" for="code">{{ trans('public.certificate_id') }}:</label>
-                            <input type="tel" name="certificate_id" class="form-control" id="certificate_id" aria-describedby="certificate_idHelp">
+                            <input type="tel" name="certificate_code" class="form-control" id="certificate_code" aria-describedby="certificate_idHelp">
                             <div class="invalid-feedback"></div>
                         </div>
 

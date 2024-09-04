@@ -85,6 +85,20 @@
                                         @enderror
                                     </div>
 
+
+
+                                    <div class="form-group">
+                                        <label>تاريخ الانتهاء</label>
+                                        <input type="date" name="end_date"
+                                            class="form-control  @error('start_date') is-invalid @enderror"
+                                            value="{{ !empty($group) ? $group->end_date : old('end_date') }}" />
+                                        @error('end_date')
+                                            <div class="invalid-feedback d-block">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
                                     {{-- status --}}
                                     <div class="form-group custom-switches-stacked">
                                         <label class="custom-switch pl-0">

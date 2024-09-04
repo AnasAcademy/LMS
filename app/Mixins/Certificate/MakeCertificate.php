@@ -21,7 +21,7 @@ class MakeCertificate
             ->where('type', 'quiz')
             ->first();
 
-           
+
 
         if (!empty($template)) {
             $quiz = $quizResult->quiz;
@@ -30,11 +30,11 @@ class MakeCertificate
             $userCertificate = $this->saveQuizCertificate($user, $quiz, $quizResult);
             //$certificateId = $userCertificate->id;
             $data = $template;
-           
+
 
             $body = $this->makeBody($data, $userCertificate);
-            $body['certificat_code']= "AC".str_pad($userCertificate->id, 4, "0", STR_PAD_LEFT);
-        
+            $body['certificat_code'] = "AC" . str_pad($userCertificate->id, 4, "0", STR_PAD_LEFT);
+
             /*$data = [
                 'pageTitle' => trans('public.certificate'),
                 'image' => public_path($template->image),
@@ -42,7 +42,7 @@ class MakeCertificate
             ];*/
 
             $img = $this->makeImage($template, $body);
-         // dd( $userCertificate,$body);
+            // dd( $userCertificate,$body);
             return $img->response('png');
         }
 
@@ -105,22 +105,22 @@ class MakeCertificate
             'position_x_student' => (int)($data['position_x_student'] ?? 835), // Default to 835 if not provided
             'position_y_student' => (int)($data['position_y_student'] ?? 1250),
             'font_size_student' => (int)($data['font_size_student'] ?? 40),
-    
+
             'course_name' => $data['course_name'] ?? '',
             'position_x_course' => (int)($data['position_x_course'] ?? 835), // Default to 835 if not provided
             'position_y_course' => (int)($data['position_y_course'] ?? 1450),
             'font_size_course' => (int)($data['font_size_course'] ?? 40),
-    
+
             'text' => $data['text'] ?? '',
             'position_x_text' => (int)($data['position_x_text'] ?? 835), // Default to 835 if not provided
             'position_y_text' => (int)($data['position_y_text'] ?? 1400),
             'font_size_text' => (int)($data['font_size_text'] ?? 40),
-    
+
             'graduation_date' => $data['graduation_date'] ?? '',
             'position_x_date' => (int)($data['position_x_date'] ?? 835), // Default to 835 if not provided
             'position_y_date' => (int)($data['position_y_date'] ?? 1510),
             'font_size_date' => (int)($data['font_size_date'] ?? 40),
-    
+
             'certificate_code' => $data['certificate_code'] ?? '',
             'position_x_certificate_code' => (int)($data['position_x_certificate_code'] ?? 800), // Fixed key name
             'position_y_certificate_code' => (int)($data['position_y_certificate_code'] ?? 3415),
@@ -128,10 +128,10 @@ class MakeCertificate
 
             'course_hours' => $data['course_hours'] ?? '',
         ];
-    
+
         return $bodyData;
     }
-    
+
 
 
 
@@ -154,7 +154,8 @@ class MakeCertificate
 
     //     return $img;
     // }
-    function getOrdinal($number) {
+    function getOrdinal($number)
+    {
         $suffix = [' th', ' st', ' nd', ' rd'];
         $lastDigit = $number % 10;
         $lastTwoDigits = $number % 100;
@@ -170,14 +171,14 @@ class MakeCertificate
     {
         // Load the background image
         $img = Image::make(public_path($certificateTemplate->image));
-    
+
         $fontPath2 = public_path('assets/default/fonts/Trajan-Bold.otf'); // Bold font path
         $fontPath = public_path('assets/default/fonts/Trajan-Regular.ttf'); // Regular font path
-    
+
         // Helper function to get ordinal suffix
-        
-    
-       // dd($body);
+
+
+        // dd($body);
         // Format the end date
         $formattedDate = '';
         if (isset($body['graduation_date'])) {
@@ -188,23 +189,23 @@ class MakeCertificate
             } else {
                 $graduation_date = new \DateTime($body['graduation_date']);
             }
-    
+
             $day = $graduation_date->format('j');
             $month = $graduation_date->format('F');
             $year = $graduation_date->format('Y');
-           // dd($day);
+            // dd($day);
             $formattedDate = "on the " . $this->getOrdinal($day) . " of " . $month . " " . $year;
         }
-    
+
         // Add Graduation Date
 
         if (isset($body['course_hours']) && $formattedDate) {
             $body['graduation_date'] = "with a total of " . $body['course_hours'] . " hours training " . $formattedDate;
         }
-       // dd($body['course_hours'],$body['graduation_date']);
-    
+        // dd($body['course_hours'],$body['graduation_date']);
+
         if (isset($body['graduation_date'])) {
-            $img->text($body['graduation_date'], $body['position_x_date'], $body['position_y_date'], function($font) use ($fontPath, $certificateTemplate, $body) {
+            $img->text($body['graduation_date'], $body['position_x_date'], $body['position_y_date'], function ($font) use ($fontPath, $certificateTemplate, $body) {
                 $font->file($fontPath);
                 $font->size($body['font_size_date']);
                 $font->color($certificateTemplate->text_color);
@@ -212,12 +213,12 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
-      
-    
+
+
+
         // Add Student Name
         if (isset($body['student_name'])) {
-            $img->text($body['student_name'], $body['position_x_student'], $body['position_y_student'], function($font) use ($fontPath2 , $certificateTemplate, $body) {
+            $img->text($body['student_name'], $body['position_x_student'], $body['position_y_student'], function ($font) use ($fontPath2, $certificateTemplate, $body) {
                 $font->file($fontPath2);
                 $font->size($body['font_size_student']);
                 $font->color($certificateTemplate->text_color);
@@ -225,10 +226,10 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Course Name
         if (isset($body['course_name'])) {
-            $img->text($body['course_name'], $body['position_x_course'], $body['position_y_course'], function($font) use ($fontPath2 , $certificateTemplate, $body) {
+            $img->text($body['course_name'], $body['position_x_course'], $body['position_y_course'], function ($font) use ($fontPath2, $certificateTemplate, $body) {
                 $font->file($fontPath2);
                 $font->size($body['font_size_course']);
                 $font->color($certificateTemplate->text_color);
@@ -236,10 +237,10 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Text
         if (isset($body['text'])) {
-            $img->text($body['text'], $body['position_x_text'], $body['position_y_text'], function($font) use ($fontPath, $certificateTemplate, $body) {
+            $img->text($body['text'], $body['position_x_text'], $body['position_y_text'], function ($font) use ($fontPath, $certificateTemplate, $body) {
                 $font->file($fontPath);
                 $font->size($body['font_size_text']);
                 $font->color($certificateTemplate->text_color);
@@ -247,10 +248,10 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Certificate Code
         if (isset($body['certificate_code'])) {
-            $img->text($body['certificate_code'], $body['position_x_certificate_code'], $body['position_y_certificate_code'], function($font) use ($fontPath, $certificateTemplate, $body) {
+            $img->text($body['certificate_code'], $body['position_x_certificate_code'], $body['position_y_certificate_code'], function ($font) use ($fontPath, $certificateTemplate, $body) {
                 $font->file($fontPath);
                 $font->size($body['font_size_certificate_code']);
                 $font->color($certificateTemplate->text_color);
@@ -258,75 +259,77 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         return $img;
     }
-    
-    
-    
-    
 
 
-    public function makeCourseCertificate(Webinar $course,$format = 'png')
+
+
+
+
+    public function makeCourseCertificate(Webinar $course, $format = 'png')
     {
         $template = CertificateTemplate::where('status', 'publish')
             ->where('type', 'course')
             ->first();
 
-       // $course = $certificate->webinar;
+        // $course = $certificate->webinar;
 
         if (!empty($template) and !empty($course)) {
             $user = auth()->user();
 
-            $userCertificate = $this->saveCourseCertificate($user, $course,$template);
+            $userCertificate = $this->saveCourseCertificate($user, $course, $template);
 
-            
+            $group = $course->groups()->whereHas('enrollments', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->first();
 
             $data = $template;
 
             $body = $this->makeBody($data, $userCertificate);
-            $body['certificate_code']= "AC".str_pad($userCertificate->id, 6, "0", STR_PAD_LEFT);
-       // dd( $data);
+            $body['certificate_code'] = "AC" . str_pad($userCertificate->id, 6, "0", STR_PAD_LEFT);
+            // dd( $data);
 
-            
-            $body['student_name']=$user->student->en_name ?? '';
-            $body['course_name']=$course->course_name_certificate;
-            $body['course_hours']=$course->duration;
+            $body['graduation_date'] = $group->end_date;
+            $body['student_name'] = $user->student->en_name ?? '';
+            $body['course_name'] = $course->course_name_certificate;
+            $body['course_hours'] = $course->duration;
 
 
-        // dd($data);
-        if ($format === 'pdf') {
-            // Generate the image
-            $img = $this->makeImage($template, $body);
+            // dd($data);
+            if ($format === 'pdf') {
+                // Generate the image
+                $img = $this->makeImage($template, $body);
 
-            // Convert the image to a base64 string
-            $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
+                // Convert the image to a base64 string
+                $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
 
-            // Generate PDF with embedded image
-            $pdf = PDF::loadView('web.default.certificate_template.index', [
-                'pageTitle' => trans('public.certificate'),
-               
-                'body' => $body,
-                'dynamicImage' => $imageData, // Pass the base64 image string to the view
-            ]);
+                // Generate PDF with embedded image
+                $pdf = PDF::loadView('web.default.certificate_template.index', [
+                    'pageTitle' => trans('public.certificate'),
 
-            return $pdf->setPaper('a4')
-                ->setWarnings(false)
-                ->stream('course_certificate.pdf');
-        } else {
-            // Handle image download logic as before
-            $img = $this->makeImage($template, $body);
-                   return $img->response('png');
+                    'body' => $body,
+                    'dynamicImage' => $imageData, // Pass the base64 image string to the view
+                ]);
+
+                return $pdf->setPaper('a4')
+                    ->setWarnings(false)
+                    ->stream('course_certificate.pdf');
+            } else {
+                // Handle image download logic as before
+                $img = $this->makeImage($template, $body);
+                return $img->response('png');
+            }
+
+            abort(404);
         }
-
-        abort(404);
     }
-}
 
 
 
 
-    public function saveCourseCertificate($user, $course,$template)
+    public function saveCourseCertificate($user, $course, $template)
     {
         $certificate = Certificate::where('webinar_id', $course->id)
             ->where('student_id', $user->id)
@@ -334,22 +337,25 @@ class MakeCertificate
 
         $data = [
             'webinar_id' => $course->id,
+
             'student_id' => $user->id,
-            'template_id'=>$template->id,
+            'template_id' => $template->id,
             'type' => 'course',
             'created_at' => time()
         ];
 
-        if (!empty($certificate)) {
-            $certificate->update($data);
-        } else {
+        if (empty($certificate)) {
             $certificate = Certificate::create($data);
-
-            $notifyOptions = [
-                '[c.title]' => $course->title,
-            ];
-            sendNotification('new_certificate', $notifyOptions, $user->id);
         }
+        $certificateCode = "AC" . str_pad($certificate->id, 6, "0", STR_PAD_LEFT);
+        $data['certificate_code'] = $certificateCode;
+        $certificate->update($data);
+
+        $notifyOptions = [
+            '[c.title]' => $course->title,
+        ];
+        sendNotification('new_certificate', $notifyOptions, $user->id);
+
 
         return $certificate;
     }
@@ -376,17 +382,17 @@ class MakeCertificate
 
     //         $body = $this->makeBody($data, $userCertificate);
     //         $body['certificat_code']= "AC".str_pad($userCertificate->id, 4, "0", STR_PAD_LEFT);
-        
 
 
-          
-           
+
+
+
     //         $body['student_name']=$user->student->en_name ?? '';
     //         $body['bundle']=$bundle->slug;
     //         dd($bundle);
 
 
-         
+
 
     //         /*$data = [
     //             'pageTitle' => trans('public.certificate'),
@@ -411,33 +417,33 @@ class MakeCertificate
         $template = CertificateTemplate::where('status', 'publish')
             ->where('type', 'bundle')
             ->first();
-    
+
         if (!empty($template) && !empty($bundle)) {
             $user = auth()->user();
             $userCertificate = $this->savebundleCertificate($user, $bundle, $template);
-    //  dd($bundle->duration);
+            //  dd($bundle->duration);
             $data = $template;
             $body = $this->makeBody($data, $userCertificate);
             $body['certificate_code'] = "AC" . str_pad($userCertificate->id, 6, "0", STR_PAD_LEFT);
             $body['student_name'] = $user->student->en_name ?? '';
             $body['course_name'] = $bundle->bundle_name_certificate;
             $body['graduation_date'] = $bundle->end_date; // Add this line to include the end date
-            $body['course_hours']=$bundle->duration;
-    
+            $body['course_hours'] = $bundle->duration;
+
             if ($format === 'pdf') {
                 // Generate the image
                 $img = $this->makeImage($template, $body);
-    
+
                 // Convert the image to a base64 string
                 $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
-    
+
                 // Generate PDF with embedded image
                 $pdf = PDF::loadView('web.default.certificate_template.index', [
                     'pageTitle' => trans('public.certificate'),
                     'body' => $body,
                     'dynamicImage' => $imageData, // Pass the base64 image string to the view
                 ]);
-    
+
                 return $pdf->setPaper('a4')
                     ->setWarnings(false)
                     ->stream('course_certificate.pdf');
@@ -447,40 +453,42 @@ class MakeCertificate
                 return $img->response('png');
             }
         }
-    
+
         abort(404);
     }
-    
 
 
 
 
-    public function savebundleCertificate($user,$bundle,$template)
+
+    public function savebundleCertificate($user, $bundle, $template)
     {
         $certificate = Certificate::where('bundle_id', $bundle->id)
             ->where('student_id', $user->id)
             ->first();
-
+        // dd($certificate);
+        // $certificateCode = "AC" . str_pad($certificate->id, 6, "0", STR_PAD_LEFT);
         $data = [
             'bundle_id' => $bundle->id,
+            // 'certificate_code'=> $certificateCode,
             'student_id' => $user->id,
-            'template_id'=>$template->id,
+            'template_id' => $template->id,
             'type' => 'bundle',
             'created_at' => time()
         ];
 
-        if (!empty($certificate)) {
-            $certificate->update($data);
-        } else {
+        if (empty($certificate)) {
             $certificate = Certificate::create($data);
-
+        }
+        $certificateCode = "AC" . str_pad($certificate->id, 6, "0", STR_PAD_LEFT);
+        $data['certificate_code'] = $certificateCode;
+        $certificate->update($data);
             $notifyOptions = [
                 '[c.title]' => $bundle->title,
             ];
             sendNotification('new_certificate', $notifyOptions, $user->id);
-        }
+        
 
         return $certificate;
     }
-
 }

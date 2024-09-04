@@ -31,7 +31,7 @@ class CertificateValidationController extends Controller
         $data = $request->all();
 
         $validator = Validator::make($data, [
-            'certificate_id' => 'required|numeric',
+            'certificate_code' => 'required',
             'captcha' => 'required|captcha',
         ]);
 
@@ -42,9 +42,9 @@ class CertificateValidationController extends Controller
             ], 422);
         }
 
-        $certificateId = $data['certificate_id'];
+        $certificateCode = $data['certificate_code'];
 
-        $certificate = Certificate::where('id', $certificateId)->first();
+        $certificate = Certificate::where('certificate_code', $certificateCode)->first();
 
         if (!empty($certificate)) {
             $webinarTitle = "-";
