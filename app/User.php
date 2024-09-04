@@ -5,6 +5,7 @@ namespace App;
 use App\Bitwise\UserLevelOfTraining;
 use App\Models\Accounting;
 use App\Models\Badge;
+use App\Models\Bundle;
 use App\Models\BundleWebinar;
 use App\Models\Enrollment;
 use App\Models\ForumTopic;
@@ -80,6 +81,10 @@ class User extends Authenticatable
     public function Student()
     {
         return $this->hasOne(Student::class);
+    }
+    public function appliedProgram()
+    {
+        return ($this->application_type == 'programs') ? $this->hasOne(Bundle::class, 'id', 'program_id') :  $this->hasOne(Webinar::class,'id', 'program_id');
     }
 
     static function getAdmin()
