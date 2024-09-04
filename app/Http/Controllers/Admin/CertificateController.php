@@ -213,6 +213,11 @@ class CertificateController extends Controller
                 $template->bundle()->sync($request->input('bundles', []));
 
             }
+
+            if(!empty($request->input('webinars'))){
+                $template->webinar()->sync($request->input('webinars', []));
+
+            }
            
            
         } else {
@@ -246,6 +251,11 @@ class CertificateController extends Controller
 
              if(!empty($request->input('bundles'))){
                 $template->bundle()->sync($request->input('bundles', []));
+
+            }
+
+            if(!empty($request->input('webinars'))){
+                $template->webinar()->sync($request->input('webinars', []));
 
             }
         }
@@ -404,135 +414,7 @@ class CertificateController extends Controller
     // }
     
 
-    // public function CertificatesTemplatePreview(Request $request)
-    // {
-        
-    //     $this->authorize('admin_certificate_template_create');
-
-    //     $data = [
-    //         'pageTitle' => trans('public.certificate'),
-    //         'image' => $request->get('image'),
-    //         'body' => $request->get('body'),
-    //         'position_x' => (int)$request->get('position_x', 120),
-    //         'position_y' => (int)$request->get('position_y', 100),
-    //         'font_size' => (int)$request->get('font_size', 26),
-    //         'text_color' => $request->get('text_color', '#e1e1e1'),
-    //     ];
-
-    //   //  dd($request->all(), $data);
-    //     $isRtl = $request->get('rtl', false);
-
-    //     $body = str_replace('[student]', 'student name', $data['body']);
-    //     $body = str_replace('[course]', 'course name', $body);
-    //     $body = str_replace('[grade]', 'xx', $body);
-    //     $body = str_replace('[certificate_id]', 'xx', $body);
-    //     $body = str_replace('[user_certificate_additional]', 'xx', $body);
-    //     $body = str_replace('[date]', 'xx', $body);
-    //     $body = str_replace('[instructor_name]', 'xx', $body);
-    //     $body = str_replace('[duration]', 'xx', $body);
-
-    //     //$data['body'] = $body;//mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8');;
-
-    //     if ($isRtl) {
-    //         $Arabic = new \I18N_Arabic('Glyphs');
-    //         $body = $Arabic->utf8Glyphs($body);
-    //     }
-
-    //     $imgPath = public_path($data['image']);
-    //  //   dd($imgPath, file_exists($imgPath));
-    //     $img = Image::make($imgPath);
-       
-
-    //     $img->text($body, $data['position_x'], $data['position_y'], function ($font) use ($data, $isRtl) {
-    //         $fontPath = $isRtl ? public_path('assets/default/fonts/vazir/Vazir-Medium.ttf') : public_path('assets/default/fonts/Montserrat-Medium.ttf');
-    //        // dd($fontPath);
-
-    //         if (!file_exists($fontPath)) {
-    //             throw new \Exception('Font file does not exist: ' . $fontPath);
-    //         }
-    //         $font->file(public_path('assets/default/fonts/vazir/Vazir-Medium.ttf'));
-           
-    //         $font->size($data['font_size']);
-    //         $font->color($data['text_color']);
-    //         $font->align($isRtl ? 'right' : 'left');
-    //     });
-    //     return $img->response('png');
-    // }
-
-    // public function CertificatesTemplatePreview(Request $request)
-    // {
-    //     // Load the background image
-    //     $imgPath = public_path($request->get('image'));
-    //     $img = Image::make($imgPath);
     
-    //     // Define the dynamic data
-    //     $studentName = "Wejdan Hamad Alnuami";
-    //     $courseName = "Graphic Design and UI/UX";
-    //     $text = "HAS BEEN AWARDED AN ONLINE DIPLOMA DEGREE OF";
-    //     $text2 = "/WITH ABOVE EXCELLENT FIRST CLASS HONORS GRADE AND A";
-    //     $issueDate = " ON THE 26th of February 2024";
-    //     $gpa = "GPA of (5/5)";
-    //     $fullText = $text2 . " " . $gpa;
-    
-    //     // Define font path
-    //     $fontPath = public_path('assets/default/fonts/vazir/Vazir-Medium.ttf'); // Make sure this font file exists
-    
-    //     // Add Student Name
-    //     $img->text($studentName, 800, 1250, function($font) use ($fontPath) {
-    //         $font->file($fontPath);
-    //         $font->size(50); // Adjust as needed
-    //         $font->color('#000000');
-    //         $font->align('center');
-    //         $font->valign('top');
-    //     });
- 
- 
- 
-    //     $img->text($text, 800, 1400, function($font) use ($fontPath) {
-    //         $font->file($fontPath);
-    //         $font->size(30); // Adjust as needed
-    //         $font->color('#000000');
-    //         $font->align('center');
-    //         $font->valign('top');
-    //     });
-    
-    //     // Add Course/Diploma Name
-    //     $img->text($courseName, 800, 1450, function($font) use ($fontPath) {
-    //         $font->file($fontPath);
-    //         $font->size(40); // Adjust as needed
-    //         $font->color('#000000');
-    //         $font->align('center');
-    //         $font->valign('top');
-    //     });
- 
- 
-    //             // Add Date of Issue
-    //             $img->text($fullText, 800, 1510, function($font) use ($fontPath) {
-    //                 $font->file($fontPath);
-    //                 $font->size(30); // Adjust as needed
-    //                 $font->color('#000000');
-    //                 $font->align('center');
-    //                 $font->valign('top');
-    //             });
-            
-    
-    //     // Add Date of Issue
-    //     $img->text($issueDate, 800, 1570, function($font) use ($fontPath) {
-    //         $font->file($fontPath);
-    //         $font->size(35); // Adjust as needed
-    //         $font->color('#000000');
-    //         $font->align('center');
-    //         $font->valign('top');
-    //     });
-    
-   
-    //     // Save the modified image
-    //     //$img->save(public_path('path_to_save_the_certificate.jpg'));
-    
-    //     // Optionally, return the image directly
-    //     return $img->response('jpg');
-    // }
-
 
 
 public function CertificatesTemplatePreview(Request $request)

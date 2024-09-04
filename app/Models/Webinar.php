@@ -71,6 +71,11 @@ class Webinar extends Model implements TranslatableContract
         return $this->hasMany(Enrollment::class);
     }
 
+    public function certificate_template()
+    {
+        return $this->belongsToMany(CertificateTemplate::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'enrollments');

@@ -70,29 +70,18 @@
                                 </div>
                                 
                                 <!-- Form Group for Course Selection (Similar to Bundle Dropdown) -->
-                                {{-- <div class="form-group" id="courseDropdown" style="display: none;">
+                                 <div class="form-group" id="courseDropdown" style="display: none;">
                                     <label class="control-label">اختيار الدورة</label>
-                                    <select name="courses[]" id="courses" class="form-control" multiple>
+                                    <select name="webinars[]" id="courses" class="form-control" multiple>
                                         @foreach($courses as $course)
-                                            <option value="{{ $course->id }}" {{ (isset($certificates) && $certificates->course->contains($course->id)) ? 'selected' : '' }}>
+                                            <option value="{{ $course->id }}" {{ (isset($template) && $template->webinar->contains($course->id)) ? 'selected' : '' }}>
                                                 {{ $course->title }}
                                             </option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">@error('courses') {{ $message }} @enderror</div>
-                                </div> --}}
-{{-- 
-                                <div class="form-group">
-                                    <label class="control-label">دبلومات الشهادة</label>
-                                    <select name="courses[]" id="courses" class="form-control" multiple>
-                                        @foreach($courses as $course)
-                                            <option value="{{ $course->id }}" {{ (isset($template) && $template->$course->contains($course->id)) ? 'selected' : '' }}>
-                                                {{ $course->title }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="invalid-feedback">@error('courses') {{ $message }} @enderror</div>
-                                </div> --}}
+                                </div> 
+
                                 <div class="form-group">
                                     <label class="control-label" for="inputDefault">{!! trans('public.title') !!}</label>
                                     <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ !empty($template) ? $template->title : old('title') }}">
@@ -303,6 +292,11 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).ready(function() {
        
         $('#bundles').select2({
+            placeholder: '',
+           
+        });
+
+        $('#courses').select2({
             placeholder: '',
            
         });

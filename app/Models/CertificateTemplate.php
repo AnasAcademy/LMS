@@ -35,6 +35,12 @@ class CertificateTemplate extends Model implements TranslatableContract
     {
         return $this->belongsToMany(Bundle::class);
     }
+
+    public function webinar()
+    {
+        return $this->belongsToMany(Webinar::class);
+    }
+    
     
     public function sales()
     {
