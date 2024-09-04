@@ -290,8 +290,8 @@
                         <th>{{ trans('admin/main.user_group') }}</th> --}}
                         @if ($lastSegment === 'users')
                             <th>الهوية الوطنية</th>
-                            <th> الدبلومات المسجلة</th>
                         @endif
+                        <th> البرامج المسجلة</th>
 
                         {{-- <th>حاله الدفع</th> --}}
                         {{-- <th>كود الطالب</th> --}}
@@ -396,6 +396,7 @@
                                     @endforeach
                                 </td>
                             @else
+                                <td>{{$user->appliedProgram->title ?? '---' }}</td>
                                 <td>{{ dateTimeFormat($user->created_at, 'j M Y | H:i') }}</td>
                             @endif
 
