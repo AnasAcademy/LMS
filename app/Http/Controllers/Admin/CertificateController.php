@@ -64,12 +64,13 @@ class CertificateController extends Controller
 
         return view('admin.certificates.lists', $data);
     }
-    
-    public function purchase(){
-        $purchased_certificates=Sale::whereNotNull('certificate_template_id')
-        ->get();
-       
-        return view('admin.certificates.purchased_certificates',compact('purchased_certificates'));
+
+    public function purchase()
+    {
+        $purchased_certificates = Sale::whereNotNull('certificate_template_id')
+            ->get();
+
+        return view('admin.certificates.purchased_certificates', compact('purchased_certificates'));
     }
 
     private function filters($query, $request)
@@ -115,33 +116,31 @@ class CertificateController extends Controller
 
     public function CertificatesNewTemplate()
     {
-       
+
         $this->authorize('admin_certificate_template_create');
-    
+
         removeContentLocale();
         $courses = Webinar::get();
         $bundles = Bundle::get();
         $data = [
             'pageTitle' => trans('admin/main.certificate_new_template_page_title'),
             'bundles' => $bundles,
-            'courses'=>$courses,
+            'courses' => $courses,
         ];
-     
-      //  dd($bundles); // Debug the data array
+
+        //  dd($bundles); // Debug the data array
         return view('admin.certificates.new_templates', $data);
     }
-    
+
     public function CertificatesTemplateStore(Request $request, $template_id = null)
     {
-        try{ 
-        $this->authorize('admin_certificate_template_create');
 
         $rules = [
             'title' => 'required',
             'image' => 'required',
             'type' => 'required|in:quiz,course,bundle',
-           // 'bundles'=>'required',
-            'student_name'=>'required',
+            // 'bundles'=>'required',
+            //    'student_name'=>'required',
             'position_x_student' => 'required',
             'position_y_student' => 'required',
             'font_size_student' => 'required',
@@ -149,132 +148,127 @@ class CertificateController extends Controller
             // 'position_x_text' => 'required',
             // 'position_y_text' => 'required',
             // 'font_size_text' => 'required',
-            'course_name'=>'required',
+            // 'course_name'=>'required',
             'position_x_course' => 'required',
             'position_y_course' => 'required',
             'font_size_course' => 'required',
-            'graduation_date' => 'required|date',
+            // 'graduation_date' => 'required|date',
             'position_x_date' => 'required',
             'position_y_date' => 'required',
             'font_size_date' => 'required',
-            'position_x_certificate_code'=>'required',
-            'position_y_certificate_code'=>'required',
+            'position_x_certificate_code' => 'required',
+            'position_y_certificate_code' => 'required',
             'font_size_certificate_code' => 'required',
-
             'text_color' => 'required',
         ];
+
         $this->validate($request, $rules);
 
-        $data = $request->all();
-      //  dd($data);
+        try {
+            $this->authorize('admin_certificate_template_create');
+            $data = $request->all();
 
-        if ($data['status'] and $data['status'] == 'publish') { // set draft for other templates
-            CertificateTemplate::where('status', 'publish')
-                ->where('type', $data['type'])
-                ->update([
-                    'status' => 'draft'
+
+            if ($data['status'] and $data['status'] == 'publish') { // set draft for other templates
+                CertificateTemplate::where('status', 'publish')
+                    ->where('type', $data['type'])
+                    ->update([
+                        'status' => 'draft'
+                    ]);
+            }
+
+            if (!empty($template_id)) {
+
+                $template = CertificateTemplate::findOrFail($template_id);
+
+                $template->update([
+                    'image' => $data['image'],
+                    'status' => $data['status'],
+                    'type' => $data['type'],
+                    'price' => $data['price'],
+                    'student_name' => $data['student_name'],
+                    'position_x_student' => $data['position_x_student'],
+                    'position_y_student' => $data['position_y_student'],
+                    'font_size_student' => $data['font_size_student'],
+                    'text' => $data['text'],
+                    'position_x_text' => $data['position_x_text'],
+                    'position_y_text' => $data['position_y_text'],
+                    'font_size_text' => $data['font_size_text'],
+                    'course_name' => $data['course_name'],
+                    'position_x_course' => $data['position_x_course'],
+                    'position_y_course' => $data['position_y_course'],
+                    'font_size_course' => $data['font_size_course'],
+                    'graduation_date' => $data['graduation_date'],
+                    'position_x_date' => $data['position_x_date'],
+                    'position_y_date' => $data['position_y_date'],
+                    'font_size_date' => $data['font_size_date'],
+
+                    'position_x_certificate_code' => $data['position_x_certificate_code'],
+                    'position_y_certificate_code' => $data['position_y_certificate_code'],
+                    'font_size_certificate_code' => $data['font_size_certificate_code'],
+                    'text_color' => $data['text_color'],
+
+                    'updated_at' => time(), // Use Carbon's now() instead of time()
                 ]);
-        }
+                if (!empty($request->input('bundles'))) {
+                    $template->bundle()->sync($request->input('bundles', []));
+                }
+            } else {
+                $template = CertificateTemplate::create([
+                    'image' => $data['image'],
+                    'status' => $data['status'],
+                    'type' => $data['type'],
+                    'price' => $data['price'],
+                    'student_name' => $data['student_name'],
+                    'position_x_student' => $data['position_x_student'],
+                    'position_y_student' => $data['position_y_student'],
+                    'font_size_student' => $data['font_size_student'],
+                    'text' => $data['text'],
+                    'position_x_text' => $data['position_x_text'],
+                    'position_y_text' => $data['position_y_text'],
+                    'font_size_text' => $data['font_size_text'],
+                    'course_name' => $data['course_name'],
+                    'position_x_course' => $data['position_x_course'],
+                    'position_y_course' => $data['position_y_course'],
+                    'font_size_course' => $data['font_size_course'],
+                    'graduation_date' => $data['graduation_date'],
+                    'position_x_date' => $data['position_x_date'],
+                    'position_y_date' => $data['position_y_date'],
+                    'font_size_date' => $data['font_size_date'],
+                    'text_color' => $data['text_color'],
+                    'position_x_certificate_code' => $data['position_x_certificate_code'],
+                    'position_y_certificate_code' => $data['position_y_certificate_code'],
+                    'font_size_certificate_code' => $data['font_size_certificate_code'],
+                    'created_at' => time(), // Use Carbon's now() instead of time()
+                ]);
 
-        if (!empty($template_id)) {
-
-            $template = CertificateTemplate::findOrFail($template_id);
-           
-            $template->update([
-                'image' => $data['image'],
-                'status' => $data['status'],
-                'type' => $data['type'],
-                'price' => $data['price'],
-                'student_name' => $data['student_name'],
-                'position_x_student' => $data['position_x_student'],
-                'position_y_student' => $data['position_y_student'],
-                'font_size_student' => $data['font_size_student'],
-                'text' => $data['text'],
-                'position_x_text' => $data['position_x_text'],
-                'position_y_text' => $data['position_y_text'],
-                'font_size_text' => $data['font_size_text'],
-                'course_name' => $data['course_name'],
-                'position_x_course' => $data['position_x_course'],
-                'position_y_course' => $data['position_y_course'],
-                'font_size_course' => $data['font_size_course'],
-                'graduation_date' => $data['graduation_date'],
-                'position_x_date' => $data['position_x_date'],
-                'position_y_date' => $data['position_y_date'],
-                'font_size_date' => $data['font_size_date'],
-
-                'position_x_certificate_code' => $data['position_x_certificate_code'],
-                'position_y_certificate_code' => $data['position_y_certificate_code'],
-                'font_size_certificate_code' => $data['font_size_certificate_code'],
-                'text_color' => $data['text_color'],
-
-                'updated_at' => time(), // Use Carbon's now() instead of time()
-            ]);
-            if(!empty($request->input('bundles'))){
-                $template->bundle()->sync($request->input('bundles', []));
-
+                if (!empty($request->input('bundles'))) {
+                    $template->bundle()->sync($request->input('bundles', []));
+                }
             }
-           
-           
-        } else {
-            $template = CertificateTemplate::create([
-                'image' => $data['image'],
-                'status' => $data['status'],
-                'type' => $data['type'],
-                'price' => $data['price'],
-                'student_name' => $data['student_name'],
-                'position_x_student' => $data['position_x_student'],
-                'position_y_student' => $data['position_y_student'],
-                'font_size_student' => $data['font_size_student'],
-                'text' => $data['text'],
-                'position_x_text' => $data['position_x_text'],
-                'position_y_text' => $data['position_y_text'],
-                'font_size_text' => $data['font_size_text'],
-                'course_name' => $data['course_name'],
-                'position_x_course' => $data['position_x_course'],
-                'position_y_course' => $data['position_y_course'],
-                'font_size_course' => $data['font_size_course'],
-                'graduation_date' => $data['graduation_date'],
-                'position_x_date' => $data['position_x_date'],
-                'position_y_date' => $data['position_y_date'],
-                'font_size_date' => $data['font_size_date'],
-                'text_color' => $data['text_color'],
-                'position_x_certificate_code' => $data['position_x_certificate_code'],
-                'position_y_certificate_code' => $data['position_y_certificate_code'],
-                'font_size_certificate_code' => $data['font_size_certificate_code'],
-                'created_at' => time(), // Use Carbon's now() instead of time()
+
+            CertificateTemplateTranslation::updateOrCreate([
+                'certificate_template_id' => $template->id,
+                'locale' => mb_strtolower($data['locale']),
+            ], [
+                'title' => $data['title'],
+                //  'body' => $data['body'],
+                'rtl' => $data['rtl'],
             ]);
 
-             if(!empty($request->input('bundles'))){
-                $template->bundle()->sync($request->input('bundles', []));
+            removeContentLocale();
 
-            }
+            return redirect(getAdminPanelUrl() . '/certificates/templates');
+        } catch (\Exception $e) {
+            dd($e);
         }
-
-        CertificateTemplateTranslation::updateOrCreate([
-            'certificate_template_id' => $template->id,
-            'locale' => mb_strtolower($data['locale']),
-        ], [
-            'title' => $data['title'],
-          //  'body' => $data['body'],
-            'rtl' => $data['rtl'],
-        ]);
-
-        removeContentLocale();
-
-        return redirect(getAdminPanelUrl().'/certificates/templates');
-    }
-    catch ( \Exception $e ){
-        dd($e);
-
-
-    }
     }
 
     // public function CertificatesTemplateStore(Request $request, $template_id = null, $certificates_id = null)
     // {
     //     try {
     //         $this->authorize('admin_certificate_template_create');
-    
+
     //         $rules = [
     //             'title' => 'required',
     //             'image' => 'required',
@@ -297,18 +291,18 @@ class CertificateController extends Controller
     //             'font_size_date' => 'required',
     //             'text_color' => 'required',
     //         ];
-    
+
     //         $this->validate($request, $rules);
-    
+
     //         $data = $request->all();
-    
+
     //         // Set draft for other templates if publishing
     //         if (isset($data['status']) && $data['status'] == 'publish') {
     //             CertificateTemplate::where('status', 'publish')
     //                 ->where('type', $data['type'])
     //                 ->update(['status' => 'draft']);
     //         }
-    
+
     //         if (!empty($template_id)) {
     //             $template = CertificateTemplate::findOrFail($template_id);
     //             $template->update([
@@ -335,7 +329,7 @@ class CertificateController extends Controller
     //                 'text_color' => $data['text_color'],
     //                 'updated_at' => time(),
     //             ]);
-    
+
     //             if ($data['type'] === 'course') {
     //                 if ($template_id) {
     //                     try {
@@ -349,7 +343,7 @@ class CertificateController extends Controller
     //                     }
     //                 }
     //             }
-    
+
     //             $template->bundle()->sync($request->input('bundles', []));
     //         } else {
     //             $template = CertificateTemplate::create([
@@ -376,17 +370,17 @@ class CertificateController extends Controller
     //                 'text_color' => $data['text_color'],
     //                 'created_at' => time(),
     //             ]);
-    
+
     //             if ($data['type'] === 'course') {
     //                 $certificates = Certificate::create([
     //                     'webinar_id' => $request->input('courses', []), // Assuming this is how you're associating courses
     //                     'type' => 'course',
     //                 ]);
     //             }
-    
+
     //             $template->bundle()->sync($request->input('bundles', []));
     //         }
-    
+
     //         CertificateTemplateTranslation::updateOrCreate([
     //             'certificate_template_id' => $template->id,
     //             'locale' => mb_strtolower($data['locale']),
@@ -394,19 +388,19 @@ class CertificateController extends Controller
     //             'title' => $data['title'],
     //             'rtl' => $data['rtl'],
     //         ]);
-    
+
     //         removeContentLocale();
-    
+
     //         return redirect(getAdminPanelUrl() . '/certificates/templates');
     //     } catch (\Exception $e) {
     //         dd($e);
     //     }
     // }
-    
+
 
     // public function CertificatesTemplatePreview(Request $request)
     // {
-        
+
     //     $this->authorize('admin_certificate_template_create');
 
     //     $data = [
@@ -441,7 +435,7 @@ class CertificateController extends Controller
     //     $imgPath = public_path($data['image']);
     //  //   dd($imgPath, file_exists($imgPath));
     //     $img = Image::make($imgPath);
-       
+
 
     //     $img->text($body, $data['position_x'], $data['position_y'], function ($font) use ($data, $isRtl) {
     //         $fontPath = $isRtl ? public_path('assets/default/fonts/vazir/Vazir-Medium.ttf') : public_path('assets/default/fonts/Montserrat-Medium.ttf');
@@ -451,7 +445,7 @@ class CertificateController extends Controller
     //             throw new \Exception('Font file does not exist: ' . $fontPath);
     //         }
     //         $font->file(public_path('assets/default/fonts/vazir/Vazir-Medium.ttf'));
-           
+
     //         $font->size($data['font_size']);
     //         $font->color($data['text_color']);
     //         $font->align($isRtl ? 'right' : 'left');
@@ -464,7 +458,7 @@ class CertificateController extends Controller
     //     // Load the background image
     //     $imgPath = public_path($request->get('image'));
     //     $img = Image::make($imgPath);
-    
+
     //     // Define the dynamic data
     //     $studentName = "Wejdan Hamad Alnuami";
     //     $courseName = "Graphic Design and UI/UX";
@@ -473,10 +467,10 @@ class CertificateController extends Controller
     //     $issueDate = " ON THE 26th of February 2024";
     //     $gpa = "GPA of (5/5)";
     //     $fullText = $text2 . " " . $gpa;
-    
+
     //     // Define font path
     //     $fontPath = public_path('assets/default/fonts/vazir/Vazir-Medium.ttf'); // Make sure this font file exists
-    
+
     //     // Add Student Name
     //     $img->text($studentName, 800, 1250, function($font) use ($fontPath) {
     //         $font->file($fontPath);
@@ -485,9 +479,9 @@ class CertificateController extends Controller
     //         $font->align('center');
     //         $font->valign('top');
     //     });
- 
- 
- 
+
+
+
     //     $img->text($text, 800, 1400, function($font) use ($fontPath) {
     //         $font->file($fontPath);
     //         $font->size(30); // Adjust as needed
@@ -495,7 +489,7 @@ class CertificateController extends Controller
     //         $font->align('center');
     //         $font->valign('top');
     //     });
-    
+
     //     // Add Course/Diploma Name
     //     $img->text($courseName, 800, 1450, function($font) use ($fontPath) {
     //         $font->file($fontPath);
@@ -504,8 +498,8 @@ class CertificateController extends Controller
     //         $font->align('center');
     //         $font->valign('top');
     //     });
- 
- 
+
+
     //             // Add Date of Issue
     //             $img->text($fullText, 800, 1510, function($font) use ($fontPath) {
     //                 $font->file($fontPath);
@@ -514,8 +508,8 @@ class CertificateController extends Controller
     //                 $font->align('center');
     //                 $font->valign('top');
     //             });
-            
-    
+
+
     //     // Add Date of Issue
     //     $img->text($issueDate, 800, 1570, function($font) use ($fontPath) {
     //         $font->file($fontPath);
@@ -524,130 +518,134 @@ class CertificateController extends Controller
     //         $font->align('center');
     //         $font->valign('top');
     //     });
-    
-   
+
+
     //     // Save the modified image
     //     //$img->save(public_path('path_to_save_the_certificate.jpg'));
-    
+
     //     // Optionally, return the image directly
     //     return $img->response('jpg');
     // }
 
 
 
-public function CertificatesTemplatePreview(Request $request)
-{
-    // Load the background image
-    $imgPath = public_path($request->get('image'));
-    $img = Image::make($imgPath);
-    $textColor = $request->get('text_color', '#000000');
+    public function CertificatesTemplatePreview(Request $request)
+    {
+        $rules = [
+            'image' => 'required',
+        ];
+        $this->validate($request, $rules);
+        // Load the background image
+        $imgPath = public_path($request->get('image'));
+        $img = Image::make($imgPath);
+        $textColor = $request->get('text_color') ?? '#000000';
 
-    $student_name = $request->get('student_name');
-    $position_x_student = (int)$request->get('position_x_student', 835); // Default to 800 if not provided
-    $position_y_student = (int)$request->get('position_y_student', 1250);
-    $font_size_student = (int)$request->get('font_size_student', 40);
+        $student_name = $request->get('student_name') ?? 'student name text';
+        $position_x_student = (int)($request->get('position_x_student') ?? 835); // Default to 800 if not provided
+        $position_y_student = (int)($request->get('position_y_student') ?? 1250);
+        $font_size_student = (int)($request->get('font_size_student') ?? 40);
 
-    $course_name = $request->get('course_name');
-    $position_x_course = (int)$request->get('position_x_course', 835); // Default to 800 if not provided
-    $position_y_course = (int)$request->get('position_y_course', 1450);
-    $font_size_course = (int)$request->get('font_size_course', 40);
+        $course_name = $request->get('course_name') ?? 'course title text';
+        $position_x_course = (int)($request->get('position_x_course') ?? 835); // Default to 800 if not provided
+        $position_y_course = (int)($request->get('position_y_course') ?? 1450);
+        $font_size_course = (int)($request->get('font_size_course') ?? 40);
 
-    $text = $request->get('text');
-    $position_x_text = (int)$request->get('position_x_text', 835); // Default to 800 if not provided
-    $position_y_text = (int)$request->get('position_y_text', 1400);
-    $font_size_text = (int)$request->get('font_size_text', 40);
+        $text = $request->get('text') ?? 'description text';
+        $position_x_text = (int)($request->get('position_x_text') ?? 835); // Default to 800 if not provided
+        $position_y_text = (int)($request->get('position_y_text') ?? 1400);
+        $font_size_text = (int)($request->get('font_size_text') ?? 40);
 
-    $graduation_date = $request->get('graduation_date');
-    $position_x_date = (int)$request->get('position_x_date', 835); // Default to 800 if not provided
-    $position_y_date = (int)$request->get('position_y_date', 1510);
-    $font_size_date = (int)$request->get('font_size_date', 40);
+        $graduation_date = $request->get('graduation_date');
+        $position_x_date = (int)($request->get('position_x_date') ?? 835); // Default to 800 if not provided
+        $position_y_date = (int)($request->get('position_y_date') ?? 1510);
+        $font_size_date = (int)($request->get('font_size_date') ?? 40);
 
-    $position_x_certificate_code = (int)$request->get('position_x_certificate_code', 835); // Default to 800 if not provided
-    $position_y_certificate_code = (int)$request->get('position_y_certificate_code', 3415);
-    $font_size_certificate_code = (int)$request->get('font_size_certificate_code', 40);
+        $position_x_certificate_code = (int)($request->get('position_x_certificate_code') ?? 835); // Default to 800 if not provided
+        $position_y_certificate_code = (int)($request->get('position_y_certificate_code') ?? 3415);
+        $font_size_certificate_code = (int)($request->get('font_size_certificate_code') ?? 40);
 
-    // Define font path
-    $fontPath2 = public_path('assets/default/fonts/Trajan-Bold.otf'); // Bold font path
-    $fontPath = public_path('assets/default/fonts/Trajan-Regular.ttf'); // Make sure this font file exists
+        // Define font path
+        $fontPath2 = public_path('assets/default/fonts/Trajan-Bold.otf'); // Bold font path
+        $fontPath = public_path('assets/default/fonts/Trajan-Regular.ttf'); // Make sure this font file exists
 
-    // Helper function to get ordinal suffix
-    function getOrdinal($number) {
-        $suffix = [' th', ' st', ' nd', ' rd'];
-        $lastDigit = $number % 10;
-        $lastTwoDigits = $number % 100;
+        // Helper function to get ordinal suffix
+        function getOrdinal($number)
+        {
+            $suffix = [' th', ' st', ' nd', ' rd'];
+            $lastDigit = $number % 10;
+            $lastTwoDigits = $number % 100;
 
-        if ($lastTwoDigits >= 11 && $lastTwoDigits <= 13) {
-            return $number . $suffix[0];
+            if ($lastTwoDigits >= 11 && $lastTwoDigits <= 13) {
+                return $number . $suffix[0];
+            }
+
+            return $number . ($suffix[$lastDigit] ?? $suffix[0]);
         }
 
-        return $number . ($suffix[$lastDigit] ?? $suffix[0]);
+        // Format the issue date
+        $graduation_date = new \DateTime($graduation_date);
+        $day = $graduation_date->format('j');
+        $month = $graduation_date->format('F');
+        $year = $graduation_date->format('Y');
+        $formattedDate = "on the " . getOrdinal($day) . " of " . $month . " " . $year;
+
+        // Add Student Name
+
+        // ADD certificate code to image
+        $id = "AC000001";
+        // dd($id, $position_y_certificate_code, $position_x_certificate_code);
+        $img->text($id, $position_x_certificate_code, $position_y_certificate_code, function ($font) use ($fontPath, $textColor, $font_size_certificate_code) {
+            $font->file($fontPath);
+            $font->size($font_size_certificate_code); // Adjust as needed
+            $font->color($textColor);
+            $font->align('center');
+            $font->valign('top');
+        });
+
+        // Add Student Name to image
+        $img->text($student_name, $position_x_student, $position_y_student, function ($font) use ($fontPath2, $textColor, $font_size_student) {
+            $font->file($fontPath2);
+            $font->size($font_size_student); // Adjust as needed
+            $font->color($textColor);
+            $font->align('center');
+            $font->valign('top');
+        });
+
+        // Add Text to image
+        $img->text($text, $position_x_text, $position_y_text, function ($font) use ($fontPath, $textColor, $font_size_text) {
+            $font->file($fontPath);
+            $font->size($font_size_text); // Adjust as needed
+            $font->color($textColor);
+            $font->align('center');
+            $font->valign('top');
+        });
+
+        // Add Course/Diploma Name to image
+        $img->text($course_name, $position_x_course, $position_y_course, function ($font) use ($fontPath2, $textColor, $font_size_course) {
+            $font->file($fontPath2);
+            $font->size($font_size_course); // Adjust as needed
+            $font->color($textColor);
+            $font->align('center');
+            $font->valign('top');
+        });
+
+
+        $graduation_date2 = "with a total of 6 hours training " . $formattedDate;
+        // Add Date of Issue
+        $img->text($graduation_date2, $position_x_date, $position_y_date, function ($font) use ($fontPath, $textColor, $font_size_date) {
+            $font->file($fontPath);
+            $font->size($font_size_date); // Adjust as needed
+            $font->color($textColor);
+            $font->align('center');
+            $font->valign('top');
+        });
+
+        // Save the modified image
+        //$img->save(public_path('path_to_save_the_certificate.jpg'));
+
+        // Optionally, return the image directly
+        return $img->response('jpg');
     }
-
-    // Format the issue date
-    $graduation_date = new \DateTime($graduation_date);
-    $day = $graduation_date->format('j');
-    $month = $graduation_date->format('F');
-    $year = $graduation_date->format('Y');
-    $formattedDate = "on the " . getOrdinal($day) . " of " . $month . " " . $year;
-
-    // Add Student Name
-
-    $id = "AC000001";
-
-    $img->text($id, $position_x_certificate_code, $position_y_certificate_code, function($font) use ($fontPath, $textColor, $font_size_certificate_code) {
-                $font->file($fontPath);
-                $font->size($font_size_certificate_code); // Adjust as needed
-                $font->color($textColor);
-                $font->align('center');
-                $font->valign('top');
-            });
-
-    
-
-
-    $img->text($student_name, $position_x_student, $position_y_student, function($font) use ($fontPath2, $textColor, $font_size_student) {
-        $font->file($fontPath2);
-        $font->size($font_size_student); // Adjust as needed
-        $font->color($textColor);
-        $font->align('center');
-        $font->valign('top');
-    });
-
-    // Add Text
-    $img->text($text, $position_x_text, $position_y_text, function($font) use ($fontPath, $textColor, $font_size_text) {
-        $font->file($fontPath);
-        $font->size($font_size_text); // Adjust as needed
-        $font->color($textColor);
-        $font->align('center');
-        $font->valign('top');
-    });
-
-    // Add Course/Diploma Name
-    $img->text($course_name, $position_x_course, $position_y_course, function($font) use ($fontPath2, $textColor, $font_size_course) {
-        $font->file($fontPath2);
-        $font->size($font_size_course); // Adjust as needed
-        $font->color($textColor);
-        $font->align('center');
-        $font->valign('top');
-    });
-    
-   
-    $graduation_date2="with a total of 6 hours training " . $formattedDate;
-    // Add Date of Issue
-    $img->text($graduation_date2, $position_x_date, $position_y_date, function($font) use ($fontPath, $textColor, $font_size_date) {
-        $font->file($fontPath);
-        $font->size($font_size_date); // Adjust as needed
-        $font->color($textColor);
-        $font->align('center');
-        $font->valign('top');
-    });
-
-    // Save the modified image
-    //$img->save(public_path('path_to_save_the_certificate.jpg'));
-
-    // Optionally, return the image directly
-    return $img->response('jpg');
-}
 
 
 
@@ -665,13 +663,13 @@ public function CertificatesTemplatePreview(Request $request)
 
         $locale = $request->get('locale', app()->getLocale());
         storeContentLocale($locale, $template->getTable(), $template->id);
-        $bundles=Bundle::get();
+        $bundles = Bundle::get();
         $courses = Webinar::get();
         $data = [
             'pageTitle' => trans('admin/main.certificate_template_edit_page_title'),
             'template' => $template,
-            'bundles'=>$bundles,
-            'courses'=>$courses,
+            'bundles' => $bundles,
+            'courses' => $courses,
         ];
         return view('admin.certificates.new_templates', $data);
     }
@@ -684,7 +682,7 @@ public function CertificatesTemplatePreview(Request $request)
 
         $template->delete();
 
-        return redirect(getAdminPanelUrl().'/certificates/templates');
+        return redirect(getAdminPanelUrl() . '/certificates/templates');
     }
 
     public function CertificatesDownload($id)
@@ -724,14 +722,14 @@ public function CertificatesTemplatePreview(Request $request)
         $certificates = $query
             ->whereHas('quiz')
             ->with(
-            [
-                'quiz' => function ($query) {
-                    $query->with('webinar');
-                },
-                'student',
-                'quizzesResult'
-            ]
-        )->orderBy('created_at', 'desc')
+                [
+                    'quiz' => function ($query) {
+                        $query->with('webinar');
+                    },
+                    'student',
+                    'quizzesResult'
+                ]
+            )->orderBy('created_at', 'desc')
             ->get();
 
         $export = new CertificatesExport($certificates);
