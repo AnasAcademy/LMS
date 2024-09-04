@@ -147,6 +147,7 @@
         'inner' => "<h1 class='form-title font-36'>نموذج قبول طلب جديد وحجز مقعد دراسي</h1>",
     ])
 
+
     <div class="application container">
         <div class="col-12 col-lg-10 col-md-11 px-0">
             <div class="col-lg-12 col-md-12 px-0">
@@ -172,10 +173,10 @@
                                     <option selected hidden value="">اختر نوع التقديم التي تريد دراسته في
                                         اكاديمية انس للفنون </option>
                                     @if (count($categories) > 0)
-                                        <option value="programs" @if (old('type', request()->type) == 'programs') selected @endif>
+                                        <option value="programs" @if (old('type', request()->type ?? $user->application_type) == 'programs') selected @endif>
                                             برامج </option>
                                     @endif
-                                    <option value="courses" @if (old('type', request()->type) == 'courses') selected @endif>دورات</option>
+                                    <option value="courses" @if (old('type', request()->type ?? $user->application_type) == 'courses') selected @endif>دورات</option>
                                 </select>
 
                                 @error('type')
@@ -197,7 +198,7 @@
 
                                     @foreach ($courses as $course)
                                         <option value="{{ $course->id }}"
-                                            @if (old('webinar_id', request()->webinar) == $course->id) selected @endif>
+                                            @if (old('webinar_id', request()->webinar ?? ($user->application_type == 'courses' ? $user->program_id: null)) == $course->id) selected @endif>
                                             {{ $course->title }} </option>
                                     @endforeach
 
@@ -277,7 +278,7 @@
                                                     <option value="{{ $bundleItem->id }}"
                                                         has_certificate="{{ $bundleItem->has_certificate }}"
                                                         early_enroll="{{ $bundleItem->early_enroll }}"
-                                                        @if (old('bundle_id', request()->bundle) == $bundleItem->id) selected @endif>
+                                                        @if (old('bundle_id', request()->bundle ?? ($user->application_type == 'programs' ? $user->program_id: null)) == $bundleItem->id) selected @endif>
                                                         {{ $bundleItem->title }}</option>
                                                 @endforeach
 
@@ -287,7 +288,7 @@
                                                         <option value="{{ $bundleItem->id }}"
                                                             has_certificate="{{ $bundleItem->has_certificate }}"
                                                             early_enroll="{{ $bundleItem->early_enroll }}"
-                                                            @if (old('bundle_id', request()->bundle) == $bundleItem->id) selected @endif>
+                                                            @if (old('bundle_id', request()->bundle ?? ($user->application_type == 'programs' ? $user->program_id: null)) == $bundleItem->id) selected @endif>
                                                             {{ $bundleItem->title }}</option>
                                                     @endforeach
                                                 @endforeach
