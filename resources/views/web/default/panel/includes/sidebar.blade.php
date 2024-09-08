@@ -401,6 +401,9 @@
             </li>
         @endcan
         @can('student_showCertificate')
+
+        @if($authUser->certificates)
+
             <li
                 class="sidenav-item {{ (request()->is('panel/certificates') or request()->is('panel/certificates/*')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#certificatesCollapse" role="button"
@@ -424,22 +427,23 @@
                             <a href="/panel/certificates/achievements">{{ trans('quiz.achievements') }}</a>
                         </li>
 
-                    <li class="mt-5">
-                        <a href="/certificate">{{ trans('site.certificate_validation') }}</a>
-                    </li>
+                        <li class="mt-5">
+                            <a href="/certificate">{{ trans('site.certificate_validation') }}</a>
+                        </li>
 
-                    {{-- <li class="mt-5 {{ request()->is('panel/certificates/webinars') ? 'active' : '' }}">
-                        <a href="/panel/certificates/webinars">{{ trans('update.course_certificates') }}</a>
-                    </li> --}}
+                        {{-- <li class="mt-5 {{ request()->is('panel/certificates/webinars') ? 'active' : '' }}">
+                            <a href="/panel/certificates/webinars">{{ trans('update.course_certificates') }}</a>
+                        </li> --}}
 
-                    {{-- <li class="mt-5 {{ request()->is('panel/certificates/certificates_template') ? 'active' : '' }}">
-                        <a href="/panel/certificates/certificates_template">الشهادات المعتمدة</a>
-                    </li> --}}
+                        {{-- <li class="mt-5 {{ request()->is('panel/certificates/certificates_template') ? 'active' : '' }}">
+                            <a href="/panel/certificates/certificates_template">الشهادات المعتمدة</a>
+                        </li> --}}
 
-                </ul>
-            </div>
-        </li>
-        
+                    </ul>
+                </div>
+            </li>
+        @endif
+
         @endcan
 
         @if ($authUser->checkCanAccessToStore())
@@ -518,10 +522,9 @@
                             <li class="mt-5 {{ request()->is('panel/financial/sales') ? 'active' : '' }}">
                                 <a href="/panel/financial/sales">{{ trans('financial.sales_report') }}</a>
                             </li>
+                        @endif
 
-                            @endif
-
-                            {{-- <li class="mt-5 {{ request()->is('panel/financial/summary') ? 'active' : '' }}">
+                        {{-- <li class="mt-5 {{ request()->is('panel/financial/summary') ? 'active' : '' }}">
                                 <a href="/panel/financial/summary">{{ trans('financial.financial_summary') }}</a>
                             </li> --}}
 
