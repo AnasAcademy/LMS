@@ -412,7 +412,7 @@ class WebinarController extends Controller
             'status' => Webinar::$pending,
             'created_at' => time(),
             'updated_at' => time(),
-            'unattached' => ($category->parent_id==null)? 1 : 0,
+            // 'unattached' => ($category->parent_id==null)? 1 : 0,
             'hasGroup'   =>($category->parent_id==null)? 1 : 0,
             'unattached'=>$data['unattached'] ?? null,
         ]);
@@ -519,7 +519,7 @@ class WebinarController extends Controller
             ])
             ->first();
 
-          
+
 
         if (empty($webinar)) {
             abort(404);
@@ -557,7 +557,7 @@ class WebinarController extends Controller
             'webinarPartnerTeacher' => $webinar->webinarPartnerTeacher,
             'webinarTags' => $tags,
             'defaultLocale' => getDefaultLocale(),
-            
+
         ];
 
         return view('admin.webinars.create', $data);
