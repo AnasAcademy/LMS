@@ -220,29 +220,29 @@
                                 <tr>
                                     <th>{{ trans('public.certificate') }}</th>
                                     <th class="text-center">{{ trans('public.certificate_id') }}</th>
-                                  
-                                    
+
+
                                     <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                          
+
                                 @foreach($courseCertificates as $courseCertificate)
                                     <tr>
                                         <td class="text-left">
                                             <span class="d-block text-dark-blue font-weight-500">{{ $courseCertificate->title }}</span>
                                             <span class="d-block font-12 text-gray mt-5">{{ $courseCertificate->webinar->title }}</span>
-                                          
+
                                         </td>
                                         <td class="align-middle">
-                                      
+
 
                                                 {{$courseCertificate->certificate_code }}
 
                                         </td>
-                                      
-                                       
-                                        
+
+
+
                                         <td class="align-middle font-weight-normal">
                                             {{-- @if($courseCertificate->can_download_certificate) --}}
                                                 {{-- <div class="btn-group dropdown table-actions"> --}}
@@ -250,10 +250,10 @@
                                                         <i data-feather="more-vertical" height="20"></i>
                                                     </button> --}}
                                                     {{-- <div class="dropdown-menu"> --}}
-                                                        
+
                                                         <a href="/panel/course/{{$courseCertificate->webinar->id}}/showCertificate" target="_blank" class="btn btn-sm btn-primary">تنزيل الشهاده كصوره</a>
                                                         <a href="/panel/course/{{$courseCertificate->webinar->id}}/showCertificate/pdf" target="_blank" class="btn btn-sm btn-primary">تحميل الشهاده ك pdf</a>
-                                                        
+
                                                     {{-- </div>
                                                 </div> --}}
                                             {{-- @endif --}}
@@ -279,7 +279,7 @@
 
     <section class="mt-35">
         <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row">
-            <h2 class="section-title">الحزم</h2>
+            <h2 class="section-title">البرامج</h2>
         </div>
 
         @if(!empty($bundleCertificates) and count($bundleCertificates))
@@ -292,8 +292,8 @@
                                 <tr>
                                     <th>{{ trans('public.certificate') }}</th>
                                     <th class="text-center">{{ trans('public.certificate_id') }}</th>
-                                  
-                                   
+
+
                                     <th></th>
                                 </tr>
                                 </thead>
@@ -306,17 +306,17 @@
                                             <span class="d-block font-12 text-gray mt-5">{{ $bundleCertificate->bundle->title }}</span>
                                         </td>
                                         <td class="align-middle">
-                                         
-                                              
+
+
 
                                                 {{$bundleCertificate->certificate_code}}
 
-                                              
-                                            
+
+
                                         </td>
-                                      
-                                       
-                                        
+
+
+
                                         <td class="align-middle font-weight-normal">
                                             {{-- @if($courseCertificate->can_download_certificate) --}}
                                                 {{-- <div class="btn-group dropdown table-actions"> --}}
@@ -324,10 +324,10 @@
                                                         <i data-feather="more-vertical" height="20"></i>
                                                     </button> --}}
                                                     {{-- <div class="dropdown-menu"> --}}
-                                                        
+
                                                         <a href="/panel/bundle/{{$bundleCertificate->bundle->id}}/showCertificate" target="_blank" class="btn btn-sm btn-primary">تحميل الشهاده كصوره</a>
                                                         <a href="/panel/bundle/{{$bundleCertificate->bundle->id}}/showCertificate/pdf" target="_blank" class="btn btn-sm btn-primary">تحميل الشهاده ك PDF</a>
-                                                        
+
                                                     {{-- </div> --}}
                                                 {{-- </div> --}}
                                             {{-- @endif --}}

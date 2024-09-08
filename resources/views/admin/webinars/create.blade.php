@@ -84,24 +84,25 @@
 
                                             <div class="form-group mt-15">
                                                 <label class="input-label d-block">نوع الدوره</label>
-                                            
+
                                                 <select name="unattached" class="custom-select @error('unattached') is-invalid @enderror">
-                                                    <option value="0" @if((!empty($webinar) && $webinar->isWebinar()) || old('unattached') == 0) selected @endif>
+                                                    <option value="" disabled selected >اختر نوع الدورة</option>
+                                                    <option value="0" @if(old('unattached', $webinar->unattached ?? null) == 0) selected @endif>
                                                         دوره خاصه ببرنامج
                                                     </option>
-                                                    <option value="1" @if((!empty($webinar) && $webinar->isCourse()) || old('unattached') == 1) selected @endif>
-                                                       
+                                                    <option value="1" @if(old('unattached', $webinar->unattached ?? null) == 1) selected @endif>
+
                                                        دوره مستقله
                                                     </option>
                                                 </select>
-                                            
+
                                                 @error('unattached')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
                                                 </div>
                                                 @enderror
                                             </div>
-                                            
+
 
 
                                             <div class="form-group mt-15">

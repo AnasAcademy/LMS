@@ -51,6 +51,7 @@
                             <th> عدد الطلاب</th>
                             <th> سعة المجموعة</th>
                             <th> تاريخ البدأ</th>
+                            <th> تاريخ الإنتهاء</th>
                             <th>الحالة</th>
                             <th width="120">{{ trans('admin/main.actions') }}</th>
                         </tr>
@@ -64,6 +65,7 @@
                                     </td>
                                 <td class="text-center">{{ $group->capacity }}</td>
                                 <td class="text-center">{{ $group->start_date }}</td>
+                                <td class="text-center">{{ $group->end_date }}</td>
                                 <td class="text-center">
                                     <span
                                         class="{{ $group->status == 'active' ? 'text-success' : 'text-danger' }}">{{ trans('admin/main.' . $group->status) }}</span>
