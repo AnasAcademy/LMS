@@ -12,6 +12,7 @@ use App\Models\Webinar;
 use \Barryvdh\DomPDF\Facade\Pdf;
 use Intervention\Image\Facades\Image;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf as WriterPdf;
+use Carbon\Carbon;
 
 class MakeCertificate
 {
@@ -98,7 +99,7 @@ class MakeCertificate
 
 
 
-    private function makeBody($data)
+    public function makeBody($data)
     {
         $bodyData = [
             'student_name' => $data['student_name'] ?? '', // Default to empty string if not provided
@@ -167,7 +168,7 @@ class MakeCertificate
         return $number . ($suffix[$lastDigit] ?? $suffix[0]);
     }
 
-    private function makeImage($certificateTemplate, $body)
+    public function makeImage($certificateTemplate, $body)
     {
         // Load the background image
         $img = Image::make(public_path($certificateTemplate->image));
@@ -270,10 +271,12 @@ class MakeCertificate
 
     public function makeCourseCertificate(Webinar $course, $format = 'png')
     {
-        $template = CertificateTemplate::where('status', 'publish')
-            ->where('type', 'course')
-            ->first();
+        // $template = CertificateTemplate::where('status', 'publish')
+        //     ->where('type', 'course')
+        //     ->first();
 
+        $template = $course->certificate_template()->where('status', 'publish')
+            ->where('type', 'course')->latest()->first();
         // $course = $certificate->webinar;
 
         if (!empty($template) and !empty($course)) {
@@ -285,22 +288,17 @@ class MakeCertificate
                 $query->where('user_id', $user->id);
             })->first();
 
-            $data = $template;
 
-            $body = $this->makeBody($data, $userCertificate);
-            $body['certificate_code'] =$userCertificate->certificate_code;
-            // dd( $data);
-
+            $body = $this->makeBody($template);
+            $body['certificate_code'] = $userCertificate->certificate_code;
             $body['graduation_date'] = $group->end_date;
             $body['student_name'] = $user->student->en_name ?? '';
             $body['course_name'] = $course->course_name_certificate;
             $body['course_hours'] = $course->duration;
 
-
-            // dd($data);
+            // Generate the image
+            $img = $this->makeImage($template, $body);
             if ($format === 'pdf') {
-                // Generate the image
-                $img = $this->makeImage($template, $body);
 
                 // Convert the image to a base64 string
                 $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
@@ -318,12 +316,12 @@ class MakeCertificate
                     ->stream('course_certificate.pdf');
             } else {
                 // Handle image download logic as before
-                $img = $this->makeImage($template, $body);
                 return $img->response('png');
             }
 
-            abort(404);
         }
+
+        abort(404);
     }
 
 
@@ -343,18 +341,20 @@ class MakeCertificate
             'type' => 'course',
             'created_at' => time()
         ];
+        $group = $course->groups()->whereHas('enrollments', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->first();
 
         if (empty($certificate)) {
+            $date = Carbon::parse($group->end_date);
+            $year = $date->format('Y');
+            $month = $date->format('m');
+            $day = $date->format('d');
             $certificate = Certificate::create($data);
-            $year = date('Y');
-            $month = date('m');
-            $day = date('d');
             $certificateCode = "AC" . $certificate->id . $year . $month . $day;
             $data['certificate_code'] = $certificateCode;
+            $certificate->update($data);
         }
-
-      
-      
 
         $notifyOptions = [
             '[c.title]' => $course->title,
@@ -419,26 +419,28 @@ class MakeCertificate
 
     public function makebundleCertificate(Bundle $bundle, $format = 'png')
     {
-        $template = CertificateTemplate::where('status', 'publish')
-            ->where('type', 'bundle')
-            ->first();
+        // $template = CertificateTemplate::where('status', 'publish')
+        //     ->where('type', 'bundle')
+        //     ->first();
 
+        $template = $bundle->certificate_template()->where('status', 'publish')
+            ->where('type', 'bundle')->latest()->first();
 
         if (!empty($template) && !empty($bundle)) {
             $user = auth()->user();
             $userCertificate = $this->savebundleCertificate($user, $bundle, $template);
             //  dd($bundle->duration);
             $data = $template;
-            $body = $this->makeBody($data, $userCertificate);
+            $body = $this->makeBody($data);
             $body['certificate_code'] = $userCertificate->certificate_code;
             $body['student_name'] = $user->student->en_name ?? '';
             $body['course_name'] = $bundle->bundle_name_certificate;
             $body['graduation_date'] = $bundle->end_date; // Add this line to include the end date
             $body['course_hours'] = $bundle->duration;
 
+            $img = $this->makeImage($template, $body);
             if ($format === 'pdf') {
                 // Generate the image
-                $img = $this->makeImage($template, $body);
 
                 // Convert the image to a base64 string
                 $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
@@ -455,7 +457,6 @@ class MakeCertificate
                     ->stream('course_certificate.pdf');
             } else {
                 // Handle image download logic as before
-                $img = $this->makeImage($template, $body);
                 return $img->response('png');
             }
         }
@@ -472,11 +473,9 @@ class MakeCertificate
         $certificate = Certificate::where('bundle_id', $bundle->id)
             ->where('student_id', $user->id)
             ->first();
-        // dd($certificate);
-        // $certificateCode = "AC" . str_pad($certificate->id, 6, "0", STR_PAD_LEFT);
+
         $data = [
             'bundle_id' => $bundle->id,
-            // 'certificate_code'=> $certificateCode,
             'student_id' => $user->id,
             'template_id' => $template->id,
             'type' => 'bundle',
@@ -484,20 +483,22 @@ class MakeCertificate
         ];
 
         if (empty($certificate)) {
+            $date = Carbon::createFromTimestamp((int)$bundle->end_date);
+            $year = $date->format('Y');
+            $month = $date->format('m');
+            $day = $date->format('d');
             $certificate = Certificate::create($data);
-            $year = date('Y');
-            $month = date('m');
-            $day = date('d');
             $certificateCode = "AC" . $certificate->id . $year . $month . $day;
             $data['certificate_code'] = $certificateCode;
+            $certificate->update($data);
         }
-      
-      
-            $notifyOptions = [
-                '[c.title]' => $bundle->title,
-            ];
-            sendNotification('new_certificate', $notifyOptions, $user->id);
-        
+
+
+        $notifyOptions = [
+            '[c.title]' => $bundle->title,
+        ];
+        sendNotification('new_certificate', $notifyOptions, $user->id);
+
 
         return $certificate;
     }

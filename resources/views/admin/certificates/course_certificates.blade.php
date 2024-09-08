@@ -83,6 +83,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th class="text-left">{{ trans('admin/main.title') }}</th>
+                                        <th class="text-left">كود الشهادة</th>
                                         <th class="text-left">{{ trans('quiz.student') }}</th>
                                         <th class="text-left">{{ trans('admin/main.instructor') }}</th>
                                         <th class="text-center">{{ trans('public.date_time') }}</th>
@@ -94,6 +95,9 @@
                                             <td class="text-center">{{ $certificate->id }}</td>
                                             <td class="text-left">
                                                 <span>{{ $certificate->webinar->title }}</span>
+                                            </td>
+                                            <td class="text-left">
+                                                <span>{{ $certificate->certificate_code }}</span>
                                             </td>
                                             <td class="text-left">{{ $certificate->student->full_name }}</td>
                                             <td class="text-left">{{ $certificate->webinar->teacher->full_name }}</td>

@@ -76,11 +76,11 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
 
         });
-        Route::get('/cousesList', 'UserController@coursesList');
         Route::group(['prefix' => 'courses'], function () {
             Route::get('/', 'UserController@Courses');
+            Route::get('/list', 'UserController@coursesList');
             // Route::get('/cousesList', 'WebinarController@index');
-            
+
             Route::get('/{id}', 'UserController@Courses');
             Route::get('/groups/{id}/show', 'UserController@groupInfo');
             Route::get('/groups/{group}/edit', 'UserController@groupEdit');
