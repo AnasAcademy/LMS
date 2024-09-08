@@ -81,6 +81,8 @@
                     </ul>
                 </li>
             @endcan()
+
+
             @can('students_info')
                 {{-- register user --}}
                 <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/students/*', false)) ? 'active' : '' }}">
@@ -123,7 +125,7 @@
                         <span>{{ 'تسجيل الدورات' }}</span>
                     </a>
                     <ul class="dropdown-menu">
-                        @php
+                        {{-- @php
                             $webinars = App\Models\Webinar::where('hasGroup', 1)->get();
                         @endphp
                         @foreach ($webinars as $webinar)
@@ -131,7 +133,22 @@
                                 <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
                                     href="{{ getAdminPanelUrl() }}/courses/{{ $webinar->id }}" style="height: auto">{{ $webinar->title }}</a>
                             </li>
-                        @endforeach
+                        @endforeach --}}
+
+                        @can('admin_webinars_list')
+                        {{-- <li
+                            class="{{ (request()->is(getAdminPanelUrl('/webinars', false)) and request()->get('type') == 'course') ? 'active' : '' }}">
+                            <a class="nav-link @if (!empty($sidebarBeeps['courses']) and $sidebarBeeps['courses']) beep beep-sidebar @endif"
+                                href="{{ getAdminPanelUrl() }}/webinars?type=course">{{ trans('admin/main.courses') }}</a>
+                        </li> --}}
+                        <li
+                        class="{{ (request()->is(getAdminPanelUrl('/cousesList', false)) and request()->get('type') == 'course') ? 'active' : '' }}">
+                        <a href="{{ getAdminPanelUrl() }}/cousesList"
+                            class="nav-link @if (!empty($sidebarBeeps['cousesList']) and $sidebarBeeps['cousesList']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
+                    </li>
+
+                     
+                    @endcan()
                     </ul>
                 </li>
                 {{--
