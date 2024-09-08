@@ -99,7 +99,7 @@ class MakeCertificate
 
 
 
-    private function makeBody($data)
+    public function makeBody($data)
     {
         $bodyData = [
             'student_name' => $data['student_name'] ?? '', // Default to empty string if not provided
@@ -168,7 +168,7 @@ class MakeCertificate
         return $number . ($suffix[$lastDigit] ?? $suffix[0]);
     }
 
-    private function makeImage($certificateTemplate, $body)
+    public function makeImage($certificateTemplate, $body)
     {
         // Load the background image
         $img = Image::make(public_path($certificateTemplate->image));
