@@ -76,8 +76,11 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
 
         });
+        Route::get('/cousesList', 'UserController@coursesList');
         Route::group(['prefix' => 'courses'], function () {
             Route::get('/', 'UserController@Courses');
+            // Route::get('/cousesList', 'WebinarController@index');
+            
             Route::get('/{id}', 'UserController@Courses');
             Route::get('/groups/{id}/show', 'UserController@groupInfo');
             Route::get('/groups/{group}/edit', 'UserController@groupEdit');
@@ -299,6 +302,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
         Route::group(['prefix' => 'webinars'], function () {
             Route::get('/', 'WebinarController@index');
+
             Route::get('/create', 'WebinarController@create');
             Route::post('/store', 'WebinarController@store');
             Route::get('/{id}/edit', 'WebinarController@edit');

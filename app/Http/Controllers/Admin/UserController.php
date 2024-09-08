@@ -2057,18 +2057,25 @@ class UserController extends Controller
 
         return view('admin.students.enrollers', $data);
     }
+    public function coursesList(){
+        $webinars = Webinar::where(['unattached' => 1, 'hasGroup' =>1])->withCount('groups')->paginate(10);
+        // dd( $webinar);
 
-    public function Courses(Request $request, $id, $is_export_excel = false)
+        return view('admin.students.coursesList', compact('webinars'));
+    }
+
+    public function Courses(Request $request, $id=null, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
 
-
+        
         // $groups=Webinar::find($id)->groups;
         // dd($groups);
         $webinar = Webinar::find($id);
+        // dd($webinar );
         $query = $webinar->groups->unique();
         $totalGroups = deepClone($query)->count();
-
+      
 
         $query = $this->filters($query, $request);
 
