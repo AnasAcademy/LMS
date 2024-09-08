@@ -295,7 +295,7 @@
                                         for="position_x_certificate_code">{!! trans('admin/main.position_x') !!}</label>
                                     <input type="text" name="position_x_certificate_code"
                                         class="form-control @error('position_x_certificate_code') is-invalid @enderror"
-                                        value="{{ old('position_x_certificate_code', !empty($template) ? $template->position_x_certificate_code : '710') }}">
+                                        value="{{ old('position_x_certificate_code', !empty($template) ? $template->position_x_certificate_code : '560') }}">
                                     <div class="invalid-feedback">
                                         @error('position_x_certificate_code')
                                             {{ $message }}
@@ -306,7 +306,7 @@
                                         for="position_y_certificate_code">{!! trans('admin/main.position_y') !!}</label>
                                     <input type="text" name="position_y_certificate_code"
                                         class="form-control @error('position_y_certificate_code') is-invalid @enderror"
-                                        value="{{ old('position_y_certificate_code', !empty($template) ? $template->position_y_certificate_code : '3415') }}">
+                                        value="{{ old('position_y_certificate_code', !empty($template) ? $template->position_y_certificate_code : '2236') }}">
                                     <div class="invalid-feedback">
                                         @error('position_y_certificate_code')
                                             {{ $message }}
@@ -317,7 +317,7 @@
                                         for="font_size_certificate_code">{!! trans('admin/main.font_size') !!}</label>
                                     <input type="text" name="font_size_certificate_code"
                                         class="form-control @error('font_size_certificate_code') is-invalid @enderror"
-                                        value="{{ old('font_size_certificate_code', !empty($template) ? $template->font_size_certificate_code : '30') }}">
+                                        value="{{ old('font_size_certificate_code', !empty($template) ? $template->font_size_certificate_code : '20') }}">
                                     <div class="invalid-feedback">
                                         @error('font_size_certificate_code')
                                             {{ $message }}

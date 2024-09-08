@@ -122,8 +122,8 @@ class MakeCertificate
             'font_size_date' => (int)($data['font_size_date'] ?? 40),
 
             'certificate_code' => $data['certificate_code'] ?? '',
-            'position_x_certificate_code' => (int)($data['position_x_certificate_code'] ?? 800), // Fixed key name
-            'position_y_certificate_code' => (int)($data['position_y_certificate_code'] ?? 3415),
+            'position_x_certificate_code' => (int)($data['position_x_certificate_code'] ?? 560), // Fixed key name
+            'position_y_certificate_code' => (int)($data['position_y_certificate_code'] ?? 2236),
             'font_size_certificate_code' => (int)($data['font_size_certificate_code'] ?? 20),
 
             'course_hours' => $data['course_hours'] ?? '',
@@ -288,7 +288,7 @@ class MakeCertificate
             $data = $template;
 
             $body = $this->makeBody($data, $userCertificate);
-            $body['certificate_code'] = "AC" . str_pad($userCertificate->id, 6, "0", STR_PAD_LEFT);
+            $body['certificate_code'] =$userCertificate->certificate_code;
             // dd( $data);
 
             $body['graduation_date'] = $group->end_date;
@@ -346,10 +346,15 @@ class MakeCertificate
 
         if (empty($certificate)) {
             $certificate = Certificate::create($data);
+            $year = date('Y');
+            $month = date('m');
+            $day = date('d');
+            $certificateCode = "AC" . $certificate->id . $year . $month . $day;
+            $data['certificate_code'] = $certificateCode;
         }
-        $certificateCode = "AC" . str_pad($certificate->id, 6, "0", STR_PAD_LEFT);
-        $data['certificate_code'] = $certificateCode;
-        $certificate->update($data);
+
+      
+      
 
         $notifyOptions = [
             '[c.title]' => $course->title,
@@ -418,13 +423,14 @@ class MakeCertificate
             ->where('type', 'bundle')
             ->first();
 
+
         if (!empty($template) && !empty($bundle)) {
             $user = auth()->user();
             $userCertificate = $this->savebundleCertificate($user, $bundle, $template);
             //  dd($bundle->duration);
             $data = $template;
             $body = $this->makeBody($data, $userCertificate);
-            $body['certificate_code'] = "AC" . str_pad($userCertificate->id, 6, "0", STR_PAD_LEFT);
+            $body['certificate_code'] = $userCertificate->certificate_code;
             $body['student_name'] = $user->student->en_name ?? '';
             $body['course_name'] = $bundle->bundle_name_certificate;
             $body['graduation_date'] = $bundle->end_date; // Add this line to include the end date
@@ -479,10 +485,14 @@ class MakeCertificate
 
         if (empty($certificate)) {
             $certificate = Certificate::create($data);
+            $year = date('Y');
+            $month = date('m');
+            $day = date('d');
+            $certificateCode = "AC" . $certificate->id . $year . $month . $day;
+            $data['certificate_code'] = $certificateCode;
         }
-        $certificateCode = "AC" . str_pad($certificate->id, 6, "0", STR_PAD_LEFT);
-        $data['certificate_code'] = $certificateCode;
-        $certificate->update($data);
+      
+      
             $notifyOptions = [
                 '[c.title]' => $bundle->title,
             ];

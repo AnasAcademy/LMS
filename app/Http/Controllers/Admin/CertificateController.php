@@ -445,9 +445,9 @@ class CertificateController extends Controller
         $position_y_date = (int)($request->get('position_y_date') ?? 1510);
         $font_size_date = (int)($request->get('font_size_date') ?? 40);
 
-        $position_x_certificate_code = (int)($request->get('position_x_certificate_code') ?? 835); // Default to 800 if not provided
-        $position_y_certificate_code = (int)($request->get('position_y_certificate_code') ?? 3415);
-        $font_size_certificate_code = (int)($request->get('font_size_certificate_code') ?? 40);
+        $position_x_certificate_code = (int)($request->get('position_x_certificate_code') ?? 560); // Default to 800 if not provided
+        $position_y_certificate_code = (int)($request->get('position_y_certificate_code') ?? 2236);
+        $font_size_certificate_code = (int)($request->get('font_size_certificate_code') ?? 20);
 
         // Define font path
         $fontPath2 = public_path('assets/default/fonts/Trajan-Bold.otf'); // Bold font path
