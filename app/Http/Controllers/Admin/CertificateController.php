@@ -169,13 +169,13 @@ class CertificateController extends Controller
             $data = $request->all();
 
 
-            if ($data['status'] and $data['status'] == 'publish') { // set draft for other templates
-                CertificateTemplate::where('status', 'publish')
-                    ->where('type', $data['type'])
-                    ->update([
-                        'status' => 'draft'
-                    ]);
-            }
+            // if ($data['status'] and $data['status'] == 'publish') { // set draft for other templates
+            //     CertificateTemplate::where('status', 'publish')
+            //         ->where('type', $data['type'])
+            //         ->update([
+            //             'status' => 'draft'
+            //         ]);
+            // }
 
 
             if (!empty($template_id)) {
@@ -211,15 +211,16 @@ class CertificateController extends Controller
 
                     'updated_at' => time(), // Use Carbon's now() instead of time()
                 ]);
-                if (!empty($request->input('bundles'))) {
-                    $template->bundle()->sync($request->input('bundles', []));
-                }
-              
-               if(!empty($request->input('webinars'))){
-                $template->webinar()->sync($request->input('webinars', []));
+                // if (!empty($request->input('bundles'))) {
+                //     $template->bundle()->sync($request->input('bundles', []));
+                // }
 
-            }
-              
+                $template->bundle()->sync($request->input('bundles', []));
+                $template->webinar()->sync($request->input('webinars', []));
+                //if(!empty($request->input('webinars'))){
+                //     $template->webinar()->sync($request->input('webinars', []));
+                // }
+
             } else {
                 $template = CertificateTemplate::create([
                     'image' => $data['image'],
@@ -252,7 +253,7 @@ class CertificateController extends Controller
                 if (!empty($request->input('bundles'))) {
                     $template->bundle()->sync($request->input('bundles', []));
                 }
-              
+
                if(!empty($request->input('webinars'))){
                 $template->webinar()->sync($request->input('webinars', []));
 
@@ -445,9 +446,9 @@ class CertificateController extends Controller
         $position_y_date = (int)($request->get('position_y_date') ?? 1510);
         $font_size_date = (int)($request->get('font_size_date') ?? 40);
 
-        $position_x_certificate_code = (int)($request->get('position_x_certificate_code') ?? 835); // Default to 800 if not provided
-        $position_y_certificate_code = (int)($request->get('position_y_certificate_code') ?? 3415);
-        $font_size_certificate_code = (int)($request->get('font_size_certificate_code') ?? 40);
+        $position_x_certificate_code = (int)($request->get('position_x_certificate_code') ?? 560); // Default to 800 if not provided
+        $position_y_certificate_code = (int)($request->get('position_y_certificate_code') ?? 2236);
+        $font_size_certificate_code = (int)($request->get('font_size_certificate_code') ?? 20);
 
         // Define font path
         $fontPath2 = public_path('assets/default/fonts/Trajan-Bold.otf'); // Bold font path
@@ -590,12 +591,117 @@ class CertificateController extends Controller
             return $makeCertificate->makeQuizCertificate($quizResult);
         } else if ($certificate->type == 'course') {
 
-            return $makeCertificate->makeCourseCertificate($certificate);
+            return $this->makeCourseCertificate($certificate);
+        } else if ($certificate->type == 'bundle') {
+
+            return $this->makeBundleCertificate($certificate);
         }
 
         abort(404);
     }
 
+
+    public function makeCourseCertificate(Certificate $certificate, $format = 'png')
+    {
+        $user = $certificate->student;
+        $course = $certificate->webinar;
+        $template = $course->certificate_template()->where('status', 'publish')
+        ->where('type', 'course')->latest()->first();
+
+        $makeCertificate = new MakeCertificate();
+
+        if (!empty($template)) {
+
+
+            $userCertificate = $makeCertificate->saveCourseCertificate($user, $course, $template);
+
+            $group = $course->groups()->whereHas('enrollments', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->first();
+
+
+            $body = $makeCertificate->makeBody($template);
+            $body['certificate_code'] = $userCertificate->certificate_code;
+            $body['graduation_date'] = $group->end_date;
+            $body['student_name'] = $user->student->en_name ?? '';
+            $body['course_name'] = $course->course_name_certificate;
+            $body['course_hours'] = $course->duration;
+
+            // Generate the image
+            $img = $makeCertificate->makeImage($template, $body);
+            if ($format === 'pdf') {
+
+                // Convert the image to a base64 string
+                $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
+
+                // Generate PDF with embedded image
+                $pdf = PDF::loadView('web.default.certificate_template.index', [
+                    'pageTitle' => trans('public.certificate'),
+
+                    'body' => $body,
+                    'dynamicImage' => $imageData, // Pass the base64 image string to the view
+                ]);
+
+                return $pdf->setPaper('a4')
+                    ->setWarnings(false)
+                    ->stream('course_certificate.pdf');
+            } else {
+                // Handle image download logic as before
+                return $img->response('png');
+            }
+        }
+
+        abort(404);
+    }
+
+    public function makeBundleCertificate(Certificate $certificate, $format = 'png')
+    {
+        $user = $certificate->student;
+        $bundle = $certificate->bundle;
+        $template = $bundle->certificate_template()->where('status', 'publish')
+        ->where('type', 'bundle')->latest()->first();
+
+        $makeCertificate = new MakeCertificate();
+
+        if (!empty($template)) {
+
+
+            $userCertificate = $makeCertificate->savebundleCertificate($user, $bundle, $template);
+
+
+            $body = $makeCertificate->makeBody($template);
+            $body['certificate_code'] = $userCertificate->certificate_code;
+            $body['graduation_date'] = $bundle->end_date;
+            $body['student_name'] = $user->student->en_name ?? '';
+            $body['course_name'] = $bundle->bundle_name_certificate;
+            $body['graduation_date'] = $bundle->end_date; // Add this line to include the end date
+            $body['course_hours'] = $bundle->duration;
+            // Generate the image
+            $img = $makeCertificate->makeImage($template, $body);
+            if ($format === 'pdf') {
+
+                // Convert the image to a base64 string
+                $imageData = (string) $img->encode('data-url'); // Assuming $img is an instance of Intervention Image
+
+                // Generate PDF with embedded image
+                $pdf = PDF::loadView('web.default.certificate_template.index', [
+                    'pageTitle' => trans('public.certificate'),
+
+                    'body' => $body,
+                    'dynamicImage' => $imageData, // Pass the base64 image string to the view
+                ]);
+
+                return $pdf->setPaper('a4')
+                    ->setWarnings(false)
+                    ->stream('course_certificate.pdf');
+            } else {
+                // Handle image download logic as before
+                return $img->response('png');
+            }
+        }
+
+        abort(404);
+    }
     public function exportExcel(Request $request)
     {
         $this->authorize('admin_certificate_export_excel');

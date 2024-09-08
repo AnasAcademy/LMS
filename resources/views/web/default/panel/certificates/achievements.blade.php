@@ -235,16 +235,10 @@
                                           
                                         </td>
                                         <td class="align-middle">
-                                            {{-- @if($courseCertificate->can_download_certificate) --}}
-                                                {{-- @php
-                                                    $getUserCertificate = $courseCertificate->getUserCertificate($authUser,$courseCertificate);
-                                                @endphp --}}
-                                                {{"AC".str_pad($courseCertificate->id, 6, "0", STR_PAD_LEFT);}}
+                                      
 
-                                              
-                                            {{-- @else
-                                                -
-                                            @endif --}}
+                                                {{$courseCertificate->certificate_code }}
+
                                         </td>
                                       
                                        
@@ -312,16 +306,13 @@
                                             <span class="d-block font-12 text-gray mt-5">{{ $bundleCertificate->bundle->title }}</span>
                                         </td>
                                         <td class="align-middle">
-                                            {{-- @if($courseCertificate->can_download_certificate) --}}
-                                                {{-- @php
-                                                    $getUserCertificate = $courseCertificate->getUserCertificate($authUser,$courseCertificate);
-                                                @endphp --}}
-                                                {{"AC".str_pad($bundleCertificate->id, 6, "0", STR_PAD_LEFT);}}
+                                         
+                                              
+
+                                                {{$bundleCertificate->certificate_code}}
 
                                               
-                                            {{-- @else
-                                                -
-                                            @endif --}}
+                                            
                                         </td>
                                       
                                        

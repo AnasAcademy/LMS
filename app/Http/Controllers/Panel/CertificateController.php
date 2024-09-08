@@ -81,8 +81,8 @@ class CertificateController extends Controller
 
         abort(404);
     }
-    
-    
+
+
     public function certificateLists()
     {
         $salesWithCertificate = Sale::where('buyer_id', auth()->user()->id)
@@ -90,13 +90,13 @@ class CertificateController extends Controller
         ->get();
       $certificateTemplatesArray = [];
         $titlesArray = [];
-        
+
         foreach ($salesWithCertificate as $sale) {
             $certificateTemplate = $sale->certificate_template;
-            
+
             if ($certificateTemplate) {
                 $certificateTemplatesArray[] = $certificateTemplate;
-        
+
                 if ($certificateTemplate->translations->isNotEmpty()) {
                     $titlesArray[] = $certificateTemplate->translations[0]->title;
                 } else {
@@ -106,7 +106,7 @@ class CertificateController extends Controller
         }
         $salesWithCertificate=$salesWithCertificate->toArray();
         // dd($salesWithCertificate[0]['created_at']);
-        
+
         // dd($titlesArray);
          return view(getTemplate() . '.panel.certificates.certificate_list', compact('certificateTemplatesArray','salesWithCertificate'));
     }
@@ -161,7 +161,7 @@ class CertificateController extends Controller
             $quiz->can_download_certificate = $canDownloadCertificate;
         }
 
-    
+
         $webinarsIds =  $user->getAllPurchasedWebinarsIds();
         $userWebinars = Webinar::select('id')
             ->whereIn('id', $webinarsIds)
@@ -171,29 +171,33 @@ class CertificateController extends Controller
             $group=$webinar->groups()->whereHas('enrollments',function($query) use($user){
                 $query->where('user_id', $user->id);
             })->first();
-           
-            if ($group && !empty($group->end_date) && $group->end_date < now()) {
+            $template = $webinar->certificate_template()->where('status', 'publish')
+            ->where('type', 'course')->latest()->first();
+
+
+            if ($group && !empty($group->end_date) && $group->end_date < now() && !empty($template)) {
                 $this->makeCourseCertificate($webinar->id);
             }
-           
+
         }
 
 
-       
+
         $bundlesIds =$user->purchasedBundles->pluck('bundle_id');
-        $userbundles = Bundle::select('id')
-        ->whereIn('id', $bundlesIds)
-        ->get();
-        //  dd($userbundles);  
+        $userbundles = Bundle::whereIn('id', $bundlesIds)->get();
 
         foreach($userbundles as $bundle){
-            //dd($bundle); 
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time()){$this->makeBundleCertificate($bundle->id);}
-           
+            //dd($bundle);
+            $template = $bundle->certificate_template()->where('status', 'publish')
+                ->where('type', 'bundle')->latest()->first();
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template)){
+               $this->makeBundleCertificate($bundle->id);}
+
         }
+
         $certificates = Certificate::where('student_id', $user->id)
         ->with(['webinar', 'bundle'])->get(); // Eager load webinars and bundles
-        
+
         $courseCertificates = $certificates->whereNotNull('webinar_id');
         $bundleCertificates = $certificates->whereNotNull('bundle_id');
 
@@ -271,7 +275,7 @@ class CertificateController extends Controller
         }
 
 
-       
+
 
         abort(404);
     }
@@ -292,7 +296,7 @@ class CertificateController extends Controller
         }
 
 
-       
+
 
         abort(404);
     }
