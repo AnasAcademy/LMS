@@ -169,13 +169,13 @@ class CertificateController extends Controller
             $data = $request->all();
 
 
-            if ($data['status'] and $data['status'] == 'publish') { // set draft for other templates
-                CertificateTemplate::where('status', 'publish')
-                    ->where('type', $data['type'])
-                    ->update([
-                        'status' => 'draft'
-                    ]);
-            }
+            // if ($data['status'] and $data['status'] == 'publish') { // set draft for other templates
+            //     CertificateTemplate::where('status', 'publish')
+            //         ->where('type', $data['type'])
+            //         ->update([
+            //             'status' => 'draft'
+            //         ]);
+            // }
 
 
             if (!empty($template_id)) {
@@ -211,15 +211,16 @@ class CertificateController extends Controller
 
                     'updated_at' => time(), // Use Carbon's now() instead of time()
                 ]);
-                if (!empty($request->input('bundles'))) {
-                    $template->bundle()->sync($request->input('bundles', []));
-                }
-              
-               if(!empty($request->input('webinars'))){
-                $template->webinar()->sync($request->input('webinars', []));
+                // if (!empty($request->input('bundles'))) {
+                //     $template->bundle()->sync($request->input('bundles', []));
+                // }
 
-            }
-              
+                $template->bundle()->sync($request->input('bundles', []));
+                $template->webinar()->sync($request->input('webinars', []));
+                //if(!empty($request->input('webinars'))){
+                //     $template->webinar()->sync($request->input('webinars', []));
+                // }
+
             } else {
                 $template = CertificateTemplate::create([
                     'image' => $data['image'],
@@ -252,7 +253,7 @@ class CertificateController extends Controller
                 if (!empty($request->input('bundles'))) {
                     $template->bundle()->sync($request->input('bundles', []));
                 }
-              
+                
                if(!empty($request->input('webinars'))){
                 $template->webinar()->sync($request->input('webinars', []));
 
