@@ -12,6 +12,7 @@ use App\Models\Webinar;
 use \Barryvdh\DomPDF\Facade\Pdf;
 use Intervention\Image\Facades\Image;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf as WriterPdf;
+use Carbon\Carbon;
 
 class MakeCertificate
 {
@@ -340,20 +341,20 @@ class MakeCertificate
             'type' => 'course',
             'created_at' => time()
         ];
+        $group = $course->groups()->whereHas('enrollments', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->first();
 
         if (empty($certificate)) {
-            $year = date('Y');
-            $month = date('m');
-            $day = date('d');
+            $date = Carbon::parse($group->end_date);
+            $year = $date->format('Y');
+            $month = $date->format('m');
+            $day = $date->format('d');
             $certificate = Certificate::create($data);
             $certificateCode = "AC" . $certificate->id . $year . $month . $day;
             $data['certificate_code'] = $certificateCode;
             $certificate->update($data);
         }
-
-
-
-
 
         $notifyOptions = [
             '[c.title]' => $course->title,
@@ -482,9 +483,10 @@ class MakeCertificate
         ];
 
         if (empty($certificate)) {
-            $year = date('Y');
-            $month = date('m');
-            $day = date('d');
+            $date = Carbon::createFromTimestamp((int)$bundle->end_date);
+            $year = $date->format('Y');
+            $month = $date->format('m');
+            $day = $date->format('d');
             $certificate = Certificate::create($data);
             $certificateCode = "AC" . $certificate->id . $year . $month . $day;
             $data['certificate_code'] = $certificateCode;

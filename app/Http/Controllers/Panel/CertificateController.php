@@ -184,18 +184,17 @@ class CertificateController extends Controller
 
 
         $bundlesIds =$user->purchasedBundles->pluck('bundle_id');
-        $userbundles = Bundle::select('id')
-        ->whereIn('id', $bundlesIds)
-        ->get();
-        //  dd($userbundles);
+        $userbundles = Bundle::whereIn('id', $bundlesIds)->get();
 
         foreach($userbundles as $bundle){
             //dd($bundle);
             $template = $bundle->certificate_template()->where('status', 'publish')
                 ->where('type', 'bundle')->latest()->first();
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($tamplate)){$this->makeBundleCertificate($bundle->id);}
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template)){
+               $this->makeBundleCertificate($bundle->id);}
 
         }
+
         $certificates = Certificate::where('student_id', $user->id)
         ->with(['webinar', 'bundle'])->get(); // Eager load webinars and bundles
 
