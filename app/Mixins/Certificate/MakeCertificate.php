@@ -354,12 +354,14 @@ class MakeCertificate
             $certificateCode = "AC" . $certificate->id . $year . $month . $day;
             $data['certificate_code'] = $certificateCode;
             $certificate->update($data);
+
+            $notifyOptions = [
+                '[c.title]' => $course->title,
+            ];
+            sendNotification('new_certificate', $notifyOptions, $user->id);
         }
 
-        $notifyOptions = [
-            '[c.title]' => $course->title,
-        ];
-        sendNotification('new_certificate', $notifyOptions, $user->id);
+      
 
 
         return $certificate;
@@ -491,14 +493,16 @@ class MakeCertificate
             $certificateCode = "AC" . $certificate->id . $year . $month . $day;
             $data['certificate_code'] = $certificateCode;
             $certificate->update($data);
+
+            $notifyOptions = [
+                '[c.title]' => $bundle->title,
+            ];
+            sendNotification('new_certificate', $notifyOptions, $user->id);
+    
         }
 
 
-        $notifyOptions = [
-            '[c.title]' => $bundle->title,
-        ];
-        sendNotification('new_certificate', $notifyOptions, $user->id);
-
+       
 
         return $certificate;
     }
