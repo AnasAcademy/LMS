@@ -147,8 +147,10 @@
                                                     @if (pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
                                                         <img src="/store/{{ $requirement->identity_attachment }}"
                                                             alt="identity_attachment" width="100px" style="max-height:100px">
-                                                    @else
+                                                    @elseif(pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) == 'pdf')
                                                         pdf ملف <i class="fas fa-file font-20"></i>
+                                                    @else
+                                                    ---
                                                     @endif
                                                 </a>
                                             </td>
