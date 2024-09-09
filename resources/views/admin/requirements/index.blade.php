@@ -143,16 +143,19 @@
                                             <td>{{ $requirement->bundleStudent->bundle->title }}</td>
 
                                             <td>
-                                                <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">
-                                                    @if (pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
-                                                        <img src="/store/{{ $requirement->identity_attachment }}"
-                                                            alt="identity_attachment" width="100px" style="max-height:100px">
-                                                    @elseif(pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) == 'pdf')
-                                                        pdf ملف <i class="fas fa-file font-20"></i>
-                                                    @else
-                                                    ---
-                                                    @endif
-                                                </a>
+                                                @if (!empty($requirement->identity_attachment))
+                                                    <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">
+                                                        @if (pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
+                                                            <img src="/store/{{ $requirement->identity_attachment }}"
+                                                                alt="identity_attachment" width="100px" style="max-height:100px">
+                                                        @else
+                                                            pdf ملف <i class="fas fa-file font-20"></i>
+                                                        @endif
+                                                    </a>
+
+                                                @else
+                                                لا يوجد
+                                                @endif
                                             </td>
 
                                             <td>
