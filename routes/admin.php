@@ -69,6 +69,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
             Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
+            Route::post('/importCourseStudent', 'UserController@importExcelCourseStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelScholarship', 'UserController@exportExcelScholarship');
             Route::get('/excelDirectRegister', 'UserController@exportExcelDirectRegister');
@@ -302,6 +303,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
         Route::group(['prefix' => 'webinars'], function () {
             Route::get('/', 'WebinarController@index');
+             Route::get('/courseCodeExcel', 'UserController@exportCourses');
 
             Route::get('/create', 'WebinarController@create');
             Route::post('/store', 'WebinarController@store');
@@ -976,6 +978,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
             Route::get('/bundleCodeExcel', 'UserController@exportBundles');
+           ;
 
             Route::get('/{id}/students', 'BundleController@studentsLists');
             Route::get('/{id}/sendNotification', 'BundleController@notificationToStudents');

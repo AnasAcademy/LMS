@@ -22,11 +22,12 @@ use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\Code;
 use App\Models\Accounting;
+use App\Models\Enrollment;
+use App\Models\Group;
 use App\Models\StudyClass;
 use App\Models\TicketUser;
-
-
-
+use App\Models\Webinar;
+use Carbon\Carbon;
 
 class StudentImport implements ToModel
 {
@@ -34,6 +35,7 @@ class StudentImport implements ToModel
 
     protected $currentRow = 1; // Initialize row counter
     protected $scholarship;
+    protected $enrollCourse;
     protected $errors = [];
     /**
      * @param array $row
@@ -42,8 +44,9 @@ class StudentImport implements ToModel
      */
 
 
-     public function __construct($scholarship=false){
+     public function __construct($scholarship=false, $enrollCourse= false){
         $this->scholarship = $scholarship;
+        $this->enrollCourse = $enrollCourse;
      }
     public function model(array $row)
     {
@@ -61,30 +64,35 @@ class StudentImport implements ToModel
             $this->currentRow++;
 
 
-            $diplomaCode = $row[8];
+            $programCode = $row[6];
 
-            $bundle = bundle::find($diplomaCode);
 
-            if (!$bundle) {
-                $this->errors[] = "في الصف رقم {$this->currentRow}: كود الدبلومة غير صحيح";
+            $program = $this->enrollCourse ? Webinar::find($programCode) : bundle::find($programCode);
+
+            if (!$program) {
+                $this->errors[] = "في الصف رقم {$this->currentRow}: كود البرنامج غير صحيح";
                 return null;
             }
             $rules = [
                 'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
                 'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
                 'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
-                'deaf' => 'required|in:نعم,لا',
+                'mobile' => 'required',
                 'gender' => 'required|in:male,female',
-                'birthdate' => 'required|date_format:Y-m-d'
+                'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
+                // 'deaf' => 'required|in:نعم,لا',
+                // 'birthdate' => 'required|date_format:Y-m-d'
             ];
 
             $fileData = [
                 'ar_name' => $row[0],
                 'en_name' => $row[1],
                 'email' => $row[2],
-                'deaf' => $row[22],
-                'gender' => $row[6],
-                'birthdate' => $row[5],
+                'mobile' => $row[3],
+                'gender' => $row[4],
+                'identifier_num' => $row[5],
+                // 'deaf' => $row[22],
+                // 'birthdate' => $row[5],
             ];
             // validate imported data
             $validator = Validator::make($fileData, $rules);
@@ -143,65 +151,69 @@ class StudentImport implements ToModel
                 'ar_name' => $row[0],
                 'en_name' => $row[1],
                 'email' => $row[2],
-                'phone' => $row[3] ?? '000000',
-                'mobile' => $row[4] ?? $row[3] ?? '0000',
-                'birthdate' => $row[5] ?? '1999-01-01',
-                'gender' => $row[6],
-                'identifier_num' => $row[7] ?? '000000',
-                'nationality' => $row[9] ?? 'سعودي/ة',
-                'country' => $row[10] ?? 'السعودية',
-                'town' => $row[11] ?? 'الرياض',
-                'educational_qualification_country' => $row[12],
-                'educational_area' => $row[13] ?? 'الرياض',
-                'university' => $row[14],
-                'faculty' => $row[15],
-                'education_specialization' => $row[16],
-                'graduation_year' => $row[17],
-                'gpa' => $row[18],
-                'school' => $row[19],
-                'secondary_school_gpa' => $row[20],
-                'secondary_graduation_year' => $row[21],
-                'deaf' => ($row[22] == 'نعم') ? 1 : 0,
-                'disabled_type' => $row[23] ?? null,
-                'healthy_problem' => $row[24],
-                'job' => $row[25] ?? null,
-                'job_type' => $row[26] ?? null,
-                'referral_person' => $row[27] ?? 'صديق',
-                'relation' => $row[28] ?? 'صديق',
-                'referral_email' => $row[29] ?? 'email@example.com',
-                'referral_phone' => $row[30] ?? '0000000',
-                'about_us' => $row[31] ?? 'facebook',
+                'phone' => $row[3] ,
+                'mobile' => $row[3],
+                // 'birthdate' => $row[5] ?? '1999-01-01',
+                'gender' => $row[4],
+                'identifier_num' => $row[5],
+                // 'nationality' => $row[9] ?? 'سعودي/ة',
+                // 'country' => $row[10] ?? 'السعودية',
+                // 'town' => $row[11] ?? 'الرياض',
+                // 'educational_qualification_country' => $row[12],
+                // 'educational_area' => $row[13] ?? 'الرياض',
+                // 'university' => $row[14],
+                // 'faculty' => $row[15],
+                // 'education_specialization' => $row[16],
+                // 'graduation_year' => $row[17],
+                // 'gpa' => $row[18],
+                // 'school' => $row[19],
+                // 'secondary_school_gpa' => $row[20],
+                // 'secondary_graduation_year' => $row[21],
+                // 'deaf' => ($row[22] == 'نعم') ? 1 : 0,
+                // 'disabled_type' => $row[23] ?? null,
+                // 'healthy_problem' => $row[24],
+                // 'job' => $row[25] ?? null,
+                // 'job_type' => $row[26] ?? null,
+                // 'referral_person' => $row[27] ?? 'صديق',
+                // 'relation' => $row[28] ?? 'صديق',
+                // 'referral_email' => $row[29] ?? 'email@example.com',
+                // 'referral_phone' => $row[30] ?? '0000000',
+                'about_us' => $row[7] ?? 'facebook',
                 'created_at' => date('Y-m-d H:i:s')
 
 
             ]);
 
-            // check the user apply to this bundle before or not
-            $bundleStudent = BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $bundle->id])->first();
-            if ($bundleStudent) {
-                return null;
+            if(!$this->enrollCourse){
+                // check the user apply to this bundle before or not
+                $bundleStudent = BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $program->id])->first();
+                if ($bundleStudent) {
+                    return null;
+                }
+
+                $class =  StudyClass::get()->last();
+                if (!$class) {
+                    $class = StudyClass::create(['title' => "الدفعة الأولي"]);
+                }
+                // apply bundle for student
+                $bundleStudent = BundleStudent::create([
+                    'student_id' => $student->id,
+                    'bundle_id' => $program->id,
+                    'class_id' => $class->id,
+                ]);
+
             }
 
-            $class =  StudyClass::get()->last();
-            if (!$class) {
-                $class = StudyClass::create(['title' => "الدفعة الأولي"]);
-            }
-            // apply bundle for student
-            $bundleStudent = BundleStudent::create([
-                'student_id' => $student->id,
-                'bundle_id' => $bundle->id,
-                'class_id' => $class->id,
-            ]);
 
             // create order
             $order = Order::create([
                 'user_id' => $user->id,
                 'status' => Order::$paid,
-                'amount' =>  $this->scholarship? 0: 230,
+                'amount' =>  ($this->scholarship ||  $this->enrollCourse) ? $program->price : 230,
                 'payment_method' =>  $this->scholarship? 'scholarship': 'payment_channel',
                 'tax' => 0,
                 'total_discount' => 0,
-                'total_amount' =>  $this->scholarship ? 0 : 230,
+                'total_amount' =>  $this->scholarship ? 0 : ($this->enrollCourse ? $program->price : 230),
                 'product_delivery_fee' => null,
                 'created_at' => time(),
             ]);
@@ -210,11 +222,11 @@ class StudentImport implements ToModel
             $orderItem = OrderItem::create([
                 'user_id' => $user->id,
                 'order_id' => $order->id,
-                'webinar_id' => null,
-                'bundle_id' => $bundle->id ?? null,
+                'bundle_id' =>  !$this->enrollCourse ? $program->id : null,
+                'webinar_id' =>  $this->enrollCourse ? $program->id : null,
                 'certificate_template_id' =>  null,
                 'certificate_bundle_id' => null,
-                'form_fee' => $this->scholarship ? null: 1,
+                'form_fee' => ($this->scholarship || $this->enrollCourse) ? null: 1,
                 'product_id' =>  null,
                 'product_order_id' => null,
                 'reserve_meeting_id' => null,
@@ -224,8 +236,8 @@ class StudentImport implements ToModel
                 'installment_payment_id' => null,
                 'ticket_id' => null,
                 'discount_id' => null,
-                'amount' =>  $this->scholarship? $bundle->price: 230,
-                'total_amount' =>  $this->scholarship? 0 : 230,
+                'amount' =>  ($this->scholarship ||  $this->enrollCourse) ? $program->price : 230,
+                'total_amount' => $this->scholarship ? 0 : ($this->enrollCourse ? $program->price : 230),
                 'tax' => null,
                 'tax_price' => 0,
                 'commission' => 0,
@@ -235,7 +247,34 @@ class StudentImport implements ToModel
                 'created_at' => time(),
             ]);
 
-            if($this->scholarship){
+
+
+
+            if ($this->enrollCourse && !empty($program->hasGroup)) {
+                $webinar = $program;
+                $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
+                $startDate = now()->addMonth()->startOfMonth();
+                $endDate = now()->addMonth(2)->startOfMonth();
+                if (!$lastGroup) {
+                    $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20, 'start_date' => $startDate, 'end_date' => $endDate]);
+                }
+                $enrollments = $lastGroup->enrollments->count();
+                $enrolled = Enrollment::where(['user_id' => $user->id, 'group_id' => $lastGroup->id,])->first();
+                if(!empty($enrolled)){
+                    return null;
+                }
+                if ($enrollments >= $lastGroup->capacity || $lastGroup->start_date < now() ) {
+                    $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20,'start_date' => $startDate, 'end_date' => $endDate]);
+                }
+
+                Enrollment::create([
+                    'user_id' => $user->id,
+                    'group_id' => $lastGroup->id,
+                ]);
+            }
+
+
+            if ($this->scholarship || $this->enrollCourse) {
                 $user->update([
                     'role_id' => 1,
                     'role_name' => 'user',
@@ -247,29 +286,6 @@ class StudentImport implements ToModel
             Accounting::createAccounting($orderItem);
             TicketUser::useTicket($orderItem);
 
-            // create sale
-            // $sale = Sale::create([
-            //     'buyer_id' => $user->id,
-            //     'seller_id' => $bundle->creator_id,
-            //     'order_id' => $order->id,
-            //     'bundle_id' => $bundle->id,
-            //     'type' => 'form_fee',
-            //     'form_fee' => 1,
-            //     'manual_added' => true,
-            //     'payment_method' => Sale::$credit,
-            //     'amount' => 230,
-            //     'total_amount' => 230,
-            //     'created_at' => time(),
-            // ]);
-
-
-            // $data['title'] = 'رسوم حجز مقعد دراسي';
-            // $data['body'] = " تهانينا تم سدادكم رسوم حجز مقعد دراسي بالأكاديمية بقيمة 230 ر.س";
-
-
-            // $this->sendEmail($user, $data);
-
-            // $this->sendNotification($user, $data);
 
             return null;
 

@@ -63,7 +63,7 @@
                                 <td class="text-center">
                                     {{ $group->enrollments->count() }}
                                     </td>
-                                <td class="text-center">{{ $group->capacity }}</td>
+                                <td class="text-center @if ($group->enrollments->count()>$group->capacity) text-danger @endif" >{{ $group->capacity }}</td>
                                 <td class="text-center">{{ $group->start_date }}</td>
                                 <td class="text-center">{{ $group->end_date }}</td>
                                 <td class="text-center">
