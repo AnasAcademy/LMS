@@ -529,12 +529,16 @@ class PaymentController extends Controller
                     if (!empty($webinar_sale->webinar->hasGroup)) {
                         $webinar = $webinar_sale->webinar;
                         $lastGroup = Group::where('webinar_id', $webinar->id)->latest()->first();
+
+                        $startDate = now()->addMonth()->startOfMonth();
+                        $endDate = now()->addMonth(2)->startOfMonth();
                         if (!$lastGroup) {
-                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
+                            $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20, 'start_date' => $startDate, 'end_date' => $endDate]);
                         }
                         $enrollments = $lastGroup->enrollments->count();
-                        if ($enrollments >= $lastGroup->capacity) {
-                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20]);
+                        if ($enrollments >= $lastGroup->capacity || $lastGroup->start_date > now()) {
+                            $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20,
+                            'start_date' => $startDate, 'end_date' =>$endDate]);
                         }
 
                         Enrollment::create([

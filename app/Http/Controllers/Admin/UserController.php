@@ -47,7 +47,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
 
 use App\Imports\StudentImport;
-use App\Exports\BundleCodeExport;
+use App\Exports\ProgramCodeExport;
 
 
 class UserController extends Controller
@@ -1528,14 +1528,62 @@ class UserController extends Controller
             return back()->with(['toast' => $toastData]);
         }
     }
+    public function importExcelCourseStudents(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $import = new StudentImport(false,true);
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => 'تم اضافه الطلبة بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            dd($toastData);
+            return back()->with(['toast' => $toastData]);
+        }
+    }
 
 
     public function exportBundles()
     {
         $bundles = Bundle::get();
-        $bundlesExport = new BundleCodeExport($bundles);
+        $bundlesExport = new ProgramCodeExport($bundles);
 
         return Excel::download($bundlesExport, ' اكواد الدبلومات.xlsx');
+    }
+    public function exportCourses()
+    {
+        $courses = Webinar::where(['unattached'=> 1, 'hasGroup' =>1])->get();
+        $coursesExport = new ProgramCodeExport($courses);
+
+        return Excel::download($coursesExport, ' اكواد الدورات.xlsx');
     }
     public function exportExcelEnrollers(Request $request)
     {
@@ -2068,14 +2116,14 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_list');
 
-        
+
         // $groups=Webinar::find($id)->groups;
         // dd($groups);
         $webinar = Webinar::find($id);
         // dd($webinar );
         $query = $webinar->groups->unique();
         $totalGroups = deepClone($query)->count();
-      
+
 
         $query = $this->filters($query, $request);
 

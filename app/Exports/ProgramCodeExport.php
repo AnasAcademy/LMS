@@ -7,13 +7,13 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class BundleCodeExport implements FromCollection, WithHeadings, WithMapping
+class ProgramCodeExport implements FromCollection, WithHeadings, WithMapping
 {
-    protected $bundles;
+    protected $programs;
 
-    public function __construct($bundles)
+    public function __construct($programs)
     {
-        $this->bundles = $bundles;
+        $this->programs = $programs;
     }
 
     /**
@@ -21,7 +21,7 @@ class BundleCodeExport implements FromCollection, WithHeadings, WithMapping
      */
     public function collection()
     {
-        return $this->bundles;
+        return $this->programs;
     }
 
     /**
@@ -30,21 +30,21 @@ class BundleCodeExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
+            'اسم التخصص',
             'اسم البرنامج',
-            'اسم الدبلومة',
-            'كود الدبلومة'
+            'كود البرنامج'
         ];
     }
 
     /**
      * @inheritDoc
      */
-    public function map($bundle): array
+    public function map($program): array
     {
         return [
-            $bundle->category->title,
-            $bundle->title,
-            $bundle->id
+            $program->category->title,
+            $program->title,
+            $program->id
         ];
     }
 }
