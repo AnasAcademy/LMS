@@ -402,7 +402,7 @@
         @endcan
         @can('student_showCertificate')
 
-         @if(!empty($authUser->certificates) and count($authUser->certificates)>0)
+         
             <li
                 class="sidenav-item {{ (request()->is('panel/certificates') or request()->is('panel/certificates/*')) ? 'sidenav-item-active' : '' }}">
                 <a class="d-flex align-items-center" data-toggle="collapse" href="#certificatesCollapse" role="button"
@@ -441,7 +441,7 @@
                     </ul>
                 </div>
             </li>
-        @endif
+       
 
         @endcan
 
