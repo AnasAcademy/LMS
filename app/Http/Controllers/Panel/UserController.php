@@ -221,6 +221,10 @@ class UserController extends Controller
                     $identityImgPath = $identityImg->storeAs('userIdentityImages', $identityImgName);
                     $data['identity_img'] = $identityImgPath;
                 }
+                if (!session()->has('impersonated')) {
+                    $data['ar_name'] = $user->student->ar_name;
+                    $data['en_name'] = $user->student->en_name;
+                }
                 $user->student->update($data);
             } elseif ($step == 4) {
                 $data = $request->except(['step', '_token', 'next_step']);

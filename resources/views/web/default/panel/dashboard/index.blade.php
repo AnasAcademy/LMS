@@ -322,7 +322,7 @@
 
 @if (!$authUser->isUser())
     <section class="dashboard">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-12 col-lg-3 mt-35">
                 <div class="bg-white account-balance rounded-sm panel-shadow py-15 py-md-30 px-10 px-md-20">
                     <div class="text-center">
@@ -403,7 +403,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <div class="row">
             <div class="col-12 col-lg-6 mt-35">
@@ -433,7 +433,7 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-6 mt-35">
+          {{--    <div class="col-12 col-lg-6 mt-35">
                 <div class="bg-white monthly-sales-card rounded-sm panel-shadow py-10 py-md-20 px-15 px-md-30">
                     <div class="d-flex align-items-center justify-content-between">
                         <h3 class="font-16 text-dark-blue font-weight-bold">{{ ($authUser->isUser()) ? trans('panel.learning_statistics') : trans('panel.monthly_sales') }}</h3>
@@ -447,6 +447,7 @@
                 </div>
             </div>
         </div>
+        --}}
     </section>
 @endif
     <div class="d-none" id="iNotAvailableModal">

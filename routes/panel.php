@@ -21,7 +21,7 @@ Route::group(['namespace' => 'Web','prefix' => 'panel', 'middleware' => ['check_
 
 Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['check_mobile_app', 'impersonate', 'panel', 'share', 'check_maintenance']], function () {
     Route::get('/course/{WebinarId}/showCertificate/{format?}', 'CertificateController@makeCourseCertificate');
-   
+
      Route::get('/bundle/{bundleId}/showCertificate/{format?}', 'CertificateController@makeBundleCertificate');
   //  Route::get('/bundle/{bundleId}/showCertificate', 'CertificateController@makeBundleCertificate');
     Route::get('/', 'DashboardController@dashboard')->middleware('can:show_panel');
@@ -39,7 +39,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
             Route::get('/new', 'WebinarController@create');
             Route::get('/invitations', 'WebinarController@invitations');
             Route::post('/store', 'WebinarController@store');
-            Route::get('/{id}/step/{step?}', 'WebinarController@edit');
+            Route::get('/{id}/step/4', 'WebinarController@edit');
+            // Route::get('/{id}/step/{step?}', 'WebinarController@edit');
             Route::get('/{id}/edit', 'WebinarController@edit')->name('panel_edit_webinar');
             Route::post('/{id}/update', 'WebinarController@update');
             Route::get('/{id}/delete', 'WebinarController@destroy');
