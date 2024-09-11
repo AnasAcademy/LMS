@@ -113,7 +113,7 @@
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     <a href="/panel/quizzes/{{ $quiz->id }}/start" class="webinar-actions d-block mt-10">{{ trans('public.start') }}</a>
-                                                    <a href="{{ $quiz->webinar->getUrl() }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
+                                                    <a href="/course/learning/{{ $quiz->webinar->slug }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -130,7 +130,8 @@
             @include(getTemplate() . '.includes.no-result',[
                 'file_name' => 'result.png',
                 'title' => trans('quiz.quiz_result_no_result'),
-                'hint' => trans('quiz.quiz_result_no_result_hint'),
+                'hint' => '',
+                // 'hint' => trans('quiz.quiz_result_no_result_hint'),
             ])
         @endif
     </section>
