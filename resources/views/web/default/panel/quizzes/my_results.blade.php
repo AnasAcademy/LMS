@@ -201,7 +201,8 @@
                                                         @endif
                                                     @endif
 
-                                                    <a href="{{ $result->quiz->webinar->getUrl() }}" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
+                                                    {{-- <a href="{{ $result->quiz->webinar->getUrl() }}" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a> --}}
+                                                    <a href="/course/learning/{{ $result->quiz->webinar->slug }}" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -218,7 +219,8 @@
             @include(getTemplate() . '.includes.no-result',[
                 'file_name' => 'result.png',
                 'title' => trans('quiz.quiz_result_no_result'),
-                'hint' => trans('quiz.quiz_result_no_result_hint'),
+                'hint' => '',
+                // 'hint' => trans('quiz.quiz_result_no_result_hint'),
             ])
         @endif
     </section>
