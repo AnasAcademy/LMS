@@ -17,19 +17,19 @@
                     <span class="disabled-content-badge mr-10">{{ trans('public.disabled') }}</span>
                 @endif
 
-                @if(!empty($file))
+                {{-- @if(!empty($file))
                     <button type="button" data-item-id="{{ $file->id }}" data-item-type="{{ \App\Models\WebinarChapterItem::$chapterFile }}" data-chapter-id="{{ !empty($chapter) ? $chapter->id : '' }}" class="js-change-content-chapter btn btn-sm btn-transparent text-gray mr-10">
                         <i data-feather="grid" class="" height="20"></i>
                     </button>
-                @endif
+                @endif --}}
 
                 <i data-feather="move" class="move-icon mr-10 cursor-pointer" height="20"></i>
 
-                @if(!empty($file))
+                {{-- @if(!empty($file))
                     <a href="/panel/files/{{ $file->id }}/delete" class="delete-action btn btn-sm btn-transparent text-gray">
                         <i data-feather="trash-2" class="mr-10 cursor-pointer" height="20"></i>
                     </a>
-                @endif
+                @endif --}}
 
                 <i class="collapse-chevron-icon" data-feather="chevron-down" height="20" href="#collapseFile{{ !empty($file) ? $file->id :'record' }}" aria-controls="collapseFile{{ !empty($file) ? $file->id :'record' }}" data-parent="#chapterContentAccordion{{ !empty($chapter) ? $chapter->id :'' }}" role="button" data-toggle="collapse" aria-expanded="true"></i>
             </div>
@@ -38,7 +38,7 @@
         <div id="collapseFile{{ !empty($file) ? $file->id :'record' }}" aria-labelledby="file_{{ !empty($file) ? $file->id :'record' }}" class=" collapse @if(empty($file)) show @endif" role="tabpanel">
             <div class="panel-collapse text-gray">
                 <div class="js-content-form file-form" data-action="/panel/files/{{ !empty($file) ? $file->id . '/update' : 'store' }}">
-                    <input type="hidden" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][webinar_id]" value="{{ !empty($webinar) ? $webinar->id :'' }}">
+                    <input readonly type="hidden" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][webinar_id]" value="{{ !empty($webinar) ? $webinar->id :'' }}">
 
                     <div class="row">
                         <div class="col-12 col-lg-6">
@@ -46,7 +46,7 @@
                             @if(!empty(getGeneralSettings('content_translate')))
                                 <div class="form-group">
                                     <label class="input-label">{{ trans('auth.language') }}</label>
-                                    <select name="ajax[{{ !empty($file) ? $file->id : 'new' }}][locale]"
+                                    <select disabled name="ajax[{{ !empty($file) ? $file->id : 'new' }}][locale]"
                                             class="form-control {{ !empty($file) ? 'js-webinar-content-locale' : '' }}"
                                             data-webinar-id="{{ !empty($webinar) ? $webinar->id : '' }}"
                                             data-id="{{ !empty($file) ? $file->id : '' }}"
@@ -59,13 +59,13 @@
                                     </select>
                                 </div>
                             @else
-                                <input type="hidden" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][locale]" value="{{ $defaultLocale }}">
+                                <input readonly type="hidden" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][locale]" value="{{ $defaultLocale }}">
                             @endif
 
                             @if(!empty($file))
                                 <div class="form-group">
                                     <label class="input-label">{{ trans('public.chapter') }}</label>
-                                    <select name="ajax[{{ !empty($file) ? $file->id : 'new' }}][chapter_id]" class="js-ajax-chapter_id form-control">
+                                    <select disabled name="ajax[{{ !empty($file) ? $file->id : 'new' }}][chapter_id]" class="js-ajax-chapter_id form-control">
                                         @foreach($webinar->chapters as $ch)
                                             <option value="{{ $ch->id }}" {{ ($file->chapter_id == $ch->id) ? 'selected' : '' }}>{{ $ch->title }}</option>
                                         @endforeach
@@ -73,18 +73,18 @@
                                     <div class="invalid-feedback"></div>
                                 </div>
                             @else
-                                <input type="hidden" name="ajax[new][chapter_id]" value="" class="chapter-input">
+                                <input readonly type="hidden" name="ajax[new][chapter_id]" value="" class="chapter-input">
                             @endif
 
                             <div class="form-group">
                                 <label class="input-label">{{ trans('public.title') }}</label>
-                                <input type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][title]" class="js-ajax-title form-control" value="{{ !empty($file) ? $file->title : '' }}" placeholder="{{ trans('forms.maximum_255_characters') }}"/>
+                                <input readonly type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][title]" class="js-ajax-title form-control" value="{{ !empty($file) ? $file->title : '' }}" placeholder="{{ trans('forms.maximum_255_characters') }}"/>
                                 <div class="invalid-feedback"></div>
                             </div>
 
                             <div class="form-group">
                                 <label class="input-label">{{ trans('public.source') }}</label>
-                                <select name="ajax[{{ !empty($file) ? $file->id : 'new' }}][storage]"
+                                <select disabled name="ajax[{{ !empty($file) ? $file->id : 'new' }}][storage]"
                                         class="js-file-storage form-control"
                                 >
                                     @foreach(getFeaturesSettings('available_sources') as $source)
@@ -98,12 +98,12 @@
 
                                 <div class="d-flex align-items-center js-ajax-accessibility">
                                     <div class="custom-control custom-radio">
-                                        <input type="radio" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][accessibility]" value="free" @if(empty($file) or (!empty($file) and $file->accessibility == 'free')) checked="checked" @endif id="accessibilityRadio1_{{ !empty($file) ? $file->id : 'record' }}" class="custom-control-input">
+                                        <input readonly type="radio" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][accessibility]" value="free" @if(empty($file) or (!empty($file) and $file->accessibility == 'free')) checked="checked" @endif id="accessibilityRadio1_{{ !empty($file) ? $file->id : 'record' }}" class="custom-control-input">
                                         <label class="custom-control-label font-14 cursor-pointer" for="accessibilityRadio1_{{ !empty($file) ? $file->id : 'record' }}">{{ trans('public.free') }}</label>
                                     </div>
 
                                     <div class="custom-control custom-radio ml-15">
-                                        <input type="radio" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][accessibility]" value="paid" @if(!empty($file) and $file->accessibility == 'paid') checked="checked" @endif id="accessibilityRadio2_{{ !empty($file) ? $file->id : 'record' }}" class="custom-control-input">
+                                        <input readonly type="radio" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][accessibility]" value="paid" @if(!empty($file) and $file->accessibility == 'paid') checked="checked" @endif id="accessibilityRadio2_{{ !empty($file) ? $file->id : 'record' }}" class="custom-control-input">
                                         <label class="custom-control-label font-14 cursor-pointer" for="accessibilityRadio2_{{ !empty($file) ? $file->id : 'record' }}">{{ trans('public.paid') }}</label>
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@
                                             <i data-feather="upload" width="18" height="18" class="text-white"></i>
                                         </button>
                                     </div>
-                                    <input type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][file_path]" id="file_path{{ !empty($file) ? $file->id : 'record' }}" value="{{ (!empty($file)) ? $file->file : '' }}" class="js-ajax-file_path form-control" placeholder="{{ trans('webinars.file_upload_placeholder') }}"/>
+                                    <input readonly type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][file_path]" id="file_path{{ !empty($file) ? $file->id : 'record' }}" value="{{ (!empty($file)) ? $file->file : '' }}" class="js-ajax-file_path form-control" placeholder="{{ trans('webinars.file_upload_placeholder') }}"/>
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -132,7 +132,7 @@
                                         </button>
                                     </div>
                                     <div class="custom-file">
-                                        <input type="file" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][s3_file]" class="js-s3-file-input custom-file-input cursor-pointer" id="s3File{{ !empty($file) ? $file->id : 'record' }}">
+                                        <input readonly type="file" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][s3_file]" class="js-s3-file-input custom-file-input cursor-pointer" id="s3File{{ !empty($file) ? $file->id : 'record' }}">
                                         <label class="custom-file-label cursor-pointer" for="s3File{{ !empty($file) ? $file->id : 'record' }}">{{ trans('update.choose_file') }}</label>
                                     </div>
                                 </div>
@@ -141,7 +141,7 @@
                             <div class="row form-group js-file-type-volume d-none">
                                 <div class="col-6">
                                     <label class="input-label">{{ trans('webinars.file_type') }}</label>
-                                    <select name="ajax[{{ !empty($file) ? $file->id : 'new' }}][file_type]" class="js-ajax-file_type form-control">
+                                    <select disabled name="ajax[{{ !empty($file) ? $file->id : 'new' }}][file_type]" class="js-ajax-file_type form-control">
                                         <option value="">{{ trans('webinars.select_file_type') }}</option>
 
                                         @foreach(\App\Models\File::$fileTypes as $fileType)
@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="col-6 js-file-volume-field">
                                     <label class="input-label">{{ trans('webinars.file_volume') }}</label>
-                                    <input type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][volume]" value="{{ (!empty($file)) ? $file->volume : '' }}" class="js-ajax-volume form-control" placeholder="{{ trans('webinars.online_file_volume') }}"/>
+                                    <input readonly type="text" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][volume]" value="{{ (!empty($file)) ? $file->volume : '' }}" class="js-ajax-volume form-control" placeholder="{{ trans('webinars.online_file_volume') }}"/>
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -167,7 +167,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <label class="cursor-pointer input-label" for="online_viewerSwitch{{ !empty($file) ? $file->id : '_record' }}">{{ trans('update.online_viewer') }}</label>
                                     <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][online_viewer]" class="custom-control-input" id="online_viewerSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (!empty($file) and $file->online_viewer) ? 'checked' : ''  }}>
+                                        <input readonly type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][online_viewer]" class="custom-control-input" id="online_viewerSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (!empty($file) and $file->online_viewer) ? 'checked' : ''  }}>
                                         <label class="custom-control-label" for="online_viewerSwitch{{ !empty($file) ? $file->id : '_record' }}"></label>
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <label class="cursor-pointer input-label" for="downloadableSwitch{{ !empty($file) ? $file->id : '_record' }}">{{ trans('home.downloadable') }}</label>
                                     <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][downloadable]" class="custom-control-input" id="downloadableSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (empty($file) or $file->downloadable) ? 'checked' : ''  }}>
+                                        <input readonly type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][downloadable]" class="custom-control-input" id="downloadableSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (empty($file) or $file->downloadable) ? 'checked' : ''  }}>
                                         <label class="custom-control-label" for="downloadableSwitch{{ !empty($file) ? $file->id : '_record' }}"></label>
                                     </div>
                                 </div>
@@ -187,7 +187,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <label class="cursor-pointer input-label" for="fileStatusSwitch{{ !empty($file) ? $file->id : '_record' }}">{{ trans('public.active') }}</label>
                                     <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][status]" class="custom-control-input" id="fileStatusSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (empty($file) or $file->status == \App\Models\File::$Active) ? 'checked' : ''  }}>
+                                        <input readonly type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][status]" class="custom-control-input" id="fileStatusSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (empty($file) or $file->status == \App\Models\File::$Active) ? 'checked' : ''  }}>
                                         <label class="custom-control-label" for="fileStatusSwitch{{ !empty($file) ? $file->id : '_record' }}"></label>
                                     </div>
                                 </div>
@@ -198,7 +198,7 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <label class="cursor-pointer input-label" for="SequenceContentSwitch{{ !empty($file) ? $file->id : '_record' }}">{{ trans('update.sequence_content') }}</label>
                                         <div class="custom-control custom-switch">
-                                            <input type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][sequence_content]" class="js-sequence-content-switch custom-control-input" id="SequenceContentSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (!empty($file) and ($file->check_previous_parts or !empty($file->access_after_day))) ? 'checked' : ''  }}>
+                                            <input readonly type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][sequence_content]" class="js-sequence-content-switch custom-control-input" id="SequenceContentSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (!empty($file) and ($file->check_previous_parts or !empty($file->access_after_day))) ? 'checked' : ''  }}>
                                             <label class="custom-control-label" for="SequenceContentSwitch{{ !empty($file) ? $file->id : '_record' }}"></label>
                                         </div>
                                     </div>
@@ -209,7 +209,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <label class="cursor-pointer input-label" for="checkPreviousPartsSwitch{{ !empty($file) ? $file->id : '_record' }}">{{ trans('update.check_previous_parts') }}</label>
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][check_previous_parts]" class="custom-control-input" id="checkPreviousPartsSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (empty($file) or $file->check_previous_parts) ? 'checked' : ''  }}>
+                                                <input readonly type="checkbox" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][check_previous_parts]" class="custom-control-input" id="checkPreviousPartsSwitch{{ !empty($file) ? $file->id : '_record' }}" {{ (empty($file) or $file->check_previous_parts) ? 'checked' : ''  }}>
                                                 <label class="custom-control-label" for="checkPreviousPartsSwitch{{ !empty($file) ? $file->id : '_record' }}"></label>
                                             </div>
                                         </div>
@@ -217,7 +217,7 @@
 
                                     <div class="form-group">
                                         <label class="input-label">{{ trans('update.access_after_day') }}</label>
-                                        <input type="number" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][access_after_day]" value="{{ (!empty($file)) ? $file->access_after_day : '' }}" class="js-ajax-access_after_day form-control" placeholder="{{ trans('update.access_after_day_placeholder') }}"/>
+                                        <input readonly type="number" name="ajax[{{ !empty($file) ? $file->id : 'new' }}][access_after_day]" value="{{ (!empty($file)) ? $file->access_after_day : '' }}" class="js-ajax-access_after_day form-control" placeholder="{{ trans('update.access_after_day_placeholder') }}"/>
                                         <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -231,7 +231,7 @@
                     </div>
 
                     <div class="mt-30 d-flex align-items-center">
-                        <button type="button" class="js-save-file btn btn-sm btn-primary">{{ trans('public.save') }}</button>
+                        {{-- <button type="button" class="js-save-file btn btn-sm btn-primary">{{ trans('public.save') }}</button> --}}
 
                         @if(empty($file))
                             <button type="button" class="btn btn-sm btn-danger ml-10 cancel-accordion">{{ trans('public.close') }}</button>
