@@ -64,7 +64,7 @@
 
                             <div class="webinar-card-body w-100 d-flex flex-column">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <a href="{{ $webinar->getUrl() }}" target="_blank">
+                                    <a  target="_blank">
                                         <h3 class="font-16 text-dark-blue font-weight-bold">{{ $webinar->title }}
                                             <span class="badge badge-dark ml-10 status-badge-dark">{{ trans('webinars.'.$webinar->type) }}</span>
                                         </h3>
@@ -77,35 +77,38 @@
                                             </button>
                                             <div class="dropdown-menu ">
                                                 @if(!empty($webinar->start_date) and ($authUser->id == $webinar->creator_id or $authUser->id == $webinar->teacher_id))
-                                                    <button type="button" data-webinar-id="{{ $webinar->id }}" class="js-webinar-next-session webinar-actions btn-transparent d-block">{{ trans('public.create_join_link') }}</button>
+                                                    {{-- <button type="button" data-webinar-id="{{ $webinar->id }}"
+                                                        class="js-webinar-next-session webinar-actions btn-transparent d-block">
+                                                            {{ trans('public.create_join_link') }}</button> --}}
                                                 @endif
 
-                                                <a href="{{ $webinar->getLearningPageUrl() }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('update.learning_page') }}</a>
+                                                <a href="{{ $webinar->getLearningPageUrl() }}" target="_blank" class="webinar-actions d-block mt-10">
+                                                {{ trans('update.learning_page') }}</a>
 
-                                                <a href="/panel/webinars/{{ $webinar->id }}/edit" class="webinar-actions d-block mt-10">{{ trans('public.edit') }}</a>
+                                                {{-- <a href="/panel/webinars/{{ $webinar->id }}/edit" class="webinar-actions d-block mt-10">{{ trans('public.edit') }}</a> --}}
 
                                                 @if($webinar->isWebinar())
-                                                    <a href="/panel/webinars/{{ $webinar->id }}/step/4" class="webinar-actions d-block mt-10">{{ trans('public.sessions') }}</a>
+                                                    <a href="/panel/webinars/{{ $webinar->id }}/step/4" class="webinar-actions d-block mt-10">{{ trans('public.content') }}</a>
                                                 @endif
 
-                                                <a href="/panel/webinars/{{ $webinar->id }}/step/4" class="webinar-actions d-block mt-10">{{ trans('public.files') }}</a>
+                                                {{-- <a href="/panel/webinars/{{ $webinar->id }}/step/4" class="webinar-actions d-block mt-10">{{ trans('public.files') }}</a> --}}
 
 
-                                                @if($webinar->isOwner($authUser->id))
+                                                {{-- @if($webinar->isOwner($authUser->id))
                                                     <a href="/panel/webinars/{{ $webinar->id }}/export-students-list" class="webinar-actions d-block mt-10">{{ trans('public.export_list') }}</a>
-                                                @endif
+                                                @endif --}}
 
-                                                @if($authUser->id == $webinar->creator_id)
+                                                {{-- @if($authUser->id == $webinar->creator_id)
                                                     <a href="/panel/webinars/{{ $webinar->id }}/duplicate" class="webinar-actions d-block mt-10">{{ trans('public.duplicate') }}</a>
-                                                @endif
+                                                @endif --}}
 
-                                                @if($webinar->isOwner($authUser->id))
+                                                {{-- @if($webinar->isOwner($authUser->id))
                                                     <a href="/panel/webinars/{{ $webinar->id }}/statistics" class="webinar-actions d-block mt-10">{{ trans('update.statistics') }}</a>
-                                                @endif
+                                                @endif --}}
 
-                                                @if($webinar->creator_id == $authUser->id)
+                                                {{-- @if($webinar->creator_id == $authUser->id)
                                                     <a href="/panel/webinars/{{ $webinar->id }}/delete" class="webinar-actions d-block mt-10 text-danger delete-action">{{ trans('public.delete') }}</a>
-                                                @endif
+                                                @endif --}}
                                             </div>
                                         </div>
                                     @endif
@@ -184,10 +187,10 @@
                                         </div>
                                     @endif
 
-                                    <div class="d-flex align-items-start flex-column mt-20 mr-15">
+                                    {{-- <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                         <span class="stat-title">{{ trans('panel.sales') }}:</span>
                                         <span class="stat-value">{{ count($webinar->sales) }} ({{ (!empty($webinar->sales) and count($webinar->sales)) ? handlePrice($webinar->sales->sum('amount')) : 0 }})</span>
-                                    </div>
+                                    </div> --}}
 
                                     @if(!empty($webinar->partner_instructor) and $webinar->partner_instructor and $authUser->id != $webinar->teacher_id and $authUser->id != $webinar->creator_id)
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">
