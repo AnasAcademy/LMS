@@ -159,7 +159,7 @@ return [
     'certificate' => 'شهادة',
     'certificate_id' => 'معرف الشهادة',
     'certificate_and_documents' => 'الشهادات والوثائق',
-    'add_quiz' => 'مسابقة جديدة',
+    'add_quiz' => 'إختبار جديد',
     'add_new_quizzes' => 'مسابقة جديدة',
     'select_a_quiz' => 'حدد اختبارًا',
     'quiz' => 'اختبار',
