@@ -59,7 +59,7 @@
             {{-- arabic name --}}
             <div class="form-group col-12 col-sm-6">
                 <label for="name">{{ trans('application_form.name') }}<span class="text-danger">*</span></label>
-                <input type="text" id="name" name="ar_name" {{-- value="{{ $student ? $student->ar_name : '' }}" --}}
+                <input @if(!session()->has('impersonated')) disabled @endif type="text" id="name" name="ar_name" {{-- value="{{ $student ? $student->ar_name : '' }}" --}}
                     value="{{ old('ar_name', $student ? $student->ar_name : $user->full_name ?? '') }}"
                     placeholder="ادخل الإسم باللغه العربية فقط" required
                     class="form-control @error('ar_name') is-invalid @enderror">
@@ -74,7 +74,7 @@
             {{-- english name --}}
             <div class="form-group col-12 col-sm-6">
                 <label for="name_en">{{ trans('application_form.name_en') }}<span class="text-danger">*</span></label>
-                <input type="text" id="name_en" name="en_name" {{-- value="{{ $student ? $student->en_name : '' }}" --}}
+                <input @if(!session()->has('impersonated')) disabled @endif type="text" id="name_en" name="en_name" {{-- value="{{ $student ? $student->en_name : '' }}" --}}
                     value="{{ old('en_name', $student ? $student->en_name : '') }}"
                     placeholder="ادخل الإسم باللغه الإنجليزيه فقط" required
                     class="form-control @error('en_name') is-invalid @enderror">
