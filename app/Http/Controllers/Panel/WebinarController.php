@@ -42,6 +42,7 @@ class WebinarController extends Controller
         }
 
         $query = Webinar::where(function ($query) use ($user) {
+            $query = $query->where(['hasGroup'=> 1 , 'unattached' => 1 ]);
             if ($user->isTeacher()) {
                 $query->where('teacher_id', $user->id);
             } elseif ($user->isOrganization()) {
@@ -367,7 +368,7 @@ class WebinarController extends Controller
         return redirect($url);
     }
 
-    public function edit(Request $request, $id, $step = 1)
+    public function edit(Request $request, $id, $step = 4)
     {
         $user = auth()->user();
         $isOrganization = $user->isOrganization();
