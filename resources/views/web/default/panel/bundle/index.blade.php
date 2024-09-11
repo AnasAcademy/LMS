@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-3 mt-30 mt-md-0 d-flex align-items-center justify-content-center mt-5 mt-md-0">
+                {{-- <div class="col-6 col-md-3 mt-30 mt-md-0 d-flex align-items-center justify-content-center mt-5 mt-md-0">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/sales.svg" width="64" height="64" alt="">
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ handlePrice($bundleSalesAmount) }}</strong>
@@ -40,7 +40,7 @@
                         <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ $bundleSalesCount }}</strong>
                         <span class="font-16 text-gray font-weight-500">{{ trans('update.bundle_sales_count') }}</span>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>
@@ -77,7 +77,7 @@
 
                             <div class="webinar-card-body w-100 d-flex flex-column">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <a href="{{ $bundle->getUrl() }}" target="_blank">
+                                    <a  target="_blank">
                                         <h3 class="font-16 text-dark-blue font-weight-bold">{{ $bundle->title }}</h3>
                                     </a>
 
@@ -88,18 +88,19 @@
                                             </button>
                                             <div class="dropdown-menu ">
 
-                                                <a href="/panel/bundles/{{ $bundle->id }}/edit" class="webinar-actions d-block mt-10">{{ trans('public.edit') }}</a>
+                                                {{--   <a href="/panel/bundles/{{ $bundle->id }}/edit" class="webinar-actions d-block mt-10">{{ trans('public.edit') }}</a> --}}
 
                                                 <a href="/panel/bundles/{{ $bundle->id }}/courses" class="webinar-actions d-block mt-10">{{ trans('product.courses') }}</a>
 
-
+                                                {{--  
                                                 @if($authUser->id == $bundle->teacher_id or $authUser->id == $bundle->creator_id)
                                                     <a href="/panel/bundles/{{ $bundle->id }}/export-students-list" class="webinar-actions d-block mt-10">{{ trans('public.export_list') }}</a>
-                                                @endif
-
+                                                @endif --}}
+                                                {{--
                                                 @if($bundle->creator_id == $authUser->id)
                                                     <a href="/panel/bundles/{{ $bundle->id }}/delete" class="webinar-actions d-block mt-10 text-danger delete-action">{{ trans('public.delete') }}</a>
                                                 @endif
+                                                --}}
                                             </div>
                                         </div>
                                     @endif
@@ -142,10 +143,10 @@
                                         <span class="stat-value">{{ $bundle->bundleWebinars->count() }}</span>
                                     </div>
 
-                                    <div class="d-flex align-items-start flex-column mt-20 mr-15">
+                                   {{-- <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                         <span class="stat-title">{{ trans('panel.sales') }}:</span>
                                         <span class="stat-value">{{ count($bundle->sales) }} ({{ (!empty($bundle->sales) and count($bundle->sales)) ? handlePrice($bundle->sales->sum('amount')) : 0 }})</span>
-                                    </div>
+                                    </div> --}}
 
                                     @if($authUser->id == $bundle->teacher_id and $authUser->id != $bundle->creator_id and $bundle->creator->isOrganization())
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">
