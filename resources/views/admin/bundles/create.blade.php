@@ -18,10 +18,15 @@
     </style>
 @endpush
 
+@php
+    $type = request()->get('type', 'program');
+@endphp
+
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.new') }} {{ trans('update.bundle') }}</h1>
+            <h1>{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.new') }} {{ trans('update.bundle') }}
+            </h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a
                         href="{{ getAdminPanelUrl() }}">{{ trans('admin/main.dashboard') }}</a>
@@ -29,7 +34,8 @@
                 <div class="breadcrumb-item active">
                     <a href="{{ getAdminPanelUrl() }}/bundles">{{ trans('update.bundles') }}</a>
                 </div>
-                <div class="breadcrumb-item">{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.new') }}</div>
+                <div class="breadcrumb-item">{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.new') }}
+                </div>
             </div>
         </div>
 
@@ -50,6 +56,31 @@
                                     <div class="row">
                                         <div class="col-12 col-md-5">
 
+                                            @if (!empty($type) and empty($bundle))
+                                                <input type="hidden" name="type" value="{{ $type }}">
+                                            @endif
+
+                                            @if (!empty($bundle))
+                                                <div class="form-group">
+                                                    <label class="input-label">نوع البرنامج</label>
+                                                    <select name="type" class="form-control">
+                                                        <option value="" selected disabled>اختر نوع البرنامج</option>
+                                                        <option value="program"
+                                                            @if ($bundle->type == 'program') selected @endif>
+                                                            عام
+                                                        </option>
+                                                        <option value="bridging"
+                                                            @if ($bundle->type == 'bridging') selected @endif>
+                                                            تكسير
+                                                        </option>
+                                                    </select>
+                                                    @error('type')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
+                                            @endif
                                             @if (!empty(getGeneralSettings('content_translate')))
                                                 <div class="form-group">
                                                     <label class="input-label">{{ trans('auth.language') }}</label>
@@ -171,7 +202,7 @@
 
 
 
-                                             
+
 
                                             <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('update.bundle_url') }}</label>
@@ -264,7 +295,7 @@
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text" name="thumbnail" id="thumbnail" value="test"
+                                                    <input type="text" name="thumbnail" id="thumbnail" value="bridging"
                                                         class="form-control @error('thumbnail')  is-invalid @enderror" />
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view"
@@ -291,7 +322,7 @@
                                                         </button>
                                                     </div>
                                                     <input type="text" name="image_cover" id="cover_image"
-                                                        value="test"
+                                                        value="bridging"
                                                         class="form-control @error('image_cover')  is-invalid @enderror" />
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view"
@@ -453,11 +484,92 @@
                                                 @enderror
                                             </div>
 
+                                            @if (($type=='bridging' or (!empty($bundle) and $bundle->type=='bridging')))
+                                                <div class="form-group mt-15">
+                                                    <label class="input-label">{{ 'البرامج المسوح لها بالتكسير' }}</label>
+
+                                                    <select id=""
+                                                        class="custom-select @error('from_bundle_id')  is-invalid @enderror"
+                                                        name="from_bundle_id" required>
+                                                        <option selected disabled>
+                                                            {{ trans('public.choose_category') }}</option>
+                                                        {{-- Loop through top-level categories --}}
+                                                        @foreach ($categories as $category)
+                                                            <optgroup label="{{ $category->title }}">
+
+                                                                {{-- Display bundles directly under the current category --}}
+                                                                @foreach ($category->bundles as $bundleItem)
+                                                                    <option value="{{ $bundleItem->id }}"
+                                                                    >
+                                                                        {{ $bundleItem->title }}</option>
+                                                                @endforeach
+
+                                                                {{-- Display bundles under subcategories --}}
+                                                                @foreach ($category->subCategories as $subCategory)
+                                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                                        <option value="{{ $bundleItem->id }}"
+                                                                        >
+                                                                            {{ $bundleItem->title }}</option>
+                                                                    @endforeach
+                                                                @endforeach
+
+                                                            </optgroup>
+                                                        @endforeach
+                                                    </select>
+
+                                                    @error('from_bundle_id')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
+
+                                                <div class="form-group mt-15">
+                                                    <label class="input-label">{{ 'البرامج المسوح بالتكسير إليها' }}</label>
+
+                                                    <select id=""
+                                                        class="custom-select @error('to_bundle_id')  is-invalid @enderror"
+                                                        name="to_bundle_id" required>
+                                                        <option selected disabled>
+                                                            {{ trans('public.choose_category') }}</option>
+                                                        {{-- Loop through top-level categories --}}
+                                                        @foreach ($categories as $category)
+                                                            <optgroup label="{{ $category->title }}">
+
+                                                                {{-- Display bundles directly under the current category --}}
+                                                                @foreach ($category->bundles as $bundleItem)
+                                                                    <option value="{{ $bundleItem->id }}"
+                                                                    >
+                                                                        {{ $bundleItem->title }}</option>
+                                                                @endforeach
+
+                                                                {{-- Display bundles under subcategories --}}
+                                                                @foreach ($category->subCategories as $subCategory)
+                                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                                        <option value="{{ $bundleItem->id }}"
+                                                                        >
+                                                                            {{ $bundleItem->title }}</option>
+                                                                    @endforeach
+                                                                @endforeach
+
+                                                            </optgroup>
+                                                        @endforeach
+                                                    </select>
+
+                                                    @error('from_bundle_id')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
+                                            @endif
+
+
 
 
                                             <div class="form-group mt-15">
                                                 <label class="input-label">{{ trans('public.batch_number') }}</label>
-                                            
+
                                                 <select id="study_classes"
                                                     class="custom-select @error('batch_id') is-invalid @enderror"
                                                     name="batch_id" required>
@@ -469,7 +581,7 @@
                                                             {{ $studyClass->title }}</option>
                                                     @endforeach
                                                 </select>
-                                            
+
                                                 @error('batch_id')
                                                     <div class="invalid-feedback">
                                                         {{ $message }}
@@ -514,7 +626,7 @@
                                                     <input type="hidden" name="has_certificate" value="0">
                                                     <input type="checkbox" name="has_certificate" id="has_certificate"
                                                         style="accent-color:var(--primary)"
-                                                        @if (isset($bundle->has_certificate) && $bundle->has_certificate==1) checked @endif value="1">
+                                                        @if (isset($bundle->has_certificate) && $bundle->has_certificate == 1) checked @endif value="1">
 
                                                     <label for="has_certificate"
                                                         class="form-check-label mr-2 font-weight-bold"> يضم شهادة الشهادة
@@ -527,21 +639,24 @@
 
                                             </div>
 
-                                               <div class="form-group">
-                                            <label>{{ trans('/admin/main.status') }}</label>
-                                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
-                                                <option disabled selected>{{ trans('admin/main.select_status') }}</option>
-                                                @foreach (\App\User::$statuses as $status)
-                                                    <option
-                                                        value="{{ $status }}" {{ old('status', $bundle->status ?? null ) === $status ? 'selected' :''}}>{{  $status }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('status')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
+                                            <div class="form-group">
+                                                <label>{{ trans('/admin/main.status') }}</label>
+                                                <select class="form-control @error('status') is-invalid @enderror"
+                                                    id="status" name="status">
+                                                    <option disabled selected>{{ trans('admin/main.select_status') }}
+                                                    </option>
+                                                    @foreach (\App\User::$statuses as $status)
+                                                        <option value="{{ $status }}"
+                                                            {{ old('status', $bundle->status ?? null) === $status ? 'selected' : '' }}>
+                                                            {{ $status }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('status')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
                                             </div>
-                                            @enderror
-                                        </div>
 
                                         </div>
                                     </div>

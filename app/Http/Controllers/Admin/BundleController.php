@@ -33,7 +33,9 @@ class BundleController extends Controller
 
         removeContentLocale();
 
-        $query = Bundle::query();
+        // $query = Bundle::query();
+        $type = $request->get('type', 'program');
+        $query = Bundle::where('bundles.type', $type);
 
         $totalBundles = $query->count();
         $totalPendingBundles = deepClone($query)->where('bundles.status', Bundle::$pending)->count();
@@ -229,12 +231,16 @@ class BundleController extends Controller
         return $query;
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('admin_bundles_create');
 
         removeContentLocale();
 
+        $type = $request->get('type', 'program');
+        if(!in_array($type, ['program', 'bridging'])){
+            abort (404);
+        }
         $categories = Category::where('parent_id', null)->get();
         $study_classes=StudyClass::get();
         $certificates = CertificateTemplate::where('type', 'bundle')->get();
@@ -251,20 +257,30 @@ class BundleController extends Controller
     public function store(Request $request)
     {
         $this->authorize('admin_bundles_create');
-
-        $this->validate($request, [
+        $type = $request->get('type', 'program');
+        $rules= [
             'title' => 'required|max:255',
             'bundle_name_certificate' => 'required',
-            'start_date'=>'required|date',
-            'end_date'=>'required|date',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'slug' => 'max:255|unique:bundles,slug',
             'thumbnail' => 'required',
             'image_cover' => 'required',
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
-            'batch_id'=>'required',
-        ]);
+            'batch_id' => 'required',
+        ];
+
+        if($type=='bridging'){
+            $rules['from_bundle_id'] ="required|exists:bundles,id";
+            $rules['to_bundle_id'] ="required|exists:bundles,id";
+        }
+        $this->validate($request, $rules);
+
+        if (!in_array($type, ['program', 'bridging'])) {
+            abort(404);
+        }
 
         $data = $request->all();
 
@@ -293,7 +309,7 @@ class BundleController extends Controller
             if (empty($data['timezone']) || !getFeaturesSettings('timezone_in_create_webinar')) {
                 $data['timezone'] = getTimezone();
             }
-    
+
             $endDate = convertTimeToUTCzone($data['end_date'], $data['timezone']);
             $data['end_date'] = $endDate->getTimestamp();
         }
@@ -323,6 +339,7 @@ class BundleController extends Controller
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
            'batch_id'=>$data['batch_id']?? null,
+           'type' => $data['type'] ?? 'program',
         ]);
 
         if ($bundle) {
@@ -334,6 +351,14 @@ class BundleController extends Controller
                 'description' => $data['description'],
                 'seo_description' => $data['seo_description'],
             ]);
+
+            // if(!empty($request['from_bundle_id']) && !empty($request['to_bundle_id']) ){
+            //     BundleX::create([
+            //         'bundle_id'=> $bundle->id ,
+            //         'from_bundle_id' => $request['from_bundle_id'],
+            //         'to_bundle_id' => $request['to_bundle_id']
+            //     ]);
+            // }
         }
 
         $filters = $request->get('filters', null);
@@ -449,6 +474,7 @@ class BundleController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
             'batch_id'=>'required',
+            'type' => 'required|in:program,bridging',
         ];
 
         $this->validate($request, $rules);
@@ -545,6 +571,7 @@ class BundleController extends Controller
             $data['end_date'] = null;
         }
 
+
         $bundle->update([
             'slug' => $data['slug'],
             'bundle_name_certificate'=> $data['bundle_name_certificate'],
@@ -567,6 +594,7 @@ class BundleController extends Controller
             'has_certificate' => $data['has_certificate'],
             'content_table' => $data['content_table'] ?? null,
             'batch_id'=>$data['batch_id']?? $bundle->batch_id,
+            'type' => $data['type'] ??  $bundle->type
         ]);
 
         if ($bundle) {
@@ -602,7 +630,12 @@ class BundleController extends Controller
 
         removeContentLocale();
 
-        return back();
+        $toastData = [
+            'title' => 'تعديل برنامج',
+            'msg' => 'تم التعديل بنجاج',
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
     public function destroy(Request $request, $id)
