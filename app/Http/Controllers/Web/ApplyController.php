@@ -46,7 +46,7 @@ class ApplyController extends Controller
                     });
             })->get();
 
-        $courses = Webinar::where('unattached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->where('status', 'active')->get();
 
         return view(getTemplate() . '.pages.application_form', compact('user', 'categories', 'student', 'courses', 'bundle'));
     }
@@ -365,7 +365,7 @@ class ApplyController extends Controller
 
             return redirect('/payment/' . $order->id);
         }
-        
+
         return back();
     }
     private function handlePaymentOrderWithZeroTotalAmount($order)

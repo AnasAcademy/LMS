@@ -82,7 +82,7 @@ class RegisterController extends Controller
                     });
             })->get();
 
-        $courses = Webinar::where('unattached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->where('status', 'active')->get();
         $data = [
             'pageTitle' => $pageTitle,
             'pageDescription' => $pageDescription,
