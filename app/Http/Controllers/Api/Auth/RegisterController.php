@@ -41,7 +41,7 @@ class RegisterController extends Controller
         })->with(['activeBundles', 'activeSubCategories'])
         ->get();
 
-        $courses = Webinar::where('unattached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->where('status', 'active')->get();
         $data = [
             'categories' => CategoryResource::collection($categories),
             'courses'  => CourseResource::collection($courses),
