@@ -17,7 +17,7 @@
     $checkSequenceContent = $item->checkSequenceContent();
 
     $sequenceContentHasError = (!empty($checkSequenceContent) and (!empty($checkSequenceContent['all_passed_items_error']) or !empty($checkSequenceContent['access_after_day_error'])));
-    
+
 @endphp
 
 <div class=" d-flex align-items-start p-10 cursor-pointer {{ (!empty($checkSequenceContent) and $sequenceContentHasError) ? 'js-sequence-content-error-modal' : 'tab-item' }}"
@@ -37,23 +37,26 @@
             <span class="font-12 text-gray d-block">{{ $hintText }}</span>
         </div>
 
+        @if ($user->isUser())
 
-        <div class="tab-item-info mt-15">
-            <p class="font-12 text-gray d-block">
-                @php
-                    $description = !empty($item->description) ? $item->description : (!empty($item->summary) ? $item->summary : '');
-                @endphp
+            <div class="tab-item-info mt-15">
+                <p class="font-12 text-gray d-block">
+                    @php
+                        $description = !empty($item->description) ? $item->description : (!empty($item->summary) ? $item->summary : '');
+                    @endphp
 
-                {!! truncate($description, 150) !!}
-            </p>
+                    {!! truncate($description, 150) !!}
+                </p>
 
-            <div class="d-flex align-items-center justify-content-between mt-15">
-                <label class="mb-0 mr-10 cursor-pointer font-weight-normal font-14 text-dark-blue" for="readToggle{{ $type }}{{ $item->id }}">{{ trans('public.i_passed_this_lesson') }}</label>
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" @if($sequenceContentHasError) disabled @endif id="readToggle{{ $type }}{{ $item->id }}" data-item-id="{{ $item->id }}" data-item="{{ $type }}_id" value="{{ $item->webinar_id }}" class="js-passed-lesson-toggle custom-control-input" @if(!empty($item->checkPassedItem())) checked @endif>
-                    <label class="custom-control-label" for="readToggle{{ $type }}{{ $item->id }}"></label>
+                <div class="d-flex align-items-center justify-content-between mt-15">
+                    <label class="mb-0 mr-10 cursor-pointer font-weight-normal font-14 text-dark-blue" for="readToggle{{ $type }}{{ $item->id }}">{{ trans('public.i_passed_this_lesson') }}</label>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" @if($sequenceContentHasError) disabled @endif id="readToggle{{ $type }}{{ $item->id }}" data-item-id="{{ $item->id }}" data-item="{{ $type }}_id" value="{{ $item->webinar_id }}" class="js-passed-lesson-toggle custom-control-input" @if(!empty($item->checkPassedItem())) checked @endif>
+                        <label class="custom-control-label" for="readToggle{{ $type }}{{ $item->id }}"></label>
+                    </div>
                 </div>
             </div>
-        </div>
+
+        @endif
     </div>
 </div>

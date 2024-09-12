@@ -31,7 +31,7 @@
                                             <i data-feather="plus" class=""></i>
                                         </button>
                                         <div class="dropdown-menu ">
-                                            @if($webinar->isWebinar())
+                                            {{-- @if($webinar->isWebinar())
                                                 <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="session" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
                                                     {{ trans('public.add_session') }}
                                                 </button>
@@ -50,7 +50,7 @@
 
                                             <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="text_lesson" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
                                                 {{ trans('public.add_text_lesson') }}
-                                            </button>
+                                            </button> --}}
 
                                             <button type="button" class="js-add-course-content-btn d-block mb-10 btn-transparent" data-webinar-id="{{ $webinar->id }}" data-type="quiz" data-chapter="{{ !empty($chapter) ? $chapter->id :'' }}">
                                                 {{ trans('public.add_quiz') }}
@@ -64,13 +64,13 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" class="js-add-chapter btn-transparent text-gray" data-webinar-id="{{ $webinar->id }}" data-chapter="{{ $chapter->id }}" data-locale="{{ mb_strtoupper($chapter->locale) }}">
+                                    {{-- <button type="button" class="js-add-chapter btn-transparent text-gray" data-webinar-id="{{ $webinar->id }}" data-chapter="{{ $chapter->id }}" data-locale="{{ mb_strtoupper($chapter->locale) }}">
                                         <i data-feather="edit-3" class="mr-10 cursor-pointer" height="20"></i>
-                                    </button>
+                                    </button> --}}
 
-                                    <a href="/panel/chapters/{{ $chapter->id }}/delete" class="delete-action btn btn-sm btn-transparent text-gray">
+                                    {{-- <a href="/panel/chapters/{{ $chapter->id }}/delete" class="delete-action btn btn-sm btn-transparent text-gray">
                                         <i data-feather="trash-2" class="mr-10 cursor-pointer" height="20"></i>
-                                    </a>
+                                    </a> --}}
 
                                     <i data-feather="move" class="move-icon mr-10 cursor-pointer text-gray" height="20"></i>
 

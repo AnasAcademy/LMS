@@ -24,13 +24,15 @@
                 <span class="font-weight-bold">{{ $course->title }}</span>
             </a>
 
-            <div class="d-flex align-items-center">
-                <div class="progress course-progress d-flex align-items-center flex-grow-1 bg-white border border-gray200 rounded-sm shadow-none mt-5">
-                    <span class="progress-bar rounded-sm bg-warning" style="width: {{ $percent }}%"></span>
-                </div>
+            @if ($user->isUser())
+                <div class="d-flex align-items-center">
+                    <div class="progress course-progress d-flex align-items-center flex-grow-1 bg-white border border-gray200 rounded-sm shadow-none mt-5">
+                        <span class="progress-bar rounded-sm bg-warning" style="width: {{ $percent }}%"></span>
+                    </div>
 
-                <span class="ml-10 font-weight-500 font-14 text-gray">{{ $percent }}% {{ trans('update.learnt') }}</span>
-            </div>
+                    <span class="ml-10 font-weight-500 font-14 text-gray">{{ $percent }}% {{ trans('update.learnt') }}</span>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -51,7 +53,7 @@
         <div class="d-none align-items-center d-lg-flex">
             {{-- <a href="{{ $course->getUrl() }}" class="btn learning-page-navbar-btn btn-sm border-gray200">{{ trans('update.course_page') }}</a> --}}
 
-            <a href="/panel/webinars/purchases" class="btn learning-page-navbar-btn btn-sm border-gray200 ml-10">جدول مقرراتي</a>
+            <a href="/panel/webinars/purchases" class="btn learning-page-navbar-btn btn-sm border-gray200 ml-10">جدول المقررات</a>
         </div>
 
         <button id="collapseBtn" type="button" class="btn-transparent ml-auto ml-lg-20">

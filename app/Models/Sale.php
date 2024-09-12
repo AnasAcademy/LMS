@@ -214,7 +214,7 @@ class Sale extends Model
             dd($e);
         }
 
-        self::handleSaleNotifications($orderItem, $seller_id);
+        self::handleSaleNotifications($orderItem, 1);
 
         if (!empty($orderItem->product_id)) {
             $buyStoreReward = RewardAccounting::calculateScore(Reward::BUY_STORE_PRODUCT, $orderItem->total_amount);
