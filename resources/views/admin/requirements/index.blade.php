@@ -143,22 +143,37 @@
                                             <td>{{ $requirement->bundleStudent->bundle->title }}</td>
 
                                             <td>
-                                                <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">
-                                                    @if (pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
-                                                        <img src="/store/{{ $requirement->identity_attachment }}"
-                                                            alt="identity_attachment" width="100px" style="max-height:100px">
-                                                    @else
-                                                        pdf ملف <i class="fas fa-file font-20"></i>
-                                                    @endif
-                                                </a>
+                                                @if (!empty($requirement->identity_attachment))
+                                                    <a href="/store/{{ $requirement->identity_attachment }}" target="_blank">
+                                                        @if (pathinfo($requirement->identity_attachment, PATHINFO_EXTENSION) != 'pdf')
+                                                            <img src="/store/{{ $requirement->identity_attachment }}"
+                                                                alt="identity_attachment" width="100px" style="max-height:100px">
+                                                        @else
+                                                            pdf ملف <i class="fas fa-file font-20"></i>
+                                                        @endif
+                                                    </a>
+
+                                                @else
+                                                لا يوجد
+                                                @endif
                                             </td>
 
-                                            <td>
-                                                <a href="/store/{{ $requirement->admission_attachment }}" target="_blank"
-                                                    class="text-black">
-                                                    pdf ملف <i class="fas fa-file font-20"></i>
-                                                </a>
+                                             <td>
+                                                @if (!empty($requirement->admission_attachment))
+                                                    <a href="/store/{{ $requirement->admission_attachment }}" target="_blank">
+                                                        @if (pathinfo($requirement->admission_attachment, PATHINFO_EXTENSION) != 'pdf')
+                                                            <img src="/store/{{ $requirement->admission_attachment }}"
+                                                                alt="admission_attachment" width="100px" style="max-height:100px">
+                                                        @else
+                                                            pdf ملف <i class="fas fa-file font-20"></i>
+                                                        @endif
+                                                    </a>
+
+                                                @else
+                                                لا يوجد
+                                                @endif
                                             </td>
+
 
                                             <td>
                                                 @if ($requirement->status == 'pending')
