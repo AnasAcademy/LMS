@@ -71,7 +71,7 @@ class ApplyController extends Controller
             })->get();
 
         // dd($categories);
-        $courses = Webinar::where('unattached', 1)->get();
+        $courses = Webinar::where('unattached', 1)->where('status', 'active')->get();
         return view(getTemplate() . '.panel.newEnrollment.index', compact('user', 'categories', 'student', 'courses'));
     }
 
