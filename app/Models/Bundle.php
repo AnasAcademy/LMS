@@ -71,6 +71,11 @@ class Bundle extends Model implements TranslatableContract
     {
         return $this->belongsTo('App\Models\Category', 'category_id', 'id');
     }
+    public function bridging()
+
+    {
+        return $this->hasOne('App\Models\BundleBridging', 'bridging_id', 'id');
+    }
 
     public function filterOptions()
     {
@@ -303,7 +308,7 @@ class Bundle extends Model implements TranslatableContract
         if (!empty($user)) {
             $sale = Sale::where('buyer_id', $user->id)
                 ->where('bundle_id', $this->id)
-                ->where('type', 'bundle')
+                ->whereIn('type', ['bundle', 'bridging'])
                 ->whereNull('refund_at')
                 ->where('access_to_purchased_item', true)
                 ->orderBy('created_at', 'desc')
