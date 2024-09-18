@@ -338,6 +338,7 @@ class BundleController extends Controller
             'created_at' => time(),
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
+            'hasGroup' => $data['hasGroup'] ?? 0,
             'content_table' => $data['content_table'] ?? null,
            'batch_id'=>$data['batch_id']?? null,
            'type' => $data['type'] ?? 'program',
@@ -595,6 +596,7 @@ class BundleController extends Controller
             'status' => $data['status'],
             'updated_at' => time(),
             'has_certificate' => $data['has_certificate'],
+            'hasGroup' => $data['hasGroup'] ?? 0,
             'content_table' => $data['content_table'] ?? null,
             'batch_id'=>$data['batch_id']?? $bundle->batch_id,
             'type' => $data['type'] ??  $bundle->type
