@@ -589,4 +589,7 @@ class Bundle extends Model implements TranslatableContract
     public function batch(){
         return $this->belongsTo(StudyClass::class, 'batch_id');
     }
+    public function groups(){
+        return $this->hasMany(Group::class, 'bundle_id');
+    }
 }

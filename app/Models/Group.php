@@ -34,5 +34,9 @@ class Group extends Model
     {
         return $this->belongsTo(Webinar::class);
     }
+    public function bundle()
+    {
+        return $this->belongsTo(Bundle::class);
+    }
 
 }
