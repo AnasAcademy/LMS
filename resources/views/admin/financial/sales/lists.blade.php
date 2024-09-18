@@ -537,7 +537,7 @@
                                                     @elseif($sale->type == 'service')
                                                         خدمة الكترونية
                                                     @else
-                                                        {{ $sale->type }}
+                                                        {{ trans('update.'.$sale->type) }}
                                                     @endif
                                                 </span>
                                             </td>

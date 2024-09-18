@@ -67,7 +67,7 @@ class salesExport implements FromCollection, WithHeadings, WithMapping
 
         $status = (!empty($sale->refund_at)) ? trans('admin/main.refund') : trans('admin/main.success');
 
-        $type = $sale->type;
+        $type = trans('update.'.$sale->type);
 
 
         if ($sale->type == \App\Models\Sale::$bundle)
