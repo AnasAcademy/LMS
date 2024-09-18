@@ -536,7 +536,7 @@ class PaymentController extends Controller
                             $lastGroup = Group::create(['name' => 'A', 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20, 'start_date' => $startDate, 'end_date' => $endDate]);
                         }
                         $enrollments = $lastGroup->enrollments->count();
-                        if ($enrollments >= $lastGroup->capacity || $lastGroup->start_date > now()) {
+                        if ($enrollments >= $lastGroup->capacity || $lastGroup->start_date < now()) {
                             $lastGroup = Group::create(['name' => chr(ord($lastGroup->name) + 1), 'creator_id' => 1, 'webinar_id' => $webinar->id, 'capacity' => 20,
                             'start_date' => $startDate, 'end_date' =>$endDate]);
                         }
@@ -558,6 +558,43 @@ class PaymentController extends Controller
 
                 BundleStudent::updateOrCreate(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id],
                 ['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
+
+                if (!empty($bundle_sale->bundle->hasGroup) && empty($bundle_sale->order->orderItem[0]->installmentPayment->step->installmentStep)) {
+                    $bundle = $bundle_sale->bundle;
+                    $lastGroup = Group::where('bundle_id', $bundle->id)->latest()->first();
+                    $startDate = now()->addMonth()->startOfMonth();
+                    $endDate = now()->addMonth(2)->startOfMonth();
+                    if (!$lastGroup) {
+                        $lastGroup = Group::create([
+                            'name' => 'A',
+                            'creator_id' => 1,
+                            'bundle_id' => $bundle->id,
+                            'capacity' => 20,
+                            'start_date' => $startDate,
+                            'end_date' => $endDate
+                        ]);
+                    }
+                    $second = $lastGroup;
+                    $enrollments = $lastGroup->enrollments->count();
+
+                    if ($enrollments >= $lastGroup->capacity || $lastGroup->start_date < now()) {
+                        $lastGroup = Group::create([
+                            'name' => chr(ord($lastGroup->name) + 1),
+                            'creator_id' => 1,
+                            'bundle_id' => $bundle->id,
+                            'capacity' => 20,
+                            'start_date' => $startDate,
+                            'end_date' => $endDate
+                        ]);
+                    }
+
+                    Enrollment::create([
+                        'user_id' => $user->id,
+                        'group_id' => $lastGroup->id,
+                    ]);
+
+
+                }
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
                 $service = $service_sale->order->orderItems->first()->service;
