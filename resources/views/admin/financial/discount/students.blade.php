@@ -49,7 +49,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            {{-- <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">نوع المبيعة</label>
                                     <select name="type" data-plugin-selectTwo class="form-control populate">
@@ -79,7 +79,7 @@
                                         </option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -88,7 +88,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            {{-- <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">{{ trans('admin/main.status') }}</label>
                                     <select name="status" data-plugin-selectTwo class="form-control populate">
@@ -97,14 +97,15 @@
                                             {{ trans('admin/main.success') }}</option>
                                         <option value="refund" @if (request()->get('status') == 'refund') selected @endif>
                                             {{ trans('admin/main.refund') }}</option>
-                                        {{--
+
                                         <option value="blocked" @if (request()->get('status') == 'blocked') selected @endif>
                                             {{ trans('update.access_blocked') }}</option>
-                                             --}}
+
                                     </select>
                                 </div>
-                            </div>
-                            <div class="col-12 row">
+                            </div> --}}
+
+                            {{-- <div class="col-12 row">
 
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -135,8 +136,15 @@
                                             value="{{ trans('admin/main.show_results') }}">
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
+                             <div class="col-md-4">
+                                    <div class="form-group mt-1">
+                                        <label class="input-label mb-4"> </label>
+                                        <input type="submit" class="text-center btn btn-primary w-100"
+                                            value="{{ trans('admin/main.show_results') }}">
+                                    </div>
+                                </div>
                         </div>
 
                     </form>
