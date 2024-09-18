@@ -75,6 +75,11 @@
                                                         <i class="fa fa-eye"></i>
                                                     </a> --}}
 
+                                                     <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}/requests" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="الطلبات">
+                                                        {{-- <img src="https://www.svgrepo.com/show/374361/product-request.svg" alt="" style="width: 30px"> --}}
+                                                        <img src="https://cdn-icons-png.flaticon.com/512/1436/1436708.png" alt="" style="width: 30px; margin-top:-15px">
+                                                    </a>
+
                                                     @include('admin.services.show', [
                                                         'url' => getAdminPanelUrl() . '/services/' . $service->id,
                                                         'btnClass' => 'btn-transparent  text-primary',
