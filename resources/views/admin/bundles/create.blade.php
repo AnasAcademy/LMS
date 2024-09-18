@@ -25,7 +25,8 @@
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.new') }} {{ trans('update.bundle') }}
+            <h1>{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.create') }}
+                {{ ($type== 'bridging' || (!empty($bundle) && $bundle->type== 'bridging'))? trans('update.bridge') :  trans('update.bundle') }}
             </h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a
@@ -65,17 +66,14 @@
                                                     <label class="input-label">نوع البرنامج</label>
                                                     <select name="type" class="form-control">
                                                         <option value="" selected disabled>اختر نوع البرنامج</option>
-                                                        <option value="program"
-                                                            @if ($bundle->type == 'program') selected @endif>
-                                                            عام
+                                                        <option value="{{ $bundle->type }}" selected
+                                                           >
+                                                            {{ ($bundle->type == 'program') ? 'عام' : 'تكسير'}}
                                                         </option>
-                                                        <option value="bridging"
-                                                            @if ($bundle->type == 'bridging') selected @endif>
-                                                            تكسير
-                                                        </option>
+
                                                     </select>
                                                     @error('type')
-                                                        <div class="invalid-feedback">
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -93,7 +91,7 @@
                                                         @endforeach
                                                     </select>
                                                     @error('locale')
-                                                        <div class="invalid-feedback">
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -110,7 +108,7 @@
                                                     class="form-control @error('title')  is-invalid @enderror"
                                                     placeholder="" />
                                                 @error('title')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -125,7 +123,7 @@
                                                     class="form-control @error('bundle_name_certificate')  is-invalid @enderror"
                                                     placeholder="" />
                                                 @error('bundle_name_certificate')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -144,7 +142,7 @@
                                                 <div class="text-muted text-small mt-1">
                                                     {{ trans('update.product_points_hint') }}</div>
                                                 @error('points')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -165,7 +163,7 @@
                                                             class="form-control @error('start_date')  is-invalid @enderror datetimepicker"
                                                             aria-describedby="dateInputGroupPrepend" />
                                                         @error('start_date')
-                                                            <div class="invalid-feedback">
+                                                            <div class="invalid-feedback d-block">
                                                                 {{ $message }}
                                                             </div>
                                                         @enderror
@@ -191,7 +189,7 @@
                                                             class="form-control @error('end_date')  is-invalid @enderror datetimepicker"
                                                             aria-describedby="dateInputGroupPrepend" />
                                                         @error('end_date')
-                                                            <div class="invalid-feedback">
+                                                            <div class="invalid-feedback d-block">
                                                                 {{ $message }}
                                                             </div>
                                                         @enderror
@@ -213,7 +211,7 @@
                                                 <div class="text-muted text-small mt-1">
                                                     {{ trans('update.bundle_url_hint') }}</div>
                                                 @error('slug')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -228,7 +226,7 @@
                                                     placeholder="" />
 
                                                 @error('content_table')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -265,7 +263,7 @@
                                                 </select>
 
                                                 @error('teacher_id')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -280,7 +278,7 @@
                                                 <div class="text-muted text-small mt-1">
                                                     {{ trans('admin/main.seo_description_hint') }}</div>
                                                 @error('seo_description')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -304,7 +302,7 @@
                                                         </button>
                                                     </div>
                                                     @error('thumbnail')
-                                                        <div class="invalid-feedback">
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -331,7 +329,7 @@
                                                         </button>
                                                     </div>
                                                     @error('image_cover')
-                                                        <div class="invalid-feedback">
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -376,7 +374,7 @@
                                                         value="{{ !empty($bundle) ? $bundle->video_demo : old('video_demo') }}"
                                                         class="form-control @error('video_demo')  is-invalid @enderror" />
                                                     @error('video_demo')
-                                                        <div class="invalid-feedback">
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -392,7 +390,7 @@
                                                 <textarea id="summernote" name="description" class="form-control @error('description')  is-invalid @enderror"
                                                     placeholder="{{ trans('forms.webinar_description_placeholder') }}">{!! !empty($bundle) ? $bundle->description : old('description') !!}</textarea>
                                                 @error('description')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -422,7 +420,7 @@
                                                 <input type="text" name="access_days" value="500"
                                                     class="form-control @error('access_days')  is-invalid @enderror" />
                                                 @error('access_days')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -437,7 +435,7 @@
                                                     class="form-control @error('price')  is-invalid @enderror"
                                                     placeholder="{{ trans('public.0_for_free') }}" />
                                                 @error('price')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -465,20 +463,20 @@
                                                             <optgroup label="{{ $category->title }}">
                                                                 @foreach ($category->subCategories as $subCategory)
                                                                     <option value="{{ $subCategory->id }}"
-                                                                        {{ (!empty($bundle) and $bundle->category_id == $subCategory->id) ? 'selected' : '' }}>
+                                                                        {{ (old('category_id' ,$bundle->category_id ?? null) == $subCategory->id) ? 'selected' : '' }}>
                                                                         {{ $subCategory->title }}</option>
                                                                 @endforeach
                                                             </optgroup>
                                                         @else
                                                             <option value="{{ $category->id }}"
-                                                                {{ (!empty($bundle) and $bundle->category_id == $category->id) ? 'selected' : '' }}>
+                                                                {{ (old('category_id', $bundle->category_id ?? null) == $category->id) ? 'selected' : '' }}>
                                                                 {{ $category->title }}</option>
                                                         @endif
                                                     @endforeach
                                                 </select>
 
                                                 @error('category_id')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -500,6 +498,7 @@
                                                                 {{-- Display bundles directly under the current category --}}
                                                                 @foreach ($category->bundles as $bundleItem)
                                                                     <option value="{{ $bundleItem->id }}"
+                                                                        @if (old('from_bundle_id', $bundle->bridging->from_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                     >
                                                                         {{ $bundleItem->title }}</option>
                                                                 @endforeach
@@ -508,6 +507,7 @@
                                                                 @foreach ($category->subCategories as $subCategory)
                                                                     @foreach ($subCategory->bundles as $bundleItem)
                                                                         <option value="{{ $bundleItem->id }}"
+                                                                            @if (old('from_bundle_id', $bundle->bridging->from_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                         >
                                                                             {{ $bundleItem->title }}</option>
                                                                     @endforeach
@@ -518,7 +518,7 @@
                                                     </select>
 
                                                     @error('from_bundle_id')
-                                                        <div class="invalid-feedback">
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -539,6 +539,7 @@
                                                                 {{-- Display bundles directly under the current category --}}
                                                                 @foreach ($category->bundles as $bundleItem)
                                                                     <option value="{{ $bundleItem->id }}"
+                                                                        @if (old('to_bundle_id', $bundle->bridging->to_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                     >
                                                                         {{ $bundleItem->title }}</option>
                                                                 @endforeach
@@ -547,6 +548,7 @@
                                                                 @foreach ($category->subCategories as $subCategory)
                                                                     @foreach ($subCategory->bundles as $bundleItem)
                                                                         <option value="{{ $bundleItem->id }}"
+                                                                            @if (old('to_bundle_id', $bundle->bridging->to_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                         >
                                                                             {{ $bundleItem->title }}</option>
                                                                     @endforeach
@@ -556,8 +558,8 @@
                                                         @endforeach
                                                     </select>
 
-                                                    @error('from_bundle_id')
-                                                        <div class="invalid-feedback">
+                                                    @error('to_bundle_id')
+                                                        <div class="invalid-feedback d-block">
                                                             {{ $message }}
                                                         </div>
                                                     @enderror
@@ -577,13 +579,13 @@
                                                         {{ trans('public.choose_batch') }}</option>
                                                     @foreach ($study_classes as $studyClass)
                                                         <option value="{{ $studyClass->id }}"
-                                                            {{ (!empty($bundle) and $bundle->batch_id == $studyClass->id) ? 'selected' : '' }}>
+                                                            {{ (old('batch_id', $bundle->batch_id?? null)  == $studyClass->id) ? 'selected' : '' }}>
                                                             {{ $studyClass->title }}</option>
                                                     @endforeach
                                                 </select>
 
                                                 @error('batch_id')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -612,7 +614,7 @@
                                                 </select>
 
                                                 @error('certificate_template_id')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
@@ -634,7 +636,7 @@
                                                 </div>
 
                                                 @error('has_certificate')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
 
                                             </div>
@@ -652,7 +654,7 @@
                                                     @endforeach
                                                 </select>
                                                 @error('status')
-                                                    <div class="invalid-feedback">
+                                                    <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
