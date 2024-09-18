@@ -1004,4 +1004,39 @@ class BundleController extends Controller
 
         return view('admin.bundles.statistics', $data);
     }
+
+    public function groups(Request $request, Bundle $bundle, $is_export_excel = false)
+    {
+        $this->authorize('admin_users_list');
+
+        $query = $bundle->groups->unique();
+        $totalGroups = deepClone($query)->count();
+
+
+        $query =(new UserController())->filters($query, $request);
+
+        if ($is_export_excel) {
+            $groups = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $groups = $query;
+        }
+
+        if ($is_export_excel) {
+            return $groups;
+        }
+
+
+        $category = Category::where('parent_id', '!=', null)->get();
+
+        $data = [
+            'pageTitle' => trans('public.students'),
+            'groups' => $groups,
+            'item' => $bundle,
+            'category' => $category,
+            'totalGroups' => $totalGroups,
+
+        ];
+
+        return view('admin.students.courses', $data);
+    }
 }

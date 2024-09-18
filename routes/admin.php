@@ -976,6 +976,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/edit', 'BundleController@edit');
             Route::post('/{id}/update', 'BundleController@update');
             Route::get('/{id}/delete', 'BundleController@destroy');
+            Route::get('/{bundle}/groups', 'BundleController@groups');
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
             Route::get('/bundleCodeExcel', 'UserController@exportBundles');
