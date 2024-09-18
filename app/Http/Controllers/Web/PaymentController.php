@@ -437,7 +437,7 @@ class PaymentController extends Controller
                 ->first();
 
             $bundle_sale = Sale::where('order_id', $order->id)
-                ->whereIn('type', ['bundle', 'installment_payment'])
+                ->whereIn('type', ['bundle', 'installment_payment', 'bridging'])
                 ->where('buyer_id', $user->id)
                 ->first();
 
@@ -556,7 +556,8 @@ class PaymentController extends Controller
                     'role_name' => 'user',
                 ]);
 
-                BundleStudent::where(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id])->update(['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
+                BundleStudent::updateOrCreate(['student_id' => $user->student->id, 'bundle_id' => $bundle_sale->bundle_id],
+                ['status' => 'approved', 'class_id' => $bundle_sale->class_id]);
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
                 $service = $service_sale->order->orderItems->first()->service;

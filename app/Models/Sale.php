@@ -132,8 +132,10 @@ class Sale extends Model
             $orderType = Order::$installmentPayment;
         } elseif (!empty($orderItem->transform_bundle_id)) {
             $orderType = 'transform_bundle';
-        } elseif (!empty($orderItem->bundle_id)) {
+        } elseif (!empty($orderItem->bundle_id) && $orderItem->bundle->type =='program') {
             $orderType = Order::$bundle;
+        } elseif (!empty($orderItem->bundle_id)&& $orderItem->bundle->type == 'bridging') {
+            $orderType = 'bridging';
         } elseif (!empty($orderItem->certificate_template_id)) {
             $orderType = Order::$certificate;
         } elseif (!empty($orderItem->service_id)) {
@@ -209,6 +211,10 @@ class Sale extends Model
                 BundleStudent::whereHas('student', function ($query) use ($orderItem) {
                     $query->where('user_id', $orderItem->user_id);
                 })->where(['bundle_id' => $orderItem->transform_bundle_id])->update(['bundle_id' => $orderItem->bundle_id]);
+            }
+
+            if (!empty($orderItem->bundle_id) && $orderItem->bundle->type == 'bridging') {
+                BridgingRequest::where('bridging_id', $orderItem->bundle->id)->update(['status', 'paid']);
             }
         } catch (\Exception $e) {
             dd($e);
