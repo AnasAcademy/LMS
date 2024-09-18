@@ -88,7 +88,7 @@ class PaymentController extends Controller
         if($order->total_discount>0){
             $order->total_discount = 0;
             $order->total_amount =  $order->amount;
-            $order->orderItems[0]->update(['discount_id' => null, 'discount' => 0, 'total' => $order->orderItems[0]->amount]);
+            $order->orderItems[0]->update(['discount_id' => null, 'discount' => 0, 'total_amount' => $order->orderItems[0]->amount]);
             $order->save();
         }
         $data = [
@@ -197,7 +197,7 @@ class PaymentController extends Controller
             }else{
                 $order->total_discount = (double)$response->total_discount;
                 $order->total_amount =  (double)$response->total_amount;
-                $order->orderItems[0]->update(['discount_id' => $response->discount_id, 'discount' => (double)$response->total_discount, 'total' => (double)$response->total_amount]);
+                $order->orderItems[0]->update(['discount_id' => $response->discount_id, 'discount' => (double)$response->total_discount, 'total_amount' => (double)$response->total_amount]);
 
                 if($response->discount_percent == 100){
                     $order->payment_method = 'scholarship';
