@@ -8,7 +8,7 @@
         <div class="section-header">
             <h1>{{ trans('admin/main.list') }} {{ 'المجموعات' }} </h1>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a>دورة {{ $webinar->title }}</a></div>
+                <div class="breadcrumb-item active"><a>  {{ $item->title }}</a></div>
                 <div class="breadcrumb-item"><a href="#">{{ 'المجموعات' }}</a></div>
             </div>
         </div>

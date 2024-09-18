@@ -2143,7 +2143,7 @@ class UserController extends Controller
         $data = [
             'pageTitle' => trans('public.students'),
             'groups' => $groups,
-            'webinar' => $webinar,
+            'item' => $webinar,
             'category' => $category,
             'totalGroups' => $totalGroups,
 
@@ -2192,7 +2192,8 @@ class UserController extends Controller
             'status' => 'success',
         ];
         $group->update($validData);
-        return redirect('/admin/courses/' . $group->webinar_id)->with('toast', $toastData);
+        return back()->with('toast', $toastData);
+        // return redirect('/admin/courses/' . $group->webinar_id)->with('toast', $toastData);
     }
 
     public function sendEmail($user, $data)
