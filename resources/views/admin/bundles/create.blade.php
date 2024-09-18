@@ -641,6 +641,24 @@
 
                                             </div>
 
+                                            {{-- has Groups --}}
+                                            <div class="form-group mt-15">
+                                                <div class="d-flex">
+                                                    <input type="hidden" name="hasGroup" value="0">
+                                                    <input type="checkbox" name="hasGroup" id="hasGroup"
+                                                        style="accent-color:var(--primary)"
+                                                        @if (isset($bundle->hasGroup) && $bundle->hasGroup == 1) checked @endif value="1">
+
+                                                    <label for="hasGroup"
+                                                        class="form-check-label mr-2 font-weight-bold"> يتم تقسيمة لجروبات </label>
+                                                </div>
+
+                                                @error('hasGroup')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+
+                                            </div>
+
                                             <div class="form-group">
                                                 <label>{{ trans('/admin/main.status') }}</label>
                                                 <select class="form-control @error('status') is-invalid @enderror"
