@@ -584,6 +584,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/{id}/edit', 'DiscountController@edit');
                 Route::post('/{id}/update', 'DiscountController@update');
                 Route::get('/{id}/delete', 'DiscountController@destroy');
+                Route::get('/{discount}/students', 'DiscountController@students');
             });
 
             Route::group(['prefix' => 'special_offers'], function () {
