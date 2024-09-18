@@ -10,6 +10,7 @@ use App\Models\DiscountCourse;
 use App\Models\DiscountGroup;
 use App\Models\DiscountUser;
 use App\Models\Group;
+use App\Models\Sale;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -331,5 +332,24 @@ class DiscountController extends Controller
         Discount::find($id)->delete();
 
         return redirect(getAdminPanelUrl() . '/financial/discounts');
+    }
+
+    public function students(Request $request,Discount $discount){
+             $query = Sale::whereHas('order', function ($query) use ($discount){
+                 $query->whereHas('orderItems', function($query) use($discount){
+                     $query->where('discount_id', $discount->id)->with(['buyer', 'buyer.student']);
+                 });
+
+             });
+        $saleController = new SaleController();
+             $query = $saleController->getSalesFilters($query, $request);
+             $sales= $query->with(['buyer'])->orderBy('created_at', 'desc')->paginate(10);
+
+            foreach ($sales as $sale) {
+            $sale = $saleController->makeTitle($sale);
+            }
+
+             return view('admin.financial.discount.students', compact('sales', 'discount'));
+
     }
 }
