@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Panel\WebinarStatisticController;
 use App\Mail\SendNotifications;
+use App\Models\BundleBridging;
 use App\Models\CertificateTemplate;
 use App\Models\StudyClass;
 use App\Models\Bundle;
@@ -89,7 +90,7 @@ class BundleController extends Controller
 
 
         $data = [
-            'pageTitle' => trans('update.bundles'),
+            'pageTitle' => ($type== 'bridging')? trans('update.bridges'): trans('update.bundles'),
             'bundles' => $bundles,
             'totalBundles' => $totalBundles,
             'totalPendingBundles' => $totalPendingBundles,
@@ -352,13 +353,14 @@ class BundleController extends Controller
                 'seo_description' => $data['seo_description'],
             ]);
 
-            // if(!empty($request['from_bundle_id']) && !empty($request['to_bundle_id']) ){
-            //     BundleX::create([
-            //         'bundle_id'=> $bundle->id ,
-            //         'from_bundle_id' => $request['from_bundle_id'],
-            //         'to_bundle_id' => $request['to_bundle_id']
-            //     ]);
-            // }
+            if(!empty($request['from_bundle_id']) && !empty($request['to_bundle_id']) ){
+
+               $test = BundleBridging::create([
+                    'bridging_id'=> $bundle->id ,
+                    'from_bundle_id' => $request['from_bundle_id'],
+                    'to_bundle_id' => $request['to_bundle_id']
+                ]);
+            }
         }
 
         $filters = $request->get('filters', null);
@@ -410,6 +412,7 @@ class BundleController extends Controller
         if (empty($bundle)) {
             abort(404);
         }
+
 
         $locale = $request->get('locale', app()->getLocale());
         storeContentLocale($locale, $bundle->getTable(), $bundle->id);
@@ -606,6 +609,18 @@ class BundleController extends Controller
                 'description' => $data['description'],
                 'seo_description' => $data['seo_description'],
             ]);
+
+            if(!empty($request['from_bundle_id']) && !empty($request['to_bundle_id']) ){
+
+
+            BundleBridging::updateOrCreate([
+                        'bridging_id' => $bundle->id,
+            ],
+            [
+                    'from_bundle_id' => $request['from_bundle_id'],
+                    'to_bundle_id' => $request['to_bundle_id']
+                ]);
+            }
         }
 
         $notifyOptions = [
