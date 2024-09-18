@@ -306,6 +306,14 @@
                                                                 <span class="ml-2">{{ trans('admin/main.students') }}</span>
                                                             </a>
                                                         @endcan
+                                                        @if (!empty($bundle->hasGroup))
+                                                            @can('admin_webinar_students_lists')
+                                                                <a href="{{ getAdminPanelUrl() }}/bundles/{{ $bundle->id }}/groups" target="_blank" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 " title="{{ trans('admin/main.groups') }}">
+                                                                    <i class="fa fa-users"></i>
+                                                                    <span class="ml-2">{{ trans('admin/main.groups') }}</span>
+                                                                </a>
+                                                            @endcan
+                                                        @endif
 
                                                         @can('admin_support_send')
                                                             <a href="{{ getAdminPanelUrl() }}/supports/create?user_id={{ $bundle->teacher->id }}" target="_blank" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1" title="{{ trans('admin/main.send_message_to_teacher') }}">
