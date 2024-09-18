@@ -112,7 +112,7 @@ class BundlesController extends Controller
             ->where('access_to_purchased_item', true)
             ->where(function ($query) {
                 $query->whereNotNull('sales.bundle_id')
-                      ->whereIn('sales.type', ['bundle', 'installment_payment'])
+                      ->whereIn('sales.type', ['bundle', 'installment_payment', 'bridging'])
                       ->whereHas('bundle');
             })
             ->distinct()
