@@ -294,7 +294,7 @@
 
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
-                        <span>برامج التكسير</span>
+                        <span>{{ trans('update.bridges') }}</span>
                     </a>
                     <ul class="dropdown-menu">
                         @can('admin_bundles_list')
