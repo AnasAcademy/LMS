@@ -2112,7 +2112,7 @@ class UserController extends Controller
         return view('admin.students.coursesList', compact('webinars'));
     }
 
-    public function Courses(Request $request, $id=null, $is_export_excel = false)
+    public function Courses(Request $request, $id, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
 
