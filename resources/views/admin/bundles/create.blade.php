@@ -496,7 +496,7 @@
                                                             <optgroup label="{{ $category->title }}">
 
                                                                 {{-- Display bundles directly under the current category --}}
-                                                                @foreach ($category->bundles as $bundleItem)
+                                                                @foreach ($category->programs as $bundleItem)
                                                                     <option value="{{ $bundleItem->id }}"
                                                                         @if (old('from_bundle_id', $bundle->bridging->from_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                     >
@@ -505,7 +505,7 @@
 
                                                                 {{-- Display bundles under subcategories --}}
                                                                 @foreach ($category->subCategories as $subCategory)
-                                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                                    @foreach ($subCategory->programs as $bundleItem)
                                                                         <option value="{{ $bundleItem->id }}"
                                                                             @if (old('from_bundle_id', $bundle->bridging->from_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                         >
@@ -537,7 +537,7 @@
                                                             <optgroup label="{{ $category->title }}">
 
                                                                 {{-- Display bundles directly under the current category --}}
-                                                                @foreach ($category->bundles as $bundleItem)
+                                                                @foreach ($category->programs as $bundleItem)
                                                                     <option value="{{ $bundleItem->id }}"
                                                                         @if (old('to_bundle_id', $bundle->bridging->to_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                     >
@@ -546,7 +546,7 @@
 
                                                                 {{-- Display bundles under subcategories --}}
                                                                 @foreach ($category->subCategories as $subCategory)
-                                                                    @foreach ($subCategory->bundles as $bundleItem)
+                                                                    @foreach ($subCategory->programs as $bundleItem)
                                                                         <option value="{{ $bundleItem->id }}"
                                                                             @if (old('to_bundle_id', $bundle->bridging->to_bundle_id ?? null) == $bundleItem->id) selected @endif
                                                                         >
