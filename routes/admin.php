@@ -980,7 +980,8 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
             Route::get('/bundleCodeExcel', 'UserController@exportBundles');
-           ;
+            Route::get('/groups/{id}/show', 'UserController@groupInfo');
+            Route::get('/groups/{group}/edit', 'UserController@groupEdit');
 
             Route::get('/{id}/students', 'BundleController@studentsLists');
             Route::get('/{id}/sendNotification', 'BundleController@notificationToStudents');
