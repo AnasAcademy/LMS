@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Mixins\Installment\InstallmentPlans;
+use App\Models\BridgingRequest;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
 
 use App\Models\Service;
 use App\Models\Bundle;
+use App\Models\BundleBridging;
 use App\Models\BundleTransform;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\ServiceUser;
+use stdClass;
 
 class ServiceController extends Controller
 {
@@ -97,7 +101,8 @@ class ServiceController extends Controller
         $validatedData = $request->validate([
             'from_bundle_id' => 'required|exists:bundles,id',
             'to_bundle_id' => [
-                'required', 'exists:bundles,id',
+                'required',
+                'exists:bundles,id',
                 function ($attribute, $value, $fail) {
                     $student = auth()->user()->student;
                     if ($student && $student->bundles()->where('bundles.id', $value)->exists()) {
@@ -209,7 +214,7 @@ class ServiceController extends Controller
             'created_at' => time(),
         ]);
 
-       Sale::createSales($orderItem, $order->payment_method);
+        Sale::createSales($orderItem, $order->payment_method);
 
         $toastData = [
             'title' => "اتمام التحويل",
@@ -220,6 +225,104 @@ class ServiceController extends Controller
     }
 
 
+    function bundleBridgingRequest(Service $service)
+    {
+
+        $bundles = Bundle::whereHas('bridging')->where('status', 'active')->with(['bridging', 'bridging.fromBundle', 'bridging.toBundle'])->get();
+        return view('web.default.panel.services.includes.bundleBridging', compact('bundles', 'service'));
+    }
+    function bundleBridging(Request $request, Service $service)
+    {
+
+        $user = auth()->user();
+        $validatedData = $request->validate([
+            'from_bundle_id' => 'required|exists:bundles,id',
+            'to_bundle_id' => [
+                'required',
+                'exists:bundles,id'
+            ],
+            'bridging_id' => "required|exists:bundles,id"
+        ]);
+
+
+        $bridging = Bundle::where('id', $request->bridging_id)->first();
+
+        if (empty($bridging)) abort(404);
+
+        $content = " طلب تقديم لبرنامج " . trans('update.bridging') . " " . $bridging->title;
+
+        if ($service->price > 0) {
+            Cookie::queue('service_content', json_encode($content));
+            $order = $this->createOrder($service);
+            return redirect('/payment/' . $order->id);
+        }
+
+        $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
+        BridgingRequest::create([...$validatedData, 'user_id' => $user->id, 'service_request_id' => $serviceRequest->id]);
+        return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
+    }
+
+    function bundleBridgingPay(Request $request, Bundle $bundleBridging)
+    {
+
+        $user = auth()->user();
+        /* Installments */
+        $bundleInstallments = [];
+
+
+        $hasBought = $bundleBridging->checkUserHasBought($user);
+        $canSale = $bundleBridging->canSale() && !$hasBought;
+        $bundleObject = new stdClass();
+        $bundleObject->bundle = $bundleBridging;
+        $bundleObject->status = 'approved';
+        $bundleObject->bridging = true;
+
+        // Check if the bundle meets the conditions
+        if ($canSale && !empty($bundleBridging->price) && $bundleBridging->price > 0 && getInstallmentsSettings('status') && (empty($user) || $user->enable_installments)) {
+            $installmentPlans = new InstallmentPlans($user);
+            $installments = $installmentPlans->getPlans('bundles', $bundleBridging->id, $bundleBridging->type, $bundleBridging->category_id, $bundleBridging->teacher_id);
+
+            $bundleInstallments[$bundleBridging->id] = [
+                'bundle' => $bundleObject,
+                'installments' => $installments,
+            ];
+        } else {
+
+            $bundleInstallments[$bundleBridging->id] = [
+                'bundle' => $bundleObject,
+                'installments' => null,
+            ];
+        }
+
+        return view(getTemplate() . '.panel.requirements.payment_step', ['bundleInstallments' => $bundleInstallments ?? null]);
+        // $order = Order::create([
+        //     'user_id' => $user->id,
+        //     'status' => Order::$pending,
+        //     'amount' => $bundleBridging->price,
+        //     'tax' => 0,
+        //     'total_discount' => 0,
+        //     'total_amount' =>  $bundleBridging->price,
+        //     'product_delivery_fee' => null,
+        //     'created_at' => time(),
+        // ]);
+
+        // OrderItem::create([
+        //     'user_id' => $user->id,
+        //     'order_id' => $order->id,
+        //     'bundle_id' => $bundleBridging->id,
+        //     'amount' => $bundleBridging->price,
+        //     'total_amount' => $bundleBridging->price,
+        //     'type' => 'bridging',
+        //     'tax_price' => 0,
+        //     'commission' => 0,
+        //     'commission_price' => 0,
+        //     'product_delivery_fee' => 0,
+        //     'discount' => 0,
+        //     'created_at' => time(),
+        // ]);
+
+        // return redirect('/payment/' . $order->id);
+    }
     /**
      * Display the specified resource.
      *

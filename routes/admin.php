@@ -78,7 +78,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
         });
         Route::group(['prefix' => 'courses'], function () {
-            Route::get('/', 'UserController@Courses');
+            // Route::get('/', 'UserController@Courses');
             Route::get('/list', 'UserController@coursesList');
             // Route::get('/cousesList', 'WebinarController@index');
 
@@ -363,7 +363,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // services routes
          Route::group(['prefix' => 'services'], function () {
-            Route::get('/requests', 'ServiceController@requests');
+            Route::get('{service}/requests', 'ServiceController@requests');
             Route::get('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
             Route::get('/requests/{serviceUser}/reject', 'ServiceController@rejectRequest');
             Route::resource('', 'ServiceController')->parameters(['' => 'service']);
@@ -584,6 +584,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
                 Route::get('/{id}/edit', 'DiscountController@edit');
                 Route::post('/{id}/update', 'DiscountController@update');
                 Route::get('/{id}/delete', 'DiscountController@destroy');
+                Route::get('/{discount}/students', 'DiscountController@students');
             });
 
             Route::group(['prefix' => 'special_offers'], function () {
@@ -975,10 +976,12 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{id}/edit', 'BundleController@edit');
             Route::post('/{id}/update', 'BundleController@update');
             Route::get('/{id}/delete', 'BundleController@destroy');
+            Route::get('/{bundle}/groups', 'BundleController@groups');
             Route::post('/search', 'BundleController@search');
             Route::get('/excel', 'BundleController@exportExcel');
             Route::get('/bundleCodeExcel', 'UserController@exportBundles');
-           ;
+            Route::get('/groups/{id}/show', 'UserController@groupInfo');
+            Route::get('/groups/{group}/edit', 'UserController@groupEdit');
 
             Route::get('/{id}/students', 'BundleController@studentsLists');
             Route::get('/{id}/sendNotification', 'BundleController@notificationToStudents');

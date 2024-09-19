@@ -139,7 +139,7 @@
                         @can('admin_webinars_list')
                             <li class="{{ request()->is(getAdminPanelUrl('/courses/list', false)) ? 'active' : '' }}">
                                 <a href="{{ getAdminPanelUrl() }}/courses/list"
-                                    class="nav-link @if (!empty($sidebarBeeps['list']) and $sidebarBeeps['list']) beep beep-sidebar @endif">{{trans('admin/main.lists') }}</a>
+                                    class="nav-link @if (!empty($sidebarBeeps['list']) and $sidebarBeeps['list']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
                             </li>
                         @endcan()
                     </ul>
@@ -251,7 +251,12 @@
 
             @can('admin_bundles')
                 <li
-                    class="nav-item dropdown {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+                    class="nav-item dropdown
+                    {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and
+                    request()->get('type', 'program') == 'program' and
+                    !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and
+                    !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
                         <span>{{ trans('update.bundles') }}</span>
@@ -259,16 +264,56 @@
                     <ul class="dropdown-menu">
                         @can('admin_bundles_list')
                             <li
-                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and request()->get('type') == 'course') ? 'active' : '' }}">
-                                <a href="{{ getAdminPanelUrl() }}/bundles"
-                                    class="nav-link @if (!empty($sidebarBeeps['bundles']) and $sidebarBeeps['bundles']) beep beep-sidebar @endif">{{ trans('admin/main.lists') }}</a>
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and
+                                request()->get('type', 'program') == 'program') ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/bundles?type=program"
+                                    class="nav-link
+                                    @if (!empty($sidebarBeeps['bundles']) and $sidebarBeeps['bundles']) beep beep-sidebar @endif">
+                                    {{ trans('admin/main.lists') }}</a>
                             </li>
                         @endcan()
 
                         @can('admin_bundles_create')
-                            <li class="{{ request()->is(getAdminPanelUrl('/bundles/create', false)) ? 'active' : '' }}">
+                            <li class="{{ (request()->is(getAdminPanelUrl('/bundles/create', false)) and
+                            request()->get('type', 'program') == 'program') ? 'active' : '' }}">
                                 <a class="nav-link"
-                                    href="{{ getAdminPanelUrl() }}/bundles/create">{{ trans('admin/main.new') }}</a>
+                                    href="{{ getAdminPanelUrl() }}/bundles/create?type=program">{{ trans('admin/main.new') }}</a>
+                            </li>
+                        @endcan()
+                    </ul>
+                </li>
+            @endcan()
+
+            @can('admin_bundles')
+                <li
+                    class="nav-item dropdown
+                    {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and
+                    request()->get('type') == 'bridging' and
+                    !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and
+                    !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-cube"></i>
+                        <span>{{ trans('update.bridges') }}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @can('admin_bundles_list')
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and
+                                request()->get('type') == 'bridging') ? 'active' : '' }}">
+                                <a href="{{ getAdminPanelUrl() }}/bundles?type=bridging"
+                                    class="nav-link
+                                    @if (!empty($sidebarBeeps['bundles']) and $sidebarBeeps['bundles']) beep beep-sidebar @endif">
+                                    {{ trans('admin/main.lists') }}
+                                </a>
+                            </li>
+                        @endcan()
+
+                        @can('admin_bundles_create')
+                            <li class="{{ (request()->is(getAdminPanelUrl('/bundles/create', false)) and
+                            request()->get('type') == 'bridging') ? 'active' : '' }}">
+                                <a class="nav-link"
+                                    href="{{ getAdminPanelUrl() }}/bundles/create?type=bridging">{{ trans('admin/main.new') }}</a>
                             </li>
                         @endcan()
                     </ul>

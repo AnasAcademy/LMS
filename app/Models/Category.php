@@ -76,9 +76,17 @@ class Category extends Model implements TranslatableContract
     {
         return $this->hasMany(Bundle::class, 'category_id', 'id');
     }
+    public function bridges()
+    {
+        return $this->hasMany(Bundle::class, 'category_id', 'id')->where('type', 'bridging');
+    }
+    public function programs()
+    {
+        return $this->hasMany(Bundle::class, 'category_id', 'id')->where('type', 'program');
+    }
     public function activeBundles()
     {
-        return $this->hasMany(Bundle::class, 'category_id', 'id')->where('status', 'active');
+        return $this->hasMany(Bundle::class, 'category_id', 'id')->where(['status'=> 'active', 'type'=> 'program']);
     }
 
     public function userOccupations()

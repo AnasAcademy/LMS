@@ -167,9 +167,15 @@
                                                 @endif
                                             </td>
 
-                                            <td>
+                                            <td class="d-flex align-items-center">
                                                 @can('admin_discount_codes_edit')
-                                                    <a href="{{ getAdminPanelUrl() }}/financial/discounts/{{ $discount->id }}/edit" class="btn-transparent text-primary" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
+                                                    <a href="{{ getAdminPanelUrl() }}/financial/discounts/{{ $discount->id }}/students" class="btn-transparent text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.students') }}">
+                                                        <i class="fa fa-users"></i>
+                                                    </a>
+                                                @endcan
+
+                                                @can('admin_discount_codes_edit')
+                                                    <a href="{{ getAdminPanelUrl() }}/financial/discounts/{{ $discount->id }}/edit" class="btn-transparent text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
                                                         <i class="fa fa-edit"></i>
                                                     </a>
                                                 @endcan

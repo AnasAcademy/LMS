@@ -3,14 +3,23 @@
 @push('styles_top')
 @endpush
 
+@php
+    $item = $group->bundle ?? $group->webinar;
+    $itemName = $group->bundle_id ? 'bundle_id' : 'webinar_id';
+    // dd($item);
+
+
+@endphp
+
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h1>{{ !empty($group) ? trans('admin/main.edit') : '' }} مجموعة دورة</h1>
+            <h1>{{ !empty($group) ? trans('admin/main.edit') : '' }} {{( $group->bundle_id) ? 'مجموعة برنامج ' :  'مجموعة دورة' }}
+        </h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a href="{{ getAdminPanelUrl() }}">{{ trans('admin/main.dashboard') }}</a>
                 </div>
-                <div class="breadcrumb-item">مجموعة دورة</div>
+                <div class="breadcrumb-item">{{( $group->bundle_id) ? 'مجموعة برنامج ' :  'مجموعة دورة' }}</div>
             </div>
         </div>
 
@@ -41,18 +50,20 @@
                                         @enderror
                                     </div>
 
-                                    {{-- webinar --}}
+                                    {{-- item --}}
                                     <div class="form-group">
-                                        <label>اسم الدورة</label>
-                                        <input type="text" name="webinar_id" hidden
-                                            class="form-control  @error('webinar_id') is-invalid @enderror"
-                                            value="{{ !empty($group) ? $group->webinar_id : old('webinar_id') }}" />
+                                        <label>
+                                            {{( $group->bundle_id) ? 'اسم البرنامج ' :  'اسم الدورة' }}
+                                            </label>
+                                        <input type="text" name="{{ $itemName }}" hidden
+                                            class="form-control  @error("$itemName") is-invalid @enderror"
+                                            value="{{ !empty($group) ? $item->id : old("$itemName") }}" />
 
-                                        <input type="text" name="webinar_name" readonly
-                                            class="form-control  @error('webinar_name') is-invalid @enderror"
-                                            value="{{ !empty($group) ? $group->webinar->title : old('webinar_name') }}" />
+                                        <input type="text" name="item_name" readonly
+                                            class="form-control  @error('item_name') is-invalid @enderror"
+                                            value="{{ !empty($group) ?$item->title : old('item_name') }}" />
 
-                                        @error('webinar_id')
+                                        @error('{{ $itemName }}')
                                             <div class="invalid-feedback d-block">
                                                 {{ $message }}
                                             </div>

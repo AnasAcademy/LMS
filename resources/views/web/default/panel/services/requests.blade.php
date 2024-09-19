@@ -107,12 +107,15 @@
                                                 {{ Carbon\Carbon::parse($service->pivot->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
                                             </td>
 
-                                            <td>
+                                            <td >
                                                 @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="pay" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
-                                                <a href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/pay">دفع الفرق و إتمام التحويل</a>
-                                                @endif
-                                                @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="refund" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
-                                                <a href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/refund">استيرداد الفرق و إتمام التحويل</a>
+                                                <a class="btn btn-primary" href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/pay">دفع الفرق و إتمام التحويل</a>
+
+                                                @elseif (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="refund" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
+                                                <a class="btn btn-secondary" href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/refund">استيرداد الفرق و إتمام التحويل</a>
+                                                @elseif (!empty($service->pivot->BridgingRequest && $service->pivot->BridgingRequest->bridging_id) && $service->pivot->status=="approved")
+                                                <a class="btn btn-primary" href="/panel/bundleBridging/{{ $service->pivot->BridgingRequest->bridging_id}}/pay">دفع ثمن البرنامج</a>
+
                                                 @endif
                                             </td>
                                         </tr>

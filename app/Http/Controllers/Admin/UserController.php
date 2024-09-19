@@ -2112,7 +2112,7 @@ class UserController extends Controller
         return view('admin.students.coursesList', compact('webinars'));
     }
 
-    public function Courses(Request $request, $id=null, $is_export_excel = false)
+    public function Courses(Request $request, $id, $is_export_excel = false)
     {
         $this->authorize('admin_users_list');
 
@@ -2143,7 +2143,7 @@ class UserController extends Controller
         $data = [
             'pageTitle' => trans('public.students'),
             'groups' => $groups,
-            'webinar' => $webinar,
+            'item' => $webinar,
             'category' => $category,
             'totalGroups' => $totalGroups,
 
@@ -2156,14 +2156,14 @@ class UserController extends Controller
     {
         // dd($course_id.','.$group_id);
         $group = Group::find($group_id);
-        $webinar = $group->webinar;
+        $item = $group->webinar ?? $group->bundle;
         $enrollments = $group->enrollments;
         // dd($enrollments);
         $data = [
             'pageTitle' => trans('public.students'),
             'totalStudents' => $enrollments->count(),
             'enrollments' => $enrollments,
-            'webinar' => $webinar,
+            'item' => $item,
             'group' => $group,
 
         ];
@@ -2187,12 +2187,13 @@ class UserController extends Controller
             'status' => 'required|in:inactive,active'
         ]);
         $toastData = [
-            'title' => 'تعديل بيانات مجموعة دورة',
+            'title' => 'تعديل بيانات المجموعة ',
             'msg' => 'تم التعديل بنجاح',
             'status' => 'success',
         ];
         $group->update($validData);
-        return redirect('/admin/courses/' . $group->webinar_id)->with('toast', $toastData);
+        return back()->with('toast', $toastData);
+        // return redirect('/admin/courses/' . $group->webinar_id)->with('toast', $toastData);
     }
 
     public function sendEmail($user, $data)
