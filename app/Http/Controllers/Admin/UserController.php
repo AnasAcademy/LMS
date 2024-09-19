@@ -2156,14 +2156,14 @@ class UserController extends Controller
     {
         // dd($course_id.','.$group_id);
         $group = Group::find($group_id);
-        $webinar = $group->webinar;
+        $item = $group->webinar ?? $group->bundle;
         $enrollments = $group->enrollments;
         // dd($enrollments);
         $data = [
             'pageTitle' => trans('public.students'),
             'totalStudents' => $enrollments->count(),
             'enrollments' => $enrollments,
-            'webinar' => $webinar,
+            'item' => $item,
             'group' => $group,
 
         ];
@@ -2187,7 +2187,7 @@ class UserController extends Controller
             'status' => 'required|in:inactive,active'
         ]);
         $toastData = [
-            'title' => 'تعديل بيانات مجموعة دورة',
+            'title' => 'تعديل بيانات المجموعة ',
             'msg' => 'تم التعديل بنجاح',
             'status' => 'success',
         ];
