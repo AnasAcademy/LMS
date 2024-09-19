@@ -68,7 +68,7 @@
                                                         <option value="" selected disabled>اختر نوع البرنامج</option>
                                                         <option value="{{ $bundle->type }}" selected
                                                            >
-                                                            {{ ($bundle->type == 'program') ? 'عام' : 'تكسير'}}
+                                                            {{ ($bundle->type == 'program') ? 'عام' : trans('update.bridging')}}
                                                         </option>
 
                                                     </select>
