@@ -6,6 +6,8 @@
         $lang = 'دفع رسوم البرنامج';
     } elseif (request()->is('panel/courses/applied')) {
         $lang = 'دفع رسوم الدورات';
+    }else if(request()->is('panel/bundleBridging*')){
+        $lang = 'دفع رسوم '. trans('update.bridge');
     }
 
     $progressSteps = [
