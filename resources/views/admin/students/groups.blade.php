@@ -9,7 +9,7 @@
             <h1>{{ trans('admin/main.list') }} {{ 'المجموعات' }} </h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a>مجموعة {{ $group->name }}</a></div>
-                <div class="breadcrumb-item"><a href="#"> {{ $webinar->title }}</a></div>
+                <div class="breadcrumb-item"><a href="#"> {{ $item->title }}</a></div>
                 <div class="breadcrumb-item"><a href="#">{{ 'المجموعات' }}</a></div>
             </div>
         </div>
@@ -112,7 +112,7 @@
                                             'hideDefaultClass' => true,
                                             'id' =>$enrollment->user->id,
                                             'from' =>$group,
-                                            'items' => $group->webinar->groups,
+                                            'items' => $group->item->groups,
                                             'user' => $enrollment->user,
                                             'title' => "تحويل الطالب من المجوعة " . $group->name . " إلي مجموعة اخري "
                                         ])
