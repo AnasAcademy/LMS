@@ -5,8 +5,8 @@
 @section('content')
     <!-- Modal -->
     <div class="" id='confirmModal' tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="">
+            <div class="">
                 <div class="modal-header">
                     <h5 class="modal-title" id="confirmModalLabel"> طلب {{ trans('update.bridging') }} </h5>
                 </div>
