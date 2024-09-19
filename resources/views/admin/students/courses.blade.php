@@ -57,6 +57,9 @@
                         </tr>
 
                         @foreach ($groups as $group)
+                        @php
+                            $type = $group->bundle ? 'bundles' : 'courses';
+                        @endphp
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
                                 <td class="text-center">{{ $group->name }}</td>
@@ -73,7 +76,7 @@
                                 <td class="text-center mb-2" width="120">
 
                                     @can('admin_users_impersonate')
-                                        <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/show"
+                                        <a href="{{ getAdminPanelUrl() }}/{{  $type }}/groups/{{ $group->id }}/show"
                                             class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
                                             title="عرض">
                                             <i class="fas fa-eye"></i>
@@ -81,7 +84,7 @@
                                     @endcan
 
                                     @can('admin_users_edit')
-                                        <a href="{{ getAdminPanelUrl() }}/courses/groups/{{ $group->id }}/edit"
+                                        <a href="{{ getAdminPanelUrl() }}/{{  $type }}/groups/{{ $group->id }}/edit"
                                             class="btn-transparent  text-primary" data-toggle="tooltip" data-placement="top"
                                             title="{{ trans('admin/main.edit') }}">
                                             <i class="fa fa-edit"></i>
