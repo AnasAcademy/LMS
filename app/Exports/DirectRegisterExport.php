@@ -42,6 +42,7 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
             'created at',
             'Status',
             'Mobile',
+            'about_us'
 
 
         ];
@@ -78,6 +79,7 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
                $created_at,
                 $user->status,
                 $user->mobile,
+                $user->student->about_us
             ];
         } else {
             return [
@@ -86,6 +88,7 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
                 '',
                 '',
                 'غير مسجل بعد',
+                '',
                 '',
                 '',
                 ''
