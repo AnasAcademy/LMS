@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Mixins\Installment\InstallmentPlans;
 use App\Models\BridgingRequest;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Sale;
 use App\Models\ServiceUser;
+use stdClass;
 
 class ServiceController extends Controller
 {
@@ -247,7 +249,7 @@ class ServiceController extends Controller
 
         if (empty($bridging)) abort(404);
 
-        $content = " طلب تقديم لبرنامج ". trans('update.bridging') . " " . $bridging->title;
+        $content = " طلب تقديم لبرنامج " . trans('update.bridging') . " " . $bridging->title;
 
         if ($service->price > 0) {
             Cookie::queue('service_content', json_encode($content));
@@ -264,35 +266,62 @@ class ServiceController extends Controller
     {
 
         $user = auth()->user();
+        /* Installments */
+        $bundleInstallments = [];
 
 
-        $order = Order::create([
-            'user_id' => $user->id,
-            'status' => Order::$pending,
-            'amount' => $bundleBridging->price,
-            'tax' => 0,
-            'total_discount' => 0,
-            'total_amount' =>  $bundleBridging->price,
-            'product_delivery_fee' => null,
-            'created_at' => time(),
-        ]);
+        $hasBought = $bundleBridging->checkUserHasBought($user);
+        $canSale = $bundleBridging->canSale() && !$hasBought;
+        $bundleObject = new stdClass();
+        $bundleObject->bundle = $bundleBridging;
+        $bundleObject->status = 'approved';
+        $bundleObject->bridging = true;
 
-        OrderItem::create([
-            'user_id' => $user->id,
-            'order_id' => $order->id,
-            'bundle_id' => $bundleBridging->id,
-            'amount' => $bundleBridging->price,
-            'total_amount' => $bundleBridging->price,
-            'type' => 'bridging',
-            'tax_price' => 0,
-            'commission' => 0,
-            'commission_price' => 0,
-            'product_delivery_fee' => 0,
-            'discount' => 0,
-            'created_at' => time(),
-        ]);
+        // Check if the bundle meets the conditions
+        if ($canSale && !empty($bundleBridging->price) && $bundleBridging->price > 0 && getInstallmentsSettings('status') && (empty($user) || $user->enable_installments)) {
+            $installmentPlans = new InstallmentPlans($user);
+            $installments = $installmentPlans->getPlans('bundles', $bundleBridging->id, $bundleBridging->type, $bundleBridging->category_id, $bundleBridging->teacher_id);
 
-        return redirect('/payment/' . $order->id);
+            $bundleInstallments[$bundleBridging->id] = [
+                'bundle' => $bundleObject,
+                'installments' => $installments,
+            ];
+        } else {
+
+            $bundleInstallments[$bundleBridging->id] = [
+                'bundle' => $bundleObject,
+                'installments' => null,
+            ];
+        }
+
+        return view(getTemplate() . '.panel.requirements.payment_step', ['bundleInstallments' => $bundleInstallments ?? null]);
+        // $order = Order::create([
+        //     'user_id' => $user->id,
+        //     'status' => Order::$pending,
+        //     'amount' => $bundleBridging->price,
+        //     'tax' => 0,
+        //     'total_discount' => 0,
+        //     'total_amount' =>  $bundleBridging->price,
+        //     'product_delivery_fee' => null,
+        //     'created_at' => time(),
+        // ]);
+
+        // OrderItem::create([
+        //     'user_id' => $user->id,
+        //     'order_id' => $order->id,
+        //     'bundle_id' => $bundleBridging->id,
+        //     'amount' => $bundleBridging->price,
+        //     'total_amount' => $bundleBridging->price,
+        //     'type' => 'bridging',
+        //     'tax_price' => 0,
+        //     'commission' => 0,
+        //     'commission_price' => 0,
+        //     'product_delivery_fee' => 0,
+        //     'discount' => 0,
+        //     'created_at' => time(),
+        // ]);
+
+        // return redirect('/payment/' . $order->id);
     }
     /**
      * Display the specified resource.
