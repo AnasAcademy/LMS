@@ -10,11 +10,13 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $users;
+    protected $batchId;
     protected $currency;
 
-    public function __construct($users)
+    public function __construct($users, $batchId)
     {
         $this->users = $users;
+        $this->batchId = $batchId;
         $this->currency = currencySign();
     }
 
@@ -56,7 +58,10 @@ class DirectRegisterExport implements FromCollection, WithHeadings, WithMapping
         if ($user->student) {
             $diploma = '';
             $created_at='';
-            $userBundles = $user->student->bundleStudent()->whereNull('class_id')->get();
+            $userBundles = $user->student->bundleStudent()->whereNull('class_id')->whereHas('bundle', function ($query) {
+                    $query->where('batch_id', $this->batchId);
+                })->get();
+
 
             if ($userBundles) {
                 foreach ($userBundles as $userBundle) {

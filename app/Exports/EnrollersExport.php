@@ -10,11 +10,13 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class EnrollersExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $users;
+    protected $batchId;
     protected $currency;
 
-    public function __construct($users)
+    public function __construct($users, $batchId = null)
     {
         $this->users = $users;
+        $this->batchId = $batchId;
         $this->currency = currencySign();
     }
 
@@ -56,7 +58,7 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
         if ($user->student) {
             $diploma = '';
             $created_at='';
-            $purchasedBundles = $user->purchasedBundles;
+            $purchasedBundles = $user->purchasedBundles($this->batchId)->get();
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {
