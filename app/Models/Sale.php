@@ -113,7 +113,7 @@ class Sale extends Model
         return $this->belongsTo('App\Models\InstallmentOrderPayment', 'installment_payment_id', 'id');
     }
 
-    public static function createSales($orderItem, $payment_method)
+    public static function createSales($orderItem, $payment_method, $manual_added = false)
     {
         $orderType = Order::$webinar;
         if (!empty($orderItem->reserve_meeting_id)) {
@@ -154,12 +154,12 @@ class Sale extends Model
             }
 
             if (
-                empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
-                && !empty($orderItem->installmentPayment->step)
+                (empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
+                && !empty($orderItem->installmentPayment->step)) || $manual_added
             ) {
                 $class =
                     BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class ?? $class;
-            }
+                }
             $price = 0;
             if (!empty($orderItem->transform_bundle_id)) {
                 $price = $orderItem->Bundle->price - $orderItem->transformBundle->price;
@@ -197,6 +197,7 @@ class Sale extends Model
                 "message" => ($price < 0) ? 'تحويل من برنامج لبرنامج اخر' : null,
                 'class_id' => $class->id,
                 'payment_email' => $orderItem->order->payment_email,
+                'manual_added' => $manual_added
             ]);
 
 
