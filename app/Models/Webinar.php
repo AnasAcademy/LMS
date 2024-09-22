@@ -30,6 +30,7 @@ class Webinar extends Model implements TranslatableContract
     static $webinar = 'webinar';
     static $course = 'course';
     static $textLesson = 'text_lesson';
+    static $graduationProject = 'graduation_project';
 
     static $statuses = [
         'active', 'pending', 'is_draft', 'inactive'
@@ -780,6 +781,11 @@ class Webinar extends Model implements TranslatableContract
     public function isTextCourse()
     {
         return ($this->type == 'text_lesson');
+    }
+
+    public function isGraduationProject()
+    {
+        return ($this->type == 'graduation_project');
     }
 
     public function isWebinar()

@@ -13,6 +13,7 @@ use App\Models\Reward;
 use App\Models\RewardAccounting;
 use App\Models\Sale;
 use App\Models\Webinar;
+use App\Models\WebinarAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
@@ -281,25 +282,74 @@ class CertificateController extends Controller
     }
 
 
-    public function makeBundleCertificate($bundleId,$format ='png')
+    // public function makeBundleCertificate($bundleId,$format ='png')
 
-    {
+    // {
 
-      //dd($bundleId);
-        $user = auth()->user();
+    //   //dd($bundleId);
+    //     $user = auth()->user();
+    //     $student = $user->student->bundleStudent->first();
+    //     $gpa=$student->gpa;
+    //    // dd($gpa);
 
-        $makeCertificate = new MakeCertificate();
-        $bunble=Bundle::where('id', $bundleId)->first();
-      //  dd($course);
-        if (!empty($bunble)) {
-            return $makeCertificate->makebundleCertificate($bunble,$format);
-        }
+    //     $makeCertificate = new MakeCertificate();
+    //     $bunble=Bundle::where('id', $bundleId)->first();
+    //   //  dd($course);
+    //     if (!empty($bunble)) {
+    //         return $makeCertificate->makebundleCertificate($bunble,$format, $gpa);
+    //     }
 
 
 
 
-        abort(404);
+    //     abort(404);
+    // }
+
+
+    public function makeBundleCertificate($bundleId, $format = 'png')
+{
+    $user = auth()->user();
+    $student = $user->student->bundleStudent->first();
+    $gpa = $student->gpa;
+
+    $makeCertificate = new MakeCertificate();
+    $bundle = Bundle::where('id', $bundleId)->first();
+
+    if (!empty($bundle)) {
+        // Check if all assignments are passed
+        $allAssignmentsPassed = $this->checkAssignmentsStatus($bundle, $student);
+
+        // Create the certificate with the appropriate image/template
+        return $makeCertificate->makeBundleCertificate($bundle, $format, $gpa, $allAssignmentsPassed);
     }
+
+    abort(404);
+}
+
+
+private function checkAssignmentsStatus(Bundle $bundle, $student)
+{
+    $graduationProjectWebinars = $bundle->bundleWebinars()
+        ->whereHas('webinar', function ($query) {
+            $query->where('type', 'graduation_project');
+        })
+        ->with('webinar')
+        ->get()
+        ->pluck('webinar.id');
+
+    $assignments = WebinarAssignment::whereIn('webinar_id', $graduationProjectWebinars)
+        ->with('assignmentHistory')
+        ->get();
+
+    foreach ($assignments as $assignment) {
+        if ($assignment->assignmentHistory && $assignment->assignmentHistory->grade < 60) {
+            return false; // If any assignment is not passed
+        }
+    }
+    return true; // All assignments are passed
+}
+
+
 
 
 

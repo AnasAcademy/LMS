@@ -73,6 +73,7 @@
                                                     <option value="webinar" @if((!empty($webinar) and $webinar->isWebinar()) or old('type') == \App\Models\Webinar::$webinar) selected @endif>{{ trans('webinars.webinar') }}</option>
                                                     <option value="course" @if((!empty($webinar) and $webinar->isCourse()) or old('type') == \App\Models\Webinar::$course) selected @endif>{{ trans('product.video_course') }}</option>
                                                     <option value="text_lesson" @if((!empty($webinar) and $webinar->isTextCourse()) or old('type') == \App\Models\Webinar::$textLesson) selected @endif>{{ trans('product.text_course') }}</option>
+                                                    <option value="graduation_project" @if((!empty($webinar) and $webinar->isGraduationProject()) or old('type') == \App\Models\Webinar::$graduationProject) selected @endif>مشروع تخرج</option>
                                                 </select>
 
                                                 @error('type')
