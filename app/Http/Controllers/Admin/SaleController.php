@@ -21,7 +21,7 @@ class SaleController extends Controller
     {
         $this->authorize('admin_sales_list');
 
-        $query = Sale::whereNull('product_order_id');
+        $query = Sale::whereNull('product_order_id')->where('manual_added', 0);
 
         $totalSales = [
             'count' => deepClone($query)->whereNull('refund_at')->count(),
@@ -413,7 +413,7 @@ class SaleController extends Controller
     {
         $this->authorize('admin_sales_export');
 
-        $query = Sale::query();
+        $query = Sale::query()->where('manual_added', 0);
 
         $salesQuery = $this->getSalesFilters($query, $request);
 
