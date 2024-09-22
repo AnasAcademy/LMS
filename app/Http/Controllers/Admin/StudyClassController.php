@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\BatchStudentsExport;
 use App\Http\Controllers\Controller;
+use App\Imports\BatchStudentImport;
 use App\Models\Category;
 use App\Models\Group;
 use App\Models\Role;
@@ -448,7 +449,9 @@ class StudyClassController extends Controller
         ];
 
         return view('admin.students.direct_register', $data);
-    }    public function requirements(Request $request, StudyClass $class)
+    }
+
+    public function requirements(Request $request, StudyClass $class)
     {
         $query = StudentRequirement::whereHas('bundleStudent', function ($query) use ($class) {
             $query->where('class_id', $class->id); // Filter by class_id
@@ -458,4 +461,48 @@ class StudyClassController extends Controller
 
         return view('admin.requirements.index', ['requirements' => $requirements]);
     }
+
+
+    function importExcelBatchStudents(Request $request, StudyClass $class){
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $import = new BatchStudentImport($class->id);
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => 'تم اضافه الطلبة بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'استرداد طلبة',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            return back()->with(['toast' => $toastData]);
+        }
+    }
 }
+
+
