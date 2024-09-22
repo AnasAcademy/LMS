@@ -316,9 +316,12 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::get('/requests', 'ServiceController@requests');
         Route::get('/{service}/bundleTransform', 'ServiceController@bundleTransformRequest');
         Route::post('/{service}/bundleTransform', 'ServiceController@bundleTransform');
+        Route::get('/{service}/bundleBridging', 'ServiceController@bundleBridgingRequest');
+        Route::post('/{service}/bundleBridging', 'ServiceController@bundleBridging');
         Route::get('/{service}/apply', 'ServiceController@store');
     });
 
+    Route::get('/bundleBridging/{bundleBridging}/pay', 'ServiceController@bundleBridgingPay');
     Route::get('/bundletransform/{bundleTransform}/pay', 'ServiceController@bundleTransformPay');
     Route::get('/bundletransform/{bundleTransform}/refund', 'ServiceController@bundleTransformRefund');
 

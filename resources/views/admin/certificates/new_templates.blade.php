@@ -295,7 +295,7 @@
                                         for="position_x_certificate_code">{!! trans('admin/main.position_x') !!}</label>
                                     <input type="text" name="position_x_certificate_code"
                                         class="form-control @error('position_x_certificate_code') is-invalid @enderror"
-                                        value="{{ old('position_x_certificate_code', !empty($template) ? $template->position_x_certificate_code : '560') }}">
+                                        value="{{ old('position_x_certificate_code', !empty($template) ? $template->position_x_certificate_code : '600') }}">
                                     <div class="invalid-feedback">
                                         @error('position_x_certificate_code')
                                             {{ $message }}

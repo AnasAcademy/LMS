@@ -127,7 +127,7 @@ class SaleController extends Controller
         return view('admin.financial.sales.lists', $data);
     }
 
-    private function makeTitle($sale)
+    public function makeTitle($sale)
     {
         if (!empty($sale->webinar_id) or !empty($sale->bundle_id)) {
             $item = !empty($sale->webinar_id) ? $sale->webinar : $sale->bundle;
@@ -192,7 +192,7 @@ class SaleController extends Controller
         return $sale;
     }
 
-    private function getSalesFilters($query, $request)
+    public function getSalesFilters($query, $request)
     {
         $item_title = $request->get('item_title');
         $from = $request->get('from');

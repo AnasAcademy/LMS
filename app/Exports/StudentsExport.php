@@ -42,6 +42,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
             'Status',
             'Mobile',
             'Email',
+            'about_us'
 
         ];
     }
@@ -76,6 +77,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
                 $user->status,
                 $user->mobile,
                 $user->email,
+                $user->student->about_us
             ];
         } else {
             return [
@@ -87,6 +89,8 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
                 $user->status,
                 $user->mobile,
                 $user->email,
+                ''
+
             ];
         }
 

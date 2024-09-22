@@ -333,9 +333,9 @@ class Discount extends Model
         foreach ($orderItems as $orderItemRecord){
             if (!empty($orderItemRecord) and !empty($orderItemRecord->order) and $orderItemRecord->order->status == 'paid') {
                 $usedCount += 1;
-                // if($orderItemRecord->user_id == $orderItem->user_id){
-                //     return trans('update.discount_code_used_before');
-                // }
+                if($orderItemRecord->user_id == $orderItem->user_id){
+                    return trans('update.discount_code_used_before');
+                }
             }
         }
 

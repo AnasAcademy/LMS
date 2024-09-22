@@ -133,7 +133,7 @@
                                     @if (!($hasBought or !empty($bundleData['bundle']->bundle->getInstallmentOrder())))
                                         <section class="bundle-details mt-3 order-3 col-12">
                                             <p class="bundle-details text-gray mt-10">
-                                                الدبلومة عن بعد 100%
+                                                البرنامج عن بعد 100%
                                             </p>
 
                                             {{-- <p class="bundle-details text-gray mt-10">
@@ -203,7 +203,7 @@
             </div>
         @endif
 
-        @if (empty($bundleData['bundle']->class_id))
+        @if (empty($bundleData['bundle']->class_id) && empty($bundleData['bundle']->bridging))
             <div class="text-center mx-auto mt-15">
                 <p class="text-danger font-weight-bold">أو</p>
                 <a href="/panel/{{ $bundleData['bundle']->bundle->id }}/book_seat"

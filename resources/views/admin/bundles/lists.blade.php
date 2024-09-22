@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-success">
                             <i class="fas fa-money-bill"></i></div>
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <section class="card">
@@ -216,12 +216,13 @@
                                         <th class="text-left">{{trans('admin/main.title')}}</th>
                                         <th class="text-left">{{trans('admin/main.instructor')}}</th>
                                         <th>{{trans('admin/main.price')}}</th>
-                                        <th>{{trans('admin/main.sales')}}</th>
-                                        <th>{{trans('admin/main.income')}}</th>
+                                        {{-- <th>{{trans('admin/main.sales')}}</th>
+                                        <th>{{trans('admin/main.income')}}</th> --}}
                                         <th>{{trans('admin/main.course_count')}}</th>
+                                        <th>مقسم إلي</th>
                                         <th>{{trans('admin/main.start_date')}}</th>
-                                        <th>{{trans('admin/main.created_at')}}</th>
-                                        <th>{{trans('admin/main.updated_at')}}</th>
+                                        <th>{{trans('admin/main.end_date')}}</th>
+                                        {{-- <th>{{trans('admin/main.updated_at')}}</th> --}}
                                         <th>{{trans('admin/main.status')}}</th>
                                         <th width="120">{{trans('admin/main.actions')}}</th>
                                     </tr>
@@ -253,23 +254,31 @@
                                                     {{ trans('public.free') }}
                                                 @endif
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <span class="text-primary mt-0 mb-1 font-weight-bold">
                                                     {{ $bundle->sales->count() }}
                                                 </span>
-                                            </td>
+                                            </td> --}}
 
-                                            <td>{{ handlePrice($bundle->sales->sum('total_amount')) }}</td>
+                                            {{-- <td>{{ handlePrice($bundle->sales->sum('total_amount')) }}</td> --}}
 
                                             <td class="font-12">
                                                 {{ $bundle->bundle_webinars_count }}
                                             </td>
+                                            <td class="font-12">
+                                                @if ( empty($bundle->hasGroup))
+                                                <p class="badge badge-primary">دفعات</p>
+                                                @else
+                                                <p class="badge badge-danger">مجموعات</p>
+                                                @endif
+
+                                            </td>
 
                                             <td class="font-12">{{ dateTimeFormat($bundle->start_date, 'Y M j | H:i') }}</td>
 
-                                            <td class="font-12">{{ dateTimeFormat($bundle->created_at, 'Y M j | H:i') }}</td>
+                                            <td class="font-12">{{ dateTimeFormat($bundle->end_date, 'Y M j | H:i') }}</td>
 
-                                            <td class="font-12">{{ dateTimeFormat($bundle->updated_at, 'Y M j | H:i') }}</td>
+                                            {{-- <td class="font-12">{{ dateTimeFormat($bundle->updated_at, 'Y M j | H:i') }}</td> --}}
 
                                             <td>
                                                 @switch($bundle->status)
@@ -306,6 +315,14 @@
                                                                 <span class="ml-2">{{ trans('admin/main.students') }}</span>
                                                             </a>
                                                         @endcan
+                                                        @if (!empty($bundle->hasGroup))
+                                                            @can('admin_webinar_students_lists')
+                                                                <a href="{{ getAdminPanelUrl() }}/bundles/{{ $bundle->id }}/groups" target="_blank" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1 " title="{{ trans('admin/main.groups') }}">
+                                                                    <i class="fa fa-users"></i>
+                                                                    <span class="ml-2">{{ trans('admin/main.groups') }}</span>
+                                                                </a>
+                                                            @endcan
+                                                        @endif
 
                                                         @can('admin_support_send')
                                                             <a href="{{ getAdminPanelUrl() }}/supports/create?user_id={{ $bundle->teacher->id }}" target="_blank" class="d-flex align-items-center text-dark text-decoration-none btn-transparent btn-sm text-primary mt-1" title="{{ trans('admin/main.send_message_to_teacher') }}">

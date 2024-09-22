@@ -34,5 +34,13 @@ class Group extends Model
     {
         return $this->belongsTo(Webinar::class);
     }
+    public function bundle()
+    {
+        return $this->belongsTo(Bundle::class);
+    }
+    public function item()
+    {
+        return (!empty($this->bundle_id))? $this->belongsTo(Bundle::class, 'bundle_id') : $this->belongsTo(Webinar::class, 'webinar_id');
+    }
 
 }

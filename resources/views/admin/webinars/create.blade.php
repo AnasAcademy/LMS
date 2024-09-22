@@ -88,10 +88,10 @@
 
                                                 <select name="unattached" class="custom-select @error('unattached') is-invalid @enderror">
                                                     <option value="" disabled selected >اختر نوع الدورة</option>
-                                                    <option value="0" @if(old('unattached', $webinar->unattached ?? null) == 0) selected @endif>
+                                                    <option value="0" @if(old('unattached', $webinar->unattached ?? null) == '0') selected @endif>
                                                         دوره خاصه ببرنامج
                                                     </option>
-                                                    <option value="1" @if(old('unattached', $webinar->unattached ?? null) == 1) selected @endif>
+                                                    <option value="1" @if(old('unattached', $webinar->unattached ?? null) == '1') selected @endif>
 
                                                        دوره مستقله
                                                     </option>

@@ -30,13 +30,13 @@ class ServiceController extends Controller
         return view('admin.services.index', compact('services'));
     }
 
-    public function requests()
+    public function requests(Service $service)
     {
         //
 
-        $services = Service::paginate(1);
+        // $services = Service::paginate(1);
 
-        return view('admin.services.requests', compact('services'));
+        return view('admin.services.requests', compact('service'));
     }
     public function approveRequest(Request $request, ServiceUser $serviceUser)
     {

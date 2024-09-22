@@ -32,5 +32,9 @@ class ServiceUser extends Pivot{
     {
         return $this->hasOne(bundleTransform::class, 'service_request_id','id');
     }
+    public function BridgingRequest()
+    {
+        return $this->hasOne(BridgingRequest::class, 'service_request_id','id');
+    }
 
 }

@@ -83,7 +83,7 @@ class DashboardController extends Controller
 
                 $bundleSales = Sale::where('buyer_id', $user->id)
                 ->where(function ($query) {
-                    $query->whereIn('type', ['bundle', 'installment_payment'])
+                    $query->whereIn('type', ['bundle', 'installment_payment', 'bridging'])
                           ->whereNotNull(['bundle_id', 'order_id']);
                 })->get()->unique('bundle_id');
 
