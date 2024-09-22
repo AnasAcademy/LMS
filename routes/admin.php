@@ -102,6 +102,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/{class}/users', 'StudyClassController@Users');
             Route::get('/{class}/registered_users', 'StudyClassController@RegisteredUsers');
             Route::get('/{class}/requirements', 'StudyClassController@requirements');
+            Route::get('/{class}/excelStudent', 'StudyClassController@exportExcelBatchStudents');
 
         });
 
