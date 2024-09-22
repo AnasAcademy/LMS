@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\BatchStudentsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Group;
@@ -11,7 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\StudyClass;
 use App\StudentRequirement;
 use App\User;
-
+use Maatwebsite\Excel\Facades\Excel;
 class StudyClassController extends Controller
 {
     /**
@@ -125,7 +126,7 @@ class StudyClassController extends Controller
     }
 
 
-    public function students(StudyClass $class, Request $request){
+    public function students(StudyClass $class, Request $request , $is_export_excel = false){
 
         $pageTitle = trans('public.students');
         $query = User::whereHas(
@@ -135,8 +136,31 @@ class StudyClassController extends Controller
             }
         );
 
-         $enrollments = (new UserController())->filters($query, $request)->paginate(10);
+        $query = (new UserController())->filters($query, $request);
+
+        if ($is_export_excel) {
+            $enrollments = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $enrollments = $query->orderBy('created_at', 'desc')
+            ->paginate(20);
+        }
+
+        $enrollments = (new UserController())->addUsersExtraInfo($enrollments);
+
+        if ($is_export_excel) {
+            return $enrollments;
+        }
         return view('admin.study_classes.student', compact('enrollments', "class", 'pageTitle'));
+    }
+
+    public function exportExcelBatchStudents(StudyClass $class, Request $request)
+    {
+        $this->authorize('admin_users_export_excel');
+        $users = $this->students($class, $request, true);
+
+        $usersExport = new BatchStudentsExport($users, $class->id);
+
+        return Excel::download($usersExport, 'طلاب '.$class->title.'.xlsx');
     }
 
     public function RegisteredUsers(Request $request, StudyClass $class, $is_export_excel = false)
