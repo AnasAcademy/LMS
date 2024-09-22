@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\BundleStudent;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Web\traits\LearningPageAssignmentTrait;
+use App\Models\Bundle;
 use App\Models\Reward;
 use App\Models\RewardAccounting;
 use App\Models\WebinarAssignment;
 use App\Models\WebinarAssignmentHistory;
 use App\Models\WebinarAssignmentHistoryMessage;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -113,11 +116,12 @@ class AssignmentHistoryController extends Controller
         $assignment = WebinarAssignment::where('id', $assignmentId)
             ->where('creator_id', $user->id)
             ->first();
-
+  
         if (!empty($assignment)) {
             $webinar = $assignment->webinar;
-
+            //dd($webinar->type);
             if (!empty($webinar) and $webinar->isOwner($user->id)) {
+                //
                 $studentId = $request->get('student_id');
                 $assignmentHistory = $this->getAssignmentHistory($webinar, $assignment, $user, $studentId);
 
@@ -163,9 +167,24 @@ class AssignmentHistoryController extends Controller
                     ];
 
                     sendNotification('instructor_set_grade', $notifyOptions, $assignmentHistory->student_id);
+              
+                   if( $webinar->type =='graduation_project'){
+                    // return $webinar->type ;
+
+                     $response=  $this->getGraduationProjectAssignments($request,$studentId);
+                     return response()->json($response) ;
+                   }
+                   
+
+                //    Log::info( 
+                  
+                //     "'webinar_type' => $webinar->type"
+                // );
 
                     return response()->json([
                         'code' => 200,
+                        'type'=>$webinar->type,
+                       
                     ]);
                 }
             }
@@ -173,6 +192,110 @@ class AssignmentHistoryController extends Controller
 
         abort(403);
     }
+
+
+
+    public function getGraduationProjectAssignments(Request $request , $userId)
+    {
+      try {  // Get the authenticated user
+       
+         // Get the associated student
+
+         $user=User::find( $userId);
+         $student = $user->student;
+    
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+    
+        $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
+        $userbundles = Bundle::whereIn('id', $bundlesIds)->get();
+    
+        foreach ($userbundles as $bundle) {
+            $graduationProjectWebinars = $bundle->bundleWebinars()
+                ->whereHas('webinar', function ($query) {
+                    $query->where('type', 'graduation_project');
+                })
+                ->with('webinar')
+                ->get()
+                ->pluck('webinar.id');
+    
+            $assignments = WebinarAssignment::whereIn('webinar_id', $graduationProjectWebinars)
+                ->with('assignmentHistory')
+                ->get();
+    
+            $totalGrade = 0;
+            $totalCount = 0;
+    
+            foreach ($assignments as $assignment) {
+                if ($assignment->assignmentHistory) {
+                    $totalGrade += $assignment->assignmentHistory->grade;
+                    $totalCount++;
+                }
+            }
+    
+            $averageGrade = $totalCount > 0 ? $totalGrade / $totalCount : 0;
+
+
+             // Convert the average grade to GPA
+             $gpa = $this->convertGradeToGPA($averageGrade);
+    
+            // Save the average grade as 'gpa' in the BundleStudent model
+            $bundleStudent = BundleStudent::where('bundle_id', $bundle->id)
+                                          ->where('student_id', $student->id) // Use the student ID here
+                                          ->first();
+           // dd($bundleStudent);
+            if ($bundleStudent) {
+                $bundleStudent->gpa = $gpa; // Save the average grade as 'gpa'
+                $bundleStudent->save();
+            } else {
+                // Handle the case where BundleStudent is not found
+                // For example, create a new BundleStudent record if necessary
+            }
+    
+            // Output the assignments and the average grade for debugging purposes
+            return ([
+                'bundle_id' => $bundle->id,
+                'student_id' => $student->id,
+                'graduationProjectWebinars' => $graduationProjectWebinars,
+                'assignments' => $assignments,
+                'totalGrade' => $totalGrade,
+                'totalCount' => $totalCount,
+                'averageGrade' => $averageGrade,
+            ]);
+        }}
+        catch(\Exception $e){
+                 return $e->getMessage();
+        };
+    }
+
+    private function convertGradeToGPA($grade)
+{
+    if ($grade >= 98) return 5.0;
+    if ($grade >= 97) return 4.9;
+    if ($grade >= 95) return 4.85;
+    if ($grade >= 92) return 4.8;
+    if ($grade >= 90) return 4.75;
+    if ($grade >= 88) return 4.6;
+    if ($grade >= 85) return 4.5;
+    if ($grade >= 83) return 4.2;
+    if ($grade >= 80) return 4.0;
+    if ($grade >= 78) return 3.9;
+    if ($grade >= 77) return 3.8;
+    if ($grade >= 76) return 3.65;
+    if ($grade >= 74) return 3.4;
+    if ($grade >= 73) return 3.3;
+    if ($grade >= 72) return 3.2;
+    if ($grade >= 71) return 3.1;
+    if ($grade >= 70) return 3.0;
+    if ($grade >= 68) return 2.9;
+    if ($grade >= 66) return 2.65;
+    if ($grade >= 65) return 2.5;
+    if ($grade >= 63) return 2.4;
+    if ($grade >= 61) return 2.2;
+    if ($grade >= 60) return 2.0;
+    return 0; // For grades below 60
+}
 
     public function downloadAttach($assignmentId, $historyId, $messageId)
     {

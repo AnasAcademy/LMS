@@ -13,6 +13,7 @@ return [
     'new_page_title' => 'جلسة جديد',
     'new_page_title_step' => 'جلسة جديد - Step :step',
     'webinar' => 'جلسة مباشر',
+    'graduation_project'=>'مشروع تخرج',
     'webinars' => 'جلسات مباشرة',
   	'class' => 'جلسة',
   	'classes' => 'الجلسات',
