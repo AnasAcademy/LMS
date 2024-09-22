@@ -1442,7 +1442,7 @@ class UserController extends Controller
             }
         }
 
-        $usersExport = new StudentsExport($users);
+        $usersExport = new StudentsExport($users, $request->class_id ?? null);
 
         return Excel::download($usersExport, 'نموذج حجز مقعد.xlsx');
     }
@@ -1599,7 +1599,7 @@ class UserController extends Controller
                 $users = (new StudyClassController())->Enrollers($request, $studyClass, true);
             }
         }
-        $usersExport = new EnrollersExport($users);
+        $usersExport = new EnrollersExport($users, $request->class_id ?? null);
 
         return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
     }
@@ -1617,7 +1617,7 @@ class UserController extends Controller
                 $users = (new StudyClassController())->ScholarshipStudent($request, $studyClass, true);
             }
         }
-        $usersExport = new EnrollersExport($users);
+        $usersExport = new EnrollersExport($users, $request->class_id ?? null);
 
         return Excel::download($usersExport, ' تسجيل الدبلومات.xlsx');
     }
@@ -1632,7 +1632,7 @@ class UserController extends Controller
                 $users = (new StudyClassController())->directRegister($request, $studyClass, true);
             }
         }
-        $usersExport = new DirectRegisterExport($users);
+        $usersExport = new DirectRegisterExport($users, $request->class_id ?? null);
 
         return Excel::download($usersExport, ' تسجيل مباشر.xlsx');
     }
@@ -1650,7 +1650,7 @@ class UserController extends Controller
             }
         }
 
-        $usersExport = new StudentsExport($users);
+        $usersExport = new StudentsExport($users, $request->class_id ?? null);
 
         return Excel::download($usersExport, 'نموذج انشاء حساب.xlsx');
     }

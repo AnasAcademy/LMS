@@ -317,7 +317,7 @@ class Discount extends Model
 
         if ($this->for_first_purchase) {
             $checkIsFirstPurchase = Sale::where('buyer_id', $user->id)
-                ->whereNull('refund_at')
+                ->whereNull(['refund_at', 'form_fee'])
                 ->count();
 
             if ($checkIsFirstPurchase > 0) {
@@ -333,7 +333,9 @@ class Discount extends Model
         foreach ($orderItems as $orderItemRecord){
             if (!empty($orderItemRecord) and !empty($orderItemRecord->order) and $orderItemRecord->order->status == 'paid') {
                 $usedCount += 1;
-                if($orderItemRecord->user_id == $orderItem->user_id){
+                if($orderItemRecord->user_id == $orderItem->user_id &&
+               ( (!empty($orderItem->bundle_id) && $orderItemRecord->bundle_id == $orderItem->bundle_id ) ||
+               (!empty($orderItem->webinar_id) && $orderItemRecord->webinar_id == $orderItem->webinar_id)  )){
                     return trans('update.discount_code_used_before');
                 }
             }

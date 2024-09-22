@@ -10,14 +10,15 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class StudentsExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $users;
+    protected $batchId;
     protected $currency;
 
-    public function __construct($users)
+    public function __construct($users, $batchId = null)
     {
         $this->users = $users;
+        $this->batchId = $batchId;
         $this->currency = currencySign();
     }
-
     /**
      * @return Collection
      */
@@ -56,7 +57,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
             $diploma = '';
             $created_at = '';
 
-            $purchasedBundles = $user->purchasedFormBundle();
+            $purchasedBundles = $user->purchasedFormBundle($this->batchId);
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {

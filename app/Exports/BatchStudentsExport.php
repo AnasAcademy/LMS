@@ -7,13 +7,13 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class EnrollersExport implements FromCollection, WithHeadings, WithMapping
+class BatchStudentsExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $users;
     protected $batchId;
     protected $currency;
 
-    public function __construct($users, $batchId = null)
+    public function __construct($users, $batchId)
     {
         $this->users = $users;
         $this->batchId = $batchId;
@@ -39,13 +39,12 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
             'Student code',
             'Arabic Name',
             'English Name',
-            'Email',
-            'diploma',
+            'program',
             'created at',
             'Status',
             'Mobile',
+            'Email',
             'about_us'
-
 
         ];
     }
@@ -57,43 +56,43 @@ class EnrollersExport implements FromCollection, WithHeadings, WithMapping
     {
         if ($user->student) {
             $diploma = '';
-            $created_at='';
-            $purchasedBundles = $user->purchasedBundles($this->batchId)->get();
+            $created_at = '';
+
+            $purchasedBundles = $user->bundleSales($this->batchId)->get();
 
             if ($purchasedBundles) {
                 foreach ($purchasedBundles as $purchasedBundle) {
-                        $diploma .= ($purchasedBundle->bundle->title . " , ") ;
-                        $created_at .=(dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') . " , ");;
-
+                    $diploma .= ($purchasedBundle->bundle->title .' , ') ;
+                    $created_at .= (dateTimeFormat($purchasedBundle->created_at, 'j M Y | H:i') . " , ");
                 }
                 $diploma = preg_replace('/,(?!.*,)/u', '', $diploma);
                 $created_at = preg_replace('/,(?!.*,)/u', '', $created_at);
             }
 
 
-
             return [
                 $user->user_code,
                 $user->student->ar_name,
                 $user->student->en_name,
-                $user->email,
                 $diploma,
                 $created_at,
                 $user->status,
                 $user->mobile,
+                $user->email,
                 $user->student->about_us
             ];
         } else {
             return [
-                '',
-                '',
-                '',
-                '',
-                'غير مسجل بعد',
-                '',
-                '',
-                '',
+                $user->user_code,
+                ($user->student ? $user->student->ar_name : $user->full_name),
+                ($user->student ? $user->student->en_name : $user->full_name),
+                $user->program_id? $user->appliedProgram->title :'غير مسجل بعد',
+                dateTimeFormat($user->created_at, 'j M Y - H:i'),
+                $user->status,
+                $user->mobile,
+                $user->email,
                 ''
+
             ];
         }
 
