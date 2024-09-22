@@ -164,7 +164,17 @@
                                                 <span class="stat-value">{{ dateTimeFormat($webinar->start_date,'j M Y') }}</span>
                                             </div>
                                         @endif
+
+
+                                        @if($webinar->isGraduationProject())
+                                        <div class="d-flex align-items-start flex-column mt-20 mr-15">
+                                            <span class="stat-title">{{ trans('public.start_date') }}:</span>
+                                            <span class="stat-value">{{ dateTimeFormat($webinar->start_date,'j M Y') }}</span>
+                                        </div>
                                     @endif
+                                    @endif
+
+                                    
 
                                     @if($webinar->isTextCourse() or $webinar->isCourse())
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">

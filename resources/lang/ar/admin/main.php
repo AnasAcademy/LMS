@@ -969,6 +969,7 @@ return [
     'type_course' => 'دورة',
     'type_webinars' => 'مقرر مباشر',
     'type_text_lessons' => 'دورة نصية',
+    'type_graduation_project' => 'دورة مشروع تخرج',
     'type_courses' => 'المقررات',
     'teacher_name' => 'المعلمون',
     'category_name' => 'القسم',
