@@ -87,9 +87,9 @@ class CertificateController extends Controller
     public function certificateLists()
     {
         $salesWithCertificate = Sale::where('buyer_id', auth()->user()->id)
-        ->whereNotNull('certificate_template_id')
-        ->get();
-      $certificateTemplatesArray = [];
+            ->whereNotNull('certificate_template_id')
+            ->get();
+        $certificateTemplatesArray = [];
         $titlesArray = [];
 
         foreach ($salesWithCertificate as $sale) {
@@ -105,11 +105,11 @@ class CertificateController extends Controller
                 }
             }
         }
-        $salesWithCertificate=$salesWithCertificate->toArray();
+        $salesWithCertificate = $salesWithCertificate->toArray();
         // dd($salesWithCertificate[0]['created_at']);
 
         // dd($titlesArray);
-         return view(getTemplate() . '.panel.certificates.certificate_list', compact('certificateTemplatesArray','salesWithCertificate'));
+        return view(getTemplate() . '.panel.certificates.certificate_list', compact('certificateTemplatesArray', 'salesWithCertificate'));
     }
 
     public function achievements(Request $request)
@@ -168,36 +168,35 @@ class CertificateController extends Controller
             ->whereIn('id', $webinarsIds)
             ->get();
 
-        foreach($userWebinars as $webinar){
-            $group=$webinar->groups()->whereHas('enrollments',function($query) use($user){
+        foreach ($userWebinars as $webinar) {
+            $group = $webinar->groups()->whereHas('enrollments', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })->first();
             $template = $webinar->certificate_template()->where('status', 'publish')
-            ->where('type', 'course')->latest()->first();
+                ->where('type', 'course')->latest()->first();
 
 
             if ($group && !empty($group->end_date) && $group->end_date < now() && !empty($template)) {
                 $this->makeCourseCertificate($webinar->id);
             }
-
         }
 
 
 
-        $bundlesIds =$user->purchasedBundles->pluck('bundle_id');
+        $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
         $userbundles = Bundle::whereIn('id', $bundlesIds)->get();
 
-        foreach($userbundles as $bundle){
+        foreach ($userbundles as $bundle) {
             //dd($bundle);
             $template = $bundle->certificate_template()->where('status', 'publish')
                 ->where('type', 'bundle')->latest()->first();
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template)){
-               $this->makeBundleCertificate($bundle->id);}
-
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template)) {
+                $this->makeBundleCertificate($bundle->id);
+            }
         }
 
         $certificates = Certificate::where('student_id', $user->id)
-        ->with(['webinar', 'bundle'])->get(); // Eager load webinars and bundles
+            ->with(['webinar', 'bundle'])->get(); // Eager load webinars and bundles
 
         $courseCertificates = $certificates->whereNotNull('webinar_id');
         $bundleCertificates = $certificates->whereNotNull('bundle_id');
@@ -261,18 +260,18 @@ class CertificateController extends Controller
     }
 
 
-    public function makeCourseCertificate($WebinarId,$format ='png')
+    public function makeCourseCertificate($WebinarId, $format = 'png')
 
     {
 
-       // dd($WebinarId);
+        // dd($WebinarId);
         $user = auth()->user();
 
         $makeCertificate = new MakeCertificate();
-        $course=Webinar::where('id', $WebinarId)->first();
-      //  dd($course);
+        $course = Webinar::where('id', $WebinarId)->first();
+        //  dd($course);
         if (!empty($course)) {
-            return $makeCertificate->makeCourseCertificate($course,$format);
+            return $makeCertificate->makeCourseCertificate($course, $format);
         }
 
 
@@ -307,52 +306,62 @@ class CertificateController extends Controller
 
 
     public function makeBundleCertificate($bundleId, $format = 'png')
-{
-    $user = auth()->user();
-    $student = $user->student->bundleStudent->first();
-    $gpa = $student->gpa;
+    {
+        $user = auth()->user();
+        $bundleStudent = $user->student->bundleStudent->first();
+        $gpa = $bundleStudent->gpa;
 
-    $makeCertificate = new MakeCertificate();
-    $bundle = Bundle::where('id', $bundleId)->first();
+        $makeCertificate = new MakeCertificate();
+        $bundle = Bundle::where('id', $bundleId)->first();
 
-    if (!empty($bundle)) {
-        // Check if all assignments are passed
-        $allAssignmentsPassed = $this->checkAssignmentsStatus($bundle, $student);
+        if (!empty($bundle)) {
+            // Check if all assignments are passed
+            $allAssignmentsPassed = $this->checkAssignmentsStatus($bundle, $bundleStudent);
 
-        // Create the certificate with the appropriate image/template
-        return $makeCertificate->makeBundleCertificate($bundle, $format, $gpa, $allAssignmentsPassed);
-    }
-
-    abort(404);
-}
-
-
-private function checkAssignmentsStatus(Bundle $bundle, $student)
-{
-    $graduationProjectWebinars = $bundle->bundleWebinars()
-        ->whereHas('webinar', function ($query) {
-            $query->where('type', 'graduation_project');
-        })
-        ->with('webinar')
-        ->get()
-        ->pluck('webinar.id');
-
-    $assignments = WebinarAssignment::whereIn('webinar_id', $graduationProjectWebinars)
-        ->with('assignmentHistory')
-        ->get();
-
-    foreach ($assignments as $assignment) {
-        if ($assignment->assignmentHistory && $assignment->assignmentHistory->grade < 60) {
-            return false; // If any assignment is not passed
+            // Create the certificate with the appropriate image/template
+            return $makeCertificate->makeBundleCertificate($bundle, $format, $bundleStudent->gpa, $allAssignmentsPassed);
         }
+
+        abort(404);
     }
-    return true; // All assignments are passed
-}
 
 
+    private function checkAssignmentsStatus(Bundle $bundle, $bundleStudent)
+    {
+        $graduationProjectWebinars = $bundle->bundleWebinars()
+            ->whereHas('webinar', function ($query) {
+                $query->where('type', 'graduation_project');
+            })
+            ->with('webinar')
+            ->get()
+            ->pluck('webinar.id');
 
+        $assignments = WebinarAssignment::whereIn('webinar_id', $graduationProjectWebinars)
+            ->with('assignmentHistory')
+            ->get();
 
+        $assignmentsHistories = WebinarAssignment::whereIn('webinar_id', $graduationProjectWebinars)->whereHas('assignmentHistory')
+            ->with('assignmentHistory')
+            ->get();
 
+        // foreach ($assignments as $assignment) {
+        //     if ( $assignment->assignmentHistory && $assignment->assignmentHistory->grade > 60) {
+        //         return true; // If any assignment is not passed
+        //     }
+        // }
+        // dd(($assignmentsHistories));
+        if(count($assignments)>0 && count($assignmentsHistories)==0){
 
+            $bundleStudent->update(['gpa' => 0]);
+        }
 
+        if (!isset($bundleStudent->gpa)) {
+            return true;
+        }
+
+        if (!empty($bundleStudent->gpa) && $bundleStudent->gpa >= 2) {
+            return true;
+        }
+        return false; // All assignments are passed
+    }
 }
