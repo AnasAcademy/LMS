@@ -184,16 +184,21 @@ class CertificateController extends Controller
 
 
         $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
-        $userbundles = Bundle::whereIn('id', $bundlesIds)->get();
-
+        $userbundles = Bundle::whereIn('id', $bundlesIds)->with('bundleWebinars.webinar')->get();
         foreach ($userbundles as $bundle) {
             //dd($bundle);
             $template = $bundle->certificate_template()->where('status', 'publish')
                 ->where('type', 'bundle')->latest()->first();
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template)) {
+
+                $test = $bundle->bundleWebinars()->whereHas('webinar', function($query){
+                    $query->whereHas('assignments')->where('type', 'graduation_project');
+                })->get();
+
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($test)>0) {
                 $this->makeBundleCertificate($bundle->id);
             }
         }
+
 
         $certificates = Certificate::where('student_id', $user->id)
             ->with(['webinar', 'bundle'])->get(); // Eager load webinars and bundles
@@ -300,7 +305,6 @@ class CertificateController extends Controller
 
 
 
-
     //     abort(404);
     // }
 
@@ -308,8 +312,9 @@ class CertificateController extends Controller
     public function makeBundleCertificate($bundleId, $format = 'png')
     {
         $user = auth()->user();
-        $bundleStudent = $user->student->bundleStudent->first();
+        $bundleStudent = $user->student->bundleStudent->where('bundle_id', $bundleId)->first();
         $gpa = $bundleStudent->gpa;
+
 
         $makeCertificate = new MakeCertificate();
         $bundle = Bundle::where('id', $bundleId)->first();
