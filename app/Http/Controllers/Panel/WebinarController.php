@@ -544,7 +544,7 @@ class WebinarController extends Controller
         $currentStep = $data['current_step'];
         $getStep = $data['get_step'];
         $getNextStep = (!empty($data['get_next']) and $data['get_next'] == 1);
-        $isDraft = (!empty($data['draft']) and $data['draft'] == 1);
+        // $isDraft = (!empty($data['draft']) and $data['draft'] == 1);
 
         $webinar = Webinar::where('id', $id)
             ->where(function ($query) use ($user) {
@@ -594,12 +594,12 @@ class WebinarController extends Controller
 
         $this->validate($request, $rules);
 
-        $status = ($isDraft or $webinarRulesRequired) ? Webinar::$isDraft : Webinar::$pending;
+        // $status = ($isDraft or $webinarRulesRequired) ? Webinar::$isDraft : Webinar::$pending;
 
-        if ($directPublicationOfCourses and !$getNextStep and !$isDraft) {
-            $status = Webinar::$active;
-        }
-
+        // if ($directPublicationOfCourses and !$getNextStep and !$isDraft) {
+        //     $status = Webinar::$active;
+        // }
+        $status = $webinar->status;
         $data['status'] = $status;
         $data['updated_at'] = time();
 
