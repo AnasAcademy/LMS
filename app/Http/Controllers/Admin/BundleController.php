@@ -37,7 +37,7 @@ class BundleController extends Controller
         // $query = Bundle::query();
         $type = $request->get('type', 'program');
         $query = Bundle::where('bundles.type', $type);
-
+      
         $totalBundles = $query->count();
         $totalPendingBundles = deepClone($query)->where('bundles.status', Bundle::$pending)->count();
         $totalSales = deepClone($query)->join('sales', 'bundles.id', '=', 'sales.bundle_id')
@@ -64,7 +64,7 @@ class BundleController extends Controller
                 'bundleWebinars'
             ]);
 
-        $bundles = $query->paginate(10);
+          $bundles = $query->with('batch')->paginate(10);
 
         foreach ($bundles as $bundle) {
             $giftsIds = Gift::query()->where('bundle_id', $bundle->id)
@@ -88,7 +88,7 @@ class BundleController extends Controller
             $bundle->sales = $sales;
         }
 
-
+     
         $data = [
             'pageTitle' => ($type== 'bridging')? trans('update.bridges'): trans('update.bundles'),
             'bundles' => $bundles,
