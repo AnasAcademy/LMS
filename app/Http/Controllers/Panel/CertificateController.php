@@ -312,7 +312,7 @@ class CertificateController extends Controller
     public function makeBundleCertificate($bundleId, $format = 'png')
     {
         $user = auth()->user();
-        $bundleStudent = $user->student->bundleStudent->where('bundle_id', $bundleId)->latest()->first();
+        $bundleStudent = $user->student->bundleStudent()->where('bundle_id', $bundleId)->latest()->first();
 
         $makeCertificate = new MakeCertificate();
 
