@@ -174,9 +174,9 @@
                                         اكاديمية انس للفنون </option>
                                     @if (count($categories) > 0)
                                         <option value="programs" @if (old('type', request()->type ?? $user->application_type) == 'programs') selected @endif>
-                                            برامج </option>
+                                            البرامج المهنية</option>
                                     @endif
-                                    <option value="courses" @if (old('type', request()->type ?? $user->application_type) == 'courses') selected @endif>دورات</option>
+                                    <option value="courses" @if (old('type', request()->type ?? $user->application_type) == 'courses') selected @endif>الدورات التدريبيه</option>
                                 </select>
 
                                 @error('type')
