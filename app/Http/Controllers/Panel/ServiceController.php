@@ -228,7 +228,7 @@ class ServiceController extends Controller
     function bundleBridgingRequest(Service $service)
     {
 
-        $bundles = Bundle::whereHas('bridging')->where('status', 'active')->with(['bridging', 'bridging.fromBundle', 'bridging.toBundle'])->get();
+        $bundles = Bundle::where('type', 'bridging')->whereHas('bridging')->where('status', 'active')->with(['bridging', 'bridging.fromBundle', 'bridging.toBundle'])->get();
         return view('web.default.panel.services.includes.bundleBridging', compact('bundles', 'service'));
     }
     function bundleBridging(Request $request, Service $service)
@@ -237,10 +237,10 @@ class ServiceController extends Controller
         $user = auth()->user();
         $validatedData = $request->validate([
             'from_bundle_id' => 'required|exists:bundles,id',
-            'to_bundle_id' => [
-                'required',
-                'exists:bundles,id'
-            ],
+            // 'to_bundle_id' => [
+            //     'required',
+            //     'exists:bundles,id'
+            // ],
             'bridging_id' => "required|exists:bundles,id"
         ]);
 
