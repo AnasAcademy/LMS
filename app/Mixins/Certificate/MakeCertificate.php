@@ -173,10 +173,10 @@ class MakeCertificate
     {
         // Load the background image
         $img = Image::make(public_path($certificateTemplate->image));
-    
+
         $fontPath2 = public_path('assets/default/fonts/Trajan-Bold.otf'); // Bold font path
         $fontPath = public_path('assets/default/fonts/Trajan-Regular.ttf'); // Regular font path
-    
+
         // GPA to Honor Level mapping
         $honorLevels = [
             5 => "above excellent first flass honors",
@@ -204,7 +204,7 @@ class MakeCertificate
             2 => "pass",
             0 => "fail",
         ];
-    
+
         // Format the graduation date
         $formattedDate = '';
         if (isset($body['graduation_date'])) {
@@ -215,26 +215,29 @@ class MakeCertificate
             } else {
                 $graduation_date = new \DateTime($body['graduation_date']);
             }
-    
+
             $day = $graduation_date->format('j');
             $month = $graduation_date->format('F');
             $year = $graduation_date->format('Y');
             $formattedDate = "on the " . $this->getOrdinal($day) . " of " . $month . " " . $year;
         }
-    
+
         // Add Graduation Date
         if (isset($body['course_hours']) && $formattedDate) {
-            
+
             $body['graduation_date'] = "with a total of " . $body['course_hours'] . " hours training " . $formattedDate;
         }
         else{
             $body['graduation_date'] =   $formattedDate;
         }
-      // dd($body['graduation_date']);
-    
+        // dd($body['graduation_date']);
+        $min = 0;
+        if (!isset($body['gpa'])) {
+            $min = 60;
+        }
         // Add Graduation Date Text
         if (isset($body['graduation_date'])) {
-            $img->text($body['graduation_date'], $body['position_x_date'], $body['position_y_date'], function ($font) use ($fontPath, $certificateTemplate, $body) {
+            $img->text($body['graduation_date'], $body['position_x_date'], $body['position_y_date']-$min, function ($font) use ($fontPath, $certificateTemplate, $body) {
                 $font->file($fontPath);
                 $font->size($body['font_size_date']);
                 $font->color($certificateTemplate->text_color);
@@ -242,7 +245,7 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Student Name
         if (isset($body['student_name'])) {
             $img->text($body['student_name'], $body['position_x_student'], $body['position_y_student'], function ($font) use ($fontPath2, $certificateTemplate, $body) {
@@ -253,7 +256,7 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Course Name
         if (isset($body['course_name'])) {
             $img->text($body['course_name'], $body['position_x_course'], $body['position_y_course'], function ($font) use ($fontPath2, $certificateTemplate, $body) {
@@ -264,7 +267,7 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // GPA Check and Honor Level
         $gpaMessage = '';
         if (isset($body['gpa'])) {
@@ -277,13 +280,13 @@ class MakeCertificate
                         break;
                     }
                 }
-    
+
                 $gpaMessage = "with a " . $honorLevel . " and a GPA of (" . $body['gpa'] . "/5)";
             } else {
                 $gpaMessage = "without graduation project requirements have not been fulfilled";
             }
         }
-    
+
         // Add GPA Text
         if (!empty($gpaMessage)) {
             $img->text($gpaMessage, $body['position_x_text'], 1510, function ($font) use ($fontPath, $certificateTemplate, $body) {
@@ -294,7 +297,7 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Additional Text
         if (isset($body['text'])) {
             $img->text($body['text'], $body['position_x_text'], $body['position_y_text'], function ($font) use ($fontPath, $certificateTemplate, $body) {
@@ -305,7 +308,7 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         // Add Certificate Code
         if (isset($body['certificate_code'])) {
             $img->text($body['certificate_code'], $body['position_x_certificate_code'], $body['position_y_certificate_code'], function ($font) use ($fontPath, $certificateTemplate, $body) {
@@ -316,10 +319,10 @@ class MakeCertificate
                 $font->valign('top');
             });
         }
-    
+
         return $img;
     }
-    
+
 
 
 
@@ -418,7 +421,7 @@ class MakeCertificate
             sendNotification('new_certificate', $notifyOptions, $user->id);
         }
 
-      
+
 
 
         return $certificate;
@@ -444,9 +447,9 @@ class MakeCertificate
         $body['graduation_date'] = $bundle->end_date; // Include the end date
        // $body['course_hours'] = $bundle->duration;
         $body['gpa'] = $gpa;
-      
-        // Set the image based on whether all assignments were passed
-        if ($allAssignmentsPassed) {
+
+            // Set the image based on whether all assignments were passed
+        if ($allAssignmentsPassed || !isset($gpa)) {
           //  dd($allAssignmentsPassed);
             // Use the template image if passed
             $img = $this->makeImage($template, $body);
@@ -454,7 +457,7 @@ class MakeCertificate
             // Use an alternative image if not passed
             $originalImage = $template->image;
             $alternativeImage = 'assets/default/certificate_template/image (3).png'; // Specify your alternative image path
-        
+
             // Update the template image to the alternative image
             $template->image= $alternativeImage;
           // dd($originaltext);
@@ -464,7 +467,7 @@ class MakeCertificate
             // Restore the original image back to the template
             $template->image = $originalImage;
         }
-        
+
         if ($format === 'pdf') {
             // Generate PDF with embedded image
             $imageData = (string) $img->encode('data-url');
@@ -518,11 +521,11 @@ class MakeCertificate
                 '[c.title]' => $bundle->title,
             ];
             sendNotification('new_certificate', $notifyOptions, $user->id);
-    
+
         }
 
 
-       
+
 
         return $certificate;
     }

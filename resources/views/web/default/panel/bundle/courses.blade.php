@@ -87,9 +87,9 @@
 
                                                 {{-- <a href="/panel/webinars/{{ $webinar->id }}/edit" class="webinar-actions d-block mt-10">{{ trans('public.edit') }}</a> --}}
 
-                                                @if($webinar->isWebinar())
+                                                {{-- @if($webinar->isWebinar()) --}}
                                                     <a href="/panel/webinars/{{ $webinar->id }}/step/4" class="webinar-actions d-block mt-10">{{ trans('public.content') }}</a>
-                                                @endif
+                                                {{-- @endif --}}
 
                                                 {{-- <a href="/panel/webinars/{{ $webinar->id }}/step/4" class="webinar-actions d-block mt-10">{{ trans('public.files') }}</a> --}}
 
@@ -174,7 +174,7 @@
                                     @endif
                                     @endif
 
-                                    
+
 
                                     @if($webinar->isTextCourse() or $webinar->isCourse())
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">

@@ -211,7 +211,7 @@
                         @if ($authUser->isUser())
                             @if (count(auth()->user()->purchasedBundles) > 0)
                                 <li class="mt-5 {{ request()->is('panel/bundles/purchases') ? 'active' : '' }}">
-                                    <a href="/panel/bundles/purchases">جدول الدبلومات الدراسيه</a>
+                                    <a href="/panel/bundles/purchases">جدول البرامج الدراسيه</a>
                                 </li>
                             @endif
 
@@ -329,7 +329,7 @@
                                     <a
                                         href="/panel/assignments/my-courses-assignments">{{ trans('update.students_assignments') }}</a>
                                 </li>
-                             
+
                             @endif
                         </ul>
                     </div>
