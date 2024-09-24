@@ -190,11 +190,11 @@ class CertificateController extends Controller
             $template = $bundle->certificate_template()->where('status', 'publish')
                 ->where('type', 'bundle')->latest()->first();
 
-                $test = $bundle->bundleWebinars()->whereHas('webinar', function($query){
+                $bundlesHasGraduationProject = $bundle->bundleWebinars()->whereHas('webinar', function($query){
                     $query->whereHas('assignments')->where('type', 'graduation_project');
                 })->get();
 
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($test)>0) {
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($bundlesHasGraduationProject)>0) {
                 $this->makeBundleCertificate($bundle->id);
             }
         }
@@ -312,19 +312,16 @@ class CertificateController extends Controller
     public function makeBundleCertificate($bundleId, $format = 'png')
     {
         $user = auth()->user();
-        $bundleStudent = $user->student->bundleStudent->where('bundle_id', $bundleId)->first();
-        $gpa = $bundleStudent->gpa;
-
+        $bundleStudent = $user->student->bundleStudent->where('bundle_id', $bundleId)->latest()->first();
 
         $makeCertificate = new MakeCertificate();
-        $bundle = Bundle::where('id', $bundleId)->first();
 
-        if (!empty($bundle)) {
+        if (!empty($bundleStudent)) {
             // Check if all assignments are passed
-            $allAssignmentsPassed = $this->checkAssignmentsStatus($bundle, $bundleStudent);
+            $allAssignmentsPassed = $this->checkAssignmentsStatus($bundleStudent->bundle, $bundleStudent);
 
             // Create the certificate with the appropriate image/template
-            return $makeCertificate->makeBundleCertificate($bundle, $format, $bundleStudent->gpa, $allAssignmentsPassed);
+            return $makeCertificate->makeBundleCertificate($bundleStudent->bundle, $format, $bundleStudent->gpa, $allAssignmentsPassed);
         }
 
         abort(404);
