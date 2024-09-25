@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\traits\LearningPageForumTrait;
 use App\Http\Controllers\Web\traits\LearningPageItemInfoTrait;
 use App\Http\Controllers\Web\traits\LearningPageMixinsTrait;
 use App\Http\Controllers\Web\traits\LearningPageNoticeboardsTrait;
+use App\Models\Bundle;
 use App\Models\Certificate;
 use App\Models\CourseNoticeboard;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class LearningPageController extends Controller
     use LearningPageMixinsTrait, LearningPageAssignmentTrait, LearningPageItemInfoTrait,
         LearningPageNoticeboardsTrait, LearningPageForumTrait;
 
-    public function index(Request $request, $slug)
+    public function index(Request $request,Bundle $bundle=null, $slug)
     {
         $requestData = $request->all();
 
@@ -27,8 +28,15 @@ class LearningPageController extends Controller
 
         $course = $data['course'];
         $user = $data['user'];
+        $itemId= $course->id;
+        $itemName= 'webinar_id';
 
-        $installmentLimitation = $webinarController->installmentContentLimitation($user, $course->id, 'webinar_id');
+        if(empty($course->unattached) && !empty($bundle)){
+            $itemId = $bundle->id;
+            $itemName = "bundle_id";
+        }
+
+        $installmentLimitation = $webinarController->installmentContentLimitation($user, $itemId, $itemName);
         if ($installmentLimitation != "ok") {
             return $installmentLimitation;
         }
@@ -54,7 +62,7 @@ class LearningPageController extends Controller
 
             if ($unReadCourseNoticeboards) {
                 $url = $course->getNoticeboardsPageUrl();
-                
+
                 return redirect($url);
             }
         }

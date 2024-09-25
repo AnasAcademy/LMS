@@ -66,7 +66,7 @@
                         <i class="fa fa-eye"></i>
                     </button>
                 </div>
-                
+
                 @error('banner')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -162,8 +162,8 @@
                 <input type="text" name="start_date" class="form-control text-center datetimepicker"
                        aria-describedby="dateRangeLabel" autocomplete="off"
                        value="{{ (!empty($installment) and !empty($installment->start_date)) ? dateTimeFormat($installment->start_date, 'Y-m-d H:i', false) : old('start_date') }}"/>
-                
-                
+
+
                @error('start_date')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -185,8 +185,8 @@
                 <input type="text" name="end_date" class="form-control text-center datetimepicker"
                        aria-describedby="dateRangeLabel" autocomplete="off"
                        value="{{ (!empty($installment) and !empty($installment->end_date)) ? dateTimeFormat($installment->end_date, 'Y-m-d H:i', false) : old('end_date') }}"/>
-        
-                
+
+
                @error('end_date')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -194,6 +194,23 @@
                 @enderror
             </div>
             <div class="text-muted text-small mt-1">{{ trans('update.installment_end_date_hint') }}</div>
+        </div>
+
+        <div class="form-group">
+            <label class="input-label">اقصي مده لتأخير دفع الاقساط (بالأيام)</label>
+            <div class="input-group">
+                <input type="number" name="duration_limit" class="form-control @error('duration_limit')
+                is-invalid
+                @enderror" value="{{ old('duration_limit',$installment->duration_limit??null ) }}"/>
+
+
+               @error('duration_limit')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
+            </div>
+
         </div>
 
     </div>
