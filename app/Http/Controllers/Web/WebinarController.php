@@ -159,7 +159,7 @@ class WebinarController extends Controller
                 },
                 'noticeboards'
             ])
-            ->where('status', 'active')
+            // ->where('status', 'active')
             ->first();
 
         if (empty($course)) {
@@ -267,11 +267,11 @@ class WebinarController extends Controller
             $cashbackRulesMixin = new CashbackRules($user);
             $cashbackRules = $cashbackRulesMixin->getRules('courses', $course->id, $course->type, $course->category_id, $course->teacher_id);
         }
-        
+
         $checkAllContentPass = $course->chapters()->where('user_id',$user->id)->get();
         $bundleId = BundleWebinar::where('webinar_id', $course->id)->value('bundle_id');
         $bundle=Bundle::find($bundleId);
-  
+
     $group=$course->groups()->whereHas('enrollments',function($query) use($user){
         $query->where('user_id', $user->id);
     })->first();
@@ -297,8 +297,8 @@ class WebinarController extends Controller
             'checkAllContentPass' => $checkAllContentPass,
             'bundle'=>$bundle,
             'group'=>$group,
-            
-            
+
+
         ];
 
         // check for certificate
@@ -309,7 +309,7 @@ class WebinarController extends Controller
         if ($justReturnData) {
             return $data;
         }
-       
+
 // dd($bundleId);
         $order_id = OrderItem::where('bundle_id', $bundleId)
         ->where('user_id', auth()->user()->id)
