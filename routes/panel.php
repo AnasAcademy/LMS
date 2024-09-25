@@ -2,6 +2,7 @@
 
 use App\Models\InstallmentOrder;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\web\LearningPageController ;
 
 /*
 |--------------------------------------------------------------------------
@@ -482,6 +483,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         // requirements Routes
         Route::get('/{studentBundleId}/requirements', 'UserController@createRequirement');
         Route::post('/{studentBundleId}/requirements', 'UserController@storeRequirement')->name('requirements.store');
+        Route::get('/{bundle}/course/learning/{slug}', [LearningPageController::class, 'index']);
     });
 
     Route::group(['prefix' => 'bundle-webinars'], function () {

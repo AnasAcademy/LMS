@@ -258,14 +258,19 @@ trait InstallmentsTrait
             $denied = false;
 
             if ($overdueInstallmentOrders->isNotEmpty() and $installmentsSettings['disable_all_courses_access_when_user_have_an_overdue_installment']) {
-                $denied = true;
+                // $denied = true;
             }
 
             if (!empty($itemId) and !empty($itemName)) {
                 $itemOrders = $overdueInstallmentOrders->where($itemName, $itemId);
 
                 if ($itemOrders->isNotEmpty() and $installmentsSettings['disable_course_access_when_user_have_an_overdue_installment']) {
-                    $denied = true;
+                    $durationLimit = $itemOrders[0]->selectedInstallment->installment->duration_limit * 86400;
+                    
+                    if (($itemOrders->first()->overdue_date + $durationLimit) < time()) {
+                        $denied = true;
+                    }
+
                 }
 
                 /*****

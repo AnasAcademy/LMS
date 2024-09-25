@@ -33,7 +33,7 @@
                         <div class="d-flex justify-content-between align-items-center mt-30">
                             <h2 class="section-title after-line">{{ trans('product.courses') }} {{ $item->title }}</h2>
                         </div>
-                        @if (!empty($item->bundleWebinars) and !$item->bundleWebinars->isEmpty())
+                        @if (!empty($item->bundleWebinars) and !$item->bundleWebinars->isEmpty() and $item->start_date<= time())
                             <div class="row mt-10">
                                 <div class="col-12">
 

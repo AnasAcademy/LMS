@@ -484,7 +484,7 @@
 
                                             @if (($type=='bridging' or (!empty($bundle) and $bundle->type=='bridging')))
                                                 <div class="form-group mt-15">
-                                                    <label class="input-label">{{ 'البرامج المسوح لها بالتكسير' }}</label>
+                                                    <label class="input-label">{{ 'البرامج المسوح لها بالتجسير' }}</label>
 
                                                     <select id=""
                                                         class="custom-select @error('from_bundle_id')  is-invalid @enderror"
@@ -524,46 +524,6 @@
                                                     @enderror
                                                 </div>
 
-                                                <div class="form-group mt-15">
-                                                    <label class="input-label">{{ 'البرامج المسوح بالتكسير إليها' }}</label>
-
-                                                    <select id=""
-                                                        class="custom-select @error('to_bundle_id')  is-invalid @enderror"
-                                                        name="to_bundle_id" required>
-                                                        <option selected disabled>
-                                                            {{ trans('public.choose_category') }}</option>
-                                                        {{-- Loop through top-level categories --}}
-                                                        @foreach ($categories as $category)
-                                                            <optgroup label="{{ $category->title }}">
-
-                                                                {{-- Display bundles directly under the current category --}}
-                                                                @foreach ($category->programs as $bundleItem)
-                                                                    <option value="{{ $bundleItem->id }}"
-                                                                        @if (old('to_bundle_id', $bundle->bridging->to_bundle_id ?? null) == $bundleItem->id) selected @endif
-                                                                    >
-                                                                        {{ $bundleItem->title }}</option>
-                                                                @endforeach
-
-                                                                {{-- Display bundles under subcategories --}}
-                                                                @foreach ($category->subCategories as $subCategory)
-                                                                    @foreach ($subCategory->programs as $bundleItem)
-                                                                        <option value="{{ $bundleItem->id }}"
-                                                                            @if (old('to_bundle_id', $bundle->bridging->to_bundle_id ?? null) == $bundleItem->id) selected @endif
-                                                                        >
-                                                                            {{ $bundleItem->title }}</option>
-                                                                    @endforeach
-                                                                @endforeach
-
-                                                            </optgroup>
-                                                        @endforeach
-                                                    </select>
-
-                                                    @error('to_bundle_id')
-                                                        <div class="invalid-feedback d-block">
-                                                            {{ $message }}
-                                                        </div>
-                                                    @enderror
-                                                </div>
                                             @endif
 
 
@@ -601,7 +561,7 @@
                                                     class="custom-select @error('certificate_template_id')  is-invalid @enderror"
                                                     name="certificate_template_id">
                                                     <option value=""
-                                                        {{ !empty($bundle) ? '' : 'selected' }}disabled>اختر الشهادة
+                                                       selected >اختر الشهادة
                                                     </option>
 
                                                     @foreach ($certificates as $certificate)

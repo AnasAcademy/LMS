@@ -18,7 +18,7 @@
                     @endphp
 
                     <div class="form-group">
-                        <input type="hidden" name="bridging_id" id="bridging_id">
+                        {{-- <input type="hidden" name="bridging_id" id="bridging_id"> --}}
                         <label class="input-label">{{ trans('update.bridging') }} من برنامج :</label>
                         <select class="form-control" name="from_bundle_id" id="from_bundle_id"
                             onchange="toggleHiddenInput();displayPriceDiff() ">
@@ -46,13 +46,13 @@
 
                     <div class="form-group">
                         <label class="input-label">{{ trans('update.bridging') }} الي برنامج :</label><br>
-                        <select id="to_bundle_id" class="form-control @error('to_bundle_id')  is-invalid @enderror"
-                            name="to_bundle_id" required onchange="">
+                        <select id="bridging_id" class="form-control @error('bridging_id')  is-invalid @enderror"
+                            name="bridging_id" required onchange="">
                             <option selected disabled bridging="0">اختر البرنامج المراد ال{{ trans('update.bridging') }} إليه
                             </option>
                         </select>
 
-                        @error('to_bundle_id')
+                        @error('bridging_id')
                             <div class="invalid-feedback d-block">
                                 {{ $message }}
                             </div>
@@ -88,7 +88,7 @@
         function toggleHiddenInput() {
 
             let from_bundle_idInput = document.getElementById("from_bundle_id");
-            let to_bundle_idInput = document.getElementById("to_bundle_id");
+            let bridging_idInput = document.getElementById("bridging_id");
 
             let myForm = from_bundle_idInput.closest('form');
 
@@ -97,36 +97,36 @@
                 var availabeToBundles = bundles[fromBundleId];
 
 
-                if (availabeToBundles?.toBundle) {
+                if (availabeToBundles?.bridging) {
 
-                    var isSelected = availabeToBundles.toBundle.id == "{{ old('to_bundle_id') }}" ?
+                    var isSelected = availabeToBundles.bridging.id == "{{ old('bridging_id') }}" ?
                         'selected' : '';
                     var options =
-                        `<option value="${availabeToBundles.toBundle.id}" ${isSelected} bridging= "${availabeToBundles?.bridging?.id}">${availabeToBundles.toBundle.title}</option>`;
+                        `<option value="${availabeToBundles.bridging.id}" ${isSelected} >${availabeToBundles.bridging.title}</option>`;
 
 
-                    to_bundle_idInput.outerHTML =
-                        ` <select id="to_bundle_id" class="form-control @error('to_bundle_id')  is-invalid @enderror"
-                            name="to_bundle_id" required onchange="displayPriceDiff()">
+                   bridging_idInput.outerHTML =
+                        ` <select id="bridging_id" class="form-control @error('bridging_id')  is-invalid @enderror"
+                            name="bridging_id" required onchange="displayPriceDiff()">
                             <option selected disabled bridging="0">اختر البرنامج المراد ال{{ trans('update.bridging') }}إليه
                             </option>
                             ${options}
                         </select>`;
 
-                    document.getElementById("to_bundle_id").closest('div').classList.remove('d-none');
-                    document.getElementById("bridging_id").value = `${availabeToBundles?.bridging?.id}`;
+                    document.getElementById("bridging_id").closest('div').classList.remove('d-none');
+                    // document.getElementById("bridging_id").value = `${availabeToBundles?.bridging?.id}`;
                     confirmAction.removeAttribute('disabled');
                 } else {
-                    to_bundle_idInput.outerHTML =
-                        "<p  id='to_bundle_id' class='text-danger' bridging='0'>غير متوفر {{ trans('update.bridging') }} لهذا البرنامج*</p>";
+                    bridging_idInput.outerHTML =
+                        "<p  id='bridging_id' class='text-danger' bridging='0'>غير متوفر {{ trans('update.bridging') }} لهذا البرنامج*</p>";
                     confirmAction.setAttribute('disabled', true);
                     document.getElementById("bridging_id").value = null;
                     priceDiff.classList.add('d-none');
                 }
             } else {
-                to_bundle_idInput.outerHTML =
-                    ` <select id="to_bundle_id" class="form-control @error('to_bundle_id')  is-invalid @enderror"
-                            name="to_bundle_id" required onchange="displayPriceDiff()">
+                bridging_idInput.outerHTML =
+                    ` <select id="bridging_id" class="form-control @error('bridging_id')  is-invalid @enderror"
+                            name="bridging_id" required onchange="displayPriceDiff()">
                             <option selected disabled price="0">اختر البرنامج المراد ال{{ trans('update.bridging') }} إليه
                             </option>
                         </select>`;
@@ -145,11 +145,11 @@
         function displayPriceDiff() {
             let priceDiff = document.getElementById('price-diff');
             let fromBundle = document.getElementById('from_bundle_id');
-            let toBundle = document.getElementById('to_bundle_id');
+            let bridgingBundle = document.getElementById('bridging_id');
             var fromBundlePrice = parseInt(fromBundle.options[fromBundle.selectedIndex].getAttribute('price'));
-            var toBundlePrice = parseInt(toBundle.options[toBundle.selectedIndex].getAttribute('price'));
+            var toBundlePrice = parseInt(bridgingBundle.options[bridgingBundle.selectedIndex].getAttribute('price'));
 
-            let id = toBundle.options[toBundle.selectedIndex].getAttribute('bridging');
+            let id = bridgingBundle.options[bridgingBundle.selectedIndex].value;
             let selectedBridge = Object.values(bundles).find(obj => obj.bridging.id == id);
 
             if (selectedBridge) {

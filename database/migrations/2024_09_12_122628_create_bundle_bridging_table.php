@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('bridging_id');
             $table->unsignedInteger('from_bundle_id');
-            $table->unsignedInteger('to_bundle_id');
+            $table->unsignedInteger('to_bundle_id')->nullable();
             $table->foreign('bridging_id')->references('id')->on('bundles')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreign('from_bundle_id')->references('id')->on('bundles')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreign('to_bundle_id')->references('id')->on('bundles')->cascadeOnUpdate()->cascadeOnDelete();

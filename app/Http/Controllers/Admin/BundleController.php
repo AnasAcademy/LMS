@@ -275,7 +275,7 @@ class BundleController extends Controller
 
         if($type=='bridging'){
             $rules['from_bundle_id'] ="required|exists:bundles,id";
-            $rules['to_bundle_id'] ="required|exists:bundles,id";
+            // $rules['to_bundle_id'] ="required|exists:bundles,id";
         }
         $this->validate($request, $rules);
 
@@ -354,12 +354,12 @@ class BundleController extends Controller
                 'seo_description' => $data['seo_description'],
             ]);
 
-            if(!empty($request['from_bundle_id']) && !empty($request['to_bundle_id']) ){
+            if(!empty($request['from_bundle_id'])){
 
                $test = BundleBridging::create([
                     'bridging_id'=> $bundle->id ,
                     'from_bundle_id' => $request['from_bundle_id'],
-                    'to_bundle_id' => $request['to_bundle_id']
+                    // 'to_bundle_id' => $request['to_bundle_id']
                 ]);
             }
         }
@@ -388,7 +388,7 @@ class BundleController extends Controller
             }
         }
 
-        return redirect(getAdminPanelUrl() . '/bundles/' . $bundle->id . '/edit?locale=' . $data['locale']);
+        return redirect(getAdminPanelUrl() . '/bundles/' . $bundle->id . '/edit?locale=' . $data['locale'] . '&type='. $bundle->type);
     }
 
     public function edit(Request $request, $id)
@@ -612,7 +612,7 @@ class BundleController extends Controller
                 'seo_description' => $data['seo_description'],
             ]);
 
-            if(!empty($request['from_bundle_id']) && !empty($request['to_bundle_id']) ){
+            if(!empty($request['from_bundle_id'])){
 
 
             BundleBridging::updateOrCreate([
@@ -620,7 +620,7 @@ class BundleController extends Controller
             ],
             [
                     'from_bundle_id' => $request['from_bundle_id'],
-                    'to_bundle_id' => $request['to_bundle_id']
+                    // 'to_bundle_id' => $request['to_bundle_id']
                 ]);
             }
         }
