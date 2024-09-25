@@ -7,6 +7,7 @@ use App\Mixins\Certificate\MakeCertificate;
 use App\Models\Bundle;
 use App\Models\Certificate;
 use App\Models\CertificateTemplate;
+use App\Models\InstallmentOrder;
 use App\Models\Quiz;
 use App\Models\QuizzesResult;
 use App\Models\Reward;
@@ -183,19 +184,46 @@ class CertificateController extends Controller
 
 
 
+        // $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
+        // $userbundles = Bundle::whereIn('id', $bundlesIds)->with('bundleWebinars.webinar')->get();
+        // foreach ($userbundles as $bundle) {
+        //     //dd($bundle);
+        //     $template = $bundle->certificate_template()->where('status', 'publish')
+        //         ->where('type', 'bundle')->latest()->first();
+
+        //         $test = $bundle->bundleWebinars()->whereHas('webinar', function($query){
+        //             $query->whereHas('assignments')->where('type', 'graduation_project');
+        //         })->get();
+
+        //     if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($test)>0) {
+        //         $this->makeBundleCertificate($bundle->id);
+        //     }
+        // }
+
+
         $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
         $userbundles = Bundle::whereIn('id', $bundlesIds)->with('bundleWebinars.webinar')->get();
+        
         foreach ($userbundles as $bundle) {
-            //dd($bundle);
-            $template = $bundle->certificate_template()->where('status', 'publish')
-                ->where('type', 'bundle')->latest()->first();
-
-                $test = $bundle->bundleWebinars()->whereHas('webinar', function($query){
+            // Check if the student has any overdue installments for the current bundle
+            $order = InstallmentOrder::where('bundle_id', $bundle->id)
+                ->where('user_id',$user->id)
+                 ->where('status', '!=', 'paying')
+                ->first();
+        //
+            $hasOverdue = $order ? $order->checkOrderHasOverdue() : false;
+           // dd( $hasOverdue);
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !$hasOverdue) {
+                $template = $bundle->certificate_template()->where('status', 'publish')
+                    ->where('type', 'bundle')->latest()->first();
+        
+                $test = $bundle->bundleWebinars()->whereHas('webinar', function ($query) {
                     $query->whereHas('assignments')->where('type', 'graduation_project');
                 })->get();
-
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($test)>0) {
-                $this->makeBundleCertificate($bundle->id);
+        
+                if (!empty($template) && count($test) > 0) {
+                    $this->makeBundleCertificate($bundle->id);
+                }
             }
         }
 
