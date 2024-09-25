@@ -164,6 +164,31 @@ class InstallmentOrder extends Model
 
         return $result;
     }
+    public function checkOrderHasOverdueAfterDurationLimit()
+    {
+        $result = false;
+        $time = time();
+// dd($this);
+        if ($this->status == 'open') {
+            foreach ($this->selectedInstallment->steps as $step) {
+                $dueAt = ($step->deadline * 86400) + $this->bundle->start_date + ($this->selectedInstallment->installment->duration_limit * 86400);
+                
+                if ($time > $dueAt) {
+                    $payment = InstallmentOrderPayment::query()
+                        ->where('installment_order_id', $this->id)
+                        ->where('selected_installment_step_id', $step->id)
+                        ->where('status', 'paid')
+                        ->first();
+
+                    if (empty($payment)) {
+                        $result = true;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
 
     public function getOrderOverdueCountAndAmount()
     {
