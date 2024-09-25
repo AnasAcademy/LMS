@@ -92,6 +92,7 @@ class InstallmentsController extends Controller
             'target_type' => 'required',
             'upfront' => 'nullable|numeric',
             'batch_id'=>'required',
+            'duration_limit'=>"required"
         ]);
 
         $data = $request->all();
@@ -113,6 +114,7 @@ class InstallmentsController extends Controller
             'enable' => (!empty($data['enable']) and $data['enable'] == 'on'),
             'created_at' => time(),
             'batch_id'=>$data['batch_id']?? null,
+            'duration_limit'=>$data['duration_limit']?? 0,
         ]);
 
         if (!empty($installment)) {
@@ -318,6 +320,7 @@ class InstallmentsController extends Controller
             'target_type' => 'required',
             'upfront' => 'nullable|numeric',
             'batch_id'=>'required',
+            'duration_limit' => 'required'
         ]);
 
         $installment = Installment::query()->findOrFail($id);
@@ -339,6 +342,7 @@ class InstallmentsController extends Controller
             'upfront_type' => !empty($data['upfront']) ? $data['upfront_type'] : null,
             'enable' => (!empty($data['enable']) and $data['enable'] == 'on'),
             'batch_id'=>$data['batch_id']?? $installment->batch_id,
+            'duration_limit'=>(int)$data['duration_limit']?? 0,
         ]);
 
         if (!empty($installment)) {
