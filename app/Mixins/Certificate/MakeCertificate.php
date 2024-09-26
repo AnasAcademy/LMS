@@ -128,7 +128,7 @@ class MakeCertificate
             'font_size_certificate_code' => (int)($data['font_size_certificate_code'] ?? 20),
 
             //'course_hours' => $data['course_hours'] ?? '',
-            //'gpa' => $data['gpa'] ?? '',
+           //'gpa' => $data['gpa'] ?? '',
         ];
 
         return $bodyData;
@@ -230,14 +230,10 @@ class MakeCertificate
         else{
             $body['graduation_date'] =   $formattedDate;
         }
-        // dd($body['graduation_date']);
-        $min = 0;
-        if (!isset($body['gpa'])) {
-            $min = 60;
-        }
+       
         // Add Graduation Date Text
         if (isset($body['graduation_date'])) {
-            $img->text($body['graduation_date'], $body['position_x_date'], $body['position_y_date']-$min, function ($font) use ($fontPath, $certificateTemplate, $body) {
+            $img->text($body['graduation_date'], $body['position_x_date'], $body['position_y_date'], function ($font) use ($fontPath, $certificateTemplate, $body) {
                 $font->file($fontPath);
                 $font->size($body['font_size_date']);
                 $font->color($certificateTemplate->text_color);
@@ -268,25 +264,32 @@ class MakeCertificate
             });
         }
 
-        // GPA Check and Honor Level
-        $gpaMessage = '';
-        if (isset($body['gpa'])) {
-            if ($body['gpa'] != 0.0) {
-                // Determine honor level based on GPA
-                $honorLevel = "Fail"; // Default value
-                foreach ($honorLevels as $gpa => $level) {
-                    if ($body['gpa'] >= $gpa) {
-                        $honorLevel = $level;
-                        break;
-                    }
-                }
+       
+           // GPA Check and Honor Level
+           $gpaMessage = ''; // Initialize the message
 
-                $gpaMessage = "with a " . $honorLevel . " and a GPA of (" . $body['gpa'] . "/5)";
-            } else {
-                $gpaMessage = "without graduation project requirements have not been fulfilled";
-            }
-        }
+           // Check if 'gpa' is set and not null
 
+           if (array_key_exists('gpa', $body)) {
+               if ($body['gpa'] === null) {
+                   // Case when GPA is null
+                   $gpaMessage = "without graduation project requirements have not been fulfilled";
+               } elseif ($body['gpa'] != 0.0) {
+                   // Determine honor level based on GPA
+                   $honorLevel = "Fail"; // Default value
+                   foreach ($honorLevels as $gpa => $level) {
+                       if ($body['gpa'] >= $gpa) {
+                           $honorLevel = $level;
+                           break;
+                       }
+                   }
+           
+                   $gpaMessage = "with a " . $honorLevel . " and a GPA of (" . $body['gpa'] . "/5)";
+               } else {
+                   $gpaMessage = "without graduation project requirements have not been fulfilled";
+               }
+           }
+    
         // Add GPA Text
         if (!empty($gpaMessage)) {
             $img->text($gpaMessage, $body['position_x_text'], 1510, function ($font) use ($fontPath, $certificateTemplate, $body) {
@@ -355,7 +358,8 @@ class MakeCertificate
             $body['student_name'] = $user->student->en_name ?? '';
             $body['course_name'] = $course->course_name_certificate;
             $body['course_hours'] = $course->duration;
-
+           // dd($body['gpa']);
+           //unset($body['gpa']);
             // Generate the image
             $img = $this->makeImage($template, $body);
             if ($format === 'pdf') {
@@ -428,7 +432,7 @@ class MakeCertificate
     }
 
 
-    public function makebundleCertificate(Bundle $bundle, $format = 'png', $gpa, $allAssignmentsPassed)
+public function makebundleCertificate(Bundle $bundle, $format = 'png', $gpa, $allAssignmentsPassed)
 {
     // Determine the appropriate template/image based on the assignment status
     $template = $bundle->certificate_template()->where('status', 'publish')
@@ -445,12 +449,24 @@ class MakeCertificate
         $body['student_name'] = $user->student->en_name ?? '';
         $body['course_name'] = $bundle->bundle_name_certificate;
         $body['graduation_date'] = $bundle->end_date; // Include the end date
-       // $body['course_hours'] = $bundle->duration;
         $body['gpa'] = $gpa;
+        
 
-            // Set the image based on whether all assignments were passed
-        if ($allAssignmentsPassed || !isset($gpa)) {
-          //  dd($allAssignmentsPassed);
+        // Set positions based on whether a GPA is present
+        if (isset($gpa) && $gpa > 0) {
+            // Set positions if GPA exists
+            $body['position_x_date'] = 835; // Change this value as needed
+            $body['position_y_date'] = 1560; // Change this value as needed
+        } else {
+            // Set default positions if GPA doesn't exist
+            $body['position_x_date'] = 835; // Change this value as needed
+            $body['position_y_date'] = 1560; // Change this value as needed
+        }
+
+        // Set the image based on whether all assignments were passed
+     
+        if ($allAssignmentsPassed && $gpa !== null) {
+            
             // Use the template image if passed
             $img = $this->makeImage($template, $body);
         } else {
@@ -459,8 +475,8 @@ class MakeCertificate
             $alternativeImage = 'assets/default/certificate_template/image (3).png'; // Specify your alternative image path
 
             // Update the template image to the alternative image
-            $template->image= $alternativeImage;
-          // dd($originaltext);
+            $template->image = $alternativeImage;
+
             // Generate the image using the alternative image
             $img = $this->makeImage($template, $body);
 
