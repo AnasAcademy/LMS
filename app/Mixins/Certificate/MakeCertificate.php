@@ -128,7 +128,11 @@ class MakeCertificate
             'font_size_certificate_code' => (int)($data['font_size_certificate_code'] ?? 20),
 
             //'course_hours' => $data['course_hours'] ?? '',
-           //'gpa' => $data['gpa'] ?? '',
+           'gpa_text' => $data['gpa'] ?? '',
+           'position_x_gpa' => (int)($data['position_x_gpa'] ?? 835), // Default to 835 if not provided
+            'position_y_gpa' => (int)($data['position_y_gpa'] ?? 1510),
+            'font_size_gpa' => (int)($data['font_size_gpa'] ?? 40),
+
         ];
 
         return $bodyData;
@@ -265,16 +269,29 @@ class MakeCertificate
         }
 
        
+
+       
            // GPA Check and Honor Level
            $gpaMessage = ''; // Initialize the message
 
            // Check if 'gpa' is set and not null
-
+   //dd($body['gpa']);
            if (array_key_exists('gpa', $body)) {
-               if ($body['gpa'] === null) {
+               if ($body['gpa'] === null || $body['gpa'] == 0) {
+
+                if (isset($body['gpa_text'])) {
+                    $img->text($body['gpa_text'], $body['position_x_gpa'], $body['position_y_gpa'], function ($font) use ($fontPath, $certificateTemplate, $body) {
+                        $font->file($fontPath);
+                        $font->size($body['font_size_gpa']);
+                        $font->color($certificateTemplate->text_color);
+                        $font->align('center');
+                        $font->valign('top');
+                    });
+                }
+                
                    // Case when GPA is null
-                   $gpaMessage = "without graduation project requirements have not been fulfilled";
-               } elseif ($body['gpa'] != 0.0) {
+                   //$gpaMessage = "without graduation project requirements have not been fulfilled";
+               } elseif ($body['gpa'] != 0.0 && !empty($body['gpa']) ) {
                    // Determine honor level based on GPA
                    $honorLevel = "Fail"; // Default value
                    foreach ($honorLevels as $gpa => $level) {
@@ -285,9 +302,10 @@ class MakeCertificate
                    }
            
                    $gpaMessage = "with a " . $honorLevel . " and a GPA of (" . $body['gpa'] . "/5)";
-               } else {
-                   $gpaMessage = "without graduation project requirements have not been fulfilled";
                }
+            //     else {
+            //        $gpaMessage = "without graduation project requirements have not been fulfilled";
+            //    }
            }
     
         // Add GPA Text
