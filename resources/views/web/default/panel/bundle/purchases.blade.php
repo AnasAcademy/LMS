@@ -18,7 +18,7 @@
     <section class="mt-25">
         @if (!empty($sales) and !$sales->isEmpty())
             <div class="d-flex align-items-start align-items-md-center justify-content-between flex-column flex-md-row mt-80">
-                <h2 class="section-title">الدبلومات المسجلة </h2>
+                <h2 class="section-title">البرامج المسجلة </h2>
             </div>
             @foreach ($sales as $sale)
                 @php
@@ -46,6 +46,7 @@
                                                 <th class="text-left">{{ trans('public.instructor') }}</th>
                                                 <th>{{ trans('public.start_date') }}</th>
                                                 <th>المهام</th>
+                                                <th>عدد التسليمات</th>
                                                 <th>الإجراءات</th>
                                             </tr>
                                             @php
@@ -63,12 +64,15 @@
 
                                                         <td class="text-left">
                                                             {{ $bundleWebinar->webinar->teacher->full_name }}</td>
-                                                        <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y | H:i') }}
+                                                            
+                                                        <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y ') }}
                                                         </td>
                                                         <td>
                                                             @php
-                                                                // dd($bundleWebinar->webinar->assignments);
+                                                                //dd($bundleWebinar->webinar->assignments);
+                                                              //  dump($bundleWebinar->webinar->assignments);
                                                             @endphp
+                                                           
                                                             @if (!empty($bundleWebinar->webinar->assignments[0]))
                                                                 <button
                                                                     type="button"style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
@@ -79,9 +83,42 @@
                                                                     disabled>لا يوجد مهام بعد</button>
                                                             @endif
                                                         </td>
+                                                        
+                                                        <td>
+                                                            @php
+                                                                $assignmentCount = $bundleWebinar->webinar->assignments->count();
+                                                                $assignmentHistoryCount = 0;
+                                                            @endphp
+                                                        
+                                                            @foreach ($bundleWebinar->webinar->assignments as $assignment)
+                                                            {{-- @dump($assignment->assignmentHistory->status ) --}}
+                                                                @if ($assignment->assignmentHistory )
+                                                              {{-- @dump($assignment->assignmentHistory) --}}
+                                                                    @php
+                                                                        $assignmentHistoryCount++;
+                                                                    @endphp
+                                                                @endif
+                                                            @endforeach
+                                                        
+                                                            @php
+                                                                $remainingAssignments = $assignmentCount - $assignmentHistoryCount;
+                                                            @endphp
+                                                        
+                                                            @if ($remainingAssignments > 0)
+                                                                <button
+                                                                    type="button" style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
+                                                                    disabled>{{$remainingAssignments}}</button>
+                                                            @else
+                                                                <button
+                                                                    type="button" style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;"
+                                                                    disabled>لا يوجد تسليمات</button>
+                                                            @endif
+                                                        </td>
+                                                        
+
                                                         <td>
                                                             @if ($bundleWebinar->webinar->duration != 0)
-                                                                @if ($bundleWebinar->webinar->video_demo)
+                                                                {{-- @if ($bundleWebinar->webinar->video_demo)
                                                                     <a target="_blank" rel="noopener noreferrer"
                                                                         class="btn btn-primary"
                                                                         style="width:190px;height:50px"
@@ -91,7 +128,7 @@
                                                                     <button class="btn btn-primary"
                                                                         style="width:190px;height:50px; background-color: #808080;"
                                                                         disabled>اضغط هنا للذهاب للمحاضرا</button>
-                                                                @endif
+                                                                @endif --}}
 
                                                                 <a class="btn btn-primary"
                                                                     href="{{ $bundleWebinar->getWebinarUrl() }}"
@@ -103,8 +140,8 @@
                                                 @endif
                                             @endforeach
                                             <tr>
-                                                <th colspan="6">إجمالي عدد الساعات:
-                                                    {{ convertMinutesToHourAndMinute($totalHours) }}</th>
+                                                <th colspan="7">إجمالي عدد الساعات:
+                                                    {{ $totalHours }}</th>
                                             </tr>
                                         </table>
                                     </div>
