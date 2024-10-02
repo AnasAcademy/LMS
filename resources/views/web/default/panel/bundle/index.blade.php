@@ -21,7 +21,7 @@
                 <div class="col-6 col-md-3 mt-30 mt-md-0 d-flex align-items-center justify-content-center">
                     <div class="d-flex flex-column align-items-center text-center">
                         <img src="/assets/default/img/activity/hours.svg" width="64" height="64" alt="">
-                        <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ convertMinutesToHourAndMinute($bundlesHours) }}</strong>
+                        <strong class="font-30 text-dark-blue font-weight-bold mt-5">{{ $bundlesHours }}</strong>
                         <span class="font-16 text-gray font-weight-500">{{ trans('home.hours') }}</span>
                     </div>
                 </div>
@@ -135,7 +135,7 @@
 
                                     <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                         <span class="stat-title">{{ trans('public.duration') }}:</span>
-                                        <span class="stat-value">{{ convertMinutesToHourAndMinute($bundle->getBundleDuration()) }} Hrs</span>
+                                        <span class="stat-value">{{ $bundle->getBundleDuration() }} Hrs</span>
                                     </div>
 
                                     <div class="d-flex align-items-start flex-column mt-20 mr-15">
