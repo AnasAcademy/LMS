@@ -772,7 +772,12 @@ class WebinarController extends Controller
 
         removeContentLocale();
 
-        return back();
+ $toastData = [
+            'title' => 'تعديل الكورس',
+            'msg' => 'تم التعديل بنجاج',
+            'status' => 'success'
+        ];
+        return back()->with(['toast' => $toastData]);
     }
 
     public function destroy(Request $request, $id)
