@@ -61,6 +61,9 @@
                                         <option value="bundle"
                                             {{ (!empty($template) and $template->type == 'bundle') ? 'selected' : '' }}>
                                             إتمام حزمة</option>
+                                            <option value="attendance"
+                                            {{ (!empty($template) and $template->type == 'attendance') ? 'selected' : '' }}>
+                                               شهاده حضور</option>   
                                     </select>
                                     <div class="invalid-feedback">
                                         @error('type')
@@ -481,7 +484,11 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (selectedType === 'course') {
             bundleDropdown.style.display = 'none';
             courseDropdown.style.display = 'block';
-        } else {
+        } else if (selectedType === 'attendance') {
+            bundleDropdown.style.display = 'block';
+            courseDropdown.style.display = 'none';
+        }
+        else {
             bundleDropdown.style.display = 'none';
             courseDropdown.style.display = 'none';
         }

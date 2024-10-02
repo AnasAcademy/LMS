@@ -138,7 +138,7 @@ class CertificateController extends Controller
         $rules = [
             'title' => 'required',
             'image' => 'required',
-            'type' => 'required|in:quiz,course,bundle',
+            'type' => 'required|in:quiz,course,bundle,attendance',
             // 'bundles'=>'required',
             //    'student_name'=>'required',
             'position_x_student' => 'required',
