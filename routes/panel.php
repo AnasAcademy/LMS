@@ -2,7 +2,7 @@
 
 use App\Models\InstallmentOrder;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\web\LearningPageController ;
+use App\Http\Controllers\Web\LearningPageController ;
 
 /*
 |--------------------------------------------------------------------------
