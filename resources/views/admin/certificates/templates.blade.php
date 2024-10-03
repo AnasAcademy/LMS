@@ -46,6 +46,8 @@
                                                     <span class="">{{ trans('update.quiz_related') }}</span>
                                                 @elseif($template->type == 'course')
                                                     <span class="">{{ trans('update.course_completion') }}</span>
+                                                @elseif($template->type == 'attendance')
+                                                    <span class="">شهاده حضور</span>
                                                 @else
                                                  <span class="">إتمام الحزمة</span>
                                                 @endif
