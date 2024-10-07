@@ -29,7 +29,7 @@ class SaleController extends Controller
         ];
 
         $totalSales = [
-            'count' => deepClone($query)->whereNull('refund_at')->count() + $totalDiscounts['count'],
+            'count' => deepClone($query)->whereNull('refund_at')->count() - $totalDiscounts['count'],
             'amount' => deepClone($query)->whereNull('refund_at')->sum('total_amount'),
         ];
 
