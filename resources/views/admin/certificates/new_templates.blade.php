@@ -290,9 +290,9 @@
 
                                 <div class="form-group">
                                     <label class="control-label" for="graduation_date">سكشن ال GPA</label>
-                                    <input type="gpa" id="graduation_date" name="gpa"
+                                    <input type="text" id="graduation_date" name="gpa"
                                         class="form-control @error('gpa') is-invalid @enderror"
-                                        value="{{ old('date', !empty($template) ? $template->gpa : '') }}">
+                                        value="{{ old('gpa', !empty($template) ? $template->gpa : '') }}">
                                     @error('gpa')
                                         <div class="invalid-feedback">
                                             {{ $message }}

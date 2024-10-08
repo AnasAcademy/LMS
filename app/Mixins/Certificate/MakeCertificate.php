@@ -430,58 +430,68 @@ class MakeCertificate
     }
 
 
-public function makebundleCertificate(Bundle $bundle, $format = 'png', $gpa, $allAssignmentsPassed)
-{
-    // Determine the appropriate template/image based on the assignment status
-    $template = $bundle->certificate_template()->where('status', 'publish')
-        ->where('type', 'bundle')
-        ->latest()
-        ->first();
-   $templateattendance = $bundle->certificate_template()->where('status', 'publish')
-        ->where('type', 'attendance')
-        ->latest()
-        ->first();
-    if (!empty($template) && !empty($bundle)) {
-        $user = auth()->user();
-        $userCertificate = $this->saveBundleCertificate($user, $bundle, $template);
-        $data = $template;
-        $body = $this->makeBody($data);
-        $body['certificate_code'] = $userCertificate->certificate_code;
-        $body['student_name'] = $user->student->en_name ?? '';
-        $body['course_name'] = $bundle->bundle_name_certificate;
-        $body['graduation_date'] = $bundle->end_date; // Include the end date
-        $body['gpa'] = $gpa;
-        
-
-
-        // Set the image based on whether all assignments were passed
-     
-        if ($allAssignmentsPassed && $gpa !== null) {
-
-            $img = $this->makeImage($template, $body);
-        } else { 
-            $img = $this->makeImage($templateattendance , $body);
+    public function makebundleCertificate(Bundle $bundle, $format = 'png', $gpa, $allAssignmentsPassed)
+    {
+        // Determine the appropriate template/image based on the assignment status
+        $template = $bundle->certificate_template()->where('status', 'publish')
+            ->where('type', 'bundle')
+            ->latest()
+            ->first();
+       $templateattendance = $bundle->certificate_template()->where('status', 'publish')
+            ->where('type', 'attendance')
+            ->latest()
+            ->first();
+        if (!empty($template) && !empty($bundle)) {
+            $user = auth()->user();
+            $userCertificate = $this->saveBundleCertificate($user, $bundle, $template);
+         
+           // dd($data);
+            
+            
+    
+    
+            // Set the image based on whether all assignments were passed
+         
+            if ($allAssignmentsPassed && $gpa !== null) {
+                   $data = $template;
+            $body = $this->makeBody($data);
+            $body['certificate_code'] = $userCertificate->certificate_code;
+            $body['student_name'] = $user->student->en_name ?? '';
+            $body['course_name'] = $bundle->bundle_name_certificate;
+            $body['graduation_date'] = $bundle->end_date; // Include the end date
+            $body['gpa'] = $gpa;
+                $img = $this->makeImage($template, $body);
+            } else { 
+                   $data = $templateattendance;
+                $body = $this->makeBody($data);
+            $body['certificate_code'] = $userCertificate->certificate_code;
+            $body['student_name'] = $user->student->en_name ?? '';
+            $body['course_name'] = $bundle->bundle_name_certificate;
+            $body['graduation_date'] = $bundle->end_date; // Include the end date
+            $body['gpa'] = $gpa;
+                $img = $this->makeImage($templateattendance , $body);
+            }
+    
+            if ($format === 'pdf') {
+                // Generate PDF with embedded image
+                $imageData = (string) $img->encode('data-url');
+                $pdf = PDF::loadView('web.default.certificate_template.index', [
+                    'pageTitle' => trans('public.certificate'),
+                    'body' => $body,
+                    'dynamicImage' => $imageData,
+                ]);
+    
+                return $pdf->setPaper('a4')
+                    ->setWarnings(false)
+                    ->stream('course_certificate.pdf');
+            } else {
+                return $img->response('png');
+            }
         }
-
-        if ($format === 'pdf') {
-            // Generate PDF with embedded image
-            $imageData = (string) $img->encode('data-url');
-            $pdf = PDF::loadView('web.default.certificate_template.index', [
-                'pageTitle' => trans('public.certificate'),
-                'body' => $body,
-                'dynamicImage' => $imageData,
-            ]);
-
-            return $pdf->setPaper('a4')
-                ->setWarnings(false)
-                ->stream('course_certificate.pdf');
-        } else {
-            return $img->response('png');
-        }
+    
+        abort(404);
     }
-
-    abort(404);
-}
+    
 
 
 

@@ -187,9 +187,9 @@ class UserController extends Controller
                 $joinNewsletter = (!empty($data['join_newsletter']) and $data['join_newsletter'] == 'on');
 
                 $updateData = [
-                    'email' => $data['email'],
+                   // 'email' => $data['email'],
                     'full_name' => $data['full_name'],
-                    'mobile' => $data['mobile'],
+                    //'mobile' => $data['mobile'],
                     'language' => $data['language'] ?? null,
                     'timezone' => $data['timezone'] ?? null,
                     'currency' => $data['currency'] ?? null,
@@ -197,7 +197,14 @@ class UserController extends Controller
                     'public_message' => (!empty($data['public_messages']) and $data['public_messages'] == 'on'),
                 ];
 
+                if (!session()->has('impersonated')) {
+                  
+                    $data['email'] = $user->email;
+                    $data['mobile'] = $user->mobile;
+                }
+
                 $this->handleNewsletter($data['email'], $user->id, $joinNewsletter);
+
             } elseif ($step == 2) {
                 $updateData = [
                     'cover_img' => $data['cover_img'],
@@ -224,6 +231,7 @@ class UserController extends Controller
                 if (!session()->has('impersonated')) {
                     $data['ar_name'] = $user->student->ar_name;
                     $data['en_name'] = $user->student->en_name;
+                  
                 }
                 $user->student->update($data);
             } elseif ($step == 4) {
