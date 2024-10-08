@@ -5,7 +5,7 @@
                 {{ csrf_field() }}
 
                 <div class="form-group">
-                    <label>{{ trans('/admin/main.full_name') }}</label>
+                    <label>اسم الطالب باللغه العربيه</label>
                     <input type="text" name="full_name"
                            class="form-control  @error('full_name') is-invalid @enderror"
                            value="{{ !empty($user) ? $user->full_name : old('full_name') }}"
@@ -16,6 +16,22 @@
                     </div>
                     @enderror
                 </div>
+
+                @if(!empty($user) && $user->role_id == 1)  {{-- Assuming role_id of "user" is 1 --}}
+                <div class="form-group">
+                    <label>اسم الطالب باللغه الانجليزيه</label>
+                    <input type="text" name="en_name"
+                           class="form-control @error('en_name') is-invalid @enderror"
+                           value="{{ !empty($user->student) ? $user->student->en_name : old('en_name') }}"
+                           placeholder="{{ trans('admin/main.create_field_en_name_placeholder') }}"/>
+            
+                    @error('en_name')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+            @endif
 
                 <div class="form-group">
                     <label>كود الطالب</label>
@@ -44,6 +60,9 @@
                     </div>
                     @enderror
                 </div>
+
+
+           
 
                 <div class="form-group">
                     <label class="input-label">{{ trans('update.timezone') }}</label>

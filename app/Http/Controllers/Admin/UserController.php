@@ -749,6 +749,7 @@ class UserController extends Controller
     public function edit(Request $request, $id)
     {
         $this->authorize('admin_users_edit');
+       // $student= Student::where('user_id', $id)->get();
 
         $user = User::where('id', $id)
             ->with([
@@ -859,6 +860,7 @@ class UserController extends Controller
             'cities' => $cities,
             'districts' => $districts,
             'userBanks' => $userBanks,
+            //'student'=>$student,
         ];
 
         // Purchased Classes Data
@@ -1040,7 +1042,7 @@ class UserController extends Controller
             'full_name' => 'required|min:3|max:128',
             'role_id' => 'required|exists:roles,id',
             'email' => (!empty($user->email)) ? 'required|email|unique:users,email,' . $user->id . ',id,deleted_at,NULL' : 'nullable|email|unique:users',
-            'mobile' => (!empty($user->mobile)) ? 'required|numeric|unique:users,mobile,' . $user->id . ',id,deleted_at,NULL' : 'nullable|numeric|unique:users',
+            'mobile' => (!empty($user->mobile)) ? 'required|unique:users,mobile,' . $user->id . ',id,deleted_at,NULL' : 'nullable|numeric|unique:users',
             'password' => 'nullable|string',
             'bio' => 'nullable|string|min:3|max:48',
             'about' => 'nullable|string|min:3',
@@ -1048,6 +1050,7 @@ class UserController extends Controller
             'status' => 'required|' . Rule::in(User::$statuses),
             'ban_start_at' => 'required_if:ban,on',
             'ban_end_at' => 'required_if:ban,on',
+            'en_name' => 'nullable|string|max:255',  
         ]);
 
         $data = $request->all();
@@ -1092,6 +1095,11 @@ class UserController extends Controller
         $user->about = !empty($data['about']) ? $data['about'] : null;
         $user->status = !empty($data['status']) ? $data['status'] : null;
         $user->language = !empty($data['language']) ? $data['language'] : null;
+
+        if ($role->id == 1) {
+            $user->student->en_name = !empty($data['en_name']) ? $data['en_name'] : null;
+           // dd($user->student->en_name );
+        }
 
         if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
@@ -1138,7 +1146,7 @@ class UserController extends Controller
         $user->can_create_store = (!empty($data['can_create_store']) and $data['can_create_store'] == '1');
 
         $user->access_content = (!empty($data['access_content']) and $data['access_content'] == '1');
-
+        $user->student->save();
         $user->save();
 
         // save certificate_additional in user metas table
