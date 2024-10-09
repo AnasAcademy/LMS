@@ -429,9 +429,9 @@ class BundleController extends Controller
 
         $userIds = [$bundle->creator_id, $bundle->teacher_id];
         $userWebinars = Webinar::select('id', 'creator_id', 'teacher_id')
-            ->where('status', Webinar::$active)
-            ->where('private', false)
-            ->where('category_id',$bundle->category_id)
+            // ->where('status', Webinar::$active)
+            // ->where('private', false)
+            // ->where('category_id',$bundle->category_id)
             // ->where(function ($query) use ($userIds) {
             //     $query->whereIn('creator_id', $userIds)
             //         ->orWhereIn('teacher_id', $userIds);
