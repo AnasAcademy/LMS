@@ -23,19 +23,18 @@ class SaleController extends Controller
 
         $query = Sale::whereNull('product_order_id')->where('manual_added', 0);
 
-        $totalSales = [
-            'count' => deepClone($query)->whereNull('refund_at')->count(),
-            'amount' => deepClone($query)->whereNull('refund_at')->sum('total_amount'),
-        ];
-
-
         $totalDiscounts = [
             'count' => deepClone($query)->where('discount', '>', 0)->whereNull('refund_at')->count(),
             'amount' => deepClone($query)->where('discount', '>', 0)->whereNull('refund_at')->sum('discount'),
         ];
 
+        $totalSales = [
+            'count' => deepClone($query)->whereNull('refund_at')->count() ,
+            'amount' => deepClone($query)->whereNull('refund_at')->sum('total_amount'),
+        ];
+
         $totalSales2 = [
-            'count' => deepClone($query)->whereNull('refund_at')->count(),
+            'count' => deepClone($query)->whereNull('refund_at')->count() - $totalDiscounts['count'],
             'amount' =>  $totalSales['amount'] + $totalDiscounts['amount'] ,
         ];
         $classesSales = [

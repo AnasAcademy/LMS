@@ -131,6 +131,7 @@ class BatchStudentImport implements ToModel
                              <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy123
                             <br>
                 ";
+
                  $this->sendEmail($user, $data);
             }
 
@@ -183,22 +184,20 @@ class BatchStudentImport implements ToModel
             ]);
 
 
-                // check the user apply to this bundle before or not
-                $bundleStudent = BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $program->id])->first();
-                if ($bundleStudent) {
-                    return null;
-                }
+            // check the user apply to this bundle before or not
+            $bundleStudent = BundleStudent::firstOrCreate([
+                'student_id' => $student->id,
+                'bundle_id' => $program->id
+            ],
+            [
+                'class_id' => $this->batchId,
+            ]);
 
+            $existSale = Sale::where(['buyer_id' => $user->id, 'bundle_id'=> $program->id])->whereIn('type', ['bundle', 'installment_payment'])->first();
 
-                // apply bundle for student
-                $bundleStudent = BundleStudent::create([
-                    'student_id' => $student->id,
-                    'bundle_id' => $program->id,
-                    'class_id' => $this->batchId,
-                ]);
-
-
-
+            if($existSale){
+                return null;
+            }
 
             // create order
             $order = Order::create([

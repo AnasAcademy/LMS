@@ -48,7 +48,7 @@ use App\Mail\SendNotifications;
 
 use App\Imports\StudentImport;
 use App\Exports\ProgramCodeExport;
-
+use App\Imports\SendUserMail;
 
 class UserController extends Controller
 {
@@ -233,8 +233,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_list');
 
-        $query = User::where('role_name', Role::$user)
-            ->orWhere('role_name', Role::$registered_user);
+        $query = User::whereIn('role_name', [Role::$user, Role::$registered_user]);
 
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -256,7 +255,11 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $query = $this->filters($query, $request);
+            $t1 = $query->get();
+            $query = $this->filters($query, $request);
+            $t2 = $query->get();
+
+            // dd($t1, $t2);
 
         if ($is_export_excel) {
             $users = $query->orderBy('created_at', 'desc')->get();
@@ -420,6 +423,7 @@ class UserController extends Controller
 
         if (!empty($full_name)) {
             $query->where('full_name', 'like', "%$full_name%");
+
         }
         if (!empty($user_code)) {
             $query->where('user_code', 'like', "%$user_code%");
@@ -541,7 +545,8 @@ class UserController extends Controller
         }
 
         if (!empty($group_id)) {
-            $userIds = GroupUser::where('group_id', $group_id)->pluck('user_id')->toArray();
+            // $userIds = GroupUser::where('group_id', $group_id)->pluck('user_id')->toArray();
+            $userIds = Enrollment::where('group_id', $group_id)->pluck('user_id')->toArray();
 
             $query->whereIn('id', $userIds);
         }
@@ -1578,6 +1583,47 @@ class UserController extends Controller
         }
     }
 
+    public function sendStudentMail(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $import = new SendUserMail();
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'ارسال ميل تسجيل لطلبة ',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد  ميل تسجيل لطلبة',
+                'msg' => 'تم الارسال بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'ارسال ميل تسجيل لطلبة ',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            dd($toastData);
+            return back()->with(['toast' => $toastData]);
+        }
+    }
 
     public function exportBundles()
     {

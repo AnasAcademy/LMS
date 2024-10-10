@@ -271,6 +271,7 @@ class BundleController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
             'batch_id' => 'required',
+            'price' => 'required',
         ];
 
         if($type=='bridging'){
@@ -429,9 +430,9 @@ class BundleController extends Controller
 
         $userIds = [$bundle->creator_id, $bundle->teacher_id];
         $userWebinars = Webinar::select('id', 'creator_id', 'teacher_id')
-            ->where('status', Webinar::$active)
-            ->where('private', false)
-            ->where('category_id',$bundle->category_id)
+            // ->where('status', Webinar::$active)
+            // ->where('private', false)
+            // ->where('category_id',$bundle->category_id)
             // ->where(function ($query) use ($userIds) {
             //     $query->whereIn('creator_id', $userIds)
             //         ->orWhereIn('teacher_id', $userIds);
@@ -479,6 +480,7 @@ class BundleController extends Controller
             'category_id' => 'required',
             'batch_id'=>'required',
             'type' => 'required|in:program,bridging',
+            'price' => 'required',
         ];
 
         $this->validate($request, $rules);

@@ -69,6 +69,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
             Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
+            Route::post('/sendStudentMail', 'UserController@sendStudentMail');
             Route::post('/importCourseStudent', 'UserController@importExcelCourseStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelScholarship', 'UserController@exportExcelScholarship');
@@ -574,9 +575,9 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
             Route::group(['prefix' => 'bundle_transforms'], function () {
                 Route::get('/', 'BundleTransformController@index');
-                Route::get('/excel', 'OfflinePaymentController@exportExcel');
-                Route::get('/{offlinePayment}/reject', 'OfflinePaymentController@reject');
-                Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+                Route::get('/{transform}/approve', 'BundleTransformController@approve');
+                Route::post('/{transform}/change_amount', 'BundleTransformController@changeAmount');
+
             });
 
             Route::group(['prefix' => 'discounts'], function () {
