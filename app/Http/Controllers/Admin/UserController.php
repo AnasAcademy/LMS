@@ -1096,9 +1096,9 @@ class UserController extends Controller
         $user->status = !empty($data['status']) ? $data['status'] : null;
         $user->language = !empty($data['language']) ? $data['language'] : null;
 
-        if ($role->id == 1) {
-            $user->student->en_name = !empty($data['en_name']) ? $data['en_name'] : null;
-           // dd($user->student->en_name );
+        if ($role->id == 1 && !empty($data['en_name'])) {
+            $user->student->en_name =  $data['en_name'] ;
+            $user->student->save();
         }
 
         if (!empty($data['password'])) {
@@ -1146,7 +1146,7 @@ class UserController extends Controller
         $user->can_create_store = (!empty($data['can_create_store']) and $data['can_create_store'] == '1');
 
         $user->access_content = (!empty($data['access_content']) and $data['access_content'] == '1');
-        $user->student->save();
+        
         $user->save();
 
         // save certificate_additional in user metas table
