@@ -131,7 +131,7 @@ class BatchStudentImport implements ToModel
                              <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy123
                             <br>
                 ";
-                // $this->sendEmail($user, $data);
+                $this->sendEmail($user, $data);
             }
 
             // update user code
@@ -184,21 +184,26 @@ class BatchStudentImport implements ToModel
 
 
                 // check the user apply to this bundle before or not
-                $bundleStudent = BundleStudent::where(['student_id' => $student->id, 'bundle_id' => $program->id])->first();
-                if ($bundleStudent) {
-                    return null;
-                }
+                $bundleStudent = BundleStudent::firstOrCreate(['student_id' => $student->id, 'bundle_id' => $program->id]);
+                // if ($bundleStudent) {
+                //     return null;
+                // }
 
 
                 // apply bundle for student
-                $bundleStudent = BundleStudent::create([
-                    'student_id' => $student->id,
-                    'bundle_id' => $program->id,
-                    'class_id' => $this->batchId,
-                ]);
+                // $bundleStudent = BundleStudent::create([
+                //     'student_id' => $student->id,
+                //     'bundle_id' => $program->id,
+                //     'class_id' => $this->batchId,
+                // ]);
 
 
 
+            $existSale = Sale::where(['buyer_id' => $user->id, 'bundle_id'=> $program->id])->whereIn('type', ['bundle', 'installment_payment'])->first();
+
+            if($existSale){
+                return null;
+            }
 
             // create order
             $order = Order::create([
@@ -241,7 +246,7 @@ class BatchStudentImport implements ToModel
                 'created_at' => time(),
             ]);
 
-
+dd
             // create sale
             $sale = Sale::createSales($orderItem, $order->payment_method, true);
             Accounting::createAccounting($orderItem);
