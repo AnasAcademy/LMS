@@ -585,6 +585,7 @@ class WebinarController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
             'unattached'=>'required',
+            'price'=>'required',
         ];
 
         if ($webinar) {
