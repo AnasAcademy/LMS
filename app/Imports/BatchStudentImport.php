@@ -246,7 +246,7 @@ class BatchStudentImport implements ToModel
                 'created_at' => time(),
             ]);
 
-dd
+
             // create sale
             $sale = Sale::createSales($orderItem, $order->payment_method, true);
             Accounting::createAccounting($orderItem);
