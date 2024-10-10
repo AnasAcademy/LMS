@@ -271,6 +271,7 @@ class BundleController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
             'batch_id' => 'required',
+            'price' => 'required',
         ];
 
         if($type=='bridging'){
@@ -479,6 +480,7 @@ class BundleController extends Controller
             'category_id' => 'required',
             'batch_id'=>'required',
             'type' => 'required|in:program,bridging',
+            'price' => 'required',
         ];
 
         $this->validate($request, $rules);
