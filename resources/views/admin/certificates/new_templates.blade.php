@@ -61,6 +61,9 @@
                                         <option value="bundle"
                                             {{ (!empty($template) and $template->type == 'bundle') ? 'selected' : '' }}>
                                             إتمام حزمة</option>
+                                            <option value="attendance"
+                                            {{ (!empty($template) and $template->type == 'attendance') ? 'selected' : '' }}>
+                                               شهاده حضور</option>   
                                     </select>
                                     <div class="invalid-feedback">
                                         @error('type')
@@ -285,6 +288,47 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group">
+                                    <label class="control-label" for="graduation_date">سكشن ال GPA</label>
+                                    <input type="text" id="graduation_date" name="gpa"
+                                        class="form-control @error('gpa') is-invalid @enderror"
+                                        value="{{ old('gpa', !empty($template) ? $template->gpa : '') }}">
+                                    @error('gpa')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                    <label class="control-label" for="position_x_gpa">{!! trans('admin/main.position_x') !!}</label>
+                                    <input type="text" name="position_x_gpa"
+                                        class="form-control @error('position_x_gpa') is-invalid @enderror"
+                                        value="{{ old('position_x_gpa', !empty($template) ? $template->position_x_gpa : '835') }}">
+                                    <div class="invalid-feedback">
+                                        @error('position_x_gpa')
+                                            {{ $message }}
+                                        @enderror
+                                    </div>
+
+                                    <label class="control-label" for="position_y_gpa">{!! trans('admin/main.position_y') !!}</label>
+                                    <input type="text" name="position_y_gpa"
+                                        class="form-control @error('position_y_gpa') is-invalid @enderror"
+                                        value="{{ old('position_y_gpa', !empty($template) ? $template->position_y_gpa : '1510') }}">
+                                    <div class="invalid-feedback">
+                                        @error('position_y_gpa')
+                                            {{ $message }}
+                                        @enderror
+                                    </div>
+
+                                    <label class="control-label" for="font_size_gpa">{!! trans('admin/main.font_size') !!}</label>
+                                    <input type="text" name="font_size_gpa"
+                                        class="form-control @error('font_size_gpa') is-invalid @enderror"
+                                        value="{{ old('font_size_gpa', !empty($template) ? $template->font_size_gpa : '40') }}">
+                                    <div class="invalid-feedback">
+                                        @error('font_size_gpa')
+                                            {{ $message }}
+                                        @enderror
+                                    </div>
+                                </div>
+
 
 
 
@@ -440,7 +484,11 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (selectedType === 'course') {
             bundleDropdown.style.display = 'none';
             courseDropdown.style.display = 'block';
-        } else {
+        } else if (selectedType === 'attendance') {
+            bundleDropdown.style.display = 'block';
+            courseDropdown.style.display = 'none';
+        }
+        else {
             bundleDropdown.style.display = 'none';
             courseDropdown.style.display = 'none';
         }

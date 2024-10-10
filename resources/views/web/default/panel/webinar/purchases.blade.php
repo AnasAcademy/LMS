@@ -110,6 +110,7 @@
                                                 <th class="text-left">{{ trans('public.instructor') }}</th>
                                                 <th>{{ trans('public.start_date') }}</th>
                                                 <th>المهام</th>
+                                                <th>عدد التسليمات</th>
                                                 <th>الإجراءات</th>
                                             </tr>
                                             @php
@@ -125,7 +126,7 @@
 
                                                     <td class="text-left">
                                                         {{ $item->teacher->full_name }}</td>
-                                                    <td>{{ dateTimeFormat($item->start_date, 'j F Y | H:i') }}
+                                                    <td>{{ dateTimeFormat($item->start_date, 'j F Y ') }}
                                                     </td>
                                                     <td>
                                                         @php
@@ -141,9 +142,44 @@
                                                                 disabled>لا يوجد مهام بعد</button>
                                                         @endif
                                                     </td>
+
                                                     <td>
+                                                        @php
+                                                            $assignmentCount = $item->assignments->count();
+                                                            $assignmentHistoryCount = 0;
+                                                        @endphp
+                                                    
+                                                        @foreach ($item->assignments as $assignment)
+                                                        {{-- @dump($assignment->assignmentHistory->status ) --}}
+                                                          {{-- @dump($assignment->assignmentHistory->status=="not_submitted") --}}
+                                                        @if ($assignment->assignmentHistory)
+                                                      
+                                                            @php
+                                                            $assignmentHistoryCount++;
+                                                        @endphp
+                                                            @endif
+                                                        @endforeach
+                                                    
+                                                        @php
+                                                            $remainingAssignments = $assignmentCount - $assignmentHistoryCount;
+                                                        @endphp
+                                                    
+                                                        @if ($remainingAssignments > 0)
+                                                            <button
+                                                                type="button" style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
+                                                                disabled>{{$remainingAssignments}}</button>
+                                                        @else
+                                                            <button
+                                                                type="button" style="width: 110px; height: 50px; border: 1px solid #28a745; color: #28a745; background-color: transparent; border-radius: 10px;"
+                                                                disabled>لا يوجد تسليمات</button>
+                                                        @endif
+                                                    </td>
+                                                    
+
+                                                   
+                                                    <td> 
                                                         @if ($item->duration != 0)
-                                                            @if ($item->video_demo)
+                                                            {{-- @if ($item->video_demo)
                                                                 <a target="_blank" rel="noopener noreferrer"
                                                                     class="btn btn-primary" style="width:190px;height:50px"
                                                                     href="{{ $item->video_demo }}">اضغط هنا للذهاب
@@ -152,7 +188,7 @@
                                                                 <button class="btn btn-primary"
                                                                     style="width:190px;height:50px; background-color: #808080;"
                                                                     disabled>اضغط هنا للذهاب للمحاضرا</button>
-                                                            @endif
+                                                            @endif --}}
 
                                                             <a class="btn btn-primary"
                                                                 href="{{ url('/course/learning/' . $item->slug) }}"
@@ -164,8 +200,8 @@
                                             @endif
 
                                             <tr>
-                                                <th colspan="6">إجمالي عدد الساعات:
-                                                    {{ convertMinutesToHourAndMinute($totalHours) }}</th>
+                                                <th colspan="7">إجمالي عدد الساعات:
+                                                    {{ $totalHours}}</th>
                                             </tr>
                                         </table>
                                     </div>

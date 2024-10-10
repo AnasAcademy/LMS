@@ -131,7 +131,8 @@ class BatchStudentImport implements ToModel
                              <span style='font-weight:bold;'>كلمة المرور: </span> anasAcademy123
                             <br>
                 ";
-                $this->sendEmail($user, $data);
+
+                 $this->sendEmail($user, $data);
             }
 
             // update user code

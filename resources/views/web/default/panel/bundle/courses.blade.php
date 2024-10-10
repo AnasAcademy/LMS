@@ -155,7 +155,7 @@
                                     @else
                                         <div class="d-flex align-items-start flex-column mt-20 mr-15">
                                             <span class="stat-title">{{ trans('public.duration') }}:</span>
-                                            <span class="stat-value">{{ convertMinutesToHourAndMinute($webinar->duration) }} Hrs</span>
+                                            <span class="stat-value">{{ $webinar->duration }} Hrs</span>
                                         </div>
 
                                         @if($webinar->isWebinar())

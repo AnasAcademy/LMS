@@ -7,6 +7,7 @@ use App\Mixins\Certificate\MakeCertificate;
 use App\Models\Bundle;
 use App\Models\Certificate;
 use App\Models\CertificateTemplate;
+use App\Models\InstallmentOrder;
 use App\Models\Quiz;
 use App\Models\QuizzesResult;
 use App\Models\Reward;
@@ -183,18 +184,44 @@ class CertificateController extends Controller
 
 
 
+        // $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
+        // $userbundles = Bundle::whereIn('id', $bundlesIds)->with('bundleWebinars.webinar')->get();
+        // foreach ($userbundles as $bundle) {
+        //     //dd($bundle);
+        //     $template = $bundle->certificate_template()->where('status', 'publish')
+        //         ->where('type', 'bundle')->latest()->first();
+
+        //         $test = $bundle->bundleWebinars()->whereHas('webinar', function($query){
+        //             $query->whereHas('assignments')->where('type', 'graduation_project');
+        //         })->get();
+
+        //     if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($test)>0) {
+        //         $this->makeBundleCertificate($bundle->id);
+        //     }
+        // }
+
+
         $bundlesIds = $user->purchasedBundles->pluck('bundle_id');
         $userbundles = Bundle::whereIn('id', $bundlesIds)->with('bundleWebinars.webinar')->get();
+
         foreach ($userbundles as $bundle) {
-            //dd($bundle);
+            // Check if the student has any overdue installments for the current bundle
+            $order = InstallmentOrder::where('bundle_id', $bundle->id)
+                ->where('user_id', $user->id)
+                ->where('status', '!=', 'paying')
+                ->first();
+            //
+            $hasOverdue = $order ? $order->checkOrderHasOverdue() : false;
+            // dd( $hasOverdue);
             $template = $bundle->certificate_template()->where('status', 'publish')
                 ->where('type', 'bundle')->latest()->first();
 
-                $bundlesHasGraduationProject = $bundle->bundleWebinars()->whereHas('webinar', function($query){
-                    $query->whereHas('assignments')->where('type', 'graduation_project');
-                })->get();
+            $bundlesHasGraduationProject = $bundle->bundleWebinars()->whereHas('webinar', function ($query) {
+                $query->whereHas('assignments')->where('type', 'graduation_project');
+            })->get();
 
-            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($bundlesHasGraduationProject)>0) {
+
+            if ($bundle && !empty($bundle->end_date) && $bundle->end_date < time() && !empty($template) && count($bundlesHasGraduationProject) > 0 && !$hasOverdue) {
                 $this->makeBundleCertificate($bundle->id);
             }
         }
@@ -312,16 +339,19 @@ class CertificateController extends Controller
     public function makeBundleCertificate($bundleId, $format = 'png')
     {
         $user = auth()->user();
-        $bundleStudent = $user->student->bundleStudent()->where('bundle_id', $bundleId)->latest()->first();
+        $bundleStudent = $user->student->bundleStudent->where('bundle_id', $bundleId)->first();
+        $gpa = $bundleStudent->gpa;
+
 
         $makeCertificate = new MakeCertificate();
+        $bundle = Bundle::where('id', $bundleId)->first();
 
-        if (!empty($bundleStudent)) {
+        if (!empty($bundle)) {
             // Check if all assignments are passed
-            $allAssignmentsPassed = $this->checkAssignmentsStatus($bundleStudent->bundle, $bundleStudent);
+            $allAssignmentsPassed = $this->checkAssignmentsStatus($bundle, $bundleStudent);
 
             // Create the certificate with the appropriate image/template
-            return $makeCertificate->makeBundleCertificate($bundleStudent->bundle, $format, $bundleStudent->gpa, $allAssignmentsPassed);
+            return $makeCertificate->makeBundleCertificate($bundle, $format, $bundleStudent->gpa, $allAssignmentsPassed);
         }
 
         abort(404);
@@ -352,7 +382,7 @@ class CertificateController extends Controller
         //     }
         // }
         // dd(($assignmentsHistories));
-        if(count($assignments)>0 && count($assignmentsHistories)==0){
+        if (count($assignments) > 0 && count($assignmentsHistories) == 0) {
 
             $bundleStudent->update(['gpa' => 0]);
         }

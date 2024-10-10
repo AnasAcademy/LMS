@@ -5,7 +5,7 @@
         <div class="col-12 col-lg-4">
             <div class="form-group">
                 <label class="input-label">{{ trans('public.email') }}</label>
-                <input type="text" name="email" value="{{ (!empty($user) and empty($new_user)) ? $user->email : old('email') }}" class="form-control @error('email')  is-invalid @enderror" placeholder=""/>
+                <input @if(!session()->has('impersonated')) disabled @endif type="text" name="email" value="{{ (!empty($user) and empty($new_user)) ? $user->email : old('email') }}" class="form-control @error('email')  is-invalid @enderror" placeholder=""/>
                 @error('email')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -45,7 +45,7 @@
 
             <div class="form-group">
                 <label class="input-label">{{ trans('public.mobile') }}</label>
-                <input type="tel" name="mobile" value="{{ (!empty($user) and empty($new_user)) ? $user->mobile : old('mobile') }}" class="form-control @error('mobile')  is-invalid @enderror" placeholder=""/>
+                <input @if(!session()->has('impersonated')) disabled @endif type="tel" name="mobile" value="{{ (!empty($user) and empty($new_user)) ? $user->mobile : old('mobile') }}" class="form-control @error('mobile')  is-invalid @enderror" placeholder=""/>
                 @error('mobile')
                 <div class="invalid-feedback">
                     {{ $message }}

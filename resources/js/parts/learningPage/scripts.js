@@ -604,10 +604,10 @@
                     html: '<h3 class="font-20 text-center text-dark-blue">' + sendAssignmentSuccessLang + '</h3>',
                     showConfirmButton: false,
                 });
-
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
+                $this.removeClass('loadingbar primary').prop('disabled', false);
+                // setTimeout(() => {
+                //     window.location.reload();
+                // }, 500);
             } else if (result && result.code === 401) {
                 $.toast({
                     heading: result.errors.title,
@@ -647,16 +647,19 @@
         $form.find('.is-invalid').removeClass('is-invalid');
 
         $.post(action, data, function (result) {
+            console.log(result);
             if (result && result.code === 200) {
+                console.log("success");
                 Swal.fire({
                     icon: 'success',
                     html: '<h3 class="font-20 text-center text-dark-blue">' + saveAssignmentRateSuccessLang + '</h3>',
                     showConfirmButton: false,
                 });
+                $this.removeClass('loadingbar primary').prop('disabled', false);
 
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
+                // setTimeout(() => {
+                //     window.location.reload();
+                // }, 500);
             } else if (result && result.code === 401) {
                 $.toast({
                     heading: result.errors.title,
