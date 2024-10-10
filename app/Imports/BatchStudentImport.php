@@ -183,21 +183,14 @@ class BatchStudentImport implements ToModel
             ]);
 
 
-                // check the user apply to this bundle before or not
-                $bundleStudent = BundleStudent::firstOrCreate(['student_id' => $student->id, 'bundle_id' => $program->id]);
-                // if ($bundleStudent) {
-                //     return null;
-                // }
-
-
-                // apply bundle for student
-                // $bundleStudent = BundleStudent::create([
-                //     'student_id' => $student->id,
-                //     'bundle_id' => $program->id,
-                //     'class_id' => $this->batchId,
-                // ]);
-
-
+            // check the user apply to this bundle before or not
+            $bundleStudent = BundleStudent::firstOrCreate([
+                'student_id' => $student->id,
+                'bundle_id' => $program->id
+            ],
+            [
+                'class_id' => $this->batchId,
+            ]);
 
             $existSale = Sale::where(['buyer_id' => $user->id, 'bundle_id'=> $program->id])->whereIn('type', ['bundle', 'installment_payment'])->first();
 
