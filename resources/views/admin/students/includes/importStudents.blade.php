@@ -24,7 +24,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm" enctype="multipart/form-data">
+            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm" enctype="multipart/form-data" onsubmit="submitForm(event)">
 
                 @csrf
                 <div class="">
@@ -43,3 +43,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    function submitForm(e) {
+        e.preventDefault();
+        let form = e.target;
+        let confirmBtn = form.querySelector('#confirmAction');
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('loadingbar', 'danger');
+        form.submit();
+    }
+</script>
