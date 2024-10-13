@@ -19,13 +19,12 @@
     @endif
 
 
+    <section class="mt-40">
+        @include('web.default.panel.services.includes.progress', [
+            'title' => 'طلبات الخدمات الإلكترونية',
+        ])
 
-    @if ($services->count() > 0)
-        <section class="mt-40">
-            @include('web.default.panel.services.includes.progress', [
-                'title' => 'طلبات الخدمات الإلكترونية',
-            ])
-
+        @if ($services->count() > 0)
             <div class="panel-section-card py-20 px-25 mt-20">
                 <div class="row">
                     <div class="col-12 ">
@@ -59,7 +58,9 @@
                                             </td>
 
                                             <td class="text-center align-middle">
-                                                @switch($service->pivot->status)
+
+                                                @switch(($service->pivot->bundleTransform->status)??
+                                                    $service->pivot->status)
                                                     @case('pending')
                                                         <span class="text-warning">{{ trans('public.waiting') }}</span>
                                                     @break
@@ -70,6 +71,14 @@
 
                                                     @case('canceled')
                                                         <span class="text-primary">ملغي</span>
+                                                    @break
+
+                                                    @case('paid')
+                                                        <span class="text-primary">مقبول وتم دفع الفرق</span>
+                                                    @break
+
+                                                    @case('refunded')
+                                                        <span class="text-primary"> مقبول وتم استيرداد الفرق</span>
                                                     @break
 
                                                     @case('rejected')
@@ -107,15 +116,27 @@
                                                 {{ Carbon\Carbon::parse($service->pivot->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
                                             </td>
 
-                                            <td >
-                                                @if (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="pay" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
-                                                <a class="btn btn-primary" href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/pay">دفع الفرق و إتمام التحويل</a>
+                                            <td>
+                                                @if (
+                                                    !empty(
+                                                        $service->pivot->bundleTransform &&
+                                                            $service->pivot->bundleTransform->type == 'pay' &&
+                                                            $service->pivot->status == 'approved' &&
+                                                            $service->pivot->bundleTransform->status != 'paid' &&
+                                                            $service->pivot->bundleTransform->status == 'approved'
+                                                    ))
+                                                    <a class="btn btn-primary"
+                                                        href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id }}/pay">دفع
+                                                        الفرق و إتمام التحويل</a>
 
-                                                @elseif (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="refund" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
-                                                <a class="btn btn-secondary" href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/refund">استيرداد الفرق و إتمام التحويل</a>
-                                                @elseif (!empty($service->pivot->BridgingRequest && $service->pivot->BridgingRequest->bridging_id) && $service->pivot->status=="approved")
-                                                <a class="btn btn-primary" href="/panel/bundleBridging/{{ $service->pivot->BridgingRequest->bridging_id}}/pay">دفع ثمن البرنامج</a>
-
+                                                    {{-- @elseif (!empty($service->pivot->bundleTransform && $service->pivot->bundleTransform->type=="refund" && $service->pivot->status=="approved" && $service->pivot->bundleTransform->status!="paid"))
+                                                <a class="btn btn-secondary" href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/refund">استيرداد الفرق و إتمام التحويل</a> --}}
+                                                @elseif (
+                                                    !empty($service->pivot->BridgingRequest && $service->pivot->BridgingRequest->bridging_id) &&
+                                                        $service->pivot->status == 'approved')
+                                                    <a class="btn btn-primary"
+                                                        href="/panel/bundleBridging/{{ $service->pivot->BridgingRequest->bridging_id }}/pay">دفع
+                                                        ثمن البرنامج</a>
                                                 @endif
                                             </td>
                                         </tr>
@@ -130,9 +151,15 @@
                     {{ $services->links() }}
                 </div>
             </div>
+        @else
+            @include(getTemplate() . '.includes.no-result',[
+                'file_name' => 'webinar.png',
+                'title' =>'ليس لديك طلبات',
+                'hint' => "<a href='/panel/services' class= 'text-primary'>قم بإرسال طلب خدمة</a>" ,
+            ])
+        @endif
 
-        </section>
-    @endif
+    </section>
 @endsection
 
 @push('scripts_bottom')
