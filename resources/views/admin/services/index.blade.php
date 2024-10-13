@@ -49,6 +49,8 @@
                                         <th class="text-center">{{ 'الحالة' }}</th>
                                         <th class="text-center">{{ 'المنشئ' }}</th>
                                         <th class="text-center">{{ 'تاريخ الإنشاء ' }}</th>
+                                        <th class="text-center">{{ 'تاريخ البدأ ' }}</th>
+                                        <th class="text-center">{{ 'تاريخ الإنتهاء ' }}</th>
 
                                         <th width="120">{{ 'الأجراءات' }}</th>
                                     </tr>
@@ -59,12 +61,19 @@
                                             <td class="text-center">{{ $service->description }}</td>
                                             <td class="text-center">{{ $service->price > 0 ? $service->price : 'مجانية' }}
                                             </td>
-                                            <td class="text-center">{{ trans('admin/main.' . $service->status) }}</td>
+                                            <td class="text-center @if($service->status =='inactive') text-danger @endif">{{ trans('admin/main.' . $service->status) }}</td>
                                             <td class="text-center">
                                                 {{ $service->created_by ? $service->createdBy->full_name : '' }}</td>
 
                                             <td class="font-12">
                                                 {{ Carbon\Carbon::parse($service->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                            </td>
+
+                                            <td class="font-12">
+                                                {{ Carbon\Carbon::parse($service->start_date)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
+                                            </td>
+                                            <td class="font-12">
+                                                {{ Carbon\Carbon::parse($service->end_date)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
                                             </td>
 
                                             {{-- actions --}}
