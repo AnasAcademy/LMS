@@ -30,7 +30,10 @@ class ServiceController extends Controller
     public function index()
     {
         //
-        $services = Service::where('status', 'active')->get();
+        $services = Service::where('status', 'active')
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->get();
         return view(getTemplate() . '.panel.services.index', compact('services'));
     }
 
@@ -160,7 +163,7 @@ class ServiceController extends Controller
                 return back()->withInput($request->all())->withErrors(['from_bundle_id' => "لا يمكن التحويل من هذا البرنامج يرجي التواصل مع إدارة التدريب"])->with(['toast' => $toastData]);
             }
 
-         
+
             $installmentPlans = new InstallmentPlans($user);
 
             $newInstallment = $installmentPlans->getPlans(
