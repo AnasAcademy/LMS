@@ -49,7 +49,7 @@ class ServiceController extends Controller
             if ($serviceUser->bundleTransform) {
                 return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال الطلب لإدارة المالبة');
             }
-            
+
             $data['user_id'] = $serviceUser->user_id;
             $data['name'] = $serviceUser->user->full_name;
             $data['receiver'] = $serviceUser->user->email;
@@ -130,6 +130,8 @@ class ServiceController extends Controller
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
             // 'apply_link' => 'required|url',
             // 'review_link' => 'required|url',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
@@ -139,8 +141,8 @@ class ServiceController extends Controller
         $lastService = (Service::get()->last()->id) + 1;
         $data['apply_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/apply';
         $data['review_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/review';
-        Service::create($data);
-        return back()->with('success', 'تم إنشاء الخدمة بنجاح');
+       $service = Service::create($data);
+        return redirect("/admin/services/$service->id/edit")->with('success', 'تم إنشاء الخدمة بنجاح');
     }
 
     /**
@@ -184,6 +186,8 @@ class ServiceController extends Controller
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
             'apply_link' => 'required|url',
             'review_link' => 'required|url',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
