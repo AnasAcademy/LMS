@@ -178,10 +178,10 @@
                     <span class="sidenav-item-icon mr-10">
                         @include('web.default.panel.includes.sidebar_icons.webinars')
                     </span>
-                     @if ($authUser->isUser())
-                    <span class="font-14 text-dark-blue font-weight-500">المقررات الدراسية</span>
+                    @if ($authUser->isUser())
+                        <span class="font-14 text-dark-blue font-weight-500">المقررات الدراسية</span>
                     @else
-                    <span class="font-14 text-dark-blue font-weight-500">الدورات الدراسية</span>
+                        <span class="font-14 text-dark-blue font-weight-500">الدورات الدراسية</span>
                     @endif
                 </a>
 
@@ -319,7 +319,7 @@
                         <ul class="sidenav-item-collapse">
                             @if (auth()->user()->isUser())
                                 <li class="mt-5 {{ request()->is('panel/assignments/my-assignments') ? 'active' : '' }}">
-                                <a href="/panel/assignments/my-assignments">{{ trans('update.my_assignments') }}</a>
+                                    <a href="/panel/assignments/my-assignments">{{ trans('update.my_assignments') }}</a>
                                 </li>
                             @endif
 
@@ -329,7 +329,6 @@
                                     <a
                                         href="/panel/assignments/my-courses-assignments">{{ trans('update.students_assignments') }}</a>
                                 </li>
-
                             @endif
                         </ul>
                     </div>
@@ -776,29 +775,33 @@
 
         {{-- services --}}
 
-        {{-- <li class="sidenav-item {{ request()->is('panel/service*') ? 'sidenav-item-active' : '' }}">
-            <a class="d-flex align-items-center" data-toggle="collapse" href="#servicesCollapse" role="button"
-                aria-expanded="false" aria-controls="servicesCollapse">
-                <span class="sidenav-setting-icon sidenav-item-icon mr-10">
-                    @include('web.default.panel.includes.sidebar_icons.service', ['class' => 'cls-1'])
-                </span>
-                <span class="font-14 text-dark-blue font-weight-500">الخدمات الإلكترونية</span>
-            </a>
+        @can('users_services')
+            <li class="sidenav-item {{ request()->is('panel/service*') ? 'sidenav-item-active' : '' }}">
+                <a class="d-flex align-items-center" data-toggle="collapse" href="#servicesCollapse" role="button"
+                    aria-expanded="false" aria-controls="servicesCollapse">
+                    <span class="sidenav-setting-icon sidenav-item-icon mr-10">
+                        @include('web.default.panel.includes.sidebar_icons.service', ['class' => 'cls-1'])
+                    </span>
+                    <span class="font-14 text-dark-blue font-weight-500">الخدمات الإلكترونية</span>
+                </a>
 
-            <div class="collapse {{ request()->is('panel/services*') ? 'show' : '' }}" id="servicesCollapse">
-                <ul class="sidenav-item-collapse">
-                    <li class="{{ request()->is('panel/services', false) ? 'active' : '' }}">
-                        <a class="nav-link" href="/panel/services">{{ 'قائمة' }}</a>
-                    </li>
+                <div class="collapse {{ request()->is('panel/services*') ? 'show' : '' }}" id="servicesCollapse">
+                    <ul class="sidenav-item-collapse">
+                        @can('users_services_list')
+                            <li class="{{ request()->is('panel/services', false) ? 'active' : '' }}">
+                                <a class="nav-link" href="/panel/services">{{ 'قائمة' }}</a>
+                            </li>
 
-                    @if (auth()->user()->services->count() > 0)
-                        <li class="{{ request()->is('panel/services/requests', false) ? 'active' : '' }}">
-                            <a class="nav-link" href="/panel/services/requests">{{ 'قائمة بالطلبات' }}</a>
-                        </li>
-                    @endif
-                </ul>
-            </div>
-        </li> --}}
+                            @if (auth()->user()->services->count() > 0)
+                                <li class="{{ request()->is('panel/services/requests', false) ? 'active' : '' }}">
+                                    <a class="nav-link" href="/panel/services/requests">{{ 'قائمة بالطلبات' }}</a>
+                                </li>
+                            @endif
+                        @endcan
+                    </ul>
+                </div>
+            </li>
+        @endcan
 
         {{-- Setting --}}
         <li class="sidenav-item {{ request()->is('panel/setting') ? 'sidenav-item-active' : '' }}">

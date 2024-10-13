@@ -49,4 +49,8 @@ class Order extends Model
     {
         return $this->hasMany('App\Models\OrderItem', 'order_id', 'id');
     }
+
+    public function sale(){
+        return $this->hasOne('App\Models\Sale','sale_id', 'id');
+    }
 }

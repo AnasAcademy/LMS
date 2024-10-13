@@ -177,31 +177,27 @@
             @endcan
 
             {{-- services --}}
-            {{-- <li
-                class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>{{ 'الخدمات الإلكترونية' }}</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li
-                        class="{{ request()->is(getAdminPanelUrl('/services/create', false)) ? 'active' : '' }}">
-                        <a class="nav-link"
-                            href="{{ getAdminPanelUrl() }}/services/create">{{ 'جديد' }}</a>
-                    </li>
-                    <li
-                        class="{{ request()->is(getAdminPanelUrl('/services', false)) ? 'active' : '' }}">
-                        <a class="nav-link"
-                            href="{{ getAdminPanelUrl() }}/services">{{ 'قائمة' }}</a>
-                    </li>
-                    <li
-                        class="{{ request()->is(getAdminPanelUrl('/services/requests', false)) ? 'active' : '' }}">
-                        <a class="nav-link"
-                            href="{{ getAdminPanelUrl() }}/services/requests">{{ 'قائمة بالطلبات' }}</a>
-                    </li>
+            @can('admin_services')
+                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/services*', false)) ? 'active' : '' }}">
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>{{ 'الخدمات الإلكترونية' }}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        @can('admin_services_list')
+                            <li class="{{ request()->is(getAdminPanelUrl('/services', false)) ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/services">{{ 'قائمة' }}</a>
+                            </li>
+                        @endcan
 
-                </ul>
-            </li> --}}
+                        @can('admin_services_create')
+                            <li class="{{ request()->is(getAdminPanelUrl('/services/create', false)) ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ getAdminPanelUrl() }}/services/create">{{ 'جديد' }}</a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endcan
 
             @can('admin_webinars')
                 <li
@@ -232,8 +228,8 @@
 
                             <li
                                 class="{{ (request()->is(getAdminPanelUrl('/webinars', false)) and request()->get('type') == 'graduation_project') ? 'active' : '' }}">
-                                <a class="nav-link "
-                                    href="{{ getAdminPanelUrl() }}/webinars?type=graduation_project">مشاريع التخرج</a>
+                                <a class="nav-link " href="{{ getAdminPanelUrl() }}/webinars?type=graduation_project">مشاريع
+                                    التخرج</a>
                             </li>
                         @endcan()
 
@@ -261,7 +257,9 @@
                     {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and
                     request()->get('type', 'program') == 'program' and
                     !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and
-                    !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+                    !request()->is(getAdminPanelUrl('/bundles/statistics*', false)))
+                        ? 'active'
+                        : '' }}">
 
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
@@ -270,8 +268,9 @@
                     <ul class="dropdown-menu">
                         @can('admin_bundles_list')
                             <li
-                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and
-                                request()->get('type', 'program') == 'program') ? 'active' : '' }}">
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and request()->get('type', 'program') == 'program')
+                                    ? 'active'
+                                    : '' }}">
                                 <a href="{{ getAdminPanelUrl() }}/bundles?type=program"
                                     class="nav-link
                                     @if (!empty($sidebarBeeps['bundles']) and $sidebarBeeps['bundles']) beep beep-sidebar @endif">
@@ -280,8 +279,11 @@
                         @endcan()
 
                         @can('admin_bundles_create')
-                            <li class="{{ (request()->is(getAdminPanelUrl('/bundles/create', false)) and
-                            request()->get('type', 'program') == 'program') ? 'active' : '' }}">
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles/create', false)) and
+                                request()->get('type', 'program') == 'program')
+                                    ? 'active'
+                                    : '' }}">
                                 <a class="nav-link"
                                     href="{{ getAdminPanelUrl() }}/bundles/create?type=program">{{ trans('admin/main.new') }}</a>
                             </li>
@@ -296,7 +298,9 @@
                     {{ (request()->is(getAdminPanelUrl('/bundles*', false)) and
                     request()->get('type') == 'bridging' and
                     !request()->is(getAdminPanelUrl('/bundles/comments*', false)) and
-                    !request()->is(getAdminPanelUrl('/bundles/statistics*', false))) ? 'active' : '' }}">
+                    !request()->is(getAdminPanelUrl('/bundles/statistics*', false)))
+                        ? 'active'
+                        : '' }}">
 
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-cube"></i>
@@ -305,8 +309,9 @@
                     <ul class="dropdown-menu">
                         @can('admin_bundles_list')
                             <li
-                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and
-                                request()->get('type') == 'bridging') ? 'active' : '' }}">
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles', false)) and request()->get('type') == 'bridging')
+                                    ? 'active'
+                                    : '' }}">
                                 <a href="{{ getAdminPanelUrl() }}/bundles?type=bridging"
                                     class="nav-link
                                     @if (!empty($sidebarBeeps['bundles']) and $sidebarBeeps['bundles']) beep beep-sidebar @endif">
@@ -316,8 +321,10 @@
                         @endcan()
 
                         @can('admin_bundles_create')
-                            <li class="{{ (request()->is(getAdminPanelUrl('/bundles/create', false)) and
-                            request()->get('type') == 'bridging') ? 'active' : '' }}">
+                            <li
+                                class="{{ (request()->is(getAdminPanelUrl('/bundles/create', false)) and request()->get('type') == 'bridging')
+                                    ? 'active'
+                                    : '' }}">
                                 <a class="nav-link"
                                     href="{{ getAdminPanelUrl() }}/bundles/create?type=bridging">{{ trans('admin/main.new') }}</a>
                             </li>

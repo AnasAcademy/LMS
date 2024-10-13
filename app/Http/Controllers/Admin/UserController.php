@@ -1468,6 +1468,24 @@ class UserController extends Controller
 
             $file = $request->file('file');
 
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
             $import = new StudentImport();
 
             Excel::import($import, $file);
@@ -1509,6 +1527,24 @@ class UserController extends Controller
 
             $file = $request->file('file');
 
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
             $import = new StudentImport(true);
 
             Excel::import($import, $file);
@@ -1549,6 +1585,24 @@ class UserController extends Controller
             ]);
 
             $file = $request->file('file');
+
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
 
             $import = new StudentImport(false,true);
 
@@ -1592,6 +1646,26 @@ class UserController extends Controller
 
             $file = $request->file('file');
 
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'ارسال ميل تسجيل لطلبة ',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+
+
             $import = new SendUserMail();
 
             Excel::import($import, $file);
@@ -1620,7 +1694,6 @@ class UserController extends Controller
                 'msg' => $e->getMessage(),
                 'status' => 'error'
             ];
-            dd($toastData);
             return back()->with(['toast' => $toastData]);
         }
     }

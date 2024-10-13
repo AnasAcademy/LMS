@@ -32,6 +32,7 @@
                     <input type="file" name="file" id="excelFile" class="form-control-file border rounded"
                         placeholder="yy" required  accept=".xlsx,.xls">
                     <p class="text-primary">.xlsx xls امتداد الملف المسموح به</p>
+                    <p class="text-danger">ملاحظة: يرجي عدم اضافة اكثر من 40 صف (طالب) في ملف الاكسل المرفع</p>
                 </div>
 
                 <div class="modal-footer">

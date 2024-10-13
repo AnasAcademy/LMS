@@ -45,6 +45,10 @@ class ServiceController extends Controller
 
             $serviceUser->status = 'approved';
             $serviceUser->approved_by = $admin->id;
+            $serviceUser->save();
+            if ($serviceUser->bundleTransform) {
+                return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال الطلب لإدارة المالبة');
+            }
 
             $data['user_id'] = $serviceUser->user_id;
             $data['name'] = $serviceUser->user->full_name;
@@ -53,9 +57,7 @@ class ServiceController extends Controller
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $serviceUser->service->title;
             $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك لخدمة ' . $serviceUser->service->title . ' التي قمت بارساله ';
-
             $this->sendNotification($data);
-            $serviceUser->save();
             return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال ايميل للطالب بهذا');
         } catch (\Exception $e) {
             return back()->with('error', 'حدث خطأ ما يرجي المحاولة مرة أخري');
@@ -70,8 +72,7 @@ class ServiceController extends Controller
             ]);
 
             if ($validator->fails()) {
-               return back()->with('error', implode(', ', $validator->errors()->all()));
-
+                return back()->with('error', implode(', ', $validator->errors()->all()));
             }
             $admin = auth()->user();
 
@@ -85,12 +86,12 @@ class ServiceController extends Controller
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $serviceUser->service->title;
 
-            $data['body'] = "لقد تم رفض طلبك لخدمة ". $serviceUser->service->title ." بسبب " . $request['reason'];
-            $serviceUser->message =  $request['reason'] . "<br>";
-            if (isset($request['message'])) {
-                $data['body'] =  $data['body'] . "\n" . $request['message'];
-                $serviceUser->message .= $request['message'];
-            }
+            $data['body'] = "لقد تم رفض طلبك لخدمة " . $serviceUser->service->title . " بسبب " . $request['message'];
+            $serviceUser->message =  $request['message'] . "<br>";
+            // if (isset($request['message'])) {
+            //     $data['body'] =  $data['body'] . "\n" . $request['message'];
+            //     $serviceUser->message .= $request['message'];
+            // }
 
             $this->sendNotification($data);
 
@@ -129,17 +130,19 @@ class ServiceController extends Controller
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
             // 'apply_link' => 'required|url',
             // 'review_link' => 'required|url',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
 
         $request['created_by'] = $authUser->id;
         $data = $request->all();
-        $lastService = (Service::get()->last()->id)+1;
-        $data['apply_link']= env('APP_URL').'panel/services/'.$lastService.'/apply';
-        $data['review_link']= env('APP_URL').'panel/services/'.$lastService.'/review';
-        Service::create($data);
-        return back()->with('success', 'تم إنشاء الخدمة بنجاح');
+        $lastService = (Service::get()->last()->id) + 1;
+        $data['apply_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/apply';
+        $data['review_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/review';
+       $service = Service::create($data);
+        return redirect("/admin/services/$service->id/edit")->with('success', 'تم إنشاء الخدمة بنجاح');
     }
 
     /**
@@ -183,6 +186,8 @@ class ServiceController extends Controller
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
             'apply_link' => 'required|url',
             'review_link' => 'required|url',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
