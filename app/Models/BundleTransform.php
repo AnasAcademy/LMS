@@ -21,6 +21,6 @@ class BundleTransform extends Model
         return $this->belongsTo('App\User','user_id','id');
     }
     function serviceRequest(){
-        return $this->belongsTo('App\Models\ServiceUser','service_request','id');
+        return $this->belongsTo('App\Models\ServiceUser','service_request_id','id');
     }
 }
