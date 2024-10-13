@@ -13,6 +13,7 @@ use App\Models\Bundle;
 use App\Models\BundleBridging;
 use App\Models\BundleTransform;
 use App\Models\Category;
+use App\Models\InstallmentOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Sale;
@@ -88,8 +89,7 @@ class ServiceController extends Controller
                     });
             })->get();
 
-        $bundles = Bundle::get();
-        return view('web.default.panel.services.includes.bundleTransform', compact('categories', 'bundles', 'service'));
+        return view('web.default.panel.services.includes.bundleTransform', compact('categories', 'service'));
     }
 
     function bundleTransform(Request $request, Service $service)
@@ -114,13 +114,83 @@ class ServiceController extends Controller
         ]);
 
 
-
-
         $from_bundle = Bundle::where('id', $request->from_bundle_id)->first();
+
 
         $content = " طلب تحويل من " . $from_bundle->title . " الي " . $to_bundle->title;
         if ($request->certificate) {
             $content .= " والرغبة في حجز الشهادة المهنيه الاحترافية ACP ";
+        }
+
+        $amount = $to_bundle->price - $from_bundle->price;
+        $transformType = 'bundle';
+
+
+        $sale = Sale::where(['bundle_id' => $from_bundle->id, 'buyer_id' => $user->id])->whereIn('type', ['bundle', 'installment_payment'])->first();
+
+        $formFeeSale = Sale::where(['bundle_id' => $from_bundle->id, 'buyer_id' => $user->id, 'type' => 'form_fee'])
+            ->whereNotExists(function ($query) {
+                $query->selectRaw(1)
+                    ->from('sales as s2')
+                    ->whereRaw('s2.bundle_id = sales.bundle_id')
+                    ->where(function ($query) {
+                        $query->where('s2.type', 'bundle')
+                            ->orWhere('s2.type', 'installment_payment');
+                    })
+                    ->whereRaw('s2.buyer_id = sales.buyer_id');
+            })->first();
+
+        if ($formFeeSale) {
+            $transformType = 'form_fee';
+            $amount = 0;
+        }
+
+        if ($sale && $sale->type == 'installment_payment') {
+            $installmentOrder = InstallmentOrder::query()
+                ->where(['user_id' => $user->id, 'bundle_id' => $from_bundle->id, 'status' => 'open'])
+                ->with(['selectedInstallment', 'selectedInstallment.steps'])->latest()->first();
+
+
+            if($installmentOrder->payments->count()> 1){
+                $toastData = [
+                    'title' => "خطأ التحويل",
+                    'msg' => "لا يمكن التحويل من هذا البرنامج يرجي التواصل مع إدارة التدريب",
+                    'status' => 'error'
+                ];
+                return back()->withInput($request->all())->withErrors(['from_bundle_id' => "لا يمكن التحويل من هذا البرنامج يرجي التواصل مع إدارة التدريب"])->with(['toast' => $toastData]);
+            }
+
+         
+            $installmentPlans = new InstallmentPlans($user);
+
+            $newInstallment = $installmentPlans->getPlans(
+                'bundles',
+                $to_bundle->id,
+                $to_bundle->type,
+                $to_bundle->category_id,
+                $to_bundle->teacher_id
+            )->last();
+
+            if (!$newInstallment) {
+                $toastData = [
+                    'title' => "خطأ التحويل",
+                    'msg' => "البرنامج المختار غير متوفر له بلان تقسيط",
+                    'status' => 'error'
+                ];
+                return back()->withInput($request->all())->withErrors(['to_bundle_id' => "البرنامج المختار غير متوفر له بلان تقسيط"])->with(['toast' => $toastData]);
+            }
+            $oldInstallment = $installmentOrder->selectedInstallment;
+            // $oldInstallment1 = $installmentPlans->getPlans('bundles', $from_bundle->id, $from_bundle->type, $from_bundle->category_id, $from_bundle->teacher_id);
+
+            $amount = $newInstallment->upfront - $oldInstallment->upfront;
+            $transformType = 'installment';
+
+            //ToDo:
+            /**
+             * want to change installment order bundle id, installment_id, item_price
+             * change selectedInstallment installment_id
+             * change order payment change installment_order_id
+             */
         }
 
         if ($service->price > 0) {
@@ -129,16 +199,22 @@ class ServiceController extends Controller
             $order = $this->createOrder($service);
             return redirect('/payment/' . $order->id);
         } else {
-            if ($to_bundle->price == $from_bundle->price) {
-                $type = null;
-            } else if ($to_bundle->price > $from_bundle->price) {
+            if ($amount == 0) {
+                $type = 'none';
+            } else if ($amount > 0) {
                 $type = "pay";
             } else {
                 $type = "refund";
             }
 
             $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
-            BundleTransform::create([...$validatedData, 'user_id' => $user->id, 'service_request_id' => $serviceRequest->id, 'type' => $type]);
+            BundleTransform::create([
+                ...$validatedData,
+                'user_id' => $user->id,
+                'service_request_id' => $serviceRequest->id,
+                'type' => $type,
+                'transform_Type' => $transformType,
+                'amount' => abs($amount)]);
             return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
         }
     }
@@ -147,9 +223,9 @@ class ServiceController extends Controller
     {
 
         $user = auth()->user();
-        Cookie::queue('bundleTransformId', json_encode($bundleTransform->id));
+        // Cookie::queue('bundleTransformId', json_encode($bundleTransform->id));
         // $order = $this->createOrder($bundleTransform);
-        $price = abs($bundleTransform->toBundle->price - $bundleTransform->fromBundle->price);
+        $price = abs($bundleTransform->amount);
 
         $order = Order::create([
             'user_id' => $user->id,
