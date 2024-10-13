@@ -20,11 +20,13 @@ use Illuminate\Http\Request;
 class BundleTransformController extends Controller
 {
     //
-    function index()
+    function index(Request $request)
     {
-        $transforms = BundleTransform::whereHas('serviceRequest', function ($query) {
+       $query = BundleTransform::whereHas('serviceRequest', function ($query) {
             $query->where('status',  'approved');
-        })->orderByDesc('created_at')->paginate(20);
+        })->orderByDesc('created_at');
+
+        $transforms = $this->filter($request, $query)->paginate(20);
         return view("admin.bundle_transform.index", compact('transforms'));
     }
     function approve(Request $request, BundleTransform $transform)
@@ -35,7 +37,7 @@ class BundleTransformController extends Controller
         if ($transform->amount <= 0) {
             return $this->finishTransform($request, $transform);
         }
-        
+
         if ($transform->type == 'refund') {
             return $this->refund($request, $transform);
         }
@@ -274,5 +276,46 @@ class BundleTransformController extends Controller
         }
 
         return true;
+    }
+
+
+
+    function filter(Request $request, $query){
+        $userName = $request->get('user_name');
+        $type = $request->get('type');
+        $transformType = $request->get('transform_type');
+        $email = $request->get('email');
+        $user_code = $request->get('user_code');
+
+        if (!empty($userName)) {
+            $query->when($userName, function ($query) use ($userName) {
+                $query->whereHas('user', function ($q) use ($userName) {
+                    $q->where('full_name', 'like', "%$userName%");
+                });
+            });
+        }
+
+        if (!empty($email)) {
+            $query->when($email, function ($query) use ($email) {
+                $query->whereHas('user', function ($q) use ($email) {
+                    $q->where('email', 'like', "%$email%");
+                });
+            });
+        }
+        if (!empty($user_code)) {
+            $query->when($user_code, function ($query) use ($user_code) {
+                $query->whereHas('user', function ($q) use ($user_code) {
+                    $q->where('user_code', 'like', "%$user_code%");
+                });
+            });
+        }
+        if (!empty($type)) {
+            $query->where('type', 'like', "%$type%");
+        }
+        if (!empty($transformType)) {
+            $query->where('transform_type', 'like', "%$transformType%");
+        }
+
+        return $query;
     }
 }

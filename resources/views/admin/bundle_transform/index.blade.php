@@ -53,16 +53,35 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="input-label">نوع التحويل</label>
-                                    <select name="type" data-plugin-selectTwo class="form-control populate">
+                                    <select name="transform_type" data-plugin-selectTwo class="form-control populate">
                                         <option value="">{{ trans('admin/main.all_status') }}</option>
-                                        <option value="form_fee" @if (request()->get('type') == 'form_fee') selected @endif>
+                                        <option value="form_fee" @if (request()->get('transform_type') == 'form_fee') selected @endif>
                                             رسوم حجز مقعد
                                         </option>
-                                        <option value="bundle" @if (request()->get('type') == 'bundle') selected @endif>
+                                        <option value="bundle" @if (request()->get('transform_type') == 'bundle') selected @endif>
                                             دفع كامل الرسوم
                                         </option>
-                                        <option value="upfront" @if (request()->get('type') == 'upfront') selected @endif>
-                                            قسط التسجيل
+                                        <option value="installment" @if (request()->get('transform_type') == 'installment') selected @endif>
+                                            تقسيط
+                                        </option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="input-label">فرق التحويل</label>
+                                    <select name="type" data-plugin-selectTwo class="form-control populate">
+                                        <option value="">{{ trans('admin/main.all_status') }}</option>
+                                        <option value="none" @if (request()->get('type') == 'none') selected @endif>
+                                        متساوي
+                                        </option>
+                                        <option value="pay" @if (request()->get('type') == 'pay') selected @endif>
+                                           دفع
+                                        </option>
+                                        <option value="refund" @if (request()->get('type') == 'refund') selected @endif>
+                                            استيرداد
                                         </option>
 
                                     </select>
