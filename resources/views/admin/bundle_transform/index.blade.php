@@ -65,76 +65,16 @@
                                             قسط التسجيل
                                         </option>
 
-                                        <option value="installment_payment"
-                                            @if (request()->get('type') == 'installment_payment') selected @endif>
-                                            اقساط
-                                        </option>
-                                        <option value="webinar" @if (request()->get('type') == 'webinar') selected @endif>
-                                            دورة
-                                        </option>
-                                        <option value="service" @if (request()->get('type') == 'service') selected @endif>
-                                            خدمات الكترونية
-                                        </option>
-                                        <option value="scholarship" @if (request()->get('type') == 'scholarship') selected @endif>
-                                            منح دراسية
-                                        </option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="input-label">عنوان البرنامج</label>
-                                    <input name="bundle_title" class="form-control"  value="{{ request()->get('bundle_title') }}">
-                                </div>
-                            </div>
 
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="input-label">{{ trans('admin/main.status') }}</label>
-                                    <select name="status" data-plugin-selectTwo class="form-control populate">
-                                        <option value="">{{ trans('admin/main.all_status') }}</option>
-                                        <option value="success" @if (request()->get('status') == 'success') selected @endif>
-                                            {{ trans('admin/main.success') }}</option>
-                                        <option value="refund" @if (request()->get('status') == 'refund') selected @endif>
-                                            {{ trans('admin/main.refund') }}</option>
-                                        {{--
-                                        <option value="blocked" @if (request()->get('status') == 'blocked') selected @endif>
-                                            {{ trans('update.access_blocked') }}</option>
-                                             --}}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 row">
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="input-label">{{ trans('admin/main.start_date') }}</label>
-                                        <div class="input-group">
-                                            <input type="date" id="from" class="text-center form-control"
-                                                name="from" value="{{ request()->get('from') }}"
-                                                placeholder="Start Date">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="input-label">{{ trans('admin/main.end_date') }}</label>
-                                        <div class="input-group">
-                                            <input type="date" id="to" class="text-center form-control"
-                                                name="to" value="{{ request()->get('to') }}"
-                                                placeholder="End Date">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group mt-1">
-                                        <label class="input-label mb-4"> </label>
-                                        <input type="submit" class="text-center btn btn-primary w-100"
-                                            value="{{ trans('admin/main.show_results') }}">
-                                    </div>
+                                <div class="form-group mt-1">
+                                    <label class="input-label mb-4"> </label>
+                                    <input type="submit" class="text-center btn btn-primary w-100"
+                                        value="{{ trans('admin/main.show_results') }}">
                                 </div>
                             </div>
 
@@ -143,6 +83,18 @@
                     </form>
                 </div>
             </section>
+
+             @if (Session::has('success'))
+            <div class="container d-flex justify-content-center mt-80">
+                <p class="alert alert-success w-75 text-center"> {{ Session::get('success') }} </p>
+            </div>
+        @endif
+
+        @if (Session::has('error'))
+            <div class="container d-flex justify-content-center mt-80">
+                <p class="alert alert-success w-75 text-center"> {{ Session::get('error') }} </p>
+            </div>
+        @endif
 
             <div class="row">
                 <div class="col-12 col-md-12">
@@ -161,18 +113,20 @@
                                         <th>#</th>
                                         <th class="text-left">{{ trans('admin/main.student') }}</th>
 
-                                        <th>اسم البرنامج المراد التحويل منه</th>
-                                        <th>اسم البرنامج المراد التحويل إليه</th>
-                                        <th>{{ trans('admin/main.transform_type') }}</th>
-                                        <th>المبلغ</th>
-                                        <th>{{ trans('admin/main.date') }}</th>
-                                        <th>{{ trans('admin/main.status') }}</th>
-                                        <th width="120">{{ trans('admin/main.actions') }}</th>
+                                        <th class="text-left">اسم البرنامج المراد التحويل منه</th>
+                                        <th class="text-left">اسم البرنامج المراد التحويل إليه</th>
+                                        <th class="text-center">{{ trans('admin/main.transform_diff') }}</th>
+                                        <th class="text-center">نوع التحويل</th>
+                                        <th class="text-center">المبلغ (ر.س)</th>
+                                        <th class="text-center">{{ trans('admin/main.date') }}</th>
+                                        <th class="text-cen ter">حالة الطلب</th>
+                                        <th class="text-cen ter">حالة التحويل</th>
+                                        <th class="text-center" width="120">{{ trans('admin/main.actions') }}</th>
                                     </tr>
 
                                     @foreach ($transforms as $index => $transform)
                                         <tr>
-                                            <td>{{ ++$index }}</td>
+                                            <td>{{ $loop->iteration }}</td>
 
                                             <td class="text-left">
                                                 {{ !empty($transform->user) ? $transform->user->full_name : '' }}
@@ -196,41 +150,100 @@
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ $transform->to_bundle_id }}</div>
                                             </td>
-                                            <td class="text-left">
-                                                {{ $transform->type }}
+                                            <td class="text-center">
+                                                {{ trans('admin/main.' . $transform->type) }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ trans('admin/main.' . $transform->transform_type) }}
                                             </td>
 
-                                            <td>
-                                                <span class="">{{ handlePrice($transform->amount ?? 0) }}</span>
+                                            <td class="text-center">
+                                                {{ handlePrice($transform->amount ?? 0, false) }}
                                             </td>
 
-                                            <td>{{ dateTimeFormat($transform->created_at, 'j F Y H:i') }}</td>
+                                            <td class="text-center">
+                                                {{ dateTimeFormat(strtotime($transform->created_at), 'j F Y H:i') }}</td>
 
-                                            <td class="text-left">
-                                                {{ $transform->status }}
-                                            </td>
-
-                                            {{-- <td>
-                                                @if (!empty($transform->refund_at))
-                                                    <span class="text-warning">{{ trans('admin/main.refund') }}</span>
+                                            <td class="text-center">
+                                                {{ trans('admin/main.' . $transform->serviceRequest->status) }}
+                                                @if ($transform->serviceRequest->status == 'rejected')
                                                     @include('admin.includes.message_button', [
-                                                                    'url' => '#',
-                                                                    'btnClass' => 'd-flex align-items-center mt-1',
-                                                                    'btnText' =>
-                                                                        '<span class="ml-2">' .
-                                                                        ' سبب الإستيرداد</span>',
-                                                                    'hideDefaultClass' => true,
-                                                                    'deleteConfirmMsg' => 'سبب  طلب الإستيرداد',
-                                                                    'message' => $transform->message,
-                                                                    'id' => $transform->id,
-                                                                ])
-                                                @elseif(!$transform->access_to_purchased_item)
-                                                    <span class="text-danger">{{ trans('update.access_blocked') }}</span>
-                                                @else
-                                                    <span class="text-success">{{ trans('admin/main.success') }}</span>
+                                                        'url' => '#',
+                                                        'btnClass' =>
+                                                            'd-flex align-items-center justify-content-center mt-1 text-danger',
+                                                        'btnText' => '<span class="ml-2">' . ' سبب الرفض</span>',
+                                                        'hideDefaultClass' => true,
+                                                        'deleteConfirmMsg' => 'هذا سبب الرفض',
+                                                        'message' => $transform->serviceRequest->message,
+                                                        'id' => $transform->serviceRequest->id,
+                                                    ])
                                                 @endif
-                                            </td> --}}
+                                            </td>
 
+                                            <td class="text-center">
+                                                {{ trans('admin/main.' . $transform->status) }}
+                                            </td>
+
+                                            {{-- actions --}}
+                                            <td width="200" class="text-center">
+                                                @if ($transform->status == 'pending')
+                                                    <div class="d-flex justify-content-center align-items-baseline gap-3">
+                                                        @can('admin_bundle_transform_approve')
+                                                            @include('admin.includes.delete_button', [
+                                                                'url' =>
+                                                                    getAdminPanelUrl() .
+                                                                    '/financial/bundle_transforms/' .
+                                                                    $transform->id .
+                                                                    '/approve',
+                                                                'btnClass' =>
+                                                                    'btn btn-primary d-flex align-items-center btn-sm mt-1 ml-3',
+                                                                'btnText' =>
+                                                                    '<i class="fa fa-check"></i><span class="ml-2"> قبول' .
+                                                                    // trans('admin/main.approve') .
+                                                                    '</span>',
+                                                                'hideDefaultClass' => true,
+                                                            ])
+                                                        @endcan
+
+                                                        @can('admin_bundle_transform_reject')
+                                                            @include('admin.services.confirm_reject_button', [
+                                                                'url' =>
+                                                                    getAdminPanelUrl() .
+                                                                    '/services/requests/' .
+                                                                    $transform->service_request_id .
+                                                                    '/reject',
+                                                                'btnClass' =>
+                                                                    'btn btn-danger d-flex align-items-center btn-sm mt-1 ml-3',
+                                                                'btnText' =>
+                                                                    '<i class="fa fa-times"></i><span class="ml-2">' .
+                                                                    trans('admin/main.reject') .
+                                                                    '</span>',
+                                                                'hideDefaultClass' => true,
+                                                                'id' => $transform->service_request_id,
+                                                            ])
+                                                        @endcan
+
+                                                        @can('admin_bundle_transform_change_amount')
+                                                            @include('admin.bundle_transform.change_amount_button', [
+                                                                'url' =>
+                                                                    getAdminPanelUrl() .
+                                                                    '/financial/bundle_transforms/' .
+                                                                    $transform->id .
+                                                                    '/change_amount',
+                                                                'btnClass' =>
+                                                                    'btn btn-warning d-flex align-items-center btn-sm mt-1',
+                                                                'btnText' =>
+                                                                    '<i class="fa fa-edit"></i><span class="ml-2">
+                                                                        تعديل المبلغ
+                                                                    </span>',
+                                                                'hideDefaultClass' => true,
+                                                                'id' => $transform->service_request_id,
+                                                                'amount' => $transform->amount,
+                                                            ])
+                                                        @endcan
+                                                    </div>
+                                                @endif
+                                            </td>
 
                                         </tr>
                                     @endforeach
