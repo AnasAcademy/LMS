@@ -6,8 +6,7 @@
         <div class="section-header">
             <h1>قائمة بالخدمات الإالكترونية</h1>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a
-                        href="{{ getAdminPanelUrl() }}">{{ trans('admin/main.dashboard') }}</a>
+                <div class="breadcrumb-item active"><a href="{{ getAdminPanelUrl() }}">{{ trans('admin/main.dashboard') }}</a>
                 </div>
                 <div class="breadcrumb-item active">
                     <a href="{{ getAdminPanelUrl() }}/services">الخدمات الإلكترونية</a>
@@ -58,9 +57,11 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td class="text-center">{{ $service->title }}</td>
                                             <td class="text-center">{{ $service->description }}</td>
-                                            <td class="text-center">{{ $service->price>0 ? $service->price : 'مجانية' }}</td>
-                                            <td class="text-center">{{ trans('admin/main.'.$service->status) }}</td>
-                                            <td class="text-center">{{ $service->created_by ?  $service->createdBy->full_name  : '' }}</td>
+                                            <td class="text-center">{{ $service->price > 0 ? $service->price : 'مجانية' }}
+                                            </td>
+                                            <td class="text-center">{{ trans('admin/main.' . $service->status) }}</td>
+                                            <td class="text-center">
+                                                {{ $service->created_by ? $service->createdBy->full_name : '' }}</td>
 
                                             <td class="font-12">
                                                 {{ Carbon\Carbon::parse($service->created_at)->translatedFormat(handleDateAndTimeFormat('Y M j | H:i')) }}
@@ -75,24 +76,48 @@
                                                         <i class="fa fa-eye"></i>
                                                     </a> --}}
 
-                                                     <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}/requests" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="الطلبات">
-                                                        {{-- <img src="https://www.svgrepo.com/show/374361/product-request.svg" alt="" style="width: 30px"> --}}
-                                                        <img src="https://cdn-icons-png.flaticon.com/512/1436/1436708.png" alt="" style="width: 30px; margin-top:-15px">
-                                                    </a>
+                                                    @can('admin_services_requests_list')
+                                                        <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}/requests"
+                                                            class="btn-transparent  text-primary ml-2" data-toggle="tooltip"
+                                                            data-placement="top" title="الطلبات">
+                                                            {{-- <img src="https://www.svgrepo.com/show/374361/product-request.svg" alt="" style="width: 30px"> --}}
+                                                            <img src="https://cdn-icons-png.flaticon.com/512/1436/1436708.png"
+                                                                alt="" style="width: 30px; margin-top:-15px">
+                                                        </a>
+                                                    @endcan
 
-                                                    @include('admin.services.show', [
-                                                        'url' => getAdminPanelUrl() . '/services/' . $service->id,
-                                                        'btnClass' => 'btn-transparent  text-primary',
-                                                        'btnText' => '<i class="fa fa-eye"></i>',
-                                                        'hideDefaultClass' => true,
-                                                        'service' => $service,
-                                                    ])
+                                                    @can('admin_services_show')
+                                                        @include('admin.services.show', [
+                                                            'url' =>
+                                                                getAdminPanelUrl() . '/services/' . $service->id,
+                                                            'btnClass' => 'btn-transparent  text-primary',
+                                                            'btnText' => '<i class="fa fa-eye"></i>',
+                                                            'hideDefaultClass' => true,
+                                                            'service' => $service,
+                                                        ])
+                                                    @endcan
 
-                                                    <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}/edit" class="btn-transparent  text-primary ml-2" data-toggle="tooltip" data-placement="top" title="{{ trans('admin/main.edit') }}">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
+                                                    @can('admin_services_edit')
+                                                        <a href="{{ getAdminPanelUrl() }}/services/{{ $service->id }}/edit"
+                                                            class="btn-transparent  text-primary ml-2" data-toggle="tooltip"
+                                                            data-placement="top" title="{{ trans('admin/main.edit') }}">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                    @endcan
 
-                                                    @include('admin.includes.delete_button',['url' => getAdminPanelUrl().'/services/'.$service->id.'/delete' , 'btnClass' => '', 'deleteConfirmMsg' => trans('admin/main.delete_confirm_msg')])
+
+                                                    @can('admin_services_delete')
+                                                        @include('admin.includes.delete_button', [
+                                                            'url' =>
+                                                                getAdminPanelUrl() .
+                                                                '/services/' .
+                                                                $service->id .
+                                                                '/delete',
+                                                            'btnClass' => '',
+                                                            'deleteConfirmMsg' => trans(
+                                                                'admin/main.delete_confirm_msg'),
+                                                        ])
+                                                    @endcan
 
                                                 </div>
                                             </td>
