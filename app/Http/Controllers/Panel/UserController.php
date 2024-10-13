@@ -977,6 +977,7 @@ class UserController extends Controller
 
         $studentBundles = BundleStudent::where('student_id', $student->id)
             ->whereHas('bundle.category.categoryRequirements') // Assuming 'requirements' is the relationship or attribute in Category
+            ->groupBy('bundle_id')
             ->get()
             ->reverse();
 
@@ -999,7 +1000,7 @@ class UserController extends Controller
             return redirect('/apply');
         }
 
-        $studentBundles = BundleStudent::where('student_id', $student->id)->get()->reverse();
+        $studentBundles = BundleStudent::where('student_id', $student->id)->groupBy('bundle_id')->get()->reverse();
 
         /* Installments */
         $bundleInstallments = [];
