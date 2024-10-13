@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('bundle_transforms', function (Blueprint $table) {
             //
-            $table->string('transform_type')->nullable();
+            $table->string('transform_type')->after('type')->nullable();
         });
     }
 
