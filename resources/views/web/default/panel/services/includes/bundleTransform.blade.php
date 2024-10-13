@@ -8,7 +8,7 @@
         <div class="">
             <div class="">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel"> طلب تحويل من دبلومة </h5>
+                    <h5 class="modal-title" id="confirmModalLabel"> طلب تحويل من برنامج </h5>
                 </div>
                 <form class="modal-body" method="post" action="/panel/services/{{ $service->id }}/bundleTransform">
                     @csrf
@@ -19,7 +19,7 @@
 
                     <div class="form-group">
                         <label class="input-label">محول من برنامج :</label>
-                        <select class="form-control" name="from_bundle_id" id="from_bundle_id" onchange="displayPriceDiff()">
+                        <select class="form-control @error('from_bundle_id')  is-invalid @enderror" name="from_bundle_id" id="from_bundle_id" >
                             <option value="" price="0" class="placeholder" disabled selected>اختر التخصص الذي تود التحويل منه
                             </option>
                             @foreach ($purchasedFormBundles as $bundleSale)
@@ -43,7 +43,7 @@
                     <div class="form-group">
                         <label class="input-label">تحويل الي برنامج :</label><br>
                         <select id="to_bundle_id" class="form-control @error('to_bundle_id')  is-invalid @enderror"
-                            name="to_bundle_id" required onchange="CertificateSectionToggle(); displayPriceDiff()">
+                            name="to_bundle_id" required onchange="CertificateSectionToggle();">
                             <option selected disabled price="0">اختر البرنامج المرام التحويل إليه
                             </option>
 
@@ -187,34 +187,34 @@
     {{-- price Section Toggle --}}
     <script>
 
-        function displayPriceDiff(){
-            let priceDiff = document.getElementById('price-diff');
-            let fromBundle = document.getElementById('from_bundle_id');
-            let toBundle = document.getElementById('to_bundle_id');
-            var fromBundlePrice = parseInt(fromBundle.options[ fromBundle.selectedIndex].getAttribute('price'));
-            var toBundlePrice = parseInt(toBundle.options[ toBundle.selectedIndex].getAttribute('price'));
-            console.log(toBundlePrice);
-            console.log(fromBundlePrice);
-            console.log("diff: " + (toBundlePrice -fromBundlePrice));
-            if(toBundlePrice>fromBundlePrice){
-                priceDiff.classList.remove('d-none');
-                priceDiff.innerHTML = `<p>*سوف تقوم بدفع
-                            <span  class="font-weight-bold text-primary"> ${toBundlePrice - fromBundlePrice} رس</span>
-                            كفرق بين البرنامج المحول منه وإليه
-                        </p>`;
-            }else if(toBundlePrice<fromBundlePrice){
-                priceDiff.classList.remove('d-none');
-                priceDiff.innerHTML = `<p>*سوف تقوم بإستيرداد مبلغ
-                            <span  class="font-weight-bold text-primary"> ${Math.abs(toBundlePrice - fromBundlePrice)} رس</span>
-                            كفرق بين البرنامج المحول منه وإليه
-                        </p>`;
-            }else{
-                priceDiff.classList.add('d-none');
+        // function displayPriceDiff(){
+        //     let priceDiff = document.getElementById('price-diff');
+        //     let fromBundle = document.getElementById('from_bundle_id');
+        //     let toBundle = document.getElementById('to_bundle_id');
+        //     var fromBundlePrice = parseInt(fromBundle.options[ fromBundle.selectedIndex].getAttribute('price'));
+        //     var toBundlePrice = parseInt(toBundle.options[ toBundle.selectedIndex].getAttribute('price'));
+        //     console.log(toBundlePrice);
+        //     console.log(fromBundlePrice);
+        //     console.log("diff: " + (toBundlePrice -fromBundlePrice));
+        //     if(toBundlePrice>fromBundlePrice){
+        //         priceDiff.classList.remove('d-none');
+        //         priceDiff.innerHTML = `<p>*سوف تقوم بدفع
+        //                     <span  class="font-weight-bold text-primary"> ${toBundlePrice - fromBundlePrice} رس</span>
+        //                     كفرق بين البرنامج المحول منه وإليه
+        //                 </p>`;
+        //     }else if(toBundlePrice<fromBundlePrice){
+        //         priceDiff.classList.remove('d-none');
+        //         priceDiff.innerHTML = `<p>*سوف تقوم بإستيرداد مبلغ
+        //                     <span  class="font-weight-bold text-primary"> ${Math.abs(toBundlePrice - fromBundlePrice)} رس</span>
+        //                     كفرق بين البرنامج المحول منه وإليه
+        //                 </p>`;
+        //     }else{
+        //         priceDiff.classList.add('d-none');
 
-            }
-        }
+        //     }
+        // }
 
-        displayPriceDiff();
+        //  displayPriceDiff();
     </script>
 
     {{-- Certificate Section Toggle --}}
