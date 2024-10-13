@@ -138,7 +138,7 @@ class CertificateController extends Controller
         $rules = [
             'title' => 'required',
             'image' => 'required',
-            'type' => 'required|in:quiz,course,bundle',
+            'type' => 'required|in:quiz,course,bundle,attendance',
             // 'bundles'=>'required',
             //    'student_name'=>'required',
             'position_x_student' => 'required',
@@ -156,6 +156,11 @@ class CertificateController extends Controller
             'position_x_date' => 'required',
             'position_y_date' => 'required',
             'font_size_date' => 'required',
+            //'gpa' => 'required',
+            'position_x_gpa' =>'required',
+            'position_y_gpa' => 'required',
+            'font_size_gpa' => 'required',
+            
             'position_x_certificate_code' => 'required',
             'position_y_certificate_code' => 'required',
             'font_size_certificate_code' => 'required',
@@ -204,6 +209,11 @@ class CertificateController extends Controller
                     'position_y_date' => $data['position_y_date'],
                     'font_size_date' => $data['font_size_date'],
 
+                    'gpa' => $data['gpa'],
+                    'position_x_gpa' => $data['position_x_gpa'],
+                    'position_y_gpa' => $data['position_y_gpa'],
+                    'font_size_gpa' => $data['font_size_gpa'],
+
                     'position_x_certificate_code' => $data['position_x_certificate_code'],
                     'position_y_certificate_code' => $data['position_y_certificate_code'],
                     'font_size_certificate_code' => $data['font_size_certificate_code'],
@@ -243,6 +253,11 @@ class CertificateController extends Controller
                     'position_x_date' => $data['position_x_date'],
                     'position_y_date' => $data['position_y_date'],
                     'font_size_date' => $data['font_size_date'],
+                    'gpa' => $data['gpa'],
+                    'position_x_gpa' => $data['position_x_gpa'],
+                    'position_y_gpa' => $data['position_y_gpa'],
+                    'font_size_gpa' => $data['font_size_gpa'],
+
                     'text_color' => $data['text_color'],
                     'position_x_certificate_code' => $data['position_x_certificate_code'],
                     'position_y_certificate_code' => $data['position_y_certificate_code'],
@@ -446,6 +461,11 @@ class CertificateController extends Controller
         $position_y_date = (int)($request->get('position_y_date') ?? 1510);
         $font_size_date = (int)($request->get('font_size_date') ?? 40);
 
+        $gpa = $request->get('gpa');
+        $position_x_gpa = (int)($request->get('position_x_gpa') ?? 835); // Default to 800 if not provided
+        $position_y_gpa = (int)($request->get('position_y_gpa') ?? 1510);
+        $font_size_gpa = (int)($request->get('font_size_gpa') ?? 40);
+
         $position_x_certificate_code = (int)($request->get('position_x_certificate_code') ?? 560); // Default to 800 if not provided
         $position_y_certificate_code = (int)($request->get('position_y_certificate_code') ?? 2236);
         $font_size_certificate_code = (int)($request->get('font_size_certificate_code') ?? 20);
@@ -510,6 +530,14 @@ class CertificateController extends Controller
         $img->text($course_name, $position_x_course, $position_y_course, function ($font) use ($fontPath2, $textColor, $font_size_course) {
             $font->file($fontPath2);
             $font->size($font_size_course); // Adjust as needed
+            $font->color($textColor);
+            $font->align('center');
+            $font->valign('top');
+        });
+
+        $img->text($gpa, $position_x_gpa, $position_y_gpa, function ($font) use ($fontPath, $textColor, $font_size_gpa) {
+            $font->file($fontPath);
+            $font->size($font_size_gpa); // Adjust as needed
             $font->color($textColor);
             $font->align('center');
             $font->valign('top');
@@ -702,6 +730,8 @@ class CertificateController extends Controller
 
         abort(404);
     }
+
+
     public function exportExcel(Request $request)
     {
         $this->authorize('admin_certificate_export_excel');

@@ -237,6 +237,13 @@
                                                 @else
                                                     <div class="text-small text-warning">{{trans('admin/main.no_category')}}</div>
                                                 @endif
+
+                                                @if(!empty($bundle->batch->title))
+                                                <div class="text-small text-success">{{ $bundle->batch->title }}</div>
+                                            @else
+                                                <div class="text-small text-warning">لا يوجد دفعه</div>
+                                            @endif
+                                                {{-- <div class="text-small">{{ $bundle->batch}}</div> --}}
                                             </td>
 
                                             <td class="text-left">{{ $bundle->teacher->full_name }}</td>

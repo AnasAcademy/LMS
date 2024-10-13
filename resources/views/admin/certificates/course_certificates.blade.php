@@ -9,8 +9,7 @@
         <div class="section-header">
             <h1>{{ $pageTitle }}</h1>
             <div class="section-header-breadcrumb">
-                <div class="breadcrumb-item active"><a href="{{ getAdminPanelUrl() }}">{{trans('admin/main.dashboard')}}</a>
-                </div>
+                <div class="breadcrumb-item active"><a href="{{ getAdminPanelUrl() }}">{{trans('admin/main.dashboard')}}</a></div>
                 <div class="breadcrumb-item">{{ $pageTitle }}</div>
             </div>
         </div>
@@ -27,8 +26,21 @@
                                         data-placeholder="{{ trans('admin/main.search_webinar') }}">
                                     @if(!empty($webinars))
                                         @foreach($webinars as $webinar)
-                                            <option value="{{ $webinar->id }}"
-                                                    selected="selected">{{ $webinar ? $webinar->title : ''}}</option>
+                                            <option value="{{ $webinar->id }}" selected="selected">{{ $webinar ? $webinar->title : '' }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">البرنامج</label>
+                                <select name="bundle_ids[]" multiple="multiple" class="form-control search-bundle-select2"
+                                        data-placeholder="البرنامج">
+                                    @if(!empty($bundles))
+                                        @foreach($bundles as $bundle)
+                                            <option value="{{ $bundle->id }}" selected>{{ $bundle->title }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -40,7 +52,6 @@
                                 <label class="input-label">{{ trans('admin/main.instructor') }}</label>
                                 <select name="teacher_ids[]" multiple="multiple" data-search-option="just_teacher_role" class="form-control search-user-select2"
                                         data-placeholder="Search teachers">
-
                                     @if(!empty($teachers) and $teachers->count() > 0)
                                         @foreach($teachers as $teacher)
                                             <option value="{{ $teacher->id }}" selected>{{ $teacher->full_name }}</option>
@@ -50,13 +61,11 @@
                             </div>
                         </div>
 
-
-                        <div class="col-md-3">
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.student') }}</label>
                                 <select name="student_ids[]" multiple="multiple" data-search-option="just_student_role" class="form-control search-user-select2"
                                         data-placeholder="Search students">
-
                                     @if(!empty($students) and $students->count() > 0)
                                         @foreach($students as $student)
                                             <option value="{{ $student->id }}" selected>{{ $student->full_name }}</option>
@@ -64,7 +73,7 @@
                                     @endif
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="col-12 col-md-3 d-flex align-items-center justify-content-end">
                             <button type="submit" class="btn btn-primary w-100">{{ trans('public.show_results') }}</button>
@@ -77,7 +86,6 @@
                 <div class="col-12 col-md-12">
                     <div class="card">
                         <div class="card-body">
-
                             <div class="table-responsive">
                                 <table class="table table-striped font-14">
                                     <tr>
@@ -91,27 +99,51 @@
                                     </tr>
 
                                     @foreach($certificates as $certificate)
-                                        <tr>
-                                            <td class="text-center">{{ $certificate->id }}</td>
-                                            <td class="text-left">
+                                    <tr>
+                                        <td class="text-center">{{ $certificate->id }}</td>
+                                
+                                        <!-- Conditional display for Webinar or Bundle -->
+                                        <td class="text-left">
+                                            @if ($certificate->webinar_id)
+                                                <!-- Show Webinar title and teacher -->
                                                 <span>{{ $certificate->webinar->title }}</span>
-                                            </td>
-                                            <td class="text-left">
-                                                <span>{{ $certificate->certificate_code }}</span>
-                                            </td>
-                                            <td class="text-left">{{ $certificate->student->full_name }}</td>
-                                            <td class="text-left">{{ $certificate->webinar->teacher->full_name }}</td>
-
-                                            <td class="text-center">{{ dateTimeFormat($certificate->created_at, 'j M Y') }}</td>
-
-                                            <td>
-                                                <a href="{{ getAdminPanelUrl() }}/certificates/{{ $certificate->id }}/download" target="_blank" class="btn-transparent text-primary" data-toggle="tooltip" title="{{ trans('quiz.download_certificate') }}">
-                                                    <i class="fa fa-download" aria-hidden="true"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-
+                                            @elseif ($certificate->bundle_id)
+                                                <!-- Show Bundle name if no Webinar -->
+                                                <span>{{ $certificate->bundle->title?? 'N/A' }}</span>
+                                            @else
+                                                <span>N/A</span>
+                                            @endif
+                                        </td>
+                                
+                                        <td class="text-left">
+                                            <span>{{ $certificate->certificate_code }}</span>
+                                        </td>
+                                
+                                        <td class="text-left">{{ $certificate->student->full_name }}</td>
+                                
+                                        <!-- Conditional display for Webinar Teacher or Bundle Teacher -->
+                                        <td class="text-left">
+                                            @if ($certificate->webinar_id)
+                                                <!-- Show Teacher name for Webinar -->
+                                                <span>{{ $certificate->webinar->teacher->full_name ?? 'N/A' }}</span>
+                                            @elseif ($certificate->bundle_id)
+                                                <!-- Show Teacher name for Bundle -->
+                                                <span>{{ $certificate->bundle->teacher->full_name ?? 'N/A' }}</span>
+                                            @else
+                                                <span>N/A</span>
+                                            @endif
+                                        </td>
+                                
+                                        <td class="text-center">{{ dateTimeFormat($certificate->created_at, 'j M Y') }}</td>
+                                
+                                        <td>
+                                            <a href="{{ getAdminPanelUrl() }}/certificates/{{ $certificate->id }}/download" target="_blank" class="btn-transparent text-primary" data-toggle="tooltip" title="{{ trans('quiz.download_certificate') }}">
+                                                <i class="fa fa-download" aria-hidden="true"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                
                                 </table>
                             </div>
                         </div>
@@ -125,4 +157,5 @@
         </div>
     </section>
 @endsection
+
 
