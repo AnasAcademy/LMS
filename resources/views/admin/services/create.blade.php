@@ -152,7 +152,7 @@
                                                         </div>
 
                                                         <input type="text" name="start_date"
-                                                            value="{{ (!empty($service) and $service->start_date) ? dateTimeFormat($service->start_date, 'Y-m-d H:i', false, false, getTimezone()) : old('start_date') }}"
+                                                            value="{{ (!empty($service) and $service->start_date) ? $service->start_date : old('start_date') }}"
                                                             class="form-control @error('start_date')  is-invalid @enderror datetimepicker"
                                                             aria-describedby="dateInputGroupPrepend" />
                                                         @error('start_date')
@@ -177,7 +177,7 @@
                                                         </div>
 
                                                         <input type="text" name="end_date"
-                                                            value="{{ (!empty($service) and $service->end_date) ? dateTimeFormat($service->end_date, 'Y-m-d H:i', false, false, getTimezone()) : old('end_date') }}"
+                                                            value="{{ (!empty($service) and $service->end_date) ? $service->end_date : old('end_date') }}"
                                                             class="form-control @error('end_date')  is-invalid @enderror datetimepicker"
                                                             aria-describedby="dateInputGroupPrepend" />
                                                         @error('end_date')

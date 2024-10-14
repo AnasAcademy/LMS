@@ -54,7 +54,9 @@
 
                                             <td class="text-center align-middle">
                                                 <span
-                                                    class="font-16 font-weight-bold text-primary">{{ handlePrice($service->price, false) }}</span>
+                                                    class="font-16 font-weight-bold text-primary">
+                                                    {{ $service->price > 0 ? handlePrice($service->price, false) : 'مجانية' }}
+                                                </span>
                                             </td>
 
                                             <td class="text-center align-middle">

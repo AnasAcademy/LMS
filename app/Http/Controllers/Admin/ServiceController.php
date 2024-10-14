@@ -47,6 +47,9 @@ class ServiceController extends Controller
             $serviceUser->approved_by = $admin->id;
             $serviceUser->save();
             if ($serviceUser->bundleTransform) {
+                if ($serviceUser->bundleTransform->amount == 0) {
+                    return (new BundleTransformController())->finishTransform($request, $serviceUser->bundleTransform);
+                }
                 return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال الطلب لإدارة المالبة');
             }
 

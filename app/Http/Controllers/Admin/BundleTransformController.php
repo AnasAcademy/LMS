@@ -48,7 +48,8 @@ class BundleTransformController extends Controller
         $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
         $data['fromName'] = env('MAIL_FROM_NAME');
         $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
-        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . 'متبقي فقط دفع فرق السعر لإتمام التحويل';
+        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . '
+ متبقي فقط دفع فرق السعر لإتمام التحويل ';
 
         $this->sendNotification($data);
         $toastData = [
@@ -214,7 +215,8 @@ class BundleTransformController extends Controller
         $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
         $data['fromName'] = env('MAIL_FROM_NAME');
         $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
-        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . "ر.س وتم التحويل بنجاح";
+        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' .
+        $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " وتم التحويل بنجاح " ;
 
         $this->sendNotification($data);
 
