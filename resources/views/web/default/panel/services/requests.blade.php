@@ -32,7 +32,7 @@
                             <table class="table text-center custom-table">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">{{ 'Index' }}</th>
+                                        <th class="text-center">#</th>
                                         <th class="text-center">{{ 'اسم الخدمة' }}</th>
                                         <th class="text-center">{{ '  ثمن الخدمة (ر.س) ' }}</th>
                                         <th class="text-center">{{ 'حالة الطلب' }}</th>
