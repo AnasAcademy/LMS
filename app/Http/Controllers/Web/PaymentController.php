@@ -91,6 +91,11 @@ class PaymentController extends Controller
             $order->orderItems[0]->update(['discount_id' => null, 'discount' => 0, 'total_amount' => $order->orderItems[0]->amount]);
             $order->save();
         }
+
+        $flag = false;
+        if($order->orderItems[0]->form_fee || $order->orderItems[0]->transform_bundle_id || $order->orderItems[0]->service_id ){
+            $flag = true;
+        }
         $data = [
             'pageTitle' => trans('public.checkout_page_title'),
             'paymentChannels' => $paymentChannels,
@@ -102,7 +107,7 @@ class PaymentController extends Controller
             'total' => $order->total_amount,
             'userGroup' => $userAuth->userGroup ? $userAuth->userGroup->group : null,
             'order' => $order,
-            'type' => $order->orderItems[0]->form_fee,
+            'type' => $flag ,
             'count' => 0,
             'userCharge' => $userAuth->getAccountingCharge(),
             'razorpay' => $razorpay,
