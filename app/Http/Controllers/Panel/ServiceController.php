@@ -127,6 +127,8 @@ class ServiceController extends Controller
 
         $amount = $to_bundle->price - $from_bundle->price;
         $transformType = 'bundle';
+        $contentExtention = '(تحويل دفع كامل الرسوم)';
+
 
 
         $sale = Sale::where(['bundle_id' => $from_bundle->id, 'buyer_id' => $user->id])->whereIn('type', ['bundle', 'installment_payment'])->first();
@@ -145,7 +147,8 @@ class ServiceController extends Controller
 
         if ($formFeeSale) {
             $transformType = 'form_fee';
-            $amount = 0;
+            $contentExtention = '(تحويل حجز مقعد)';
+             $amount = 0;
         }
 
         if ($sale && $sale->type == 'installment_payment') {
@@ -187,6 +190,8 @@ class ServiceController extends Controller
 
             $amount = $newInstallment->upfront - $oldInstallment->upfront;
             $transformType = 'installment';
+            $contentExtention = '(تحويل قسط التسجيل)';
+
 
             //ToDo:
             /**
@@ -209,6 +214,7 @@ class ServiceController extends Controller
             } else {
                 $type = "refund";
             }
+            $content .= ' ' . $contentExtention;
 
             $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
             BundleTransform::create([
