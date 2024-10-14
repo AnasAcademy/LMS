@@ -30,7 +30,7 @@ class ServiceUser extends Pivot{
     }
     public function bundleTransform()
     {
-        return $this->hasOne(bundleTransform::class, 'service_request_id','id');
+        return $this->hasOne(BundleTransform::class, 'service_request_id','id');
     }
     public function BridgingRequest()
     {
