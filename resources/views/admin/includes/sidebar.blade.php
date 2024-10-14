@@ -199,16 +199,15 @@
                 </li>
             @endcan
 
-
             {{-- financila bundle transform --}}
-            @can('admin_bundle_transforms')
-                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/bundle_transforms*', false)) ? 'active' : '' }}">
+            @can('admin_bundle_transform')
+                <li class="nav-item dropdown {{ request()->is(getAdminPanelUrl('/financial/bundle_transforms*', false)) ? 'active' : '' }}">
                     <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                         <i class="fas fa-graduation-cap"></i>
                         <span>التحويلات</span>
                     </a>
                     <ul class="dropdown-menu">
-                        @can('admin_bundle_transforms_list')
+                        @can('admin_bundle_transform_list')
                             <li class="{{ request()->is(getAdminPanelUrl('/financial/bundle_transforms', false)) ? 'active' : '' }}">
                                 <a class="nav-link" href="{{ getAdminPanelUrl() }}/financial/bundle_transforms">{{ ' قائمة بالطلبات' }}</a>
                             </li>
