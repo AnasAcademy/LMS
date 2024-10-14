@@ -13,12 +13,12 @@
         }
 
         /* .module-box:hover{
-                    background-color: var(--secondary) !important;
+                        background-color: var(--secondary) !important;
 
-                }
-                /* .module-box:hover a{
-                    background-color: var(--secondary);
-                } */
+                    }
+                    /* .module-box:hover a{
+                        background-color: var(--secondary);
+                    } */
 
         .module-box:hover .service-card svg {
             fill: var(--primary);
@@ -38,11 +38,18 @@
     @endif
 
     <section class="row p-20">
-        @foreach ($services as $service)
-            <div class="col-12 col-lg-4 mt-35 ">
-                @include('web.default.panel.services.includes.service_card', ['service' => $service])
-            </div>
-        @endforeach
+        @if ($services->count() > 0)
+            @foreach ($services as $service)
+                <div class="col-12 col-lg-4 mt-35 ">
+                    @include('web.default.panel.services.includes.service_card', ['service' => $service])
+                </div>
+            @endforeach
+        @else
+            @include(getTemplate() . '.includes.no-result', [
+                'file_name' => 'webinar.png',
+                'title' => 'غير متوفر اي خدمات حاليا',
+            ])
+        @endif
     </section>
 @endsection
 @push('scripts_bottom')
