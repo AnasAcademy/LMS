@@ -26,6 +26,11 @@ class Support extends Model
         return $this->belongsTo('App\Models\Webinar', 'webinar_id', 'id');
     }
 
+    public function bundle()
+    {
+        return $this->belongsTo('App\Models\Bundle', 'bundle_id', 'id');
+    }
+
     public function conversations()
     {
         return $this->hasMany('App\Models\SupportConversation', 'support_id', 'id');

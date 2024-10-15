@@ -601,12 +601,14 @@
                 <div class="collapse {{ (request()->is('panel/support') or request()->is('panel/support/*')) ? 'show' : '' }}"
                     id="supportCollapse">
                     <ul class="sidenav-item-collapse">
+                        @if(auth()->check() && auth()->user()->role_name === 'user')
                         <li class="mt-5 {{ request()->is('panel/support/new') ? 'active' : '' }}">
                             <a href="/panel/support/new">{{ trans('public.new') }}</a>
                         </li>
-                        <li class="mt-5 {{ request()->is('panel/support') ? 'active' : '' }}">
+                    @endif
+                        {{-- <li class="mt-5 {{ request()->is('panel/support') ? 'active' : '' }}">
                             <a href="/panel/support">{{ trans('panel.classes_support') }}</a>
-                        </li>
+                        </li> --}}
                         <li class="mt-5 {{ request()->is('panel/support/tickets') ? 'active' : '' }}">
                             <a href="/panel/support/tickets">{{ trans('panel.support_tickets') }}</a>
                         </li>
