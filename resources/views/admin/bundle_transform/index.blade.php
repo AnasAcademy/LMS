@@ -201,6 +201,18 @@
 
                                             <td class="text-center">
                                                 {{ trans('admin/main.' . $transform->status) }}
+                                                @if ($transform->status == 'rejected')
+                                                    @include('admin.includes.message_button', [
+                                                        'url' => '#',
+                                                        'btnClass' =>
+                                                            'd-flex align-items-center justify-content-center mt-1 text-danger',
+                                                        'btnText' => '<span class="ml-2">' . ' سبب الرفض</span>',
+                                                        'hideDefaultClass' => true,
+                                                        'deleteConfirmMsg' => 'هذا سبب الرفض',
+                                                        'message' => $transform->serviceRequest->message,
+                                                        'id' => $transform->serviceRequest->id,
+                                                    ])
+                                                @endif
                                             </td>
 
                                             {{-- actions --}}

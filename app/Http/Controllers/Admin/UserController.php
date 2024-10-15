@@ -1055,7 +1055,7 @@ class UserController extends Controller
             'status' => 'required|' . Rule::in(User::$statuses),
             'ban_start_at' => 'required_if:ban,on',
             'ban_end_at' => 'required_if:ban,on',
-            'en_name' => 'nullable|string|max:255',  
+            'en_name' => 'nullable|string|max:255',
         ]);
 
         $data = $request->all();
@@ -1105,9 +1105,9 @@ class UserController extends Controller
             $user->student->en_name =  $data['en_name'] ;
             $user->student->save();
         }
-
         if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
+            $user->save();
             $data['title'] = 'تغيير كلمة المرور';
             $data['body'] = "حياك الله
                             <br>
@@ -1151,7 +1151,7 @@ class UserController extends Controller
         $user->can_create_store = (!empty($data['can_create_store']) and $data['can_create_store'] == '1');
 
         $user->access_content = (!empty($data['access_content']) and $data['access_content'] == '1');
-        
+
         $user->save();
 
         // save certificate_additional in user metas table
