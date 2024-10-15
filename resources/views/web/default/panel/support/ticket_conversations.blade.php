@@ -106,6 +106,24 @@
                         </div>
                     </div>
 
+                    <div class="col-12 col-lg-5">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label class="input-label">رقم التزكرة</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            {{-- <span class="input-group-text" id="serialNumberInputGroupPrepend">
+                                                <i data-feather="hash" width="18" height="18" class="text-white"></i>
+                                            </span> --}}
+                                        </div>
+                                        <input type="text" name="serial_number"  class="form-control" value="{{ request()->get('serial_number','') }}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-12 col-lg-2 d-flex align-items-center justify-content-end">
                         <button type="submit" class="btn btn-sm font-14 btn-primary w-100 mt-2">{{ trans('public.show_results') }}</button>
                     </div>
@@ -125,15 +143,19 @@
                         <div class="table-responsive">
                             <table class="table table-md">
                                 <tr>
+                                    <th class="text-center font-14 text-gray font-weight-500">رقم التزكرة</th>
                                     <th class="text-left font-14 text-gray font-weight-500">{{ trans('navbar.title') }}</th>
-                                    <th class="text-center font-14 text-gray font-weight-500">{{ trans('public.updated_at') }}</th>
                                     <th class="text-center font-14 text-gray font-weight-500">{{ trans('panel.department') }}</th>
+                                    <th class="text-center font-14 text-gray font-weight-500">{{ trans('public.updated_at') }}</th>
+                                    
                                     <th class="text-center font-14 text-gray font-weight-500">{{ trans('public.status') }}</th>
+                                    
                                 </tr>
                                 <tbody>
 
                                 @foreach($supports as $support)
                                     <tr class="@if(!empty($selectSupport) and $selectSupport->id == $support->id) selected-row @endif">
+                                        <td class="text-center">{{ $support->serial_number }}</td>
                                         <td class="text-left">
                                             <a href="/panel/support/tickets/{{ $support->id }}/conversations" class="">
                                                 <div class="user-inline-avatar d-flex align-items-center">
@@ -148,12 +170,15 @@
                                         </td>
 
                                         <td class="text-center align-middle">
+                                            <span class="font-weight-500 text-dark-blue font-14 d-block">{{ $support->department->title }}</span>
+                                        </td>
+                                        
+
+                                        <td class="text-center align-middle">
                                             <span class="font-weight-500 text-dark-blue font-14 text-gray d-block">{{ (!empty($support->conversations) and count($support->conversations)) ? dateTimeFormat($support->conversations->first()->created_at,'j M Y | H:i') : dateTimeFormat($support->created_at,'j M Y | H:i') }}</span>
                                         </td>
 
-                                        <td class="text-center align-middle">
-                                            <span class="font-weight-500 text-dark-blue font-14 d-block">{{ $support->department->title }}</span>
-                                        </td>
+                                        
 
                                         <td class="text-center align-middle">
                                             @if($support->status == 'close')
@@ -179,10 +204,13 @@
                                 <div>
                                     <span class="font-weight-500 font-14 text-dark-blue d-block">{{ $selectSupport->title }}</span>
                                     <span class="font-12 text-gray d-block mt-5">{{ trans('public.created') }}: {{ dateTimeFormat($support->created_at,'j M Y | H:i') }}</span>
-
+                           {{-- @dump($selectSupport->bundle) --}}
                                     @if(!empty($selectSupport->webinar))
                                         <span class="font-12 text-gray d-block mt-5">{{ trans('webinars.webinar') }}: {{ $selectSupport->webinar->title }}</span>
                                     @endif
+                                    @if(!empty($selectSupport->bundle))
+                                    <span class="font-12 text-gray d-block mt-5"> {{ $selectSupport->bundle->title }}</span>
+                                @endif
                                 </div>
 
                                 @if($selectSupport->status != 'close')
@@ -214,6 +242,7 @@
                                                         <a href="{{ url($conversations->attach) }}" target="_blank" class="font-12 mt-10 text-danger"><i data-feather="paperclip" height="14"></i> {{ trans('panel.attach') }}</a>
                                                     @endif
                                                 </div>
+
                                             </div>
                                             <p class="white-space-pre-wrap text-gray mt-15 font-weight-500 font-14">{{ $conversations->message }}</p>
                                         </div>
