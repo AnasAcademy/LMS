@@ -22,7 +22,7 @@ class BundleTransformController extends Controller
     //
     function index(Request $request)
     {
-       $query = BundleTransform::whereHas('serviceRequest', function ($query) {
+        $query = BundleTransform::whereHas('serviceRequest', function ($query) {
             $query->where('status',  'approved');
         })->orderByDesc('created_at');
 
@@ -52,6 +52,20 @@ class BundleTransformController extends Controller
  متبقي فقط دفع فرق السعر لإتمام التحويل ';
 
         $this->sendNotification($data);
+
+        $financialUsers = User::where(['status' => 'active'])
+            ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+        foreach ($financialUsers as $financialUser) {
+            $data['user_id'] = $financialUser->id;
+            $data['name'] = $financialUser->full_name;
+            $data['receiver'] = $financialUser->email;
+            $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+            $data['fromName'] = env('MAIL_FROM_NAME');
+            $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " المقدم من الطالب " . $transform->user->full_name . " من قبل "  . auth()->user()->full_name;
+            $this->sendNotification($data);
+        }
+
         $toastData = [
             'title' => " طلب تحويل",
             'msg' => "تم الموافقة علي طلب التحويل بنجاح",
@@ -108,6 +122,20 @@ class BundleTransformController extends Controller
         $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $bundleTransform->fromBundle->title .  ' إلي برنامج ' . $bundleTransform->toBundle->title . " واستيرداد مبلغ قدره $bundleTransform->amount ر.س وتم التحويل بنجاح";
 
         $this->sendNotification($data);
+
+        $financialUsers = User::where(['status' => 'active'])
+            ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+        foreach ($financialUsers as $financialUser) {
+            $data['user_id'] = $financialUser->id;
+            $data['name'] = $financialUser->full_name;
+            $data['receiver'] = $financialUser->email;
+            $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+            $data['fromName'] = env('MAIL_FROM_NAME');
+            $data['subject'] = 'الرد علي طلب خدمة ' . $bundleTransform->serviceRequest->title;
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $bundleTransform->fromBundle->title .  ' إلي برنامج ' . $bundleTransform->toBundle->title . " المقدم من الطالب " . $bundleTransform->user->full_name . " من قبل "  . auth()->user()->full_name .  " واستيرداد مبلغ قدره $bundleTransform->amount ر.س وتم التحويل بنجاح";
+
+            $this->sendNotification($data);
+        }
 
         $toastData = [
             'title' => "اتمام التحويل",
@@ -216,9 +244,22 @@ class BundleTransformController extends Controller
         $data['fromName'] = env('MAIL_FROM_NAME');
         $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
         $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' .
-        $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " وتم التحويل بنجاح " ;
+            $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " وتم التحويل بنجاح ";
 
         $this->sendNotification($data);
+
+        $financialUsers = User::where(['status' => 'active'])
+            ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+        foreach ($financialUsers as $financialUser) {
+            $data['user_id'] = $financialUser->id;
+            $data['name'] = $financialUser->full_name;
+            $data['receiver'] = $financialUser->email;
+            $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+            $data['fromName'] = env('MAIL_FROM_NAME');
+            $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " المقدم من الطالب " . $transform->user->full_name . " من قبل "  . auth()->user()->full_name . " وتم التحويل بنجاح ";
+            $this->sendNotification($data);
+        }
 
         $toastData = [
             'title' => "اتمام التحويل",
@@ -228,7 +269,6 @@ class BundleTransformController extends Controller
 
 
         return back()->with(['toast' => $toastData]);
-
     }
     function changeAmount(Request $request, BundleTransform $transform)
     {
@@ -263,7 +303,7 @@ class BundleTransformController extends Controller
         Notification::create([
             'user_id' => !empty($data['user_id']) ? $data['user_id'] : null,
             'sender_id' => auth()->id(),
-            'title' => "طلب خدمة",
+            'title' => $data['subject'],
             'message' => $data['body'],
             'sender' => Notification::$AdminSender,
             'type' => "single",
@@ -282,7 +322,8 @@ class BundleTransformController extends Controller
 
 
 
-    function filter(Request $request, $query){
+    function filter(Request $request, $query)
+    {
         $userName = $request->get('user_name');
         $type = $request->get('type');
         $transformType = $request->get('transform_type');
