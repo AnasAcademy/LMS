@@ -7,22 +7,23 @@
 @section('content')
 
 
-    @if (Session::has('success'))
-        <div class="container d-flex justify-content-center mt-80">
-            <p class="alert alert-success w-75 text-center"> {{ Session::get('success') }} </p>
-        </div>
-    @endif
-    @if (Session::has('error'))
-        <div class="container d-flex justify-content-center mt-80">
-            <p class="alert alert-danger w-75 text-center"> {{ Session::get('error') }} </p>
-        </div>
-    @endif
 
 
     <section class="mt-40">
         @include('web.default.panel.services.includes.progress', [
             'title' => 'طلبات الخدمات الإلكترونية',
         ])
+
+        @if (Session::has('success'))
+            <div class="container d-flex justify-content-center mt-80">
+                <p class="alert alert-success w-75 text-center"> {{ Session::get('success') }} </p>
+            </div>
+        @endif
+        @if (Session::has('error'))
+            <div class="container d-flex justify-content-center mt-80">
+                <p class="alert alert-danger w-75 text-center"> {{ Session::get('error') }} </p>
+            </div>
+        @endif
 
         @if ($services->count() > 0)
             <div class="panel-section-card py-20 px-25 mt-20">
@@ -53,8 +54,7 @@
                                             </td>
 
                                             <td class="text-center align-middle">
-                                                <span
-                                                    class="font-16 font-weight-bold text-primary">
+                                                <span class="font-16 font-weight-bold text-primary">
                                                     {{ $service->price > 0 ? handlePrice($service->price, false) : 'مجانية' }}
                                                 </span>
                                             </td>
@@ -87,7 +87,7 @@
                                                         <span class="text-danger">{{ trans('public.rejected') }}</span>
                                                         @include('admin.includes.message_button', [
                                                             'url' => '#',
-                                                            'btnClass' => 'd-flex align-items-center mt-1',
+                                                            'btnClass' => 'd-block m-auto mt-2',
                                                             'btnText' =>
                                                                 '<span class="ml-2">' . ' سبب الرفض</span>',
                                                             'hideDefaultClass' => true,
@@ -154,10 +154,10 @@
                 </div>
             </div>
         @else
-            @include(getTemplate() . '.includes.no-result',[
+            @include(getTemplate() . '.includes.no-result', [
                 'file_name' => 'webinar.png',
-                'title' =>'ليس لديك طلبات',
-                'hint' => "<a href='/panel/services' class= 'text-primary'>قم بإرسال طلب خدمة</a>" ,
+                'title' => 'ليس لديك طلبات',
+                'hint' => "<a href='/panel/services' class= 'text-primary'>قم بإرسال طلب خدمة</a>",
             ])
         @endif
 

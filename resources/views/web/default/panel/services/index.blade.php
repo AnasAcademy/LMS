@@ -37,6 +37,12 @@
         </div>
     @endif
 
+    @if (Session::has('error'))
+            <div class="container d-flex justify-content-center mt-80">
+                <p class="alert alert-danger w-75 text-center"> {{ Session::get('error') }} </p>
+            </div>
+        @endif
+
     @if ($services->count() > 0)
         <section class="row p-20">
             @foreach ($services as $service)
