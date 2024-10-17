@@ -366,11 +366,15 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // services routes
          Route::group(['prefix' => 'services'], function () {
+             Route::group(['prefix' => 'bundle_delay'], function () {
+                 Route::get('/', 'BundleDelayController@index');
+             });
             Route::get('{service}/requests', 'ServiceController@requests');
             Route::get('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
             Route::get('/requests/{serviceUser}/reject', 'ServiceController@rejectRequest');
             Route::resource('', 'ServiceController')->parameters(['' => 'service']);
             Route::get('/{service}/delete', 'ServiceController@destroy');
+
         });
 
         Route::group(['prefix' => 'quizzes'], function () {
