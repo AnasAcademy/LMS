@@ -179,6 +179,7 @@ class ServiceController extends Controller
 
         $request['created_by'] = $authUser->id;
         $data = $request->all();
+        $data['status'] = 'inactive';
         $lastService = (Service::get()->last()->id) + 1;
         $data['apply_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/apply';
         $data['review_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/review';
