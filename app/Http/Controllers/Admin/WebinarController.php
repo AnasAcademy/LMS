@@ -38,6 +38,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class WebinarController extends Controller
 {
@@ -329,6 +330,7 @@ class WebinarController extends Controller
         return view('admin.webinars.create', $data);
     }
 
+
     public function store(Request $request)
     {
         $this->authorize('admin_webinars_create');
@@ -337,7 +339,7 @@ class WebinarController extends Controller
             'type' => 'required|in:webinar,course,text_lesson,graduation_project',
             'title' => 'required|max:255',
             'course_name_certificate' => 'required',
-            'slug' => 'max:255|unique:webinars,slug',
+            // 'slug' => 'max:255|unique:webinars,slug',
             'thumbnail' => 'required',
             'image_cover' => 'required',
             'description' => 'required',
@@ -347,6 +349,7 @@ class WebinarController extends Controller
             'capacity' => 'required',
             'price' => 'required',
             'unattached'=>'required',
+            'start_date' => 'required'
         ]);
 
         $data = $request->all();
@@ -366,7 +369,7 @@ class WebinarController extends Controller
         }
 
         if (empty($data['slug'])) {
-            $data['slug'] = Webinar::makeSlug($data['title']);
+            $data['slug'] = Webinar::makeSlug($data['title']) . '_' . Str::random(5) ;
         }
 
         if (empty($data['video_demo'])) {
@@ -578,7 +581,7 @@ class WebinarController extends Controller
             'type' => 'required|in:webinar,course,text_lesson,graduation_project',
             'title' => 'required|max:255',
             'course_name_certificate'=>'required',
-            'slug' => 'max:255|unique:webinars,slug,' . $webinar->id,
+            // 'slug' => 'max:255|unique:webinars,slug,' . $webinar->id,
             'thumbnail' => 'required',
             'image_cover' => 'required',
             'description' => 'required',
@@ -586,6 +589,7 @@ class WebinarController extends Controller
             'category_id' => 'required',
             'unattached'=>'required',
             'price'=>'required',
+            'start_date' => 'required'
         ];
 
         if ($webinar) {
@@ -612,7 +616,7 @@ class WebinarController extends Controller
 
 
         if (empty($data['slug'])) {
-            $data['slug'] = Webinar::makeSlug($data['title']);
+            $data['slug'] = Webinar::makeSlug($data['title']) . '_' . Str::random(5);
         }
 
         $data['status'] = $publish ? Webinar::$active : ($reject ? Webinar::$inactive : ($isDraft ? Webinar::$isDraft : Webinar::$pending));
