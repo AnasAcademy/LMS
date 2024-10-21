@@ -70,7 +70,7 @@
                                         </h3>
                                     </a>
 
-                                    @if($authUser->id == $webinar->creator_id or $authUser->id == $webinar->teacher_id)
+                                    {{-- @if($authUser->id == $webinar->creator_id or $authUser->id == $webinar->teacher_id) --}}
                                         <div class="btn-group dropdown table-actions">
                                             <button type="button" class="btn-transparent dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i data-feather="more-vertical" height="20"></i>
@@ -111,7 +111,7 @@
                                                 @endif --}}
                                             </div>
                                         </div>
-                                    @endif
+                                    {{-- @endif --}}
                                 </div>
 
                                 @include(getTemplate() . '.includes.webinar.rate',['rate' => $webinar->getRate()])
