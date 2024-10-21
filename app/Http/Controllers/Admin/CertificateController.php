@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\BundleStudent;
 use App\Exports\CertificatesExport;
 use App\Http\Controllers\Controller;
 use App\Mixins\Certificate\MakeCertificate;
@@ -17,6 +18,7 @@ use App\Models\CertificateTemplate;
 use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\Panel\CertificateController AS PanelCertificateController;
 
 
 class CertificateController extends Controller
@@ -160,7 +162,7 @@ class CertificateController extends Controller
             'position_x_gpa' =>'required',
             'position_y_gpa' => 'required',
             'font_size_gpa' => 'required',
-            
+
             'position_x_certificate_code' => 'required',
             'position_y_certificate_code' => 'required',
             'font_size_certificate_code' => 'required',
@@ -689,6 +691,11 @@ class CertificateController extends Controller
         $template = $bundle->certificate_template()->where('status', 'publish')
         ->where('type', 'bundle')->latest()->first();
 
+        $templateattendance = $bundle->certificate_template()->where('status', 'publish')
+            ->where('type', 'attendance')
+            ->latest()
+            ->first();
+
         $makeCertificate = new MakeCertificate();
 
         if (!empty($template)) {
@@ -696,16 +703,37 @@ class CertificateController extends Controller
 
             $userCertificate = $makeCertificate->savebundleCertificate($user, $bundle, $template);
 
+            $bundleStudent = BundleStudent::where(['student_id'=> $user->student->id, 'bundle_id' => $bundle->id])->first();
 
-            $body = $makeCertificate->makeBody($template);
-            $body['certificate_code'] = $userCertificate->certificate_code;
-            $body['graduation_date'] = $bundle->end_date;
-            $body['student_name'] = $user->student->en_name ?? '';
-            $body['course_name'] = $bundle->bundle_name_certificate;
-            $body['graduation_date'] = $bundle->end_date; // Add this line to include the end date
-            $body['course_hours'] = $bundle->duration;
-            // Generate the image
-            $img = $makeCertificate->makeImage($template, $body);
+            $gpa = $bundleStudent->gpa;
+            $allAssignmentsPassed = (new PanelCertificateController())->checkAssignmentsStatus($bundle, $bundleStudent);
+            // Set the image based on whether all assignments were passed
+
+            if ($allAssignmentsPassed && $gpa !== null) {
+                $data = $template;
+                $body = $makeCertificate->makeBody($data);
+                $body['certificate_code'] = $userCertificate->certificate_code;
+                $body['student_name'] = $user->student->en_name ?? '';
+                $body['course_name'] = $bundle->bundle_name_certificate;
+                $body['graduation_date'] = $bundle->end_date; // Include the end date
+                $body['gpa'] = $gpa;
+                $img = $makeCertificate->makeImage($template, $body);
+            } else {
+                if(!$templateattendance){
+                   abort(404);
+                }
+                $data = $templateattendance;
+                $body = $makeCertificate->makeBody($data);
+                $body['certificate_code'] = $userCertificate->certificate_code;
+                $body['student_name'] = $user->student->en_name ?? '';
+                $body['course_name'] = $bundle->bundle_name_certificate;
+                $body['graduation_date'] = $bundle->end_date; // Include the end date
+                $body['gpa'] = $gpa;
+                $img = $makeCertificate->makeImage($templateattendance, $body);
+            }
+            //
+
+
             if ($format === 'pdf') {
 
                 // Convert the image to a base64 string

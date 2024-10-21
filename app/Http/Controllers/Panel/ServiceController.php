@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Bundle;
 use App\Models\BundleBridging;
+use App\Models\BundleDelay;
 use App\Models\BundleTransform;
 use App\Models\Category;
 use App\Models\InstallmentOrder;
@@ -77,7 +78,7 @@ class ServiceController extends Controller
             return redirect('/payment/' . $order->id);
         } else {
             $service->users()->attach($user, ['content' => $content]);
-            return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
+            return redirect('/panel/services/requests')->with("success", "تم ارسال الطلب بنجاح");
         }
     }
 
@@ -224,7 +225,7 @@ class ServiceController extends Controller
                 'type' => $type,
                 'transform_Type' => $transformType,
                 'amount' => abs($amount)]);
-            return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
+            return redirect('/panel/services/requests')->with("success", "تم ارسال الطلب بنجاح");
         }
     }
 
@@ -344,7 +345,7 @@ class ServiceController extends Controller
 
         $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
         BridgingRequest::create([...$validatedData, 'user_id' => $user->id, 'service_request_id' => $serviceRequest->id]);
-        return redirect('/panel/services')->with("success", "تم ارسال الطلب بنجاح");
+        return redirect('/panel/services/requests')->with("success", "تم ارسال الطلب بنجاح");
     }
 
     function bundleBridgingPay(Request $request, Bundle $bundleBridging)
@@ -407,6 +408,38 @@ class ServiceController extends Controller
         // ]);
 
         // return redirect('/payment/' . $order->id);
+    }
+
+
+    function bundleDelayRequest(Service $service)
+    {
+
+
+        return view('web.default.panel.services.includes.bundleDelay', compact('service'));
+    }
+    function bundleDelay(Request $request, Service $service)
+    {
+
+        $user = auth()->user();
+        $validatedData = $request->validate([
+            'from_bundle_id' => 'required|exists:bundles,id',
+            'reason' => "required|string"
+        ]);
+
+        $fromBundle = Bundle::findOrFail($validatedData['from_bundle_id']);
+
+        $content = " طلب تأجيل البرنامج " . $fromBundle->title . " من  " . $fromBundle->batch->title . " للدفعة اللاحقة " .
+        " وسبب التأجيل هو : " . $request->reason;
+
+        if ($service->price > 0) {
+            Cookie::queue('service_content', json_encode($content));
+            $order = $this->createOrder($service);
+            return redirect('/payment/' . $order->id);
+        }
+
+        $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
+        BundleDelay::create([...$validatedData, 'user_id' => $user->id, 'service_request_id' => $serviceRequest->id]);
+        return redirect('/panel/services/requests')->with("success", "تم ارسال الطلب بنجاح وهو قيد المراجعة من قبل الإدارة المختصة");
     }
     /**
      * Display the specified resource.

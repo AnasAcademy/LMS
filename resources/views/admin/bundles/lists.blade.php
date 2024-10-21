@@ -95,7 +95,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            {{-- <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="input-label">{{trans('admin/main.start_date')}}</label>
                                     <div class="input-group">
@@ -131,7 +131,7 @@
                                         <option value="updated_at_desc" @if(request()->get('sort') == 'updated_at_desc') selected @endif>{{trans('admin/main.update_date_descending')}}</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> --}}
 
 
                             <div class="col-md-3">

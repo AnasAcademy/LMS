@@ -148,13 +148,13 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="input-label">{{ trans('update.file_title') }} ({{ trans('public.optional') }})</label>
+                                <label class="input-label">{{ trans('update.file_title') }} </label>
                                 <input name="file_title" class="form-control"/>
                                 <div class="invalid-feedback"></div>
                             </div>
 
                             <div class="form-group">
-                                <label class="input-label">{{ trans('update.attach_a_file') }} ({{ trans('public.optional') }})</label>
+                                <label class="input-label">{{ trans('update.attach_a_file') }}</label>
 
                                 <div class="d-flex align-items-center">
                                     <div class="input-group mr-10">
@@ -164,6 +164,7 @@
                                             </button>
                                         </div>
                                         <input type="text" name="file_path" id="assignmentAttachmentInput" value="" class="form-control" placeholder="{{ trans('update.assignment_attachments_placeholder') }}"/>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <button type="button" class="js-save-history-message btn btn-primary btn-sm">{{ trans('update.send') }}</button>
