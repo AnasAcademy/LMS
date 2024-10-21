@@ -358,7 +358,7 @@ class CertificateController extends Controller
     }
 
 
-    private function checkAssignmentsStatus(Bundle $bundle, $bundleStudent)
+    public function checkAssignmentsStatus(Bundle $bundle, $bundleStudent)
     {
         $graduationProjectWebinars = $bundle->bundleWebinars()
             ->whereHas('webinar', function ($query) {
