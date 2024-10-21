@@ -69,7 +69,7 @@
                             </div>
                         </div>
                     </div>
-                @else
+                {{-- @else
                     <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                         <div class="card card-statistic-1">
                             <div class="card-icon bg-info">
@@ -85,10 +85,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 @endif
 
-                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                {{-- <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-success">
                             <i class="fas fa-dollar-sign"></i></div>
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <section class="card">
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            {{-- <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="input-label">{{trans('admin/main.start_date')}}</label>
                                     <div class="input-group">
@@ -154,7 +154,7 @@
                                         <option value="courses_private" @if(request()->get('sort') == 'courses_private') selected @endif>{{trans('update.courses_private')}}</option>
                                     </select>
                                 </div>
-                            </div>
+                            </div> --}}
 
 
                             <div class="col-md-3">
