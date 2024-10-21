@@ -544,7 +544,7 @@ class WebinarController extends Controller
         $currentStep = $data['current_step'];
         $getStep = $data['get_step'];
         $getNextStep = (!empty($data['get_next']) and $data['get_next'] == 1);
-        // $isDraft = (!empty($data['draft']) and $data['draft'] == 1);
+        $isDraft = (!empty($data['draft']) and $data['draft'] == 1);
 
         $webinar = Webinar::where('id', $id)
             ->where(function ($query) use ($user) {
@@ -733,6 +733,10 @@ class WebinarController extends Controller
             $nextStep = (!empty($getStep) and $getStep > 0) ? $getStep : $currentStep + 1;
 
             $url = '/panel/webinars/' . $webinar->id . '/step/' . (($nextStep <= $stepCount) ? $nextStep : $stepCount);
+        }
+
+        if($currentStep == 4) {
+            return redirect()->back()->with('message', 'تم تحديث المحتوي بنجاح');
         }
 
         if ($webinarRulesRequired) {
