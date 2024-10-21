@@ -202,7 +202,7 @@
 
 
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15 d-none">
                                                 <label class="input-label">{{ trans('update.bundle_url') }}</label>
                                                 <input type="text" name="slug"
                                                     value="{{ !empty($bundle) ? $bundle->slug : old('slug') }}"
@@ -270,7 +270,7 @@
                                             </div>
 
 
-                                            <div class="form-group mt-15">
+                                            <div class="form-group mt-15 d-none">
                                                 <label class="input-label">{{ trans('public.seo_description') }}</label>
                                                 <input type="text" name="seo_description"
                                                     value="{{ !empty($bundle) ? $bundle->seo_description : old('seo_description') }}"
@@ -341,7 +341,7 @@
                                                     ({{ trans('public.optional') }})</label>
 
 
-                                                <div class="">
+                                                <div class="d-none">
                                                     <label
                                                         class="input-label font-12">{{ trans('public.source') }}</label>
                                                     <select name="video_demo_source"
@@ -355,7 +355,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mt-0">
+                                            <div class="form-group mt-0 d-none">
                                                 <label class="input-label font-12">{{ trans('update.path') }}</label>
                                                 <div class="input-group js-video-demo-path-input">
                                                     <div class="input-group-prepend">
