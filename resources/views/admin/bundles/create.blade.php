@@ -625,7 +625,7 @@
                                                     id="status" name="status">
                                                     <option disabled selected>{{ trans('admin/main.select_status') }}
                                                     </option>
-                                                    @foreach (\App\User::$statuses as $status)
+                                                    @foreach (\App\Models\Bundle::$statuses as $status)
                                                         <option value="{{ $status }}"
                                                             {{ old('status', $bundle->status ?? null) === $status ? 'selected' : '' }}>
                                                             {{ $status }}</option>
