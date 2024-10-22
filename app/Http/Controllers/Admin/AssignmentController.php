@@ -201,6 +201,7 @@ class AssignmentController extends Controller
             'description' => 'required',
             'grade' => 'required|integer',
             'pass_grade' => 'required|integer',
+            'deadline' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -210,13 +211,13 @@ class AssignmentController extends Controller
             ], 422);
         }
 
-        if (!empty($data['sequence_content']) and $data['sequence_content'] == 'on') {
+        // if (!empty($data['sequence_content']) and $data['sequence_content'] == 'on') {
             $data['check_previous_parts'] = (!empty($data['check_previous_parts']) and $data['check_previous_parts'] == 'on');
-            $data['access_after_day'] = !empty($data['access_after_day']) ? $data['access_after_day'] : null;
-        } else {
-            $data['check_previous_parts'] = false;
-            $data['access_after_day'] = null;
-        }
+            $data['access_after_day'] = !empty($data['access_after_day']) ? strtotime($data['access_after_day']) : null;
+        // } else {
+        //     $data['check_previous_parts'] = false;
+        //     $data['access_after_day'] = null;
+        // }
 
         $webinar = Webinar::where('id', $data['webinar_id'])->first();
 
@@ -227,7 +228,7 @@ class AssignmentController extends Controller
                 'chapter_id' => $data['chapter_id'],
                 'grade' => $data['grade'] ?? null,
                 'pass_grade' => $data['pass_grade'] ?? null,
-                'deadline' => $data['deadline'] ?? null,
+                'deadline' => $data['deadline'] ? strtotime($data['deadline']) : null,
                 'attempts' => $data['attempts'] ?? null,
                 'check_previous_parts' => $data['check_previous_parts'],
                 'access_after_day' => $data['access_after_day'],
@@ -297,6 +298,7 @@ class AssignmentController extends Controller
             'description' => 'required',
             'grade' => 'required|integer',
             'pass_grade' => 'required|integer',
+            'deadline' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -306,13 +308,13 @@ class AssignmentController extends Controller
             ], 422);
         }
 
-        if (!empty($data['sequence_content']) and $data['sequence_content'] == 'on') {
+        // if (!empty($data['sequence_content']) and $data['sequence_content'] == 'on') {
             $data['check_previous_parts'] = (!empty($data['check_previous_parts']) and $data['check_previous_parts'] == 'on');
-            $data['access_after_day'] = !empty($data['access_after_day']) ? $data['access_after_day'] : null;
-        } else {
-            $data['check_previous_parts'] = false;
-            $data['access_after_day'] = null;
-        }
+            $data['access_after_day'] = !empty($data['access_after_day']) ? strtotime($data['access_after_day']) : null;
+        // } else {
+        //     $data['check_previous_parts'] = false;
+        //     $data['access_after_day'] = null;
+        // }
 
         $assignment = WebinarAssignment::where('id', $id)
             ->first();
@@ -325,7 +327,7 @@ class AssignmentController extends Controller
                 'chapter_id' => $data['chapter_id'],
                 'grade' => $data['grade'] ?? null,
                 'pass_grade' => $data['pass_grade'] ?? null,
-                'deadline' => $data['deadline'] ?? null,
+                'deadline' => $data['deadline'] ? strtotime($data['deadline']) : null,
                 'attempts' => $data['attempts'] ?? null,
                 'check_previous_parts' => $data['check_previous_parts'],
                 'access_after_day' => $data['access_after_day'],
