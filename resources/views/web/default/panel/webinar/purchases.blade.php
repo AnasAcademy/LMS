@@ -148,22 +148,22 @@
                                                             $assignmentCount = $item->assignments->count();
                                                             $assignmentHistoryCount = 0;
                                                         @endphp
-                                                    
+
                                                         @foreach ($item->assignments as $assignment)
                                                         {{-- @dump($assignment->assignmentHistory->status ) --}}
                                                           {{-- @dump($assignment->assignmentHistory->status=="not_submitted") --}}
                                                         @if ($assignment->assignmentHistory)
-                                                      
+
                                                             @php
                                                             $assignmentHistoryCount++;
                                                         @endphp
                                                             @endif
                                                         @endforeach
-                                                    
+
                                                         @php
                                                             $remainingAssignments = $assignmentCount - $assignmentHistoryCount;
                                                         @endphp
-                                                    
+
                                                         @if ($remainingAssignments > 0)
                                                             <button
                                                                 type="button" style="width: 110px; height: 50px; border: 1px solid #dc3545; color: #dc3545; background-color: transparent; border-radius: 10px;"
@@ -174,10 +174,10 @@
                                                                 disabled>لا يوجد تسليمات</button>
                                                         @endif
                                                     </td>
-                                                    
 
-                                                   
-                                                    <td> 
+
+
+                                                    <td>
                                                         @if ($item->duration != 0)
                                                             {{-- @if ($item->video_demo)
                                                                 <a target="_blank" rel="noopener noreferrer"
@@ -191,7 +191,7 @@
                                                             @endif --}}
 
                                                             <a class="btn btn-primary"
-                                                                href="{{ url('/course/learning/' . $item->slug) }}"
+                                                                href="{{ url('/course/learning/' . $item->id) }}"
                                                                 target="_blank" rel="noopener noreferrer">المحاضره
                                                                 المسجله</a>
                                                         @endif

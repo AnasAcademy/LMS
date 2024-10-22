@@ -22,6 +22,6 @@ class BundleWebinar extends Model
     }
     public function getWebinarUrl()
     {
-        return url('panel/bundles/'.$this->bundle->id .'/course/learning/' . $this->webinar->slug);
+        return url('panel/bundles/'.$this->bundle->id .'/course/learning/' . $this->webinar->id);
     }
 }

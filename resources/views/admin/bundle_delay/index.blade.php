@@ -122,7 +122,7 @@
                                                 <div class="text-primary text-small font-600-bold">ID :
                                                     {{ $bundleDelay->from_bundle_id }}</div>
                                                 <div class="text-primary text-small font-600-bold">
-                                                    {{ $bundleDelay->fromBundle->batch->title }}</div>
+                                                    {{ $bundleDelay->fromBundle->batch?->title }}</div>
                                             </td>
 
                                             <td class="text-center">
@@ -164,8 +164,14 @@
                                             <td width="200" class="text-center">
                                                 @if ($bundleDelay->status == 'pending')
                                                     <div class="d-flex justify-content-center align-items-baseline gap-3">
-                                                        @can('admin_bundle_delay_approve')
-                                                            @include('admin.includes.delete_button', [
+
+                                                        @php
+                                                        $user = $bundleDelay->user;
+                                                        @endphp
+
+
+                                                        {{-- @can('admin_bundle_delay_approve') --}}
+                                                            @include('admin.includes.batch_transform', [
                                                                 'url' =>
                                                                     getAdminPanelUrl() .
                                                                     '/services/bundle_delay/' .
@@ -174,12 +180,15 @@
                                                                 'btnClass' =>
                                                                     'btn btn-primary d-flex align-items-center btn-sm mt-1 ml-3',
                                                                 'btnText' =>
-                                                                    '<i class="fa fa-check"></i><span class="ml-2"> قبول' .
+                                                                    '<i class="fa fa-retweet"></i><span class="ml-2"> قبول' .
                                                                     // trans('admin/main.approve') .
                                                                     '</span>',
                                                                 'hideDefaultClass' => true,
+                                                                'id' => $bundleDelay->id,
+                                                                'bundle' => $bundleDelay->fromBundle,
+                                                                'title' => 'تأجيل البرنامج'
                                                             ])
-                                                        @endcan
+                                                        {{-- @endcan --}}
 
                                                         @can('admin_bundle_delay_reject')
                                                             @include('admin.services.confirm_reject_button', [
@@ -199,24 +208,7 @@
                                                             ])
                                                         @endcan
 
-                                                        @can('admin_bundle_bundleDelay_change_amount')
-                                                            @include('admin.bundle_bundleDelay.change_amount_button', [
-                                                                'url' =>
-                                                                    getAdminPanelUrl() .
-                                                                    '/financial/bundle_bundleDelays/' .
-                                                                    $bundleDelay->id .
-                                                                    '/change_amount',
-                                                                'btnClass' =>
-                                                                    'btn btn-warning d-flex align-items-center btn-sm mt-1',
-                                                                'btnText' =>
-                                                                    '<i class="fa fa-edit"></i><span class="ml-2">
-                                                                        تعديل المبلغ
-                                                                    </span>',
-                                                                'hideDefaultClass' => true,
-                                                                'id' => $bundleDelay->service_request_id,
-                                                                'amount' => $bundleDelay->amount,
-                                                            ])
-                                                        @endcan
+
                                                     </div>
                                                 @endif
                                             </td>

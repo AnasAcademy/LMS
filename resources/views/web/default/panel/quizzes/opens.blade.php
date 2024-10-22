@@ -113,7 +113,7 @@
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     <a href="/panel/quizzes/{{ $quiz->id }}/start" class="webinar-actions d-block mt-10">{{ trans('public.start') }}</a>
-                                                    <a href="/course/learning/{{ $quiz->webinar->slug }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
+                                                    <a href="/course/learning/{{ $quiz->webinar->id }}" target="_blank" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
                                                 </div>
                                             </div>
                                         </td>

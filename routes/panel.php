@@ -485,7 +485,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         // requirements Routes
         Route::get('/{studentBundleId}/requirements', 'UserController@createRequirement');
         Route::post('/{studentBundleId}/requirements', 'UserController@storeRequirement')->name('requirements.store');
-        Route::get('/{bundle}/course/learning/{slug}', [LearningPageController::class, 'index']);
+        Route::get('/{bundle}/course/learning/{id}', [LearningPageController::class, 'index']);
     });
 
     Route::group(['prefix' => 'bundle-webinars'], function () {

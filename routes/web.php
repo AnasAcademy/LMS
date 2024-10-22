@@ -130,14 +130,14 @@ Route::group(['namespace' => 'Web', 'middleware' => ['check_mobile_app', 'impers
             //         Route::get('/{slug}/installments', 'WebinarController@getInstallmentsByCourse');
 
             Route::post('/learning/itemInfo', 'LearningPageController@getItemInfo');
-            Route::get('/learning/{slug}', 'LearningPageController@index');
-            Route::get('/learning/{slug}/noticeboards', 'LearningPageController@noticeboards');
+            Route::get('/learning/{id}', 'LearningPageController@index');
+            Route::get('/learning/{id}/noticeboards', 'LearningPageController@noticeboards');
             Route::get('/assignment/{assignmentId}/download/{id}/attach', 'LearningPageController@downloadAssignment');
             Route::post('/assignment/{assignmentId}/history/{historyId}/message', 'AssignmentHistoryController@storeMessage');
             Route::post('/assignment/{assignmentId}/history/{historyId}/setGrade', 'AssignmentHistoryController@setGrade');
             Route::get('/assignment/{assignmentId}/history/{historyId}/message/{messageId}/downloadAttach', 'AssignmentHistoryController@downloadAttach');
 
-            Route::group(['prefix' => '/learning/{slug}/forum'], function () { // LearningPageForumTrait
+            Route::group(['prefix' => '/learning/{id}/forum'], function () { // LearningPageForumTrait
                 Route::get('/', 'LearningPageController@forum');
                 Route::post('/store', 'LearningPageController@forumStoreNewQuestion');
                 Route::get('/{forumId}/edit', 'LearningPageController@getForumForEdit');

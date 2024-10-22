@@ -70,9 +70,9 @@ class WebinarAssignment extends Model implements TranslatableContract
             $user = auth()->user();
         }
 
-        if (!empty($this->deadline)) {
+        // if (!empty($this->deadline)) {
 
-            $deadline = strtotime("+{$this->deadline} days", $this->created_at);
+            // $deadline = strtotime("+{$this->deadline} days", $this->created_at);
           //  dd( $deadline);
             // $sale = Sale::where('buyer_id', $user->id)
             //     ->where('webinar_id', $this->webinar_id)
@@ -84,8 +84,8 @@ class WebinarAssignment extends Model implements TranslatableContract
             // } else {
             //     $deadline = false;
             // }
-        }
+        // }
 
-        return $deadline;
+        return $this->deadline;
     }
 }
