@@ -25,7 +25,7 @@
                 @csrf
 
                 <label class="input-label">من البرنامج</label>
-                <select class="form-control" name="from_bundle_id" id="diploma1">
+                <select class="form-control" name="from_bundle_id" id="diploma1" required>
                     @if ($bundle)
                         <option value="{{ $bundle->id }}" selected>
                             {{ $bundle->title }} ({{ $bundle->batch?->title }})
@@ -43,7 +43,7 @@
                     <div class="form-group mt-5">
                         <label class="input-label"> إلي البرنامج <span class="text-danger">*</span> </label>
                         <select id="bundle_id" class="custom-select @error('to_bundle_id')  is-invalid @enderror"
-                            name="to_bundle_id">
+                            name="to_bundle_id" required>
                             <option selected hidden value="">اختر البرنامج </option>
 
 
