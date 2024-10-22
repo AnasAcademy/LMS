@@ -14,6 +14,7 @@
     }
 @endphp
 
+
 <a href="{{ (!empty($checkSequenceContent) and $sequenceContentHasError) ? '#!' : $assignmentUrl }}" target="{{ $assignmentUrlTarget }}" class=" d-flex align-items-start p-10 cursor-pointer {{ (!empty($checkSequenceContent) and $sequenceContentHasError) ? 'js-sequence-content-error-modal' : 'tab-item' }} {{ ($user->isAdmin() or $course->isPartnerTeacher($user->id)) ? 'js-not-access-toast' : '' }}"
    data-type="assignment"
    data-id="{{ $item->id }}"
@@ -52,7 +53,8 @@
             </p>
 
             @php
-                $itemDeadline = $item->getDeadlineTimestamp();
+                // $itemDeadline = $item->getDeadlineTimestamp();
+                $itemDeadline = $item->deadline;
             @endphp
 
             <div class="d-block mt-10 font-12 text-gray">
