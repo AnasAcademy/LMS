@@ -25,6 +25,7 @@ use App\Models\Webinar;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BundleController extends Controller
 {
@@ -37,7 +38,7 @@ class BundleController extends Controller
         // $query = Bundle::query();
         $type = $request->get('type', 'program');
         $query = Bundle::where('bundles.type', $type);
-      
+
         $totalBundles = $query->count();
         $totalPendingBundles = deepClone($query)->where('bundles.status', Bundle::$pending)->count();
         $totalSales = deepClone($query)->join('sales', 'bundles.id', '=', 'sales.bundle_id')
@@ -88,7 +89,7 @@ class BundleController extends Controller
             $bundle->sales = $sales;
         }
 
-     
+
         $data = [
             'pageTitle' => ($type== 'bridging')? trans('update.bridges'): trans('update.bundles'),
             'bundles' => $bundles,
@@ -264,13 +265,14 @@ class BundleController extends Controller
             'bundle_name_certificate' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'slug' => 'max:255|unique:bundles,slug',
+            // 'slug' => 'max:255|unique:bundles,slug',
             'thumbnail' => 'required',
             'image_cover' => 'required',
             'description' => 'required',
             'teacher_id' => 'required|exists:users,id',
             'category_id' => 'required',
             'batch_id' => 'required',
+            'price' => 'required',
         ];
 
         if($type=='bridging'){
@@ -286,7 +288,7 @@ class BundleController extends Controller
         $data = $request->all();
 
         if (empty($data['slug'])) {
-            $data['slug'] = Bundle::makeSlug($data['title']);
+            $data['slug'] = Bundle::makeSlug($data['title']) . '_'. Str::random(5) ;
         }
 
         if (empty($data['video_demo'])) {
@@ -429,9 +431,9 @@ class BundleController extends Controller
 
         $userIds = [$bundle->creator_id, $bundle->teacher_id];
         $userWebinars = Webinar::select('id', 'creator_id', 'teacher_id')
-            ->where('status', Webinar::$active)
-            ->where('private', false)
-            ->where('category_id',$bundle->category_id)
+            // ->where('status', Webinar::$active)
+            // ->where('private', false)
+            // ->where('category_id',$bundle->category_id)
             // ->where(function ($query) use ($userIds) {
             //     $query->whereIn('creator_id', $userIds)
             //         ->orWhereIn('teacher_id', $userIds);
@@ -471,7 +473,7 @@ class BundleController extends Controller
             'bundle_name_certificate'=>'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'slug' => 'max:255|unique:bundles,slug,' . $bundle->id,
+            // 'slug' => 'max:255|unique:bundles,slug,' . $bundle->id,
             'thumbnail' => 'required',
             'image_cover' => 'required',
             'description' => 'required',
@@ -479,6 +481,7 @@ class BundleController extends Controller
             'category_id' => 'required',
             'batch_id'=>'required',
             'type' => 'required|in:program,bridging',
+            'price' => 'required',
         ];
 
         $this->validate($request, $rules);
@@ -499,7 +502,7 @@ class BundleController extends Controller
 
 
         if (empty($data['slug'])) {
-            $data['slug'] = Bundle::makeSlug($data['title']);
+            $data['slug'] = Bundle::makeSlug($data['title']) . '_' . Str::random(5);
         }
 
         // $data['status'] = $publish ? Bundle::$active : ($reject ? Bundle::$inactive : ($isDraft ? Bundle::$isDraft : Bundle::$pending));

@@ -69,6 +69,7 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
             Route::get('/excelStudent', 'UserController@exportExcelStudents');
             Route::post('/importStudent', 'UserController@importExcelStudents');
             Route::post('/importScholarshipStudent', 'UserController@importExcelScholarshipStudents');
+            Route::post('/sendStudentMail', 'UserController@sendStudentMail');
             Route::post('/importCourseStudent', 'UserController@importExcelCourseStudents');
             Route::get('/excelEnroller', 'UserController@exportExcelEnrollers');
             Route::get('/excelScholarship', 'UserController@exportExcelScholarship');
@@ -365,11 +366,17 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
          // services routes
          Route::group(['prefix' => 'services'], function () {
+             Route::group(['prefix' => 'bundle_delay'], function () {
+                 Route::get('/', 'BundleDelayController@index');
+                 Route::post('/{bundleDelay}/approve', 'BundleDelayController@approve');
+             });
             Route::get('{service}/requests', 'ServiceController@requests');
             Route::get('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
+            Route::post('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
             Route::get('/requests/{serviceUser}/reject', 'ServiceController@rejectRequest');
             Route::resource('', 'ServiceController')->parameters(['' => 'service']);
             Route::get('/{service}/delete', 'ServiceController@destroy');
+
         });
 
         Route::group(['prefix' => 'quizzes'], function () {
@@ -574,9 +581,9 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
 
             Route::group(['prefix' => 'bundle_transforms'], function () {
                 Route::get('/', 'BundleTransformController@index');
-                Route::get('/excel', 'OfflinePaymentController@exportExcel');
-                Route::get('/{offlinePayment}/reject', 'OfflinePaymentController@reject');
-                Route::get('/{id}/approved', 'OfflinePaymentController@approved');
+                Route::get('/{transform}/approve', 'BundleTransformController@approve');
+                Route::post('/{transform}/change_amount', 'BundleTransformController@changeAmount');
+
             });
 
             Route::group(['prefix' => 'discounts'], function () {

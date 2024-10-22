@@ -13,12 +13,12 @@
         }
 
         /* .module-box:hover{
-                    background-color: var(--secondary) !important;
+                            background-color: var(--secondary) !important;
 
-                }
-                /* .module-box:hover a{
-                    background-color: var(--secondary);
-                } */
+                        }
+                        /* .module-box:hover a{
+                            background-color: var(--secondary);
+                        } */
 
         .module-box:hover .service-card svg {
             fill: var(--primary);
@@ -37,13 +37,27 @@
         </div>
     @endif
 
-    <section class="row p-20">
-        @foreach ($services as $service)
-            <div class="col-12 col-lg-4 mt-35 ">
-                @include('web.default.panel.services.includes.service_card', ['service' => $service])
+    @if (Session::has('error'))
+            <div class="container d-flex justify-content-center mt-80">
+                <p class="alert alert-danger w-75 text-center"> {{ Session::get('error') }} </p>
             </div>
-        @endforeach
-    </section>
+        @endif
+
+    @if ($services->count() > 0)
+        <section class="row p-20">
+            @foreach ($services as $service)
+                <div class="col-12 col-lg-4 mt-35 ">
+                    @include('web.default.panel.services.includes.service_card', ['service' => $service])
+                </div>
+            @endforeach
+        </section>
+    @else
+        @include(getTemplate() . '.includes.no-result', [
+            'file_name' => 'webinar.png',
+            'title' => 'غير متوفر اي خدمات حاليا',
+            'hint' => 'تحدث مع ادارة التدريب',
+        ])
+    @endif
 @endsection
 @push('scripts_bottom')
     <script src="/assets/vendors/cropit/jquery.cropit.js"></script>

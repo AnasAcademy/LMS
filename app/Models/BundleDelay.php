@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BundleTransform extends Model
+class BundleDelay extends Model
 {
     use HasFactory;
 
+    protected $table = 'bundle_delay';
     protected $guarded =[];
 
     function fromBundle(){

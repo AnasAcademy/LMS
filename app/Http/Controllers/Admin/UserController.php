@@ -48,7 +48,7 @@ use App\Mail\SendNotifications;
 
 use App\Imports\StudentImport;
 use App\Exports\ProgramCodeExport;
-
+use App\Imports\SendUserMail;
 
 class UserController extends Controller
 {
@@ -233,8 +233,7 @@ class UserController extends Controller
     {
         $this->authorize('admin_users_list');
 
-        $query = User::where('role_name', Role::$user)
-            ->orWhere('role_name', Role::$registered_user);
+        $query = User::whereIn('role_name', [Role::$user, Role::$registered_user]);
 
         $totalStudents = deepClone($query)->count();
         $inactiveStudents = deepClone($query)->where('status', 'inactive')
@@ -256,7 +255,11 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $query = $this->filters($query, $request);
+            $t1 = $query->get();
+            $query = $this->filters($query, $request);
+            $t2 = $query->get();
+
+            // dd($t1, $t2);
 
         if ($is_export_excel) {
             $users = $query->orderBy('created_at', 'desc')->get();
@@ -420,6 +423,7 @@ class UserController extends Controller
 
         if (!empty($full_name)) {
             $query->where('full_name', 'like', "%$full_name%");
+
         }
         if (!empty($user_code)) {
             $query->where('user_code', 'like', "%$user_code%");
@@ -541,7 +545,8 @@ class UserController extends Controller
         }
 
         if (!empty($group_id)) {
-            $userIds = GroupUser::where('group_id', $group_id)->pluck('user_id')->toArray();
+            // $userIds = GroupUser::where('group_id', $group_id)->pluck('user_id')->toArray();
+            $userIds = Enrollment::where('group_id', $group_id)->pluck('user_id')->toArray();
 
             $query->whereIn('id', $userIds);
         }
@@ -1050,7 +1055,7 @@ class UserController extends Controller
             'status' => 'required|' . Rule::in(User::$statuses),
             'ban_start_at' => 'required_if:ban,on',
             'ban_end_at' => 'required_if:ban,on',
-            'en_name' => 'nullable|string|max:255',  
+            'en_name' => 'nullable|string|max:255',
         ]);
 
         $data = $request->all();
@@ -1100,9 +1105,9 @@ class UserController extends Controller
             $user->student->en_name =  $data['en_name'] ;
             $user->student->save();
         }
-
         if (!empty($data['password'])) {
             $user->password = User::generatePassword($data['password']);
+            $user->save();
             $data['title'] = 'تغيير كلمة المرور';
             $data['body'] = "حياك الله
                             <br>
@@ -1146,7 +1151,7 @@ class UserController extends Controller
         $user->can_create_store = (!empty($data['can_create_store']) and $data['can_create_store'] == '1');
 
         $user->access_content = (!empty($data['access_content']) and $data['access_content'] == '1');
-        
+
         $user->save();
 
         // save certificate_additional in user metas table
@@ -1463,6 +1468,24 @@ class UserController extends Controller
 
             $file = $request->file('file');
 
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
             $import = new StudentImport();
 
             Excel::import($import, $file);
@@ -1503,6 +1526,24 @@ class UserController extends Controller
             ]);
 
             $file = $request->file('file');
+
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
 
             $import = new StudentImport(true);
 
@@ -1545,6 +1586,24 @@ class UserController extends Controller
 
             $file = $request->file('file');
 
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'استرداد طلبة',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
             $import = new StudentImport(false,true);
 
             Excel::import($import, $file);
@@ -1578,6 +1637,66 @@ class UserController extends Controller
         }
     }
 
+    public function sendStudentMail(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            $rows = Excel::toArray([], $file);
+
+            // Check if the total number of rows is less than 40
+            $totalRows = 0;
+            foreach ($rows as $sheet) {
+                $totalRows += count($sheet); // Count rows in each sheet
+            }
+            $limit = 40;
+
+            if ($totalRows > $limit) {
+                $toastData = [
+                    'title' => 'ارسال ميل تسجيل لطلبة ',
+                    'msg' => "يجيب ان يكون عدد الصفوف المضافة اقل من $limit",
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+
+
+            $import = new SendUserMail();
+
+            Excel::import($import, $file);
+
+            $errors = $import->getErrors();
+
+            if (!empty($errors)) {
+                $toastData = [
+                    'title' => 'ارسال ميل تسجيل لطلبة ',
+                    'msg' => implode('<br>', $errors),
+                    'status' => 'error'
+                ];
+                return back()->with(['toast' => $toastData]);
+            }
+
+            $toastData = [
+                'title' => 'استرداد  ميل تسجيل لطلبة',
+                'msg' => 'تم الارسال بنجاح.',
+                'status' => 'success'
+            ];
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => 'ارسال ميل تسجيل لطلبة ',
+                'msg' => $e->getMessage(),
+                'status' => 'error'
+            ];
+            return back()->with(['toast' => $toastData]);
+        }
+    }
 
     public function exportBundles()
     {

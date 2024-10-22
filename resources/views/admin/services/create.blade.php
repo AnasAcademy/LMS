@@ -126,7 +126,7 @@
                                                 <label class="input-label">
                                                     {{ trans('public.price') }}
                                                     ({{ $currency }})
-                                                     <span class="text-danger">*</span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <input type="text" name="price"
                                                     value="{{ !empty($service) ? $service->price : old('price') }}"
@@ -139,51 +139,61 @@
                                                 @enderror
                                             </div>
 
-                                            {{-- application link --}}
+                                            {{-- start date --}}
+                                            <div class="form-group mt-15 js-start_date">
+                                                <div class="form-group">
+                                                    <label class="input-label">{{ trans('public.start_date') }} <span
+                                                            class="text-danger">*</span> </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" id="dateInputGroupPrepend">
+                                                                <i class="fa fa-calendar-alt "></i>
+                                                            </span>
+                                                        </div>
 
-                                            <div class="form-group mt-15">
-                                                <label class="input-label">رابط التقديم (URL)
-                                                     <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="url" name="apply_link"
-                                                    value="{{ !empty($service) ? $service->apply_link : old('apply_link') }}"
-                                                    class="form-control @error('apply_link')  is-invalid @enderror"
-                                                    placeholder="" />
-                                                <div class="text-muted text-small mt-1">
-                                                    هذا الحقل خاص لعنوان URL الذي يذهب إليه الطالب لطلب هذة الخدمة
-                                                </div>
-                                                @error('apply_link')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
+                                                        <input type="text" name="start_date"
+                                                            value="{{ (!empty($service) and $service->start_date) ? $service->start_date : old('start_date') }}"
+                                                            class="form-control @error('start_date')  is-invalid @enderror datetimepicker"
+                                                            aria-describedby="dateInputGroupPrepend" />
+                                                        @error('start_date')
+                                                            <div class="invalid-feedback d-block">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
                                                     </div>
-                                                @enderror
+                                                </div>
                                             </div>
 
-                                            {{-- review link --}}
+                                            {{-- end date --}}
+                                            <div class="form-group mt-15 js-start_date">
+                                                <div class="form-group">
+                                                    <label class="input-label">{{ trans('public.end_date') }} <span
+                                                            class="text-danger">*</span> </label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" id="dateInputGroupPrepend">
+                                                                <i class="fa fa-calendar-alt "></i>
+                                                            </span>
+                                                        </div>
 
-                                            <div class="form-group mt-15">
-                                                <label class="input-label">رابط مراجعة طلب سابق (URL)
-                                                     <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="url" name="review_link"
-                                                    value="{{ !empty($service) ? $service->review_link : old('review_link') }}"
-                                                    class="form-control @error('review_link')  is-invalid @enderror"
-                                                    placeholder="" />
-                                                <div class="text-muted text-small mt-1">
-                                                    هذا الحقل خاص لعنوان URL الذي يذهب إليه الطالب ..لمراجعة طلب سابق لهذة
-                                                    الخدمة
-                                                </div>
-                                                @error('review_link')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
+                                                        <input type="text" name="end_date"
+                                                            value="{{ (!empty($service) and $service->end_date) ? $service->end_date : old('end_date') }}"
+                                                            class="form-control @error('end_date')  is-invalid @enderror datetimepicker"
+                                                            aria-describedby="dateInputGroupPrepend" />
+                                                        @error('end_date')
+                                                            <div class="invalid-feedback d-block">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
                                                     </div>
-                                                @enderror
+                                                </div>
                                             </div>
+
 
                                             {{-- status --}}
                                             <div class="form-group  mt-15">
                                                 <label>{{ trans('/admin/main.status') }}
-                                                     <span class="text-danger">*</span>
+                                                    <span class="text-danger">*</span>
                                                 </label>
                                                 <select class="form-control @error('status') is-invalid @enderror"
                                                     id="status" name="status">
@@ -203,6 +213,51 @@
                                                     </div>
                                                 @enderror
                                             </div>
+
+                                            {{-- application link --}}
+
+                                            @if (isset($service))
+                                                <div class="form-group mt-15">
+                                                    <label class="input-label">رابط التقديم (URL)
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="url" name="apply_link"
+                                                        value="{{ !empty($service) ? $service->apply_link : old('apply_link') }}"
+                                                        class="form-control @error('apply_link')  is-invalid @enderror"
+                                                        placeholder="" />
+                                                    <div class="text-muted text-small mt-1">
+                                                        هذا الحقل خاص لعنوان URL الذي يذهب إليه الطالب لطلب هذة الخدمة
+                                                    </div>
+                                                    @error('apply_link')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
+
+                                                {{-- review link --}}
+
+                                                <div class="form-group mt-15">
+                                                    <label class="input-label">رابط مراجعة طلب سابق (URL)
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="url" name="review_link"
+                                                        value="{{ !empty($service) ? $service->review_link : old('review_link') }}"
+                                                        class="form-control @error('review_link')  is-invalid @enderror"
+                                                        placeholder="" />
+                                                    <div class="text-muted text-small mt-1">
+                                                        هذا الحقل خاص لعنوان URL الذي يذهب إليه الطالب ..لمراجعة طلب سابق
+                                                        لهذة
+                                                        الخدمة
+                                                    </div>
+                                                    @error('review_link')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
+                                                </div>
+                                            @endif
+
 
                                         </div>
                                     </div>

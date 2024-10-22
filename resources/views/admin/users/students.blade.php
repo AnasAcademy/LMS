@@ -83,15 +83,42 @@
                 <form method="get" class="mb-0">
 
                     <div class="row">
+
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label class="input-label">{{ trans('admin/main.search') }}</label>
+                                <label class="input-label">كود الطالب</label>
                                 <input name="user_code" type="text" class="form-control"
                                     value="{{ request()->get('user_code') }}">
                             </div>
                         </div>
 
+
                         <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">بريد الطالب</label>
+                                <input name="email" type="text" class="form-control"
+                                    value="{{ request()->get('email') }}">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">اسم الطالب</label>
+                                <input name="full_name" type="text" class="form-control"
+                                    value="{{ request()->get('full_name') }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="input-label">هاتف الطالب</label>
+                                <input name="mobile" type="text" class="form-control"
+                                    value="{{ request()->get('mobile') }}">
+                            </div>
+                        </div>
+
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.start_date') }}</label>
                                 <div class="input-group">
@@ -150,10 +177,10 @@
                                         {{ trans('admin/main.register_date_descending') }}</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
 
-                        <div class="col-md-3">
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.organization') }}</label>
                                 <select name="organization_id" data-plugin-selectTwo class="form-control populate">
@@ -165,9 +192,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <div class="col-md-3">
+                        {{-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="input-label">{{ trans('admin/main.users_group') }}</label>
                                 <select name="group_id" data-plugin-selectTwo class="form-control populate">
@@ -179,7 +206,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
 
                         <div class="col-md-3">
@@ -219,6 +246,15 @@
                 <a href="{{ getAdminPanelUrl() }}/students/excelAll?{{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
+            @can('admin_users_send_password_mail')
+                @include('admin.students.includes.importStudents', [
+                    'url' => getAdminPanelUrl() . '/students/sendStudentMail',
+                    'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
+                    'btnText' => '<span class="ml-2">رفع الايميلات من الاكسيل</span>',
+                    'hideDefaultClass' => true,
+                ])
+            @endcan
+
             <div class="h-10"></div>
         </div>
 

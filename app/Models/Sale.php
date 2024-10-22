@@ -6,6 +6,7 @@ use App\Mixins\RegistrationBonus\RegistrationBonusAccounting;
 use Illuminate\Database\Eloquent\Model;
 
 use App\BundleStudent;
+use App\Mixins\Installment\InstallmentPlans;
 
 class Sale extends Model
 {
@@ -113,7 +114,7 @@ class Sale extends Model
         return $this->belongsTo('App\Models\InstallmentOrderPayment', 'installment_payment_id', 'id');
     }
 
-    public static function createSales($orderItem, $payment_method, $manual_added = false)
+    public static function createSales($orderItem, $payment_method, $manual_added = false, $refund = false)
     {
         $orderType = Order::$webinar;
         if (!empty($orderItem->reserve_meeting_id)) {
@@ -132,9 +133,9 @@ class Sale extends Model
             $orderType = Order::$installmentPayment;
         } elseif (!empty($orderItem->transform_bundle_id)) {
             $orderType = 'transform_bundle';
-        } elseif (!empty($orderItem->bundle_id) && $orderItem->bundle->type =='program') {
+        } elseif (!empty($orderItem->bundle_id) && $orderItem->bundle->type == 'program') {
             $orderType = Order::$bundle;
-        } elseif (!empty($orderItem->bundle_id)&& $orderItem->bundle->type == 'bridging') {
+        } elseif (!empty($orderItem->bundle_id) && $orderItem->bundle->type == 'bridging') {
             $orderType = 'bridging';
         } elseif (!empty($orderItem->certificate_template_id)) {
             $orderType = Order::$certificate;
@@ -155,15 +156,12 @@ class Sale extends Model
 
             if (
                 (empty($orderItem->form_fee) && !empty($orderItem->bundle_id)
-                && !empty($orderItem->installmentPayment->step)) || $manual_added
+                    && !empty($orderItem->installmentPayment->step)) || $manual_added
             ) {
                 $class =
                     BundleStudent::where(['student_id' => $orderItem->user->student->id, 'bundle_id' => $orderItem->bundle_id])->first()->class ?? $class;
-                }
-            $price = 0;
-            if (!empty($orderItem->transform_bundle_id)) {
-                $price = $orderItem->Bundle->price - $orderItem->transformBundle->price;
             }
+
 
             $sale = Sale::create([
                 'buyer_id' => $orderItem->user_id,
@@ -193,15 +191,95 @@ class Sale extends Model
                 'total_amount' => abs($orderItem->total_amount),
                 'product_delivery_fee' => $orderItem->product_delivery_fee,
                 'created_at' => time(),
-                "refund_at" => ($price<0) ? time() : null,
-                "message" => ($price < 0) ? 'تحويل من برنامج لبرنامج اخر' : null,
+                'refund_at' => $refund ? time() : null,
+                "message" => ($refund && $orderItem->transform_bundle_id) ? 'تحويل من برنامج لبرنامج اخر <br>' : null,
                 'class_id' => $class->id,
                 'payment_email' => $orderItem->order->payment_email,
-                'manual_added' => $manual_added
+                'manual_added' => $manual_added,
             ]);
 
 
             if (!empty($orderItem->transform_bundle_id)) {
+
+                $oldSale = Sale::where(['bundle_id' => $orderItem->transform_bundle_id, 'buyer_id' => $orderItem->user_id])->whereIn('type', ['bundle', 'installment_payment'])->first();
+
+                if ($oldSale && $oldSale->type == 'installment_payment') {
+
+                    $installmentOrder = InstallmentOrder::query()
+                        ->where(['user_id' => $orderItem->user_id, 'bundle_id' => $orderItem->transform_bundle_id, 'status' => 'open'])
+                        ->with(['selectedInstallment', 'selectedInstallment.steps'])->latest()->first();
+
+                    $installmentPlans = new InstallmentPlans($orderItem->user);
+
+                    $newInstallment = $installmentPlans->getPlans(
+                        'bundles',
+                        $orderItem->bundle->id,
+                        $orderItem->bundle->type,
+                        $orderItem->bundle->category_id,
+                        $orderItem->bundle->teacher_id
+                    )->last();
+
+                    // $oldInstallment = $installmentOrder->selectedInstallment;
+// dd($installmentOrder );
+                    $installmentOrder->update([
+                        'installment_id' => $newInstallment->id,
+                        'bundle_id' => $orderItem->bundle_id,
+                        'item_price' => $orderItem->bundle->price
+                    ]);
+                    $installmentOrder->selectedInstallment->update([
+                        'installment_id' => $newInstallment->id,
+                        'start_date' => $newInstallment->start_date,
+                        'end_date' => $newInstallment->end_date,
+                        'upfront' => $newInstallment->upfront,
+                        'upfront_type' => $newInstallment->upfront_type,
+                    ]);
+
+                     $installmentOrder->payments->first()->update(['amount' => $newInstallment->upfront]);
+
+                    $oldSteps = $installmentOrder->selectedInstallment->steps;
+                    $newSteps = $newInstallment->steps;
+
+                    if (count($oldSteps) <= count($newSteps)) {
+                        foreach ($oldSteps as $index => $oldStep) {
+                            $newStep =  $newSteps[$index];
+                            $oldStep->update([
+                                'installment_step_id' => $newStep->id,
+                                'amount' => $newStep->amount,
+                                'deadline' => $newStep->deadline,
+
+                            ]);
+                        }
+
+                        // Add remaining new steps to the database
+                        for ($i = count($oldSteps); $i < count($newSteps); $i++) {
+                            $newStep = $newSteps[$i];
+                            SelectedInstallmentStep::create([
+                                'selected_installment_id' =>   $installmentOrder->selectedInstallment->id,
+                                'installment_step_id' => $newStep->id,
+                                'amount' => $newStep->amount,
+                                'deadline' => $newStep->deadline,
+                                'amount_type' =>  $newStep->amount_type,
+                            ]);
+                        }
+                    } else {
+                        foreach ($newSteps as $index => $newStep) {
+                            $oldStep =  $oldSteps[$index];
+                            $oldStep->update([
+                                'installment_step_id' => $newStep->id,
+                                'amount' => $newStep->amount,
+                                'deadline' => $newStep->deadline,
+
+                            ]);
+                        }
+
+                        // Add remaining new steps to the database
+                        for ($i = count($newSteps); $i < count($oldSteps); $i++) {
+                            $oldStep = $oldSteps[$i];
+                            $oldStep->delete();
+                        }
+                    }
+                }
+
                 Sale::where(['buyer_id' => $orderItem->user_id, "bundle_id" => $orderItem->transform_bundle_id])->update(['transform_bundle_id' => $orderItem->transform_bundle_id, 'bundle_id' => $orderItem->bundle_id]);
 
                 $bundleTransform = BundleTransform::where(['user_id' => $orderItem->user_id, "to_bundle_id" => $orderItem->bundle_id, 'from_bundle_id' => $orderItem->transform_bundle_id])->orderBy('id', 'desc')->first();

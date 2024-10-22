@@ -115,16 +115,16 @@ trait SequenceContent
         $day = $this->access_after_day;
 
         if (!empty($user)) {
-            $sale = Sale::where('buyer_id', $user->id)
-                ->where('webinar_id', $this->webinar_id)
-                ->whereNull('refund_at')
-                ->first();
+            // $sale = Sale::where('buyer_id', $user->id)
+            //     ->where('webinar_id', $this->webinar_id)
+            //     ->whereNull('refund_at')
+            //     ->first();
 
-            if (!empty($sale)) {
-                $conditionDay = strtotime("+$day days", $sale->created_at);
+            if (!empty($day)) {
+                // $conditionDay = strtotime("+$day days", $sale->created_at);
 
-                if (time() < $conditionDay) {
-                    $result = trans('update.this_content_will_be_accessible_for_you_on_date', ['date' => dateTimeFormat($conditionDay, 'j M Y H:i')]);
+                if (time() < $day) {
+                    $result = trans('update.this_content_will_be_accessible_for_you_on_date', ['date' => dateTimeFormat($day, 'j M Y')]);
                 }
             } else {
                 $result = trans('public.not_access_to_this_content');

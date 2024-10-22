@@ -24,7 +24,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm" enctype="multipart/form-data">
+            <form class="modal-body" method="post" action="{{ $url }}" id="deleteForm" enctype="multipart/form-data" onsubmit="submitForm(event)">
 
                 @csrf
                 <div class="">
@@ -32,6 +32,7 @@
                     <input type="file" name="file" id="excelFile" class="form-control-file border rounded"
                         placeholder="yy" required  accept=".xlsx,.xls">
                     <p class="text-primary">.xlsx xls امتداد الملف المسموح به</p>
+                    <p class="text-danger">ملاحظة: يرجي عدم اضافة اكثر من 40 صف (طالب) في ملف الاكسل المرفع</p>
                 </div>
 
                 <div class="modal-footer">
@@ -43,3 +44,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    function submitForm(e) {
+        e.preventDefault();
+        let form = e.target;
+        let confirmBtn = form.querySelector('#confirmAction');
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('loadingbar', 'danger');
+        form.submit();
+    }
+</script>

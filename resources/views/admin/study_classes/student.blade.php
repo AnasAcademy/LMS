@@ -91,22 +91,22 @@
     <div class="card">
         <div class="card-header">
             @can('admin_users_export_excel')
-               <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/excelStudent? {{ http_build_query(request()->all()) }}"
+                <a href="{{ getAdminPanelUrl() }}/classes/{{ $class->id }}/excelStudent? {{ http_build_query(request()->all()) }}"
                     class="btn btn-primary">{{ trans('admin/main.export_xls') }}</a>
             @endcan
 
             @can('admin_users_export_excel')
-              @include('admin.students.includes.importStudents', [
-                        'url' => getAdminPanelUrl() . "/classes/$class->id/importStudents",
-                        'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
-                        'btnText' => '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
-                        'hideDefaultClass' => true,
-                    ])
+                @include('admin.students.includes.importStudents', [
+                    'url' => getAdminPanelUrl() . "/classes/$class->id/importStudents",
+                    'btnClass' => 'btn btn-danger d-flex align-items-center btn-sm mt-1  mr-3',
+                    'btnText' => '<span class="ml-2">رفع الطلاب من الاكسيل</span>',
+                    'hideDefaultClass' => true,
+                ])
 
-                    <a href="{{ asset('files/import_student_template.xlsx') }}" class="btn btn-success" download>تحميل قالب
-                        النموذج</a>
-                    <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
-                    </a>
+                <a href="{{ asset('files/import_student_template.xlsx') }}" class="btn btn-success" download>تحميل قالب
+                    النموذج</a>
+                <a href="{{ getAdminPanelUrl() }}/bundles/bundleCodeExcel" class="btn btn-info mr-3">تحميل اكواد الدبلومات
+                </a>
             @endcan
             <div class="h-10"></div>
         </div>
@@ -165,7 +165,7 @@
                                             width="100px" style="max-height:100px">
                                     </a>
                                 @else
-                                <span class="text-warning">لم ترفع بعد</span>
+                                    <span class="text-warning">لم ترفع بعد</span>
                                 @endif
                             </td>
                             <td>
@@ -276,3 +276,5 @@
         </div>
     </section>
 @endsection
+
+

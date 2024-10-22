@@ -16,9 +16,9 @@
                 </div>
             </div>
         </div>
-@php
-    $users = $service->users()->paginate(10);
-@endphp
+        @php
+            $users = $service->users()->paginate(10);
+        @endphp
 
         @if (Session::has('success'))
             <div class="container d-flex justify-content-center mt-80">
@@ -117,37 +117,65 @@
                                             <td width="200" class="">
 
                                                 <div class="d-flex justify-content-center align-items-baseline gap-3">
+                                                    @if ($user->pivot->status == 'pending')
+                                                        @can('admin_services_requests_approve')
+                                                            @if ($user->pivot->bundleDelay)
+                                                                @include('admin.includes.batch_transform', [
+                                                                    'url' =>
+                                                                        getAdminPanelUrl() .
+                                                                        '/services/requests/' .
+                                                                        $user->pivot->id .
+                                                                        '/approve',
+                                                                    'btnClass' =>
+                                                                        'btn btn-primary d-flex align-items-center btn-sm mt-1 ml-3',
+                                                                    'btnText' =>
+                                                                        '<i class="fa fa-retweet"></i><span class="ml-2"> قبول' .
+                                                                        // trans('admin/main.approve') .
+                                                                        '</span>',
+                                                                    'hideDefaultClass' => true,
+                                                                    'id' => $user->pivot->bundleDelay->id,
+                                                                    'bundle' =>
+                                                                        $user->pivot->bundleDelay->fromBundle,
+                                                                    'title' => 'تأجيل البرنامج',
+                                                                ])
+                                                            @else
+                                                                @include('admin.includes.delete_button', [
+                                                                    'url' =>
+                                                                        getAdminPanelUrl() .
+                                                                        '/services/requests/' .
+                                                                        $user->pivot->id .
+                                                                        '/approve',
+                                                                    'btnClass' =>
+                                                                        'btn btn-primary d-flex align-items-center btn-sm mt-1 ml-3',
+                                                                    'btnText' =>
+                                                                        '<i class="fa fa-check"></i><span class="ml-2"> قبول' .
+                                                                        '</span>',
+                                                                    'hideDefaultClass' => true,
+                                                                ])
+                                                            @endif
+                                                        @endcan
 
-                                                    @include('admin.includes.delete_button', [
-                                                        'url' =>
-                                                            getAdminPanelUrl() .
-                                                            '/services/requests/' .
-                                                            $user->pivot->id .
-                                                            '/approve',
-                                                        'btnClass' =>
-                                                            'btn btn-primary d-flex align-items-center btn-sm mt-1 ml-3',
-                                                        'btnText' =>
-                                                            '<i class="fa fa-check"></i><span class="ml-2"> قبول' .
-                                                            // trans('admin/main.approve') .
-                                                            '</span>',
-                                                        'hideDefaultClass' => true,
-                                                    ])
-
-                                                    @include('admin.services.confirm_reject_button', [
-                                                        'url' =>
-                                                            getAdminPanelUrl() .
-                                                            '/services/requests/' .
-                                                            $user->pivot->id .
-                                                            '/reject',
-                                                        'btnClass' =>
-                                                            'btn btn-danger d-flex align-items-center btn-sm mt-1',
-                                                        'btnText' =>
-                                                            '<i class="fa fa-times"></i><span class="ml-2">' .
-                                                            trans('admin/main.reject') .
-                                                            '</span>',
-                                                        'hideDefaultClass' => true,
-                                                        'id' => $user->pivot->id,
-                                                    ])
+                                                        @can('admin_services_requests_reject')
+                                                            @include(
+                                                                'admin.services.confirm_reject_button',
+                                                                [
+                                                                    'url' =>
+                                                                        getAdminPanelUrl() .
+                                                                        '/services/requests/' .
+                                                                        $user->pivot->id .
+                                                                        '/reject',
+                                                                    'btnClass' =>
+                                                                        'btn btn-danger d-flex align-items-center btn-sm mt-1',
+                                                                    'btnText' =>
+                                                                        '<i class="fa fa-times"></i><span class="ml-2">' .
+                                                                        trans('admin/main.reject') .
+                                                                        '</span>',
+                                                                    'hideDefaultClass' => true,
+                                                                    'id' => $user->pivot->id,
+                                                                ]
+                                                            )
+                                                        @endcan
+                                                    @endif
 
                                                 </div>
                                             </td>

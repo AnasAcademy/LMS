@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
+use App\Models\Category;
 use App\Models\Notification;
+use App\Models\StudyClass;
+use App\User;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
@@ -35,8 +38,35 @@ class ServiceController extends Controller
         //
 
         // $services = Service::paginate(1);
+        $lastBatch = StudyClass::latest()->first();
+        $categories = Category::whereNull('parent_id')
+            ->whereHas('bundles', function ($query) use ($lastBatch) {
+                $query->where('batch_id', $lastBatch->id);
+            })
+            ->orWhereHas('subCategories', function ($query) use ($lastBatch) {
+                $query->whereHas('bundles', function ($query) use ($lastBatch) {
+                    $query->where('batch_id', $lastBatch->id);
+                });
+            })
+            ->with(
+                [
+                    'bundles' => function ($query) use ($lastBatch) {
+                        $query->where('batch_id', $lastBatch->id);
+                    },
 
-        return view('admin.services.requests', compact('service'));
+                    'subCategories' => function ($query) use ($lastBatch) {
+                        $query->whereHas('bundles', function ($query) use ($lastBatch) {
+                            $query->where('batch_id', $lastBatch->id);
+                        })->with([
+                            'bundles' => function ($query) use ($lastBatch) {
+                                $query->where('batch_id', $lastBatch->id);
+                            },
+                        ]);
+                    },
+                ]
+            )->get();
+
+        return view('admin.services.requests', compact('service', 'categories'));
     }
     public function approveRequest(Request $request, ServiceUser $serviceUser)
     {
@@ -45,6 +75,32 @@ class ServiceController extends Controller
 
             $serviceUser->status = 'approved';
             $serviceUser->approved_by = $admin->id;
+            $serviceUser->save();
+            if ($serviceUser->bundleTransform) {
+                if ($serviceUser->bundleTransform->amount == 0) {
+                    return (new BundleTransformController())->finishTransform($request, $serviceUser->bundleTransform);
+                }
+
+                $financialUsers = User::where(['status' => 'active'])
+                    ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+                foreach ($financialUsers as $financialUser) {
+                    $data['user_id'] = $financialUser->id;
+                    $data['name'] = $financialUser->full_name;
+                    $data['receiver'] = $financialUser->email;
+                    $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+                    $data['fromName'] = env('MAIL_FROM_NAME');
+                    $data['subject'] = 'الرد علي طلب خدمة ' . $serviceUser->bundleTransform->serviceRequest->title;
+                    $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $serviceUser->bundleTransform->fromBundle->title .  ' إلي برنامج ' . $serviceUser->bundleTransform->toBundle->title . " المقدم من الطالب " . $serviceUser->bundleTransform->user->full_name . " من قبل "  . auth()->user()->full_name . "  من ادارة الأدميشن ومنتظر منكم إتمام التحويل ";
+                    $this->sendNotification($data);
+                }
+
+                $serviceUser->bundleTransform->update(['approved_by' => auth()->id()]);
+                return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال الطلب لإدارة المالبة');
+            }
+
+            if($serviceUser->bundleDelay){
+                (new BundleDelayController)->approve($request, $serviceUser->bundleDelay);
+            }
 
             $data['user_id'] = $serviceUser->user_id;
             $data['name'] = $serviceUser->user->full_name;
@@ -53,12 +109,20 @@ class ServiceController extends Controller
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $serviceUser->service->title;
             $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك لخدمة ' . $serviceUser->service->title . ' التي قمت بارساله ';
-
             $this->sendNotification($data);
-            $serviceUser->save();
-            return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال ايميل للطالب بهذا');
+            $toastData = [
+                'title' => 'قبول خدمة',
+                'msg' => 'تم الموافقة علي طلب الخدمة وارسال ايميل للطالب بهذا',
+                'status' => 'success'
+            ];
+            return back()->with(['toast' => $toastData]);
         } catch (\Exception $e) {
-            return back()->with('error', 'حدث خطأ ما يرجي المحاولة مرة أخري');
+            $toastData = [
+                'title' => 'قبول خدمة',
+                'msg' => 'حدث خطأ ما في ارسال ايميل للطالب',
+                'status' => 'error'
+            ];
+            return back()->with( ['toast' => $toastData]);
         }
     }
     public function rejectRequest(Request $request, ServiceUser $serviceUser)
@@ -70,8 +134,7 @@ class ServiceController extends Controller
             ]);
 
             if ($validator->fails()) {
-               return back()->with('error', implode(', ', $validator->errors()->all()));
-
+                return back()->with('error', implode(', ', $validator->errors()->all()));
             }
             $admin = auth()->user();
 
@@ -85,19 +148,41 @@ class ServiceController extends Controller
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $serviceUser->service->title;
 
-            $data['body'] = "لقد تم رفض طلبك لخدمة ". $serviceUser->service->title ." بسبب " . $request['reason'];
-            $serviceUser->message =  $request['reason'] . "<br>";
-            if (isset($request['message'])) {
-                $data['body'] =  $data['body'] . "\n" . $request['message'];
-                $serviceUser->message .= $request['message'];
-            }
+            $data['body'] = "لقد تم رفض طلبك لخدمة " . $serviceUser->service->title . " بسبب " . $request['message'];
+            $serviceUser->message =  $request['message'] . "<br>";
+            // if (isset($request['message'])) {
+            //     $data['body'] =  $data['body'] . "\n" . $request['message'];
+            //     $serviceUser->message .= $request['message'];
+            // }
 
             $this->sendNotification($data);
 
-            $serviceUser->save();
+            if ($serviceUser->bundleTransform) {
+                $serviceUser->bundleTransform->update(['status' => 'rejected', 'approved_by' => auth()->id()]);
+                if (auth()->user()->role_name == 'Financial Management User' || auth()->user()->role_name == 'admin') {
+                    $financialUsers = User::where(['status' => 'active'])
+                        ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+                    foreach ($financialUsers as $financialUser) {
+                        $data['user_id'] = $financialUser->id;
+                        $data['name'] = $financialUser->full_name;
+                        $data['receiver'] = $financialUser->email;
+                        $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+                        $data['fromName'] = env('MAIL_FROM_NAME');
+                        $data['subject'] = '  طلب خدمة ' . $serviceUser->bundleTransform->serviceRequest->title;
+                        $data['body'] = 'نود اعلامك علي انه تم رفض التحويل من برنامج  ' .
+                            $serviceUser->bundleTransform->fromBundle->title .  ' إلي برنامج ' .
+                            $serviceUser->bundleTransform->toBundle->title . " المقدم من الطالب " .
+                            $serviceUser->bundleTransform->user->full_name . " من قبل "  . auth()->user()->full_name;
+                        $this->sendNotification($data);
+                    }
+                } else {
+                    $serviceUser->save();
+                }
+            }
+
             return back()->with('success', 'تم رفض طلب الخدمة وارسال ايميل للطالب بهذا');
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            // dd($e->getMessage());
             return back()->with('error', 'حدث خطأ ما يرجي المحاولة مرة أخري');
         }
     }
@@ -129,17 +214,20 @@ class ServiceController extends Controller
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
             // 'apply_link' => 'required|url',
             // 'review_link' => 'required|url',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
 
         $request['created_by'] = $authUser->id;
         $data = $request->all();
-        $lastService = (Service::get()->last()->id)+1;
-        $data['apply_link']= env('APP_URL').'panel/services/'.$lastService.'/apply';
-        $data['review_link']= env('APP_URL').'panel/services/'.$lastService.'/review';
-        Service::create($data);
-        return back()->with('success', 'تم إنشاء الخدمة بنجاح');
+        $data['status'] = 'inactive';
+        $lastService = (Service::get()->last()->id) + 1;
+        $data['apply_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/apply';
+        $data['review_link'] = env('APP_URL') . 'panel/services/' . $lastService . '/review';
+        $service = Service::create($data);
+        return redirect("/admin/services/$service->id/edit")->with('success', 'تم إنشاء الخدمة بنجاح');
     }
 
     /**
@@ -183,6 +271,8 @@ class ServiceController extends Controller
             'price' => 'required|regex:/^\d{1,3}(\.\d{1,6})?$/',
             'apply_link' => 'required|url',
             'review_link' => 'required|url',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => ['required', Rule::in(['pending', 'active', 'inactive'])],
 
         ]);
@@ -214,7 +304,7 @@ class ServiceController extends Controller
         Notification::create([
             'user_id' => !empty($data['user_id']) ? $data['user_id'] : null,
             'sender_id' => auth()->id(),
-            'title' => "طلب خدمة",
+            'title' => $data['subject'],
             'message' => $data['body'],
             'sender' => Notification::$AdminSender,
             'type' => "single",

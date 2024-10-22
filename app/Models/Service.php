@@ -11,7 +11,7 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description','price', 'apply_link', 'review_link', 'details', 'created_by', 'status'];
+    protected $fillable = ['title', 'description','price', 'apply_link', 'review_link', 'details', 'created_by', 'status', 'start_date', 'end_date'];
 
 
     public function createdBy()

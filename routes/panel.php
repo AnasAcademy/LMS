@@ -319,6 +319,8 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         Route::post('/{service}/bundleTransform', 'ServiceController@bundleTransform');
         Route::get('/{service}/bundleBridging', 'ServiceController@bundleBridgingRequest');
         Route::post('/{service}/bundleBridging', 'ServiceController@bundleBridging');
+        Route::get('/{service}/bundleDelay', 'ServiceController@bundleDelayRequest');
+        Route::post('/{service}/bundleDelay', 'ServiceController@bundleDelay');
         Route::get('/{service}/apply', 'ServiceController@store');
     });
 
@@ -483,7 +485,7 @@ Route::group(['namespace' => 'Panel', 'prefix' => 'panel', 'middleware' => ['che
         // requirements Routes
         Route::get('/{studentBundleId}/requirements', 'UserController@createRequirement');
         Route::post('/{studentBundleId}/requirements', 'UserController@storeRequirement')->name('requirements.store');
-        Route::get('/{bundle}/course/learning/{slug}', [LearningPageController::class, 'index']);
+        Route::get('/{bundle}/course/learning/{id}', [LearningPageController::class, 'index']);
     });
 
     Route::group(['prefix' => 'bundle-webinars'], function () {

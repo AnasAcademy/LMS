@@ -218,6 +218,9 @@ class Discount extends Model
         }
 
         $user = auth()->user();
+        if (isset($orderItem->installmentPayment->step)) {
+            return "لا يمكن استخدام الكوبون في حالة دفع قسط";
+        }
 
         if ($this->source == self::$discountSourceCourse or $this->source == self::$discountSourceCategory) {
             if (empty($orderItem->webinar) ) {

@@ -3,9 +3,14 @@
         <div class="assignment-top-stats__item d-flex align-items-center justify-content-center pb-5 pb-md-0">
             <div class="d-flex flex-column align-items-center text-center">
                 <img src="/assets/default/img/activity/calendar.svg" class="assignment-top-stats__icon" alt="">
-                <strong class="font-20 text-dark-blue font-weight-bold mt-5">
+                <span class="font-20 text-dark-blue font-weight-bold mt-20">
+                    {{ dateTimeFormat($assignment->deadline, 'j M Y') }}
+                </span>
+                <strong class="font-16 text-dark-blue font-weight-bold mt-5">
                     @if($assignmentDeadline)
+                    (
                         {{ is_bool($assignmentDeadline) ? trans('update.unlimited') : trans('update.n_day', ['day' => ceil($assignmentDeadline)]) }}
+                    )
                     @else
                         <span class="text-danger">{{ trans('panel.expired') }}</span>
                     @endif
@@ -148,13 +153,13 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="input-label">{{ trans('update.file_title') }} ({{ trans('public.optional') }})</label>
+                                <label class="input-label">{{ trans('update.file_title') }} </label>
                                 <input name="file_title" class="form-control"/>
                                 <div class="invalid-feedback"></div>
                             </div>
 
                             <div class="form-group">
-                                <label class="input-label">{{ trans('update.attach_a_file') }} ({{ trans('public.optional') }})</label>
+                                <label class="input-label">{{ trans('update.attach_a_file') }}</label>
 
                                 <div class="d-flex align-items-center">
                                     <div class="input-group mr-10">
@@ -164,6 +169,7 @@
                                             </button>
                                         </div>
                                         <input type="text" name="file_path" id="assignmentAttachmentInput" value="" class="form-control" placeholder="{{ trans('update.assignment_attachments_placeholder') }}"/>
+                                        <div class="invalid-feedback"></div>
                                     </div>
 
                                     <button type="button" class="js-save-history-message btn btn-primary btn-sm">{{ trans('update.send') }}</button>
