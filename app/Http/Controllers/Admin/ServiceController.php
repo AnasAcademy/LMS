@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendNotifications;
+use App\Models\Category;
 use App\Models\Notification;
+use App\Models\StudyClass;
 use App\User;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,8 +38,35 @@ class ServiceController extends Controller
         //
 
         // $services = Service::paginate(1);
+        $lastBatch = StudyClass::latest()->first();
+        $categories = Category::whereNull('parent_id')
+            ->whereHas('bundles', function ($query) use ($lastBatch) {
+                $query->where('batch_id', $lastBatch->id);
+            })
+            ->orWhereHas('subCategories', function ($query) use ($lastBatch) {
+                $query->whereHas('bundles', function ($query) use ($lastBatch) {
+                    $query->where('batch_id', $lastBatch->id);
+                });
+            })
+            ->with(
+                [
+                    'bundles' => function ($query) use ($lastBatch) {
+                        $query->where('batch_id', $lastBatch->id);
+                    },
 
-        return view('admin.services.requests', compact('service'));
+                    'subCategories' => function ($query) use ($lastBatch) {
+                        $query->whereHas('bundles', function ($query) use ($lastBatch) {
+                            $query->where('batch_id', $lastBatch->id);
+                        })->with([
+                            'bundles' => function ($query) use ($lastBatch) {
+                                $query->where('batch_id', $lastBatch->id);
+                            },
+                        ]);
+                    },
+                ]
+            )->get();
+
+        return view('admin.services.requests', compact('service', 'categories'));
     }
     public function approveRequest(Request $request, ServiceUser $serviceUser)
     {
@@ -69,6 +98,10 @@ class ServiceController extends Controller
                 return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال الطلب لإدارة المالبة');
             }
 
+            if($serviceUser->bundleDelay){
+                (new BundleDelayController)->approve($request, $serviceUser->bundleDelay);
+            }
+
             $data['user_id'] = $serviceUser->user_id;
             $data['name'] = $serviceUser->user->full_name;
             $data['receiver'] = $serviceUser->user->email;
@@ -77,9 +110,19 @@ class ServiceController extends Controller
             $data['subject'] = 'الرد علي طلب خدمة ' . $serviceUser->service->title;
             $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك لخدمة ' . $serviceUser->service->title . ' التي قمت بارساله ';
             $this->sendNotification($data);
-            return back()->with('success', 'تم الموافقة علي طلب الخدمة وارسال ايميل للطالب بهذا');
+            $toastData = [
+                'title' => 'قبول خدمة',
+                'msg' => 'تم الموافقة علي طلب الخدمة وارسال ايميل للطالب بهذا',
+                'status' => 'success'
+            ];
+            return back()->with(['toast' => $toastData]);
         } catch (\Exception $e) {
-            return back()->with('error', 'حدث خطأ ما يرجي المحاولة مرة أخري');
+            $toastData = [
+                'title' => 'قبول خدمة',
+                'msg' => 'حدث خطأ ما في ارسال ايميل للطالب',
+                'status' => 'error'
+            ];
+            return back()->with( ['toast' => $toastData]);
         }
     }
     public function rejectRequest(Request $request, ServiceUser $serviceUser)
@@ -139,7 +182,7 @@ class ServiceController extends Controller
 
             return back()->with('success', 'تم رفض طلب الخدمة وارسال ايميل للطالب بهذا');
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            // dd($e->getMessage());
             return back()->with('error', 'حدث خطأ ما يرجي المحاولة مرة أخري');
         }
     }
