@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\traits\LearningPageNoticeboardsTrait;
 use App\Models\Bundle;
 use App\Models\Certificate;
 use App\Models\CourseNoticeboard;
+use App\Models\Webinar;
 use Illuminate\Http\Request;
 
 class LearningPageController extends Controller
@@ -18,13 +19,14 @@ class LearningPageController extends Controller
     use LearningPageMixinsTrait, LearningPageAssignmentTrait, LearningPageItemInfoTrait,
         LearningPageNoticeboardsTrait, LearningPageForumTrait;
 
-    public function index(Request $request,Bundle $bundle=null, $slug)
+    public function index(Request $request,Bundle $bundle=null, $id)
     {
         $requestData = $request->all();
 
         $webinarController = new WebinarController();
 
-        $data = $webinarController->course($slug, true);
+        $webinar = Webinar::findOrFail($id);
+        $data = $webinarController->course($id, true);
 
         $course = $data['course'];
         $user = $data['user'];

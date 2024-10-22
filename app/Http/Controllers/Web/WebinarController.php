@@ -36,7 +36,7 @@ class WebinarController extends Controller
     use CheckContentLimitationTrait;
     use InstallmentsTrait;
 
-    public function course($slug, $justReturnData = false)
+    public function course($id, $justReturnData = false)
     {
         $user = null;
 
@@ -52,7 +52,7 @@ class WebinarController extends Controller
             }
         }
 
-        $course = Webinar::where('slug', $slug)
+        $course = Webinar::where('id', $id)
             ->with([
                 'quizzes' => function ($query) {
                     $query->where('status', 'active')

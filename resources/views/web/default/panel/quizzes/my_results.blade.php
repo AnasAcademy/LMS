@@ -202,7 +202,7 @@
                                                     @endif
 
                                                     {{-- <a href="{{ $result->quiz->webinar->getUrl() }}" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a> --}}
-                                                    <a href="/course/learning/{{ $result->quiz->webinar->slug }}" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
+                                                    <a href="/course/learning/{{ $result->quiz->webinar->id }}" class="webinar-actions d-block mt-10">{{ trans('webinars.webinar_page') }}</a>
                                                 </div>
                                             </div>
                                         </td>
