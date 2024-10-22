@@ -368,9 +368,11 @@ Route::group(['prefix' => $prefix, 'namespace' => 'Admin', 'middleware' => ['web
          Route::group(['prefix' => 'services'], function () {
              Route::group(['prefix' => 'bundle_delay'], function () {
                  Route::get('/', 'BundleDelayController@index');
+                 Route::post('/{bundleDelay}/approve', 'BundleDelayController@approve');
              });
             Route::get('{service}/requests', 'ServiceController@requests');
             Route::get('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
+            Route::post('/requests/{serviceUser}/approve', 'ServiceController@approveRequest');
             Route::get('/requests/{serviceUser}/reject', 'ServiceController@rejectRequest');
             Route::resource('', 'ServiceController')->parameters(['' => 'service']);
             Route::get('/{service}/delete', 'ServiceController@destroy');
