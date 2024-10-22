@@ -65,6 +65,7 @@ class BundleDelayController extends Controller
         ]);
 
 
+
         if ($request->from_bundle_id == $request->to_bundle_id) {
             return redirect()->back()->with('error', 'From and To Bundle can not be same');
         }
@@ -79,73 +80,9 @@ class BundleDelayController extends Controller
                 ->where(['user_id' => $bundleDelay->user_id, 'bundle_id' => $request->from_bundle_id, 'status' => 'open'])
                 ->with(['selectedInstallment', 'selectedInstallment.steps'])->latest()->first();
 
-            $installmentPlans = new InstallmentPlans($bundleDelay->user);
-
-            // $newInstallment = $installmentPlans->getPlans(
-            //     'bundles',
-            //     $toBundle->id,
-            //     $toBundle->type,
-            //     $toBundle->category_id,
-            //     $toBundle->teacher_id
-            // )->last();
-
-            // $oldInstallment = $installmentOrder->selectedInstallment;
-            // dd($installmentOrder );
             $installmentOrder->update([
-                // 'installment_id' => $newInstallment->id,
                 'bundle_id' => $toBundle->id,
-                // 'item_price' => $toBundle->price
             ]);
-            // $installmentOrder->selectedInstallment->update([
-            //     'installment_id' => $newInstallment->id,
-            //     'start_date' => $newInstallment->start_date,
-            //     'end_date' => $newInstallment->end_date,
-            //     'upfront' => $newInstallment->upfront,
-            //     'upfront_type' => $newInstallment->upfront_type,
-            // ]);
-
-            // $oldSteps = $installmentOrder->selectedInstallment->steps;
-            // $newSteps = $newInstallment->steps;
-
-            // if (count($oldSteps) <= count($newSteps)) {
-            //     foreach ($oldSteps as $index => $oldStep) {
-            //         $newStep =  $newSteps[$index];
-            //         $oldStep->update([
-            //             'installment_step_id' => $newStep->id,
-            //             'amount' => $newStep->amount,
-            //             'deadline' => $newStep->deadline,
-
-            //         ]);
-            //     }
-
-            //     // Add remaining new steps to the database
-            //     for ($i = count($oldSteps); $i < count($newSteps); $i++) {
-            //         $newStep = $newSteps[$i];
-            //         SelectedInstallmentStep::create([
-            //             'selected_installment_id' =>   $installmentOrder->selectedInstallment->id,
-            //             'installment_step_id' => $newStep->id,
-            //             'amount' => $newStep->amount,
-            //             'deadline' => $newStep->deadline,
-            //             'amount_type' =>  $newStep->amount_type,
-            //         ]);
-            //     }
-            // } else {
-            //     foreach ($newSteps as $index => $newStep) {
-            //         $oldStep =  $oldSteps[$index];
-            //         $oldStep->update([
-            //             'installment_step_id' => $newStep->id,
-            //             'amount' => $newStep->amount,
-            //             'deadline' => $newStep->deadline,
-
-            //         ]);
-            //     }
-
-            //     // Add remaining new steps to the database
-            //     for ($i = count($newSteps); $i < count($oldSteps); $i++) {
-            //         $oldStep = $oldSteps[$i];
-            //         $oldStep->delete();
-            //     }
-            // }
         }
 
         Sale::where(['buyer_id' => $bundleDelay->user_id, "bundle_id" => $request->from_bundle_id])->update(['bundle_id' => $request->to_bundle_id, 'class_id' => $toBundle->batch_id]);
