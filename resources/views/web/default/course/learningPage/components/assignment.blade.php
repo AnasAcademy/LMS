@@ -3,9 +3,14 @@
         <div class="assignment-top-stats__item d-flex align-items-center justify-content-center pb-5 pb-md-0">
             <div class="d-flex flex-column align-items-center text-center">
                 <img src="/assets/default/img/activity/calendar.svg" class="assignment-top-stats__icon" alt="">
-                <strong class="font-20 text-dark-blue font-weight-bold mt-5">
+                <span class="font-20 text-dark-blue font-weight-bold mt-20">
+                    {{ dateTimeFormat($assignment->deadline, 'j M Y') }}
+                </span>
+                <strong class="font-16 text-dark-blue font-weight-bold mt-5">
                     @if($assignmentDeadline)
+                    (
                         {{ is_bool($assignmentDeadline) ? trans('update.unlimited') : trans('update.n_day', ['day' => ceil($assignmentDeadline)]) }}
+                    )
                     @else
                         <span class="text-danger">{{ trans('panel.expired') }}</span>
                     @endif
