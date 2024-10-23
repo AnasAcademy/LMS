@@ -276,7 +276,8 @@ class BundleController extends Controller
         ];
 
         if($type=='bridging'){
-            $rules['from_bundle_id'] ="required|exists:bundles,id";
+            $rules['from_bundle_id'] ="required|array";
+            $rules['from_bundle_id.*'] ="required|exists:bundles,id";
             // $rules['to_bundle_id'] ="required|exists:bundles,id";
         }
         $this->validate($request, $rules);
@@ -357,12 +358,7 @@ class BundleController extends Controller
             ]);
 
             if(!empty($request['from_bundle_id'])){
-
-               $test = BundleBridging::create([
-                    'bridging_id'=> $bundle->id ,
-                    'from_bundle_id' => $request['from_bundle_id'],
-                    // 'to_bundle_id' => $request['to_bundle_id']
-                ]);
+                $bundle->bridgingBundles()->sync($request->input('from_bundle_id', []));
             }
         }
 
@@ -416,7 +412,6 @@ class BundleController extends Controller
             abort(404);
         }
 
-
         $locale = $request->get('locale', app()->getLocale());
         storeContentLocale($locale, $bundle->getTable(), $bundle->id);
 
@@ -464,6 +459,8 @@ class BundleController extends Controller
         $data = $request->all();
 
         $bundle = Bundle::find($id);
+
+
         $isDraft = (!empty($data['draft']) and $data['draft'] == 1);
         $reject = (!empty($data['draft']) and $data['draft'] == 'reject');
         $publish = (!empty($data['draft']) and $data['draft'] == 'publish');
@@ -615,17 +612,10 @@ class BundleController extends Controller
                 'seo_description' => $data['seo_description'],
             ]);
 
-            if(!empty($request['from_bundle_id'])){
-
-
-            BundleBridging::updateOrCreate([
-                        'bridging_id' => $bundle->id,
-            ],
-            [
-                    'from_bundle_id' => $request['from_bundle_id'],
-                    // 'to_bundle_id' => $request['to_bundle_id']
-                ]);
+            if($bundle->type == 'bridging'){
+                $bundle->bridgingBundles()->sync($request->input('from_bundle_id', []) );
             }
+
         }
 
         $notifyOptions = [

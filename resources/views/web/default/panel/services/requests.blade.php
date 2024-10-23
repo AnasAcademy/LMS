@@ -61,7 +61,7 @@
 
                                             <td class="text-center align-middle">
 
-                                                @switch(($service->pivot->bundleTransform->status)??
+                                                @switch(($service?->pivot?->bundleTransform?->status ?? $service?->pivot?->BridgingRequest?->status)??
                                                     $service->pivot->status)
                                                     @case('pending')
                                                         <span class="text-warning">{{ trans('public.waiting') }}</span>
@@ -76,7 +76,7 @@
                                                     @break
 
                                                     @case('paid')
-                                                        <span class="text-primary">مقبول وتم دفع الفرق</span>
+                                                        <span class="text-primary">مقبول وتم الدفع </span>
                                                     @break
 
                                                     @case('refunded')
@@ -135,7 +135,7 @@
                                                 <a class="btn btn-secondary" href="/panel/bundletransform/{{ $service->pivot->bundleTransform->id}}/refund">استيرداد الفرق و إتمام التحويل</a> --}}
                                                 @elseif (
                                                     !empty($service->pivot->BridgingRequest && $service->pivot->BridgingRequest->bridging_id) &&
-                                                        $service->pivot->status == 'approved')
+                                                        $service->pivot->status == 'approved'  && $service->pivot->BridgingRequest->status!="paid")
                                                     <a class="btn btn-primary"
                                                         href="/panel/bundleBridging/{{ $service->pivot->BridgingRequest->bridging_id }}/pay">دفع
                                                         ثمن البرنامج</a>

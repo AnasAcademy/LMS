@@ -201,7 +201,11 @@ class Sale extends Model
 
             if (!empty($orderItem->transform_bundle_id)) {
 
-                $oldSale = Sale::where(['bundle_id' => $orderItem->transform_bundle_id, 'buyer_id' => $orderItem->user_id])->whereIn('type', ['bundle', 'installment_payment'])->first();
+                $oldSale = Sale::where([
+                    'bundle_id' => $orderItem->transform_bundle_id,
+                    'buyer_id' => $orderItem->user_id
+                ])
+                    ->whereIn('type', ['bundle', 'installment_payment'])->first();
 
                 if ($oldSale && $oldSale->type == 'installment_payment') {
 
@@ -220,7 +224,7 @@ class Sale extends Model
                     )->last();
 
                     // $oldInstallment = $installmentOrder->selectedInstallment;
-// dd($installmentOrder );
+
                     $installmentOrder->update([
                         'installment_id' => $newInstallment->id,
                         'bundle_id' => $orderItem->bundle_id,
@@ -234,7 +238,7 @@ class Sale extends Model
                         'upfront_type' => $newInstallment->upfront_type,
                     ]);
 
-                     $installmentOrder->payments->first()->update(['amount' => $newInstallment->upfront]);
+                    $installmentOrder->payments->first()->update(['amount' => $newInstallment->upfront]);
 
                     $oldSteps = $installmentOrder->selectedInstallment->steps;
                     $newSteps = $newInstallment->steps;
@@ -280,7 +284,7 @@ class Sale extends Model
                     }
                 }
 
-                Sale::where(['buyer_id' => $orderItem->user_id, "bundle_id" => $orderItem->transform_bundle_id])->update(['transform_bundle_id' => $orderItem->transform_bundle_id, 'bundle_id' => $orderItem->bundle_id]);
+                Sale::where(['buyer_id' => $orderItem->user_id, "bundle_id" => $orderItem->transform_bundle_id])->update(['transform_bundle_id' => $orderItem->transform_bundle_id, 'bundle_id' => $orderItem->bundle_id, 'class_id'  => $orderItem->bundle->batch_id ]);
 
                 $bundleTransform = BundleTransform::where(['user_id' => $orderItem->user_id, "to_bundle_id" => $orderItem->bundle_id, 'from_bundle_id' => $orderItem->transform_bundle_id])->orderBy('id', 'desc')->first();
                 if ($bundleTransform) {
@@ -289,14 +293,14 @@ class Sale extends Model
 
                 BundleStudent::whereHas('student', function ($query) use ($orderItem) {
                     $query->where('user_id', $orderItem->user_id);
-                })->where(['bundle_id' => $orderItem->transform_bundle_id])->update(['bundle_id' => $orderItem->bundle_id]);
+                })->where(['bundle_id' => $orderItem->transform_bundle_id])->update(['bundle_id' => $orderItem->bundle_id, 'class_id'  => $orderItem->bundle->batch_id]);
             }
 
             if (!empty($orderItem->bundle_id) && $orderItem->bundle->type == 'bridging') {
-                BridgingRequest::where('bridging_id', $orderItem->bundle->id)->update(['status', 'paid']);
+                BridgingRequest::where('bridging_id', $orderItem->bundle->id)->update(['status' => 'paid']);
             }
         } catch (\Exception $e) {
-            dd($e);
+            dd(vars: $e);
         }
 
         self::handleSaleNotifications($orderItem, 1);
