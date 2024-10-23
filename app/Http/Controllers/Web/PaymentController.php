@@ -27,6 +27,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\OfflineBank;
 use App\Models\OfflinePayment;
 use App\BundleStudent;
+use App\Models\BridgingRequest;
+use App\Models\BundleDelay;
+use App\Models\BundleTransform;
 use App\Models\Discount;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
@@ -602,13 +605,54 @@ class PaymentController extends Controller
                 }
             } elseif ($service_sale && $service_sale->order->user_id == $user->id && $service_sale->order->status == 'paid') {
                 $serviceRequestContent = $request->cookie('service_content');
+                $bundle_transform = $request->cookie('bundle_transform');
+                $bundle_bridging = $request->cookie('bundle_bridging');
+                $bundle_delay = $request->cookie('bundle_delay');
+
                 $service = $service_sale->order->orderItems->first()->service;
                 if ($serviceRequestContent) {
                     $serviceRequestContent = json_decode($serviceRequestContent, true);
-                    $service->users()->attach($user, ['content' => $serviceRequestContent]);
+
+                    // $service->users()->attach($user, ['content' => $serviceRequestContent]);
+                    $serviceRequest = ServiceUser::create([
+                        'service_id' => $service->id,
+                        'user_id' => $service_sale->buyer_id,
+                        'content' => $serviceRequestContent
+                    ]);
                 } else {
-                    ServiceUser::where(['user_id' => $user->id, 'service_id' => $service->id])->update(['status' => 'pending']);
+                  $serviceRequest=  ServiceUser::where([
+                    'user_id' => $service_sale->buyer_id,
+                    'service_id' => $service->id
+                    ])->update(['status' => 'pending']);
                 }
+                if($bundle_transform){
+                    $bundle_transform = json_decode($bundle_transform, true);
+                    BundleTransform::create([
+                        ...$bundle_transform,
+                        'user_id' => $service_sale->buyer_id,
+                        'service_request_id' => $serviceRequest->id
+                    ]);
+                }
+
+                if($bundle_bridging){
+                    $bundle_bridging = json_decode($bundle_bridging, true);
+                    BridgingRequest::create([
+                        ...$bundle_bridging,
+                        'user_id' => $service_sale->buyer_id,
+                        'service_request_id' => $serviceRequest->id
+                    ]);
+                }
+
+                if($bundle_delay){
+                    $bundle_delay = json_decode($bundle_delay, true);
+                    BundleDelay::create([
+                        ...$bundle_delay,
+                        'user_id' => $service_sale->buyer_id,
+                        'service_request_id' => $serviceRequest->id
+                    ]);
+                }
+
+
             }
 
             if (!empty($data['order']) && $data['order']->status === Order::$paid) {
@@ -619,7 +663,7 @@ class PaymentController extends Controller
                 ];
 
                 if (!empty($service_sale)) {
-                    return redirect('/panel/services')->with(['toast' => $toastData, 'success' => "تم ارسال الطلب بنجاح"]);
+                    return redirect('/panel/services/requests')->with(['toast' => $toastData, 'success' => "تم ارسال الطلب بنجاح"]);
                 }
 
                 if (empty($sale)) {
