@@ -49,7 +49,7 @@
 
                             <form method="post"
                                 action="{{ getAdminPanelUrl() }}/bundles/{{ !empty($bundle) ? $bundle->id . '/update' : 'store' }}"
-                                id="webinarForm" class="webinar-form">
+                                id="webinarForm" class="webinar-form" enctype="multipart/form-data">
                                 {{ csrf_field() }}
                                 <section>
                                     <h2 class="section-title after-line">{{ trans('public.basic_information') }}</h2>
@@ -217,20 +217,41 @@
                                                 @enderror
                                             </div>
 
-
                                             <div class="form-group mt-15">
+                                                <label class="input-label">طريقة إدخال جدول المحاضرات</label>
+                                                <select id="inputMethod" class="form-control" onchange="toggleInput()">
+                                                    <option value="url" selected>رابط (URL)</option>
+                                                    <option value="file">رفع ملف</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div id="urlInput" class="form-group mt-15">
                                                 <label class="input-label">عنوان رابط (URL) جدول المحاضرات</label>
-                                                <input type="text" name="content_table"
+                                                <input type="text" name="content_table" 
                                                     value="{{ !empty($bundle) ? $bundle->content_table : old('content_table') }}"
-                                                    class="form-control @error('content_table')  is-invalid @enderror"
+                                                    class="form-control @error('content_table') is-invalid @enderror"
                                                     placeholder="" />
-
+                                                
                                                 @error('content_table')
                                                     <div class="invalid-feedback d-block">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
                                             </div>
+                                            
+                                            <div id="fileInput" class="form-group mt-15" style="display: none;">
+                                                <label class="input-label">رفع جدول المحاضرات</label>
+                                                <input type="file" name="content_table" 
+                                                 value="{{ !empty($bundle) ? $bundle->content_table : old('content_table') }}"
+                                                       class="form-control @error('content_table') is-invalid @enderror" />
+                                                @error('content_table')
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+
+
 
                                             @if (!empty($bundle) and $bundle->creator->isOrganization())
                                                 <div class="form-group mt-15 ">
@@ -922,6 +943,19 @@
     <script>
         var saveSuccessLang = '{{ trans('webinars.success_store') }}';
         var titleLang = '{{ trans('admin/main.title') }}';
+    </script>
+
+<script>
+    function toggleInput() {
+        var method = document.getElementById('inputMethod').value;
+        if (method === 'url') {
+            document.getElementById('urlInput').style.display = 'block';
+            document.getElementById('fileInput').style.display = 'none';
+        } else {
+            document.getElementById('urlInput').style.display = 'none';
+            document.getElementById('fileInput').style.display = 'block';
+        }
+    }
     </script>
 
     <script src="/assets/default/vendors/sweetalert2/dist/sweetalert2.min.js"></script>

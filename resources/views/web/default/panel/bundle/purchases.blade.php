@@ -31,7 +31,13 @@
                 @if (!empty($item))
                     <section class="mb-80">
                         <div class="d-flex justify-content-between align-items-center mt-30">
+                            {{-- @dump($item->content_table) --}}
                             <h2 class="section-title after-line">{{ trans('product.courses') }} {{ $item->title }}</h2>
+                            @if($item->content_table)
+                            <a href="{{ $item->content_table }}" class="text-primary  mr-50 font-weight-bold" target="_blank" style="font-size:18px">
+                               تحميل جدول المحاضرات<!-- You can customize the button text here -->
+                            </a>
+                        @endif
                         </div>
                         @if (!empty($item->bundleWebinars) and !$item->bundleWebinars->isEmpty() and $item->start_date<= time())
                             <div class="row mt-10">
@@ -43,7 +49,7 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>اسم المقرر</th>
-                                                <th class="text-left">{{ trans('public.instructor') }}</th>
+                                                {{-- <th class="text-left">{{ trans('public.instructor') }}</th> --}}
                                                 <th>{{ trans('public.start_date') }}</th>
                                                 <th>المهام</th>
                                                 <th>عدد التسليمات</th>
@@ -62,8 +68,8 @@
                                                         <td>{{ $loop->index + 1 }}</td>
                                                         <th>{{ $bundleWebinar->webinar->title }}</th>
 
-                                                        <td class="text-left">
-                                                            {{ $bundleWebinar->webinar->teacher->full_name }}</td>
+                                                        {{-- <td class="text-left">
+                                                            {{ $bundleWebinar->webinar->teacher->full_name }}</td> --}}
                                                             
                                                         <td>{{ dateTimeFormat($bundleWebinar->webinar->start_date, 'j F Y ') }}
                                                         </td>
