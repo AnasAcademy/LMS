@@ -149,7 +149,7 @@ class ServiceController extends Controller
         if ($formFeeSale) {
             $transformType = 'form_fee';
             $contentExtention = '(تحويل حجز مقعد)';
-             $amount = 0;
+            $amount = 0;
         }
 
         if ($sale && $sale->type == 'installment_payment') {
@@ -158,7 +158,7 @@ class ServiceController extends Controller
                 ->with(['selectedInstallment', 'selectedInstallment.steps'])->latest()->first();
 
 
-            if($installmentOrder->payments->count()> 1){
+            if ($installmentOrder->payments->count() > 1) {
                 $toastData = [
                     'title' => "خطأ التحويل",
                     'msg' => "لا يمكن التحويل من هذا البرنامج يرجي التواصل مع إدارة التدريب",
@@ -202,19 +202,29 @@ class ServiceController extends Controller
              */
         }
 
+        if ($amount == 0) {
+            $type = 'none';
+        } else if ($amount > 0) {
+            $type = "pay";
+        } else {
+            $type = "refund";
+        }
+
         if ($service->price > 0) {
 
+            $bundleRequest = [
+                ...$validatedData,
+                'type' => $type,
+                'transform_Type' => $transformType,
+                'amount' => abs($amount)
+            ];
+
             Cookie::queue('service_content', json_encode($content));
+            Cookie::queue('bundle_transform', json_encode($bundleRequest));
             $order = $this->createOrder($service);
             return redirect('/payment/' . $order->id);
         } else {
-            if ($amount == 0) {
-                $type = 'none';
-            } else if ($amount > 0) {
-                $type = "pay";
-            } else {
-                $type = "refund";
-            }
+
             $content .= ' ' . $contentExtention;
 
             $serviceRequest = ServiceUser::create(['service_id' => $service->id, 'user_id' => $user->id, 'content' => $content]);
@@ -224,7 +234,8 @@ class ServiceController extends Controller
                 'service_request_id' => $serviceRequest->id,
                 'type' => $type,
                 'transform_Type' => $transformType,
-                'amount' => abs($amount)]);
+                'amount' => abs($amount)
+            ]);
             return redirect('/panel/services/requests')->with("success", "تم ارسال الطلب بنجاح");
         }
     }
@@ -315,9 +326,9 @@ class ServiceController extends Controller
     {
 
         $bundles = Bundle::where('type', 'bridging')
-        ->whereHas('bridgingBundles')
-        ->where('status', 'active')
-        ->with(['bridgings', 'bridgingBundles', 'bridgings.fromBundle', 'bridgings.toBundle'])->get();
+            ->whereHas('bridgingBundles')
+            ->where('status', 'active')
+            ->with(['bridgings', 'bridgingBundles', 'bridgings.fromBundle', 'bridgings.toBundle'])->get();
         return view('web.default.panel.services.includes.BundleBridging', compact('bundles', 'service'));
     }
     function bundleBridging(Request $request, Service $service)
@@ -326,10 +337,6 @@ class ServiceController extends Controller
         $user = auth()->user();
         $validatedData = $request->validate([
             'from_bundle_id' => 'required|exists:bundles,id',
-            // 'to_bundle_id' => [
-            //     'required',
-            //     'exists:bundles,id'
-            // ],
             'bridging_id' => "required|exists:bundles,id"
         ]);
 
@@ -342,6 +349,7 @@ class ServiceController extends Controller
 
         if ($service->price > 0) {
             Cookie::queue('service_content', json_encode($content));
+            Cookie::queue('bundle_bridging', json_encode($validatedData));
             $order = $this->createOrder($service);
             return redirect('/payment/' . $order->id);
         }
@@ -432,10 +440,11 @@ class ServiceController extends Controller
         $fromBundle = Bundle::findOrFail($validatedData['from_bundle_id']);
 
         $content = " طلب تأجيل البرنامج " . $fromBundle->title . " من  " . $fromBundle->batch->title . " للدفعة اللاحقة " .
-        " وسبب التأجيل هو : " . $request->reason;
+            " وسبب التأجيل هو : " . $request->reason;
 
         if ($service->price > 0) {
             Cookie::queue('service_content', json_encode($content));
+            Cookie::queue('bundle_delay', json_encode($validatedData));
             $order = $this->createOrder($service);
             return redirect('/payment/' . $order->id);
         }
