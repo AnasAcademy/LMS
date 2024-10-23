@@ -314,7 +314,10 @@ class ServiceController extends Controller
     function bundleBridgingRequest(Service $service)
     {
 
-        $bundles = Bundle::where('type', 'bridging')->whereHas('bridging')->where('status', 'active')->with(['bridging', 'bridging.fromBundle', 'bridging.toBundle'])->get();
+        $bundles = Bundle::where('type', 'bridging')
+        ->whereHas('bridgingBundles')
+        ->where('status', 'active')
+        ->with(['bridgings', 'bridgingBundles', 'bridgings.fromBundle', 'bridgings.toBundle'])->get();
         return view('web.default.panel.services.includes.BundleBridging', compact('bundles', 'service'));
     }
     function bundleBridging(Request $request, Service $service)
