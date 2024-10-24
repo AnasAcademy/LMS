@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\BatchStudentsExport;
+use App\Exports\BatchStudentsExportV2;
 use App\Http\Controllers\Controller;
 use App\Imports\BatchStudentImport;
 use App\Models\Category;
 use App\Models\Group;
 use App\Models\Role;
+use App\Models\Sale;
 use Illuminate\Http\Request;
 
 use App\Models\StudyClass;
@@ -157,9 +159,12 @@ class StudyClassController extends Controller
     public function exportExcelBatchStudents(StudyClass $class, Request $request)
     {
         $this->authorize('admin_users_export_excel');
-        $users = $this->students($class, $request, true);
+        // $users = $this->students($class, $request, true);
 
-        $usersExport = new BatchStudentsExport($users, $class->id);
+        // $usersExport = new BatchStudentsExport($users, $class->id);
+
+        $sales=Sale::whereNull('refund_at')->whereNotNull('bundle_id')->where('class_id',$class->id)->orderBy('buyer_id','desc')->groupBy(['buyer_id','bundle_id'])->get();
+        $usersExport = new BatchStudentsExportV2($sales);
 
         return Excel::download($usersExport, 'طلاب '.$class->title.'.xlsx');
     }

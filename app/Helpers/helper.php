@@ -1680,6 +1680,19 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
             // }
 
         }
+       
+        $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
+
+        if (!empty($options['[r.btn]'])) {
+            
+            $message .= "<br><br>" . $options['[r.btn]'];
+           // dd($message);
+        }
+
+        // If the [c.message] is available in the options, append it to the message
+        if (!empty($options['[c.message]'])) {
+            $message .= "<br><br><strong>Message:</strong><br>" . $options['[c.message]'];
+        }
 
 
         if (!empty($options['[p.body]'])) {
@@ -1688,7 +1701,7 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
         }
 
 
-        $message = str_replace(array_keys($options), array_values($options), $notificationTemplate->template);
+       
         $check = \App\Models\Notification::where('user_id', $user_id)
         ->where('group_id', $group_id)
         ->where('title', $title)
@@ -1717,13 +1730,13 @@ function sendNotification($template, $options, $user_id = null, $group_id = null
                 if (!empty($user) and !empty($user->email)) {
                     $name = $user->student ? $user->student->ar_name : $user->fullname;
                     try {
-
+                    
                         Mail::to($user->email)->send(new \App\Mail\SendNotifications(['title' => $title, 'message' => $message, 'name' => $name]));
 
                     } catch (Exception $exception) {
                         // dd($exception)
                     }
-                }
+               }
             }
         }
 

@@ -273,6 +273,7 @@ class BundleController extends Controller
             'category_id' => 'required',
             'batch_id' => 'required',
             'price' => 'required',
+           
         ];
 
         if($type=='bridging'){
@@ -318,6 +319,20 @@ class BundleController extends Controller
             $data['end_date'] = $endDate->getTimestamp();
         }
 
+
+        if ($request->hasFile('content_table')) {
+            $file = $request->file('content_table');
+            $originalName = time() . '_' . $file->getClientOriginalName();
+            $destinationPath = public_path('uploads'); 
+            $file->move($destinationPath, $originalName);
+            $data['content_table'] = config('app.url') . 'uploads/' . $originalName; // Adjust the URL as needed
+        
+        } else {
+           
+            $data['content_table'] = $request->input('content_table');
+        }
+        
+      //  dd($request->input('content_table'));
 
         $bundle = Bundle::create([
             'slug' => $data['slug'],
@@ -500,6 +515,17 @@ class BundleController extends Controller
 
         if (empty($data['slug'])) {
             $data['slug'] = Bundle::makeSlug($data['title']) . '_' . Str::random(5);
+        }
+
+
+        if ($request->hasFile('content_table')) {
+            $file = $request->file('content_table');
+            $originalName = time() . '_' . $file->getClientOriginalName();
+            $destinationPath = public_path('uploads'); // Ensure this path exists
+            $file->move($destinationPath, $originalName);
+            $data['content_table'] = config('app.url') . 'uploads/' . $originalName; // Construct URL
+        } else {
+            $data['content_table'] = $bundle->content_table; // Keep the existing value if no new upload
         }
 
         // $data['status'] = $publish ? Bundle::$active : ($reject ? Bundle::$inactive : ($isDraft ? Bundle::$isDraft : Bundle::$pending));

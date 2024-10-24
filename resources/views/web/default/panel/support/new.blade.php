@@ -29,7 +29,8 @@
                     <select name="type" id="supportType" class="form-control  @error('type')  is-invalid @enderror" data-allow-clear="false" data-search="false">
                         <option selected disabled></option>
                         <option value="course_support" @if($errors->has('webinar_id')) selected @endif>{{ trans('panel.course_support') }}</option>
-                        <option value="platform_support" @if($errors->has('department_id')) selected @endif>{{ trans('panel.platform_support') }}</option>
+                        <option value="bundle_support" @if($errors->has('bundle_id')) selected @endif>دعم البرنامج</option>
+                        {{-- <option value="platform_support" @if($errors->has('department_id')) selected @endif>{{ trans('panel.platform_support') }}</option> --}}
                     </select>
 
                     @error('type')
@@ -39,10 +40,46 @@
                     @enderror
                 </div>
 
-                <div id="departmentInput" class="form-group @if(!$errors->has('department_id')) d-none @endif">
+            
+
+                <div id="courseInput" class="form-group @if(!$errors->has('webinar_id')) d-none @endif">
+                    <label class="input-label d-block">{{ trans('product.course') }}</label>
+                    <select name="webinar_id" class="form-control select2 @error('webinar_id')  is-invalid @enderror">
+                        <option value="" selected disabled>{{ trans('panel.select_course') }}</option>
+                      
+                        @foreach($webinars as $webinar)
+                       
+                            <option value="{{ $webinar->id }}">{{ $webinar->title }} - {{ $webinar->creator->full_name }}</option>
+                        @endforeach
+                    </select>
+                    @error('webinar_id')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+
+                <div id="bundleInput" class="form-group @if(!$errors->has('bundle_id')) d-none @endif">
+                    <label class="input-label d-block">برنامج</label>
+                    <select name="bundle_id" class="form-control select2 @error('bundle_id')  is-invalid @enderror">
+                        <option value="" selected disabled>اختر البرنامج</option>
+                      
+                        @foreach($bundles as $bundle)
+                       
+                            <option value="{{ $bundle->id }}">{{ $bundle->title }} - {{ $bundle->creator->full_name }}</option>
+                        @endforeach
+                    </select>
+                    @error('bundle_id')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </div>
+
+                <div class="form-group ">
                     <label class="input-label d-block">{{ trans('panel.department') }}</label>
 
-                    <select name="department_id" id="departments" class="form-control select2 @error('department_id')  is-invalid @enderror" data-allow-clear="false" data-search="false">
+                    <select name="department_id"  class="form-control select2 @error('department_id')  is-invalid @enderror" data-allow-clear="false" data-search="false">
                         <option selected disabled></option>
                         @foreach($departments as $department)
                             <option value="{{ $department->id }}">{{ $department->title }}</option>
@@ -50,22 +87,6 @@
                     </select>
 
                     @error('department_id')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                    @enderror
-                </div>
-
-                <div id="courseInput" class="form-group @if(!$errors->has('webinar_id')) d-none @endif">
-                    <label class="input-label d-block">{{ trans('product.course') }}</label>
-                    <select name="webinar_id" class="form-control select2 @error('webinar_id')  is-invalid @enderror">
-                        <option value="" selected disabled>{{ trans('panel.select_course') }}</option>
-
-                        @foreach($webinars as $webinar)
-                            <option value="{{ $webinar->id }}">{{ $webinar->title }} - {{ $webinar->creator->full_name }}</option>
-                        @endforeach
-                    </select>
-                    @error('webinar_id')
                     <div class="invalid-feedback">
                         {{ $message }}
                     </div>
