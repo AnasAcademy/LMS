@@ -319,7 +319,7 @@ class ApplyController extends Controller
                 ],
                 'ar_name' => 'required|string|regex:/^[\p{Arabic} ]+$/u|max:255|min:5',
                 'en_name' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255|min:5',
-                'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
+                'identifier_num' => 'required|regex:/^[A-Za-z0-9]{6,10}$/',
                 'country' => 'required|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
                 'area' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
                 'city' => 'nullable|string|max:255|min:3|regex:/^(?=.*[\p{Arabic}\p{L}])[0-9\p{Arabic}\p{L}\s]+$/u',
