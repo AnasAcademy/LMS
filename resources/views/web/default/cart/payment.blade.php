@@ -16,15 +16,17 @@
 
         if ($count > 0) {
             $subTitle .= $total . ' ريال سعودي ' . trans('cart.for_items', ['count' => $count]);
-        } elseif (!empty($type) && $type == 1) {
+        }
+        elseif (!empty($order->orderItems[0]->service)) {
+            $subTitle .= 'الرسوم لطلب خدمة  ' . $order->orderItems[0]->service->title;
+        }
+        elseif (!empty($type) && $type == 1) {
             $subTitle .= 'رسوم حجز مقعد  ';
             // $subTitle .= 'الرسوم الدراسية للبرنامج : '.($total).' ريال سعودي';
         } elseif (!empty($order->orderItems[0]->bundle)) {
             $subTitle .= 'الرسوم الدراسية للبرنامج ' . $order->orderItems[0]->bundle->title;
         } elseif (!empty($order->orderItems[0]->webinar)) {
             $subTitle .= 'الرسوم الدراسية للدورة ' . $order->orderItems[0]->webinar->title;
-        } elseif (!empty($order->orderItems[0]->service)) {
-            $subTitle .= 'الرسوم لطلب خدمة  ' . $order->orderItems[0]->service->title;
         }
         // close subtitle
         $subTitle .=
