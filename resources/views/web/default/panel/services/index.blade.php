@@ -55,7 +55,7 @@
         @include(getTemplate() . '.includes.no-result', [
             'file_name' => 'webinar.png',
             'title' => 'غير متوفر اي خدمات حاليا',
-            'hint' => 'تحدث مع ادارة التدريب',
+            'hint' => '',
         ])
     @endif
 @endsection
