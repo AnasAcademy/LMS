@@ -6,7 +6,7 @@
 @isset($service)
     <div
         class="module-box dashboard-stats rounded-sm panel-shadow py-30 d-flex align-items-center justify-content-center mt-0 h-100 w-100">
-        <div class="d-flex flex-column service-card" style="align-items: center;">
+        <div class="d-flex flex-column service-card px-20 text-center" style="align-items: center;">
             <img src="{{ asset('assets/default/img/img.png') }}" class="img-cover" alt="anas academy">
 
             @isset($service->title)
