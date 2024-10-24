@@ -55,16 +55,16 @@ class BatchStudentsExportV2 implements FromCollection, WithHeadings, WithMapping
 
         return [
 
-           $sale->buyer->user_code,
-           $sale->buyer->student->ar_name,
-           $sale->buyer->student->en_name,
-           $sale->bundle->title ,
-           dateTimeFormat($sale->created_at, 'j M Y - H:i'),
-           $sale->buyer->status,
-           $sale->buyer->mobile,
-           $sale->buyer->email,
-           $sale->buyer->student->about_us
-        ] ;
+            $sale->buyer->user_code,
+            $sale->buyer->student->ar_name ??$sale->buyer->full_name,
+            $sale->buyer->student->en_name ??$sale->buyer->full_name,
+            $sale->bundle->title ,
+            dateTimeFormat($sale->created_at, 'j M Y - H:i'),
+            $sale->buyer->status,
+            $sale->buyer->mobile,
+            $sale->buyer->email,
+            $sale->buyer->student->about_us ??''
+         ] ;
 
      }
 }
