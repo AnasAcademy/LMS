@@ -79,7 +79,7 @@ class StudentImport implements ToModel
                 'email' => 'required|email|max:255|regex:/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/',
                 'mobile' => 'required',
                 'gender' => 'required|in:male,female',
-                'identifier_num' => 'required|numeric|regex:/^\d{6,10}$/',
+                'identifier_num' => 'required|regex:/^[A-Za-z0-9]{6,10}$/',
                 // 'deaf' => 'required|in:نعم,لا',
                 // 'birthdate' => 'required|date_format:Y-m-d'
             ];

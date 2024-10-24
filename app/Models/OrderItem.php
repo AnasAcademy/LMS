@@ -35,7 +35,7 @@ class OrderItem extends Model
     }
     public function service()
     {
-        return $this->belongsTo('App\Models\service', 'service_id', 'id');
+        return $this->belongsTo('App\Models\Service', 'service_id', 'id');
     }
 
     public function subscribe()

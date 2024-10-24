@@ -26,7 +26,7 @@
     <section class="section">
         <div class="section-header">
             <h1>{{ !empty($bundle) ? trans('/admin/main.edit') : trans('admin/main.create') }}
-                {{ ($type== 'bridging' || (!empty($bundle) && $bundle->type== 'bridging'))? trans('update.bridge') :  trans('update.bundle') }}
+                {{ $type == 'bridging' || (!empty($bundle) && $bundle->type == 'bridging') ? trans('update.bridge') : trans('update.bundle') }}
             </h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a
@@ -66,9 +66,8 @@
                                                     <label class="input-label">نوع البرنامج</label>
                                                     <select name="type" class="form-control">
                                                         <option value="" selected disabled>اختر نوع البرنامج</option>
-                                                        <option value="{{ $bundle->type }}" selected
-                                                           >
-                                                            {{ ($bundle->type == 'program') ? 'عام' : trans('update.bridging')}}
+                                                        <option value="{{ $bundle->type }}" selected>
+                                                            {{ $bundle->type == 'program' ? 'عام' : trans('update.bridging') }}
                                                         </option>
 
                                                     </select>
@@ -79,6 +78,7 @@
                                                     @enderror
                                                 </div>
                                             @endif
+
                                             @if (!empty(getGeneralSettings('content_translate')))
                                                 <div class="form-group">
                                                     <label class="input-label">{{ trans('auth.language') }}</label>
@@ -314,7 +314,8 @@
                                                             <i class="fa fa-upload"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text" name="thumbnail" id="thumbnail" value="bridging"
+                                                    <input type="text" name="thumbnail" id="thumbnail"
+                                                        value="bridging"
                                                         class="form-control @error('thumbnail')  is-invalid @enderror" />
                                                     <div class="input-group-append">
                                                         <button type="button" class="input-group-text admin-file-view"
@@ -484,13 +485,13 @@
                                                             <optgroup label="{{ $category->title }}">
                                                                 @foreach ($category->subCategories as $subCategory)
                                                                     <option value="{{ $subCategory->id }}"
-                                                                        {{ (old('category_id' ,$bundle->category_id ?? null) == $subCategory->id) ? 'selected' : '' }}>
+                                                                        {{ old('category_id', $bundle->category_id ?? null) == $subCategory->id ? 'selected' : '' }}>
                                                                         {{ $subCategory->title }}</option>
                                                                 @endforeach
                                                             </optgroup>
                                                         @else
                                                             <option value="{{ $category->id }}"
-                                                                {{ (old('category_id', $bundle->category_id ?? null) == $category->id) ? 'selected' : '' }}>
+                                                                {{ old('category_id', $bundle->category_id ?? null) == $category->id ? 'selected' : '' }}>
                                                                 {{ $category->title }}</option>
                                                         @endif
                                                     @endforeach
@@ -503,14 +504,14 @@
                                                 @enderror
                                             </div>
 
-                                            @if (($type=='bridging' or (!empty($bundle) and $bundle->type=='bridging')))
+                                            @if ($type == 'bridging' or !empty($bundle) and $bundle->type == 'bridging')
                                                 <div class="form-group mt-15">
                                                     <label class="input-label">{{ 'البرامج المسوح لها بالتجسير' }}</label>
 
                                                     <select id=""
-                                                        class="custom-select @error('from_bundle_id')  is-invalid @enderror"
-                                                        name="from_bundle_id" required>
-                                                        <option selected disabled>
+                                                        class="form-control select2 @error('from_bundle_id')  is-invalid @enderror"
+                                                        name="from_bundle_id[]" id='from_bundle_id' required multiple>
+                                                        <option disabled>
                                                             {{ trans('public.choose_category') }}</option>
                                                         {{-- Loop through top-level categories --}}
                                                         @foreach ($categories as $category)
@@ -519,8 +520,7 @@
                                                                 {{-- Display bundles directly under the current category --}}
                                                                 @foreach ($category->programs as $bundleItem)
                                                                     <option value="{{ $bundleItem->id }}"
-                                                                        @if (old('from_bundle_id', $bundle->bridging->from_bundle_id ?? null) == $bundleItem->id) selected @endif
-                                                                    >
+                                                                        @if (old('from_bundle_id[]') == $bundleItem->id || $bundle->bridgingBundles->contains($bundleItem->id)) selected @endif>
                                                                         {{ $bundleItem->title }}</option>
                                                                 @endforeach
 
@@ -528,12 +528,10 @@
                                                                 @foreach ($category->subCategories as $subCategory)
                                                                     @foreach ($subCategory->programs as $bundleItem)
                                                                         <option value="{{ $bundleItem->id }}"
-                                                                            @if (old('from_bundle_id', $bundle->bridging->from_bundle_id ?? null) == $bundleItem->id) selected @endif
-                                                                        >
+                                                                            @if (old('from_bundle_id') == $bundleItem->id || $bundle->bridgingBundles->contains($bundleItem->id)) selected @endif>
                                                                             {{ $bundleItem->title }}</option>
                                                                     @endforeach
                                                                 @endforeach
-
                                                             </optgroup>
                                                         @endforeach
                                                     </select>
@@ -544,7 +542,6 @@
                                                         </div>
                                                     @enderror
                                                 </div>
-
                                             @endif
 
 
@@ -560,7 +557,7 @@
                                                         {{ trans('public.choose_batch') }}</option>
                                                     @foreach ($study_classes as $studyClass)
                                                         <option value="{{ $studyClass->id }}"
-                                                            {{ (old('batch_id', $bundle->batch_id?? null)  == $studyClass->id) ? 'selected' : '' }}>
+                                                            {{ old('batch_id', $bundle->batch_id ?? null) == $studyClass->id ? 'selected' : '' }}>
                                                             {{ $studyClass->title }}</option>
                                                     @endforeach
                                                 </select>
@@ -581,8 +578,7 @@
                                                 <select id="certificates"
                                                     class="custom-select @error('certificate_template_id')  is-invalid @enderror"
                                                     name="certificate_template_id">
-                                                    <option value=""
-                                                       selected >اختر الشهادة
+                                                    <option value="" selected>اختر الشهادة
                                                     </option>
 
                                                     @foreach ($certificates as $certificate)
@@ -630,8 +626,8 @@
                                                         style="accent-color:var(--primary)"
                                                         @if (isset($bundle->hasGroup) && $bundle->hasGroup == 1) checked @endif value="1">
 
-                                                    <label for="hasGroup"
-                                                        class="form-check-label mr-2 font-weight-bold"> يتم تقسيمة لجروبات </label>
+                                                    <label for="hasGroup" class="form-check-label mr-2 font-weight-bold">
+                                                        يتم تقسيمة لجروبات </label>
                                                 </div>
 
                                                 @error('hasGroup')
@@ -926,7 +922,6 @@
                                     </div>
                                 </div>
                             </form>
-
 
                             @include('admin.bundles.modals.bundle-webinar')
                             @include('admin.bundles.modals.ticket')

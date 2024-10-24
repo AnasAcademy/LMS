@@ -31,244 +31,277 @@ class BundleTransformController extends Controller
     }
     function approve(Request $request, BundleTransform $transform)
     {
-        $transform->status = 'approved';
-        $transform->save();
 
-        if ($transform->amount <= 0) {
-            return $this->finishTransform($request, $transform);
-        }
+        try {
+            $transform->status = 'approved';
+            $transform->save();
 
-        if ($transform->type == 'refund') {
-            return $this->refund($request, $transform);
-        }
+            if ($transform->amount <= 0) {
+                return $this->finishTransform($request, $transform);
+            }
 
-        $data['user_id'] = $transform->user_id;
-        $data['name'] = $transform->user->full_name;
-        $data['receiver'] = $transform->user->email;
-        $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
-        $data['fromName'] = env('MAIL_FROM_NAME');
-        $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
-        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . '
- متبقي فقط دفع فرق السعر لإتمام التحويل ';
+            if ($transform->type == 'refund') {
+                return $this->refund($request, $transform);
+            }
 
-        $this->sendNotification($data);
-
-        $financialUsers = User::where(['status' => 'active'])
-            ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
-        foreach ($financialUsers as $financialUser) {
-            $data['user_id'] = $financialUser->id;
-            $data['name'] = $financialUser->full_name;
-            $data['receiver'] = $financialUser->email;
+            $data['user_id'] = $transform->user_id;
+            $data['name'] = $transform->user->full_name;
+            $data['receiver'] = $transform->user->email;
             $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
-            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " المقدم من الطالب " . $transform->user->full_name . " من قبل "  . auth()->user()->full_name;
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . '
+ متبقي فقط دفع فرق السعر لإتمام التحويل ';
+
             $this->sendNotification($data);
+
+            $financialUsers = User::where(['status' => 'active'])
+                ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+            foreach ($financialUsers as $financialUser) {
+                $data['user_id'] = $financialUser->id;
+                $data['name'] = $financialUser->full_name;
+                $data['receiver'] = $financialUser->email;
+                $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+                $data['fromName'] = env('MAIL_FROM_NAME');
+                $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
+                $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " المقدم من الطالب " . $transform->user->full_name . " من قبل "  . auth()->user()->full_name;
+                $this->sendNotification($data);
+            }
+
+            $toastData = [
+                'title' => " طلب تحويل",
+                'msg' => "تم الموافقة علي طلب التحويل بنجاح",
+                'status' => 'success'
+            ];
+
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => " طلب تحويل",
+                'msg' => "حدث خطأ في ارسال ايميل للطالب",
+                'status' => 'error'
+            ];
+
+
+            return back()->with(['toast' => $toastData]);
         }
-
-        $toastData = [
-            'title' => " طلب تحويل",
-            'msg' => "تم الموافقة علي طلب التحويل بنجاح",
-            'status' => 'success'
-        ];
-
-
-        return back()->with(['toast' => $toastData]);
     }
 
     function refund(Request $request, bundleTransform $bundleTransform)
     {
+        try {
+            $user = auth()->user();
+            // $order = $this->createOrder($bundleTransform);
+            $price = ($bundleTransform->amount);
 
-        $user = auth()->user();
-        // $order = $this->createOrder($bundleTransform);
-        $price = ($bundleTransform->amount);
+            $order = Order::create([
+                'user_id' => $bundleTransform->user_id,
+                'status' => Order::$pending,
+                'amount' => $price,
+                'tax' => 0,
+                'total_discount' => 0,
+                'total_amount' =>  $price,
+                'product_delivery_fee' => null,
+                'created_at' => time(),
+            ]);
 
-        $order = Order::create([
-            'user_id' => $bundleTransform->user_id,
-            'status' => Order::$pending,
-            'amount' => $price,
-            'tax' => 0,
-            'total_discount' => 0,
-            'total_amount' =>  $price,
-            'product_delivery_fee' => null,
-            'created_at' => time(),
-        ]);
+            $orderItem = OrderItem::create([
+                'user_id' => $bundleTransform->user_id,
+                'order_id' => $order->id,
+                'bundle_id' => $bundleTransform->to_bundle_id,
+                'transform_bundle_id' => $bundleTransform->from_bundle_id,
+                'amount' => $price,
+                'total_amount' => $price,
+                'tax_price' => 0,
+                'commission' => 0,
+                'commission_price' => 0,
+                'product_delivery_fee' => 0,
+                'discount' => 0,
+                'created_at' => time(),
+            ]);
 
-        $orderItem = OrderItem::create([
-            'user_id' => $bundleTransform->user_id,
-            'order_id' => $order->id,
-            'bundle_id' => $bundleTransform->to_bundle_id,
-            'transform_bundle_id' => $bundleTransform->from_bundle_id,
-            'amount' => $price,
-            'total_amount' => $price,
-            'tax_price' => 0,
-            'commission' => 0,
-            'commission_price' => 0,
-            'product_delivery_fee' => 0,
-            'discount' => 0,
-            'created_at' => time(),
-        ]);
+            Sale::createSales($orderItem, $order->payment_method, false, true);
+            $bundleTransform->status = 'refunded';
+            $bundleTransform->save();
 
-        Sale::createSales($orderItem, $order->payment_method, false, true);
-        $bundleTransform->status = 'refunded';
-        $bundleTransform->save();
-
-        $data['user_id'] = $bundleTransform->user_id;
-        $data['name'] = $bundleTransform->user->full_name;
-        $data['receiver'] = $bundleTransform->user->email;
-        $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
-        $data['fromName'] = env('MAIL_FROM_NAME');
-        $data['subject'] = 'الرد علي طلب خدمة ' . $bundleTransform->serviceRequest->title;
-        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $bundleTransform->fromBundle->title .  ' إلي برنامج ' . $bundleTransform->toBundle->title . " واستيرداد مبلغ قدره $bundleTransform->amount ر.س وتم التحويل بنجاح";
-
-        $this->sendNotification($data);
-
-        $financialUsers = User::where(['status' => 'active'])
-            ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
-        foreach ($financialUsers as $financialUser) {
-            $data['user_id'] = $financialUser->id;
-            $data['name'] = $financialUser->full_name;
-            $data['receiver'] = $financialUser->email;
+            $data['user_id'] = $bundleTransform->user_id;
+            $data['name'] = $bundleTransform->user->full_name;
+            $data['receiver'] = $bundleTransform->user->email;
             $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $bundleTransform->serviceRequest->title;
-            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $bundleTransform->fromBundle->title .  ' إلي برنامج ' . $bundleTransform->toBundle->title . " المقدم من الطالب " . $bundleTransform->user->full_name . " من قبل "  . auth()->user()->full_name .  " واستيرداد مبلغ قدره $bundleTransform->amount ر.س وتم التحويل بنجاح";
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' . $bundleTransform->fromBundle->title .  ' إلي برنامج ' . $bundleTransform->toBundle->title . " واستيرداد مبلغ قدره $bundleTransform->amount ر.س وتم التحويل بنجاح";
 
             $this->sendNotification($data);
+
+            $financialUsers = User::where(['status' => 'active'])
+                ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+            foreach ($financialUsers as $financialUser) {
+                $data['user_id'] = $financialUser->id;
+                $data['name'] = $financialUser->full_name;
+                $data['receiver'] = $financialUser->email;
+                $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+                $data['fromName'] = env('MAIL_FROM_NAME');
+                $data['subject'] = 'الرد علي طلب خدمة ' . $bundleTransform->serviceRequest->title;
+                $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $bundleTransform->fromBundle->title .  ' إلي برنامج ' . $bundleTransform->toBundle->title . " المقدم من الطالب " . $bundleTransform->user->full_name . " من قبل "  . auth()->user()->full_name .  " واستيرداد مبلغ قدره $bundleTransform->amount ر.س وتم التحويل بنجاح";
+
+                $this->sendNotification($data);
+            }
+
+            $toastData = [
+                'title' => "اتمام التحويل",
+                'msg' => "تم اتمام التحويل واستيرداد المبلغ بنجاح",
+                'status' => 'success'
+            ];
+
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => " طلب تحويل",
+                'msg' => "حدث خطأ في ارسال ايميل للطالب",
+                'status' => 'error'
+            ];
+
+
+            return back()->with(['toast' => $toastData]);
         }
-
-        $toastData = [
-            'title' => "اتمام التحويل",
-            'msg' => "تم اتمام التحويل واستيرداد المبلغ بنجاح",
-            'status' => 'success'
-        ];
-
-
-        return back()->with(['toast' => $toastData]);
     }
 
     function finishTransform(Request $request, BundleTransform $transform)
     {
 
-        $oldSale = Sale::where(['bundle_id' => $transform->from_bundle_id, 'buyer_id' => $transform->user_id])->whereIn('type', ['bundle', 'installment_payment'])->first();
+        try {
+            $oldSale = Sale::where(['bundle_id' => $transform->from_bundle_id, 'buyer_id' => $transform->user_id])->whereIn('type', ['bundle', 'installment_payment'])->first();
 
-        if ($oldSale && $oldSale->type == 'installment_payment') {
+            if ($oldSale && $oldSale->type == 'installment_payment') {
 
-            $installmentOrder = InstallmentOrder::query()
-                ->where(['user_id' => $transform->user_id, 'bundle_id' => $transform->from_bundle_id, 'status' => 'open'])
-                ->with(['selectedInstallment', 'selectedInstallment.steps'])->latest()->first();
+                $installmentOrder = InstallmentOrder::query()
+                    ->where(['user_id' => $transform->user_id, 'bundle_id' => $transform->from_bundle_id, 'status' => 'open'])
+                    ->with(['selectedInstallment', 'selectedInstallment.steps'])->latest()->first();
 
-            $installmentPlans = new InstallmentPlans($transform->user);
+                $installmentPlans = new InstallmentPlans($transform->user);
 
-            $newInstallment = $installmentPlans->getPlans(
-                'bundles',
-                $transform->to_bundle_id,
-                $transform->toBundle->type,
-                $transform->toBundle->category_id,
-                $transform->toBundle->teacher_id
-            )->last();
+                $newInstallment = $installmentPlans->getPlans(
+                    'bundles',
+                    $transform->to_bundle_id,
+                    $transform->toBundle->type,
+                    $transform->toBundle->category_id,
+                    $transform->toBundle->teacher_id
+                )->last();
 
-            // $oldInstallment = $installmentOrder->selectedInstallment;
-            // dd($installmentOrder );
-            $installmentOrder->update([
-                'installment_id' => $newInstallment->id,
-                'bundle_id' => $transform->to_bundle_id,
-                'item_price' => $transform->toBundle->price
-            ]);
-            $installmentOrder->selectedInstallment->update([
-                'installment_id' => $newInstallment->id,
-                'start_date' => $newInstallment->start_date,
-                'end_date' => $newInstallment->end_date,
-                'upfront' => $newInstallment->upfront,
-                'upfront_type' => $newInstallment->upfront_type,
-            ]);
+                // $oldInstallment = $installmentOrder->selectedInstallment;
+                // dd($installmentOrder );
+                $installmentOrder->update([
+                    'installment_id' => $newInstallment->id,
+                    'bundle_id' => $transform->to_bundle_id,
+                    'item_price' => $transform->toBundle->price
+                ]);
+                $installmentOrder->selectedInstallment->update([
+                    'installment_id' => $newInstallment->id,
+                    'start_date' => $newInstallment->start_date,
+                    'end_date' => $newInstallment->end_date,
+                    'upfront' => $newInstallment->upfront,
+                    'upfront_type' => $newInstallment->upfront_type,
+                ]);
 
-            $oldSteps = $installmentOrder->selectedInstallment->steps;
-            $newSteps = $newInstallment->steps;
+                $oldSteps = $installmentOrder->selectedInstallment->steps;
+                $newSteps = $newInstallment->steps;
 
-            if (count($oldSteps) <= count($newSteps)) {
-                foreach ($oldSteps as $index => $oldStep) {
-                    $newStep =  $newSteps[$index];
-                    $oldStep->update([
-                        'installment_step_id' => $newStep->id,
-                        'amount' => $newStep->amount,
-                        'deadline' => $newStep->deadline,
+                if (count($oldSteps) <= count($newSteps)) {
+                    foreach ($oldSteps as $index => $oldStep) {
+                        $newStep =  $newSteps[$index];
+                        $oldStep->update([
+                            'installment_step_id' => $newStep->id,
+                            'amount' => $newStep->amount,
+                            'deadline' => $newStep->deadline,
 
-                    ]);
-                }
+                        ]);
+                    }
 
-                // Add remaining new steps to the database
-                for ($i = count($oldSteps); $i < count($newSteps); $i++) {
-                    $newStep = $newSteps[$i];
-                    SelectedInstallmentStep::create([
-                        'selected_installment_id' =>   $installmentOrder->selectedInstallment->id,
-                        'installment_step_id' => $newStep->id,
-                        'amount' => $newStep->amount,
-                        'deadline' => $newStep->deadline,
-                        'amount_type' =>  $newStep->amount_type,
-                    ]);
-                }
-            } else {
-                foreach ($newSteps as $index => $newStep) {
-                    $oldStep =  $oldSteps[$index];
-                    $oldStep->update([
-                        'installment_step_id' => $newStep->id,
-                        'amount' => $newStep->amount,
-                        'deadline' => $newStep->deadline,
+                    // Add remaining new steps to the database
+                    for ($i = count($oldSteps); $i < count($newSteps); $i++) {
+                        $newStep = $newSteps[$i];
+                        SelectedInstallmentStep::create([
+                            'selected_installment_id' =>   $installmentOrder->selectedInstallment->id,
+                            'installment_step_id' => $newStep->id,
+                            'amount' => $newStep->amount,
+                            'deadline' => $newStep->deadline,
+                            'amount_type' =>  $newStep->amount_type,
+                        ]);
+                    }
+                } else {
+                    foreach ($newSteps as $index => $newStep) {
+                        $oldStep =  $oldSteps[$index];
+                        $oldStep->update([
+                            'installment_step_id' => $newStep->id,
+                            'amount' => $newStep->amount,
+                            'deadline' => $newStep->deadline,
 
-                    ]);
-                }
+                        ]);
+                    }
 
-                // Add remaining new steps to the database
-                for ($i = count($newSteps); $i < count($oldSteps); $i++) {
-                    $oldStep = $oldSteps[$i];
-                    $oldStep->delete();
+                    // Add remaining new steps to the database
+                    for ($i = count($newSteps); $i < count($oldSteps); $i++) {
+                        $oldStep = $oldSteps[$i];
+                        $oldStep->delete();
+                    }
                 }
             }
-        }
 
-        Sale::where(['buyer_id' => $transform->user_id, "bundle_id" => $transform->from_bundle_id])->update(['transform_bundle_id' => $transform->from_bundle_id, 'bundle_id' => $transform->to_bundle_id]);
-
-
-        $transform->update(['status' => 'paid']);
+            Sale::where(['buyer_id' => $transform->user_id, "bundle_id" => $transform->from_bundle_id])->update(['transform_bundle_id' => $transform->from_bundle_id, 'bundle_id' => $transform->to_bundle_id]);
 
 
-        BundleStudent::whereHas('student', function ($query) use ($transform) {
-            $query->where('user_id', $transform->user_id);
-        })->where(['bundle_id' => $transform->from_bundle_id])->update(['bundle_id' => $transform->to_bundle_id]);
+            $transform->update(['status' => 'paid']);
 
-        $data['user_id'] = $transform->user_id;
-        $data['name'] = $transform->user->full_name;
-        $data['receiver'] = $transform->user->email;
-        $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
-        $data['fromName'] = env('MAIL_FROM_NAME');
-        $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
-        $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' .
-            $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " وتم التحويل بنجاح ";
 
-        $this->sendNotification($data);
+            BundleStudent::whereHas('student', function ($query) use ($transform) {
+                $query->where('user_id', $transform->user_id);
+            })->where(['bundle_id' => $transform->from_bundle_id])->update(['bundle_id' => $transform->to_bundle_id]);
 
-        $financialUsers = User::where(['status' => 'active'])
-            ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
-        foreach ($financialUsers as $financialUser) {
-            $data['user_id'] = $financialUser->id;
-            $data['name'] = $financialUser->full_name;
-            $data['receiver'] = $financialUser->email;
+            $data['user_id'] = $transform->user_id;
+            $data['name'] = $transform->user->full_name;
+            $data['receiver'] = $transform->user->email;
             $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
             $data['fromName'] = env('MAIL_FROM_NAME');
             $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
-            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " المقدم من الطالب " . $transform->user->full_name . " من قبل "  . auth()->user()->full_name . " وتم التحويل بنجاح ";
+            $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلبك للتحويل من برنامج  ' .
+                $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " وتم التحويل بنجاح ";
+
             $this->sendNotification($data);
+
+            $financialUsers = User::where(['status' => 'active'])
+                ->whereIn('role_name', ['Financial Management User', 'admin'])->get();
+            foreach ($financialUsers as $financialUser) {
+                $data['user_id'] = $financialUser->id;
+                $data['name'] = $financialUser->full_name;
+                $data['receiver'] = $financialUser->email;
+                $data['fromEmail'] = env('MAIL_FROM_ADDRESS');
+                $data['fromName'] = env('MAIL_FROM_NAME');
+                $data['subject'] = 'الرد علي طلب خدمة ' . $transform->serviceRequest->title;
+                $data['body'] = 'نود اعلامك علي انه تم الموافقة علي طلب التحويل من برنامج  ' . $transform->fromBundle->title .  ' إلي برنامج ' . $transform->toBundle->title . " المقدم من الطالب " . $transform->user->full_name . " من قبل "  . auth()->user()->full_name . " وتم التحويل بنجاح ";
+                $this->sendNotification($data);
+            }
+
+            $toastData = [
+                'title' => "اتمام التحويل",
+                'msg' => "تم التحويل بنجاح",
+                'status' => 'success'
+            ];
+
+
+            return back()->with(['toast' => $toastData]);
+        } catch (\Exception $e) {
+            $toastData = [
+                'title' => " طلب تحويل",
+                'msg' => "حدث خطأ في ارسال ايميل للطالب",
+                'status' => 'error'
+            ];
+
+
+            return back()->with(['toast' => $toastData]);
         }
-
-        $toastData = [
-            'title' => "اتمام التحويل",
-            'msg' => "تم التحويل بنجاح",
-            'status' => 'success'
-        ];
-
-
-        return back()->with(['toast' => $toastData]);
     }
     function changeAmount(Request $request, BundleTransform $transform)
     {

@@ -62,8 +62,7 @@ class Bundle extends Model implements TranslatableContract
         return $this->belongsTo('App\User', 'creator_id', 'id');
     }
 
-    public function teacher()
-    {
+    public function teacher(){
         return $this->belongsTo('App\User', 'teacher_id', 'id');
     }
 
@@ -71,12 +70,14 @@ class Bundle extends Model implements TranslatableContract
     {
         return $this->belongsTo('App\Models\Category', 'category_id', 'id');
     }
-    public function bridging()
-
-    {
-        return $this->hasOne('App\Models\BundleBridging', 'bridging_id', 'id');
+    public function bridgings(){
+        return $this->hasMany('App\Models\BundleBridging', 'bridging_id', 'id');
     }
 
+    public function bridgingBundles(){
+        return $this->belongsToMany('App\Models\Bundle', 'bundle_bridging', 'bridging_id', 'from_bundle_id');
+    }
+    
     public function filterOptions()
     {
         return $this->hasMany('App\Models\BundleFilterOption', 'bundle_id', 'id');
