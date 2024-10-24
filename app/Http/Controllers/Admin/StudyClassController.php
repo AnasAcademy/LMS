@@ -163,7 +163,7 @@ class StudyClassController extends Controller
 
         // $usersExport = new BatchStudentsExport($users, $class->id);
 
-        $sales=Sale::whereNull('refund_at')->whereNotNull('bundle_id')->where('class_id',$class->id)->get();
+        $sales=Sale::whereNull('refund_at')->whereNotNull('bundle_id')->where('class_id',$class->id)->orderBy('buyer_id','desc')->groupBy(['buyer_id','bundle_id'])->get();
         $usersExport = new BatchStudentsExportV2($sales);
 
         return Excel::download($usersExport, 'طلاب '.$class->title.'.xlsx');
